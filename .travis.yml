@@ -6,8 +6,8 @@ matrix:
 		  	- cd server
 		  script:
 		  	# un comment when server is added
-			# - npm install
-			# - npm test
+			- npm install
+			- npm test
 		
 		- language: android
 		  jdk: oraclejdk8
