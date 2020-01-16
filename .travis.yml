@@ -1,63 +1,24 @@
-# matrix:
-#   	include:
-# 	    - language: node_js
-# 		    node_js: "12.13.1"
-# 		    before_script:
-# 		  	  - cd server
-# 		    script:
-# 		  	# un comment when server is added
-#         - npm install
-#         - npm test
+matrix:
+  	include:
+	    - language: node_js
+		    node_js: "12.13.1"
+		    before_script:
+		  	  - cd server
+		    script:
+		  	# un comment when server is added
+        - npm install
+        - npm test
 		
-# 		  - language: android
-# 		    jdk: oraclejdk8
-# 		    android:
-# 		      components:
-#             - tools
-#             - platform-tools
-#             - android-25
-#             - build-tools-25.0.3
-#         before_script:
-#           - cd android_app
-#         script:
-#           # uncomment when android app is added
-#           # - ./gradlew test connectedAndroidTest
-language: node_js
-node_js:
-  - "10.11.0"
-
-branches:
-  only:
-    - master
-
-addons:
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
-
-env:
-  - DISPLAY=:99.0
-
-before_script:
-  - yarn global add @angular/cli
-  - sh -e /etc/init.d/xvfb start
-
-cache:
-  yarn: true
-  directories:
-    - node_modules
-
-
-script:
-  - cd server
-  - npm install
-  - npm run lint
-  - npm test
-  - cd ..
-  - cd client
-  - npm install
-  - npm i three --save
-  - npm run lint
-  - npm test
+		  - language: android
+		    jdk: oraclejdk8
+		    android:
+		      components:
+            - tools
+            - platform-tools
+            - android-25
+            - build-tools-25.0.3
+        before_script:
+          - cd android_app
+        script:
+          # uncomment when android app is added
+          # - ./gradlew test connectedAndroidTest
