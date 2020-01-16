@@ -20,6 +20,7 @@ matrix:
 		  before_script:
 		  	- cd android_app
 		  script:
+		#   test
 			# uncomment when android app is added
 		    # - ./gradlew test connectedAndroidTest
 
