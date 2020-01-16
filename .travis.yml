@@ -1,24 +1,24 @@
 matrix:
-  	include:
-	    - language: node_js
-		    node_js: "12.13.1"
-		    before_script:
-		  	  - cd server
-		    script:
-		  	# un comment when server is added
-        - npm install
-        - npm test
-		
-		  - language: android
-		    jdk: oraclejdk8
-		    android:
-		      components:
-            - tools
-            - platform-tools
-            - android-25
-            - build-tools-25.0.3
-        before_script:
-          - cd android_app
-        script:
-          # uncomment when android app is added
-          # - ./gradlew test connectedAndroidTest
+  include:
+    - language: node_js
+      node_js: "12.13.1"
+      before_script:
+        - cd server
+      script:
+      # un comment when server is added
+      - npm install
+      - npm test
+  
+    - language: android
+      jdk: oraclejdk8
+      android:
+        components:
+          - tools
+          - platform-tools
+          - android-25
+          - build-tools-25.0.3
+      before_script:
+        - cd android_app
+      script:
+        # uncomment when android app is added
+        # - ./gradlew test connectedAndroidTest
