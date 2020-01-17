@@ -1,0 +1,6 @@
+{
+    "extends": "../common/tslint.json",
+    "rulesDirectory": [],
+    "defaultSeverity": "error",
+    "rules": {}
+}
