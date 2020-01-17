@@ -18,6 +18,6 @@ matrix:
           - android-25
           - build-tools-25.0.3
       script:
-        # - gradle wrapper --gradle-version 4.10.1
         - cd android_app
+        - gradle wrapper --gradle-version 4.10.1
         - gradlew test
