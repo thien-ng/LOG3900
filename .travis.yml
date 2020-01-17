@@ -1,14 +1,14 @@
 matrix:
   include:
     - language: node_js
-      node_js: "12.13.1"
+      node_js:
+        - "12.13.1"
       before_script:
         - cd server
       script:
-      # un comment when server is added
-      - npm install
-      - npm test
-  
+        # - npm install
+        # - npm test
+    
     - language: android
       jdk: oraclejdk8
       android:
