@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
-import { Message } from '../../../common/communication/message';
 import Types from '../types';
 import { DateService } from './date.service';
 
@@ -8,17 +7,17 @@ import { DateService } from './date.service';
 export class IndexService {
     constructor(@inject(Types.DateService) private dateService: DateService) {}
 
-    about(): Message {
+    about(): any {
         return {
             title: 'This is merely a test',
             body: 'Lorem ipsum........',
         };
     }
 
-    async helloWorld(): Promise<Message> {
+    async helloWorld(): Promise<any> {
         return this.dateService
             .currentTime()
-            .then((timeMessage: Message) => {
+            .then((timeMessage: any) => {
                 return {
                     title: 'Hello world',
                     body: 'Time is ' + timeMessage.body,

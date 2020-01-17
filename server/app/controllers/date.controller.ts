@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
-import { Message } from '../../../common/communication/message';
 import { DateService } from '../services/date.service';
 import Types from '../types';
 
@@ -18,15 +17,8 @@ export class DateController {
             // Send the request to the service and send the response
             this.dateService
                 .currentTime()
-                .then((time: Message) => {
+                .then((time: any) => {
                     res.json(time);
-                })
-                .catch((reason: unknown) => {
-                    const errorMessage: Message = {
-                        title: 'Error',
-                        body: reason as string,
-                    };
-                    res.json(errorMessage);
                 });
         });
     }
