@@ -6,8 +6,8 @@ matrix:
       before_script:
         - cd server
       script:
-        # - npm install
-        # - npm test
+        - npm install
+        - npm test
     
     - language: android
       jdk: oraclejdk8
@@ -20,5 +20,4 @@ matrix:
       before_script:
         - cd android_app
       script:
-        # uncomment when android app is added
-        # - ./gradlew test connectedAndroidTest
+        - gradlew test
