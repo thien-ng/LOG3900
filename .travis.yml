@@ -17,7 +17,7 @@ matrix:
           - platform-tools
           - android-25
           - build-tools-25.0.3
-      before_script:
-        - cd android_app
       script:
+        # - gradle wrapper --gradle-version 4.10.1
+        - cd android_app
         - gradlew test
