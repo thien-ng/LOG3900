@@ -18,6 +18,8 @@ matrix:
           - platform-tools
           - android-25
           - build-tools-25.0.3
+      before_install:
+        - chmod +x gradlew
       script:
         - cd android_app
-        - gradlew :app:test
+        - ./gradlew test
