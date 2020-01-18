@@ -19,4 +19,4 @@ matrix:
           - build-tools-25.0.3
       script:
         - cd android_app
-        - chmod +x gradlew 
+        - chmod +x gradlew clean
