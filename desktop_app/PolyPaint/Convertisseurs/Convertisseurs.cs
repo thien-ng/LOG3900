@@ -41,8 +41,6 @@ namespace PolyPaint.Convertisseurs
         {
             switch (value)
             {
-                case "lasso":
-                    return InkCanvasEditingMode.Select;
                 case "efface_segment":
                     return InkCanvasEditingMode.EraseByPoint;
                 case "efface_trait":

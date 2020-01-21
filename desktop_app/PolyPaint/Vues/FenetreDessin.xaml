@@ -46,16 +46,7 @@
                             Background="Transparent"                                
                             Click="SupprimerSelection" FontSize="14">
                     </Button>
-                </StackPanel>                
-                <Button Name="lasso" Width="40" Height="40" Margin="5" 
-                            BorderBrush="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurBordure}, ConverterParameter=lasso, UpdateSourceTrigger=PropertyChanged}" 
-                            Background="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=lasso, UpdateSourceTrigger=PropertyChanged}" 
-                            Command="{Binding Path=ChoisirOutil}"
-                            CommandParameter="lasso">
-                    <StackPanel>
-                        <Image Source="/Resources/lasso.png"  />
-                    </StackPanel>
-                </Button>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
