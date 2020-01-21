@@ -26,24 +26,6 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <StackPanel Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
-                    <Button Name="Copier" Width="24" Height="24" Margin="0"
-                            HorizontalContentAlignment="Left"                            
-                            BorderBrush="Transparent"
-                            Background="Transparent"                                
-                            Click="DupliquerSelection">
-                        <StackPanel>
-                            <Image Source="/Resources/dupliquer.png"  />
-                        </StackPanel>
-                    </Button>
-                    <Button Name="Couper" Width="24" Height="24" Margin="0"  
-                            HorizontalContentAlignment="Left"                                
-                            BorderBrush="Transparent"
-                            Content="✂"
-                            Background="Transparent"                                
-                            Click="SupprimerSelection" FontSize="14">
-                    </Button>
-                </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
