@@ -24,8 +24,6 @@
                     </LinearGradientBrush>
                 </StackPanel.Background>
                 <Button x:Name="reinitialiser" Width="30" Height="30" Margin="5" Background="#00000000" Command="{Binding Reinitialiser}" Content="♺" FontSize="18"/>
-                <Button x:Name="empiler" Width="30" Height="30" Margin="5" Background="#00000000" Command="{Binding Empiler}" Content="≚" FontSize="18"/>
-                <Button x:Name="depiler" Width="30" Height="30" Margin="5" Background="#00000000" Command="{Binding Depiler}" Content="≙" FontSize="18"/>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
