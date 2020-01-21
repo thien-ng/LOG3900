@@ -49,8 +49,7 @@ namespace PolyPaint.VueModeles
 
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<string> ChoisirPointe { get; set; }
-        public RelayCommand<string> ChoisirOutil { get; set; }
-        public RelayCommand<object> Reinitialiser { get; set; }        
+        public RelayCommand<string> ChoisirOutil { get; set; }     
 
         /// <summary>
         /// Constructeur de VueModele
@@ -73,8 +72,7 @@ namespace PolyPaint.VueModeles
             // Pour les commandes suivantes, il est toujours possible des les activer.
             // Donc, aucune vérification de type Peut"Action" à faire.
             ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
-            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
-            Reinitialiser = new RelayCommand<object>(editeur.Reinitialiser);            
+            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);      
         }
 
         /// <summary>

@@ -84,8 +84,5 @@ namespace PolyPaint.Modeles
 
         // L'outil actif devient celui passé en paramètre.
         public void ChoisirOutil(string outil) => OutilSelectionne = outil;
-
-        // On vide la surface de dessin de tous ses traits.
-        public void Reinitialiser(object o) => traits.Clear();
     }
 }

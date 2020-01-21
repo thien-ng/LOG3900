@@ -23,7 +23,6 @@
                         <GradientStop Color="#FFE0E0E0" Offset="1"/>
                     </LinearGradientBrush>
                 </StackPanel.Background>
-                <Button x:Name="reinitialiser" Width="30" Height="30" Margin="5" Background="#00000000" Command="{Binding Reinitialiser}" Content="♺" FontSize="18"/>
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
