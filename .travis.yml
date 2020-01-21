@@ -1,0 +1,35 @@
+matrix:
+  include:
+    - language: node_js
+      node_js:
+        - "12.13.1"
+      before_script:
+        - cd server
+      script:
+        - npm install
+        - npm test
+    
+    - language: android
+      jdk: oraclejdk8
+      sudo: false
+      android:
+        components:
+          - tools
+          - platform-tools
+          - android-25
+          - build-tools-25.0.3
+      before_install:
+        - yes | sdkmanager "platforms;android-28"
+        - cd android_app
+      script:
+        - chmod +x gradlew
+        - ./gradlew test
+
+after_success:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh success $WEBHOOK_URL
+after_failure:
+  - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
+  - chmod +x send.sh
+  - ./send.sh failure $WEBHOOK_URL
