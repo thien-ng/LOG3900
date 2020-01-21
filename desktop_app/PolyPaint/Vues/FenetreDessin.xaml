@@ -99,24 +99,6 @@
                             <Rectangle Width="10" Height="10" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
                         </Button>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Name="Verticale" Width="24" Height="24" Margin="0"
-                            HorizontalContentAlignment="Center"
-                            BorderBrush="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurBordure}, ConverterParameter=verticale, UpdateSourceTrigger=PropertyChanged}" 
-                            Background="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=verticale, UpdateSourceTrigger=PropertyChanged}"   
-                            Command="{Binding Path=ChoisirPointe}"
-                            CommandParameter="verticale">
-                            <Rectangle Width="2" Height="10" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
-                        </Button>
-                        <Button Name="Horizontale" Width="24" Height="24" Margin="0"
-                            HorizontalContentAlignment="Center"
-                            BorderBrush="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurBordure}, ConverterParameter=horizontale, UpdateSourceTrigger=PropertyChanged}" 
-                            Background="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=horizontale, UpdateSourceTrigger=PropertyChanged}"   
-                            Command="{Binding Path=ChoisirPointe}"
-                            CommandParameter="horizontale">
-                            <Rectangle Width="10" Height="2" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
-                        </Button>
-                    </StackPanel>
                 </StackPanel>                
                 <xctk:ColorPicker x:Name="selecteurCouleur"                             
                   VerticalContentAlignment="Stretch"
