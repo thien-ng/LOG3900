@@ -119,7 +119,7 @@
                 <RowDefinition Name="ligne" Height="310" />
                 <RowDefinition Height="6" />
             </Grid.RowDefinitions>
-            <Thumb Name="horizontal" Grid.Row="0" Grid.Column="1" Background="White" 
+            <!--<Thumb Name="horizontal" Grid.Row="0" Grid.Column="1" Background="White" 
                       Width="6" Height="6" DragDelta="GlisserMouvementRecu" 
                       DragStarted="GlisserCommence" DragCompleted="GlisserTermine"
                       />
@@ -130,7 +130,7 @@
             <Thumb Name="vertical" Grid.Row="1" Grid.Column="0" Background="White" 
                       Width="6" Height="6" DragDelta="GlisserMouvementRecu" 
                       DragStarted="GlisserCommence" DragCompleted="GlisserTermine"
-                      />
+                      />-->
             <Border BorderThickness="5,5,0,0">
                 <InkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" Name="surfaceDessin" 
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
