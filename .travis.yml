@@ -8,6 +8,10 @@ matrix:
       script:
         - npm install
         - npm test
+      deploy:
+        - provider: heroku
+          api_key: 2638cf67-67bc-4ac1-982e-2f8b6c25a4f7
+          script: ./deploy.sh
     
     - language: android
       jdk: oraclejdk8
