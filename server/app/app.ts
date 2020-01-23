@@ -33,7 +33,7 @@ export class Application {
 
     bindRoutes(): void {
         // Notre application utilise le routeur de notre API `Index`
-        this.app.use('/test', this.dateController.router);
+        this.app.use('/date', this.dateController.router);
         this.errorHandling();
     }
 
