@@ -22,7 +22,9 @@ export class DatabaseService {
     }
 
     public async registerAccount(registration: IRegistration): Promise<pg.QueryResult> {
-        return this.pool.query('SELECT * FROM LOG3900.Account;');
+        return this.pool.query(`SELECT LOG3900.registerAccount(
+                                    CAST('${registration.username}' AS VARCHAR),
+                                    CAST('${registration.password}' AS VARCHAR));`);
     }
 
 }
