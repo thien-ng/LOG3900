@@ -23,9 +23,9 @@ export class AccountController {
                         password: row.password,
                     }));
                 
-                res.json(test);
+                res.json(accounts);
             }).catch((e: Error) => {
-                console.log("test", e)
+                console.log("error", e)
             });;
         });
     }
