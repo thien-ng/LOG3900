@@ -7,4 +7,5 @@ export default {
 
     DateService: Symbol('DateService'),
     DatabaseService: Symbol('DatabaseService'),
+    AccountService: Symbol('AccountService'),
 };

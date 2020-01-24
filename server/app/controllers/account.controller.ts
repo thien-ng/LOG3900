@@ -15,7 +15,7 @@ export class AccountController {
     private configureRouter() {
         this.router = Router();
         this.router.get('/test', (req: Request, res: Response, next: NextFunction) => {
-            this.databaseService.test().then((result: pg.QueryResult) => {
+            this.databaseService.registerAccount().then((result: pg.QueryResult) => {
                 const test: any[] = result.rows.map((row: any) => (
                     {
                         id:       row.noanimal,
