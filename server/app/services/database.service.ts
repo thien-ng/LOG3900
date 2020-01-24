@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { IRegistration } from "../interfaces/communication";
 import * as pg from "pg";
 
 @injectable()
@@ -20,7 +21,7 @@ export class DatabaseService {
         this.pool.connect().catch();
     }
 
-    public async registerAccount(): Promise<pg.QueryResult> {
+    public async registerAccount(registration: IRegistration): Promise<pg.QueryResult> {
         return this.pool.query('SELECT * FROM LOG3900.Account;');
     }
 
