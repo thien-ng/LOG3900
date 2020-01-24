@@ -19,8 +19,8 @@ namespace PolyPaint
         }
         
         // Pour gérer les points de contrôles.
-        private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
-        private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
+        //private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
+        //private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
         private void GlisserMouvementRecu(object sender, DragDeltaEventArgs e)
         {
             String nom = (sender as Thumb).Name;
@@ -35,13 +35,5 @@ namespace PolyPaint
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
         }
-
-        private void DupliquerSelection(object sender, RoutedEventArgs e)
-        {          
-            surfaceDessin.CopySelection();
-            surfaceDessin.Paste();
-        }
-
-        private void SupprimerSelection(object sender, RoutedEventArgs e) => surfaceDessin.CutSelection();
     }
 }
