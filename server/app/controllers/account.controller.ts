@@ -14,18 +14,18 @@ export class AccountController {
 
     private configureRouter() {
         this.router = Router();
-        this.router.get('/test', (req: Request, res: Response, next: NextFunction) => {
-            this.databaseService.test().then((result: pg.QueryResult) => {
-                const test: any[] = result.rows.map((row: any) => (
+        this.router.get('/selectAccount', (req: Request, res: Response, next: NextFunction) => {
+            this.databaseService.selectAccount().then((result: pg.QueryResult) => {
+                const accounts: any[] = result.rows.map((row: any) => (
                     {
                         id:       row.noanimal,
                         username: row.username,
                         password: row.password,
                     }));
                 
-                res.json(test);
+                res.json(accounts);
             }).catch((e: Error) => {
-                console.log("test", e)
+                console.log("error", e)
             });;
         });
     }

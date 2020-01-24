@@ -20,7 +20,7 @@ export class DatabaseService {
         this.pool.connect().catch();
     }
 
-    public async test(): Promise<pg.QueryResult> {
+    public async selectAccount(): Promise<pg.QueryResult> {
         return this.pool.query('SELECT * FROM LOG3900.Account;');
     }
 
