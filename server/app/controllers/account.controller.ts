@@ -17,5 +17,9 @@ export class AccountController {
         this.router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.accountService.register(req.body));
         });
+
+        this.router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.accountService.login(req.body));
+        });
     }
 }
