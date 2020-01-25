@@ -1,23 +1,32 @@
 package com.example.client_leger
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import kotlinx.android.synthetic.main.activity_logpage.*
+import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.fragment_registration.*
 
-import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class LogPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.fragment_registration)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+
+        register_button.setOnClickListener {
+            //TODO: Create an account for the user.
+        }
+
+        textView_alreadyHaveAccount.setOnClickListener {
+            setContentView(R.layout.fragment_login)
+
+            login_button.setOnClickListener {
+                //TODO: Login the user.
+            }
         }
     }
 
