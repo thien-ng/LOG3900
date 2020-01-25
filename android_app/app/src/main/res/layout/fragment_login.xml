@@ -2,32 +2,31 @@
 <android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent" android:layout_height="match_parent">
 
     <Button
-            android:id="@+id/button_submit2"
+            android:id="@+id/login_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Login"
-            app:layout_constraintEnd_toEndOf="@+id/editText_password2"
-            app:layout_constraintStart_toStartOf="@+id/editText_password2"
-            app:layout_constraintTop_toBottomOf="@+id/editText_password2" />
+            app:layout_constraintEnd_toEndOf="@+id/login_editText_password"
+            app:layout_constraintStart_toStartOf="@+id/login_editText_password"
+            app:layout_constraintTop_toBottomOf="@+id/login_editText_password" />
 
     <EditText
-            android:id="@+id/editText_password2"
+            android:id="@+id/login_editText_password"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
-            app:layout_constraintEnd_toEndOf="@+id/editText_name3"
+            app:layout_constraintEnd_toEndOf="@+id/login_editText_name"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/editText_name3"
-            app:layout_constraintTop_toBottomOf="@+id/editText_name3" />
+            app:layout_constraintStart_toStartOf="@+id/login_editText_name"
+            app:layout_constraintTop_toBottomOf="@+id/login_editText_name" />
 
     <EditText
-            android:id="@+id/editText_name3"
+            android:id="@+id/login_editText_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
