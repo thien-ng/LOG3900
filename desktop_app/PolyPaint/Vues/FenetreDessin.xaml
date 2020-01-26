@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"        
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="PolyPaint.FenetreDessin"
@@ -28,32 +29,29 @@
                 <StackPanel Orientation="Horizontal">
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                 </StackPanel>
-                <Button Name="crayon" Width="40" Height="40" Margin="5" 
+                <Button Name="crayon"
                         BorderBrush="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurBordure}, ConverterParameter=crayon, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=crayon, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding Path=ChoisirOutil}"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
                         CommandParameter="crayon">
-                    <StackPanel>
-                        <Image Source="/Resources/crayon.png"  />
-                    </StackPanel>
+                    <materialDesign:PackIcon Kind="LeadPencil"/>
                 </Button>
-                <Button Name="efface_segment" Width="40" Height="40" Margin="5" 
+                <Button Name="efface_segment" 
                         BorderBrush="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurBordure}, ConverterParameter=efface_segment, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=efface_segment, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding Path=ChoisirOutil}"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
                         CommandParameter="efface_segment">
-                    <StackPanel>
-                        <Image Source="/Resources/efface_crayon.png" />
-                    </StackPanel>
+                    <materialDesign:PackIcon Kind="Eraser"/>
                 </Button>
-                <Button Name="efface_trait" Width="40" Height="40" Margin="5" 
+                <Button Name="efface_trait" 
                         BorderBrush="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurBordure}, ConverterParameter=efface_trait, UpdateSourceTrigger=PropertyChanged}" 
                         Background="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=efface_trait, UpdateSourceTrigger=PropertyChanged}" 
                         Command="{Binding Path=ChoisirOutil}"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
                         CommandParameter="efface_trait">
-                    <StackPanel>
-                        <Image Source="/Resources/efface.png" />
-                    </StackPanel>
+                    <materialDesign:PackIcon Kind="EraserVariant"/>
                 </Button>
                 
                 <StackPanel Orientation="Horizontal">
@@ -61,21 +59,23 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <Button Name="PointeRonde" Width="24" Height="24" Margin="0"
+                        <Button Name="PointeRonde" Margin="0"
                             BorderBrush="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurBordure}, ConverterParameter=ronde, UpdateSourceTrigger=PropertyChanged}" 
                             Background="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=ronde, UpdateSourceTrigger=PropertyChanged}"                                 
                             HorizontalContentAlignment="Center"                                
                             Command="{Binding Path=ChoisirPointe}"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
                             CommandParameter="ronde">
-                            <Ellipse Width="10" Height="10" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="Circle"/>
                         </Button>
-                        <Button Name="PointeCarree" Width="24" Height="24" Margin="0"
+                        <Button Name="PointeCarree" Margin="0"
                             HorizontalContentAlignment="Center"                            
                             BorderBrush="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurBordure}, ConverterParameter=carree, UpdateSourceTrigger=PropertyChanged}" 
                             Background="{Binding Path=PointeSelectionnee, Converter={StaticResource convertisseurCouleurFond}, ConverterParameter=carree, UpdateSourceTrigger=PropertyChanged}"                                
                             Command="{Binding Path=ChoisirPointe}"
+                            Style="{DynamicResource MaterialDesignFlatButton}"
                             CommandParameter="carree">
-                            <Rectangle Width="10" Height="10" Fill="Black" Stroke="Black" StrokeThickness="2" HorizontalAlignment="Center"/>
+                            <materialDesign:PackIcon Kind="Square"/>
                         </Button>
                     </StackPanel>
                     
