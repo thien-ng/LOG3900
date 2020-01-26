@@ -37,6 +37,7 @@
     "dependencies": {
         "@types/chai-spies": "^1.0.1",
         "@types/pg": "^7.14.1",
+        "@types/ws": "^7.2.0",
         "body-parser": "^1.18.3",
         "chai-spies": "^1.0.0",
         "cookie-parser": "1.4.4",
@@ -49,7 +50,8 @@
         "pg": "^7.17.1",
         "prettier": "^1.19.1",
         "reflect-metadata": "^0.1.10",
-        "serve-favicon": "~2.5.0"
+        "serve-favicon": "~2.5.0",
+        "ws": "^7.2.1"
     },
     "devDependencies": {
         "@types/body-parser": "1.17.1",
