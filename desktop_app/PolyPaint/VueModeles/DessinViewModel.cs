@@ -18,7 +18,6 @@ namespace PolyPaint.VueModeles
             {
                 return _goToLogin ?? (_goToLogin = new RelayCommand(x =>
                 {
-                    Console.WriteLine("hello");
                     Mediator.Notify("GoToLoginScreen", "");
                 }));
             }
