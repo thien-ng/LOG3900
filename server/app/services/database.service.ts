@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { IRegistration, ILogin } from "../interfaces/communication";
 import * as pg from "pg";
 
 @injectable()
@@ -20,8 +21,16 @@ export class DatabaseService {
         this.pool.connect().catch();
     }
 
-    public async selectAccount(): Promise<pg.QueryResult> {
-        return this.pool.query('SELECT * FROM LOG3900.Account;');
+    public async registerAccount(registration: IRegistration): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.registerAccount(
+                                    CAST('${registration.username}' AS VARCHAR),
+                                    CAST('${registration.password}' AS VARCHAR));`);
+    }
+
+    public async loginAccount(login: ILogin): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.loginAccount(
+                                    CAST('${login.username}' AS VARCHAR),
+                                    CAST('${login.password}' AS VARCHAR));`);
     }
 
 }

@@ -1,32 +1,25 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
-import { DatabaseService } from '../services/database.service';
+import { AccountService } from '../services/account.service';
 import Types from '../types';
-import * as pg from "pg";
 
 @injectable()
 export class AccountController {
     public router: Router;
 
-    public constructor(@inject(Types.DatabaseService) private databaseService: DatabaseService) {
+    public constructor(@inject(Types.AccountService) private accountService: AccountService) {
         this.configureRouter();
     }
 
     private configureRouter() {
         this.router = Router();
-        this.router.get('/selectAccount', (req: Request, res: Response, next: NextFunction) => {
-            this.databaseService.selectAccount().then((result: pg.QueryResult) => {
-                const accounts: any[] = result.rows.map((row: any) => (
-                    {
-                        id:       row.noanimal,
-                        username: row.username,
-                        password: row.password,
-                    }));
-                
-                res.json(accounts);
-            }).catch((e: Error) => {
-                console.log("error", e)
-            });;
+
+        this.router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.accountService.register(req.body));
+        });
+
+        this.router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.accountService.login(req.body));
         });
     }
 }

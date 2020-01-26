@@ -7,7 +7,7 @@
         "start": "nodemon",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "tslint --project tsconfig.json \"./app/**/*.ts\" --format stylish",
-        "test": "mocha",
+        "test": "mocha --exit",
         "coverage": "nyc mocha"
     },
     "nyc": {
@@ -35,8 +35,10 @@
         "instrument": true
     },
     "dependencies": {
+        "@types/chai-spies": "^1.0.1",
         "@types/pg": "^7.14.1",
         "body-parser": "^1.18.3",
+        "chai-spies": "^1.0.0",
         "cookie-parser": "1.4.4",
         "cors": "2.8.5",
         "debug": "^4.1.1",
