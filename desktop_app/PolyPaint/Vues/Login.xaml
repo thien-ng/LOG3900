@@ -43,7 +43,7 @@
             
             Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" />
 
-        <Button Grid.Column="3" Grid.Row="5" Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="100" Command="{Binding GoTo2}" >
+        <Button Grid.Column="3" Grid.Row="5" Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="100" Command="{Binding GoToDraw}" >
             _LOGIN
         </Button>
     </Grid>

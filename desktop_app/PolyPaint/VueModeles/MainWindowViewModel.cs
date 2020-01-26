@@ -45,12 +45,12 @@ namespace PolyPaint.VueModeles
                 .FirstOrDefault(vm => vm == viewModel);
         }
 
-        private void OnGo1Screen(object obj)
+        private void OnGoToLoginScreen(object obj)
         {
             ChangeViewModel(PageViewModels[0]);
         }
 
-        private void OnGo2Screen(object obj)
+        private void OnGoToDrawScreen(object obj)
         {
             ChangeViewModel(PageViewModels[1]);
         }
@@ -63,8 +63,8 @@ namespace PolyPaint.VueModeles
 
             CurrentPageViewModel = PageViewModels[0];
 
-            Mediator.Subscribe("GoTo1Screen", OnGo1Screen);
-            Mediator.Subscribe("GoTo2Screen", OnGo2Screen);
+            Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
+            Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);
         }
     }
 }

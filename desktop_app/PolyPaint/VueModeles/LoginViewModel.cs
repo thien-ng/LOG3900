@@ -10,15 +10,15 @@ namespace PolyPaint.VueModeles
 {
     class LoginViewModel : VueModele, IPageViewModel
     {
-        private ICommand _goTo2;
+        private ICommand _goToDraw;
 
-        public ICommand GoTo2
+        public ICommand GoToDraw
         {
             get
             {
-                return _goTo2 ?? (_goTo2 = new RelayCommand(x =>
+                return _goToDraw ?? (_goToDraw = new RelayCommand(x =>
                 {
-                    Mediator.Notify("GoTo2Screen", "");
+                    Mediator.Notify("GoToDrawScreen", "");
                 }));
             }
         }
