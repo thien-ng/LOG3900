@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{AA1204D0-59EF-4254-BF1A-87DF67980AAD}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>PolyPaint</RootNamespace>
     <AssemblyName>PolyPaint</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
@@ -37,6 +37,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>palette.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MaterialDesignColors, Version=1.2.2.920, Culture=neutral, processorArchitecture=MSIL">
@@ -89,7 +92,14 @@
     </ApplicationDefinition>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Utilitaires\EventRaiser.cs" />
+    <Compile Include="Utilitaires\EventArgs.cs" />
+    <Compile Include="Utilitaires\IPageViewModel.cs" />
+    <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
+    <Compile Include="VueModeles\DessinViewModel.cs" />
+    <Compile Include="VueModeles\LoginViewModel.cs" />
+    <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="VueModeles\VueModele.cs" />
     <Compile Include="Vues\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
