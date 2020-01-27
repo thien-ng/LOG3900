@@ -19,8 +19,7 @@ namespace PolyPaint.Utilitaires
         /// </summary>
         /// <param name="execute">Delegate to execute when Execute is called on the command.  This can be null to just hook up a CanExecute delegate.</param>
         /// <remarks><seealso cref="CanExecute"/> will always return true.</remarks>
-        public RelayCommand(Action<T> execute)
-            : this(execute, null)
+        public RelayCommand(Action<T> execute) : this(execute, null)
         {
             _execute = execute;
         }
@@ -81,8 +80,7 @@ namespace PolyPaint.Utilitaires
         private readonly Predicate<object> _canExecute;
         private readonly Action<object> _execute;
 
-        public RelayCommand(Action<object> execute)
-           : this(execute, null)
+        public RelayCommand(Action<object> execute) : this(execute, null)
         {
             _execute = execute;
         }
