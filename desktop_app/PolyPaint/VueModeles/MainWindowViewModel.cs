@@ -12,7 +12,7 @@ namespace PolyPaint.VueModeles
         private IPageViewModel _currentPageViewModel;
         private List<IPageViewModel> _pageViewModels;
 
-        public List<Utilitaires.IPageViewModel> PageViewModels
+        public List<IPageViewModel> PageViewModels
         {
             get
             {
