@@ -13,6 +13,7 @@
             android:id="@+id/recyclerView_chat_log"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
             app:layout_constraintEnd_toEndOf="parent"
