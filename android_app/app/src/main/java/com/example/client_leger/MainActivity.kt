@@ -8,12 +8,9 @@ import android.view.View
 import android.widget.EditText
 import kotlinx.android.synthetic.main.fragment_chat.*
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.my_message_layout.view.*
-import kotlinx.android.synthetic.main.their_message_layout.view.*
 
-class ChatActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_chat)
@@ -44,22 +41,3 @@ fun sendMessage(adapter: GroupAdapter<ViewHolder>, textInput: EditText, recycler
     recyclerView.smoothScrollToPosition(adapter.itemCount)
 }
 
-class ChatItemReceived(val text: String): Item<ViewHolder>(){
-    override fun bind(viewHolder: ViewHolder, position: Int){
-        viewHolder.itemView.their_message_body.text = text
-    }
-
-    override fun getLayout(): Int {
-        return R.layout.their_message_layout
-    }
-}
-
-class ChatItemSent(val text: String): Item<ViewHolder>(){
-    override fun bind(viewHolder: ViewHolder, position: Int){
-        viewHolder.itemView.my_message_body.text = text
-    }
-
-    override fun getLayout(): Int {
-        return R.layout.my_message_layout
-    }
-}

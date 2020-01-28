@@ -20,7 +20,7 @@ class LogPageActivity : AppCompatActivity() {
 
         register_button.setOnClickListener {
             //TODO: Create an account for the user.
-            val intent = Intent(this, ChatActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
 
@@ -29,7 +29,7 @@ class LogPageActivity : AppCompatActivity() {
 
             login_button.setOnClickListener {
                 //TODO: Login the user.
-                val intent = Intent(this, ChatActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
         }
