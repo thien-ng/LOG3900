@@ -1,6 +1,8 @@
 export interface IRegistration {
     username: string,
     password: string,
+    firstName: string;
+    lastName: string;
 }
 
 export interface ILogin {
@@ -9,7 +11,7 @@ export interface ILogin {
 }
 
 export interface IStatus {
-    status:  number;
+    status: number;
     message: string;
 }
 

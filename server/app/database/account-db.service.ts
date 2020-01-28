@@ -9,7 +9,9 @@ export class AccountDbService extends DatabaseService {
     public async registerAccount(registration: IRegistration): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT LOG3900.registerAccount(
                                     CAST('${registration.username}' AS VARCHAR),
-                                    CAST('${registration.password}' AS VARCHAR));`);
+                                    CAST('${registration.password}' AS VARCHAR),
+                                    CAST('${registration.firstName}' AS VARCHAR),
+                                    CAST('${registration.lastName}' AS VARCHAR));`);
     }
 
     public async loginAccount(login: ILogin): Promise<pg.QueryResult> {
@@ -18,4 +20,4 @@ export class AccountDbService extends DatabaseService {
                                     CAST('${login.password}' AS VARCHAR));`);
     }
 
-} 
+}
