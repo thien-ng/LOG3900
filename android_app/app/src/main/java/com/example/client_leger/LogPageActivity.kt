@@ -8,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.android.volley.AuthFailureError
 import com.android.volley.toolbox.Volley
+
+import android.content.Intent
 import kotlinx.android.synthetic.main.activity_logpage.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
@@ -32,6 +34,8 @@ class LogPageActivity : AppCompatActivity() {
             var status = authenticateUser( body, endpoint )
             if(status == 200) {
                 //TODO navigate to next page
+              val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
             }
 
         }
@@ -47,9 +51,11 @@ class LogPageActivity : AppCompatActivity() {
                 var endpoint = "/account/login"
                 var status = authenticateUser( body,endpoint )
                 if(status == 200) {
-                    //TODO navigate to next page
+                     val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
                 }
             }
+          
         }
     }
 
