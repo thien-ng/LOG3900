@@ -33,15 +33,15 @@ namespace PolyPaint.Vues
 
         private void PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (this.DataContext != null)
-            { ((dynamic)this.DataContext).Password = ((PasswordBox)sender); }
+            if (DataContext != null)
+            { ((dynamic)DataContext).Password = ((PasswordBox)sender); }
         }
 
         private void PasswordConfirmationChanged(object sender, RoutedEventArgs e)
         {
 
-            if (this.DataContext != null)
-            { ((dynamic)this.DataContext).PasswordConfirm = ((PasswordBox)sender); }
+            if (DataContext != null)
+            { ((dynamic)DataContext).PasswordConfirm = ((PasswordBox)sender); }
         }
     }
 }

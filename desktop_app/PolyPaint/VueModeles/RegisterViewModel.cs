@@ -4,6 +4,8 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace PolyPaint.VueModeles
 {
@@ -11,7 +13,7 @@ namespace PolyPaint.VueModeles
     {
         private ICommand _goToLogin;
         private ICommand _register;
-        private string _username;
+        private string   _username;
 
         public PasswordBox Password { private get; set; }
         public PasswordBox PasswordConfirm { private get; set; }
@@ -46,15 +48,18 @@ namespace PolyPaint.VueModeles
             {
                 return _register ?? (_register = new RelayCommand(async x =>
                 {
-                    await postRequestAsync(_username,Password.Password);
-                    Console.WriteLine("User: " + this._username);
-                    Console.WriteLine("pswd: " + this.Password.Password);
-                    Console.WriteLine("cfrm: " + this.PasswordConfirm.Password);
+                    JObject res = await RegisterRequestAsync(_username,Password.Password);
+
+                    if (res.ContainsKey("status"))
+                    {
+                        if (res.GetValue("status").ToString() == "200")
+                            Mediator.Notify("GoToLoginScreen", "");
+                    }
                 }));
             }
         }
 
-        public async System.Threading.Tasks.Task postRequestAsync(string username, string password)
+        public async Task<JObject> RegisterRequestAsync(string username, string password)
         {
             var values = new Dictionary<string, string>
                 {
@@ -64,10 +69,11 @@ namespace PolyPaint.VueModeles
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await VueModele.client.PostAsync("http://72.53.102.93:3000/account/register", content);
+            var response = await client.PostAsync("http://72.53.102.93:3000/account/register", content);
 
             var responseString = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseString);
+
+            return JObject.Parse(responseString);
         }
     }
 
