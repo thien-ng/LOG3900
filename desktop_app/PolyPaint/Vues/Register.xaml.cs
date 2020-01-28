@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.VueModeles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,20 @@ namespace PolyPaint.Vues
         private void TextBlock_SourceUpdated(object sender, DataTransferEventArgs e)
         {
 
+        }
+
+        private void PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Password Changed");
+            if (this.DataContext != null)
+            { ((dynamic)this.DataContext).SecurePassword = ((PasswordBox)sender); }
+        }
+
+        private void PasswordConfirmationChanged(object sender, RoutedEventArgs e)
+        {
+
+            if (this.DataContext != null)
+            { ((dynamic)this.DataContext).SecurePasswordConfirm = ((PasswordBox)sender); }
         }
     }
 }
