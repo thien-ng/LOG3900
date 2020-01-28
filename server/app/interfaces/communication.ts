@@ -12,3 +12,13 @@ export interface IStatus {
     status:  number;
     message: string;
 }
+
+export interface IMessage {
+    type:       IMessageType,
+    content:    string | ILogin,
+}
+
+export enum IMessageType {
+    login,
+    chat,
+}

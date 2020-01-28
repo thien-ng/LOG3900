@@ -9,4 +9,6 @@ export default {
     DatabaseService:    Symbol('DatabaseService'),
     AccountService:     Symbol('AccountService'),
     WebsocketService:   Symbol('WebsocketService'),
+    ChatService:        Symbol('ChatService'),
+    UserManagerService: Symbol('UserManagerService',)
 };
