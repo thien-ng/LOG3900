@@ -10,7 +10,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/message_body"
+            android:id="@+id/my_message_body"
             android:background="@drawable/my_message_drawable"
             android:textColor="#fff"
             android:padding="10dp"
