@@ -24,5 +24,10 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
         }
+
+        private void TextBlock_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PolyPaint.Utilitaires;
+using PolyPaint.Modeles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
