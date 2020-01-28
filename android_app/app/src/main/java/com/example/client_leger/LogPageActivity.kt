@@ -2,7 +2,6 @@ package com.example.client_leger
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.widget.Toast
 import android.view.Menu
 import android.view.MenuItem
@@ -19,7 +18,6 @@ import com.android.volley.toolbox.JsonObjectRequest
 
 class LogPageActivity : AppCompatActivity() {
 
-    val serverURL = "http://72.53.102.93:3000"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,11 +77,10 @@ class LogPageActivity : AppCompatActivity() {
         var status = 504
         var mRequestQueue = Volley.newRequestQueue(this)
 
-        var mStringRequest = object : JsonObjectRequest( Method.POST, serverURL + endpoint,null, Response.Listener { response ->
+        var mStringRequest = object : JsonObjectRequest( Method.POST, Constants.SERVER_URL + endpoint,null, Response.Listener { response ->
             Toast.makeText(applicationContext, response["message"].toString(), Toast.LENGTH_SHORT).show()
             status =  response["status"].toString().toInt()
-        }, Response.ErrorListener { error ->
-            Log.i("This is the error", "Error :$error")
+        }, Response.ErrorListener {
             Toast.makeText(applicationContext, "Something went wrong...", Toast.LENGTH_SHORT).show()
         }) {
             override fun getBodyContentType(): String {
