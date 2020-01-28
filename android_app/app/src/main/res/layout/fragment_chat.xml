@@ -1,44 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:clipToPadding="false"
         android:focusableInTouchMode="true"
         tools:context=".Chat">
 
-    <ListView
-            android:layout_width="match_parent"
-            android:id="@+id/messages_view"
-            android:layout_weight="2"
-            android:divider="#fff"
-            android:layout_height="wrap_content"
-            />
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_chat_log"
+            android:layout_width="409dp"
+            android:layout_height="681dp"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#fff"
-            android:orientation="horizontal">
+    <EditText
+            android:id="@+id/chat_message_editText"
+            android:layout_width="309dp"
+            android:layout_height="47dp"
+            android:ems="10"
+            android:hint="Write a message"
+            android:inputType="text"
+            android:text=""
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-        <EditText
-                android:id="@+id/chat_message_editText"
-                android:layout_width="347dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:ems="10"
-                android:hint="Write a message"
-                android:inputType="text"
-                android:paddingHorizontal="10dp"
-                android:text="" />
+    <Button
+            android:id="@+id/chat_send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="Send"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/chat_message_editText" />
 
-        <Button
-                android:id="@+id/chat_send_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="Send" />
-
-    </LinearLayout>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
