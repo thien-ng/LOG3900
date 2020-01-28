@@ -16,6 +16,7 @@ class ChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_chat)
+        chat_message_editText.requestFocus()
 
         val adapter = GroupAdapter<ViewHolder>()
 
