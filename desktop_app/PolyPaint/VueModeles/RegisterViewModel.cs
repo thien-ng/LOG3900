@@ -1,12 +1,6 @@
 ﻿using PolyPaint.Utilitaires;
-using PolyPaint.Modeles;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Security;
 using System.Windows.Controls;
 
 namespace PolyPaint.VueModeles
@@ -15,20 +9,10 @@ namespace PolyPaint.VueModeles
     {
         private ICommand _goToLogin;
         private ICommand _register;
+        private string _username;
 
-        public PasswordBox SecurePassword { private get; set; }
-        public PasswordBox SecurePasswordConfirm { private get; set; }
-
-        public ICommand Register
-        {
-            get
-            {
-                return _register ?? (_register = new RelayCommand(x =>
-                {
-
-                }));
-            }
-        }
+        public PasswordBox Password { private get; set; }
+        public PasswordBox PasswordConfirm { private get; set; }
 
         public ICommand GoToLogin
         {
@@ -41,5 +25,31 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        public string Username
+        {
+            get { return _username; }
+            set
+            {
+                if (value != _username)
+                {
+                    _username = value;
+                    ProprieteModifiee("Username");
+                }
+            }
+        }
+
+        public ICommand Register
+        {
+            get
+            {
+                return _register ?? (_register = new RelayCommand(x =>
+                {
+                    Console.WriteLine("User: " + this._username);
+                    Console.WriteLine("pswd: " + this.Password.Password);
+                    Console.WriteLine("cfrm: " + this.PasswordConfirm.Password);
+                }));
+            }
+        }
     }
+
 }
