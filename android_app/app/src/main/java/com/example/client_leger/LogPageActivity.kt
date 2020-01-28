@@ -19,6 +19,7 @@ class LogPageActivity : AppCompatActivity() {
 
         register_button.setOnClickListener {
             //TODO: Create an account for the user.
+            setContentView(R.layout.fragment_chat)
         }
 
         textView_alreadyHaveAccount.setOnClickListener {
@@ -26,6 +27,7 @@ class LogPageActivity : AppCompatActivity() {
 
             login_button.setOnClickListener {
                 //TODO: Login the user.
+                setContentView(R.layout.fragment_chat)
             }
         }
     }
