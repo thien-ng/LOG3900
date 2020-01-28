@@ -11,31 +11,32 @@
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView_chat_log"
-            android:layout_width="409dp"
-            android:layout_height="681dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
             android:id="@+id/chat_message_editText"
-            android:layout_width="309dp"
-            android:layout_height="47dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Write a message"
             android:inputType="text"
             android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/chat_send_button"
             app:layout_constraintStart_toStartOf="parent" />
 
     <Button
             android:id="@+id/chat_send_button"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:text="Send"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/chat_message_editText" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
