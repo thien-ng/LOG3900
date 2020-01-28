@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.content.Intent
 import kotlinx.android.synthetic.main.activity_logpage.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
@@ -19,6 +20,8 @@ class LogPageActivity : AppCompatActivity() {
 
         register_button.setOnClickListener {
             //TODO: Create an account for the user.
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
 
         textView_alreadyHaveAccount.setOnClickListener {
@@ -26,6 +29,8 @@ class LogPageActivity : AppCompatActivity() {
 
             login_button.setOnClickListener {
                 //TODO: Login the user.
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
             }
         }
     }
