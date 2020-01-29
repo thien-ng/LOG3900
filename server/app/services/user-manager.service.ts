@@ -1,16 +1,16 @@
 import { injectable } from "inversify";
-import * as ws from 'ws';
+import * as io from 'socket.io';
 
 @injectable()
 export class UserManagerService {
 
-    private usersMap: Map<string, ws>;
+    private usersMap: Map<string, io.Socket>;
 
     public constructor() {
-        this.usersMap = new Map<string, ws>();
+        this.usersMap = new Map<string, io.Socket>();
     }
 
-    public addUser(username: string, socket: ws): void {
+    public addUser(username: string, socket: io.Socket): void {
         this.usersMap.set(username, socket);
     }
 
