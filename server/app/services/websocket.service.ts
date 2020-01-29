@@ -1,6 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { UserManagerService } from './user-manager.service';
-import { IMessage, IMessageType, ILogin } from '../interfaces/communication';
+import { ILogin } from '../interfaces/communication';
 import 'reflect-metadata';
 import * as io from 'socket.io';
 import * as http from 'http';
@@ -23,11 +23,9 @@ export class WebsocketService {
             let username: string;
             
             // test event to check if socket is on
-            socket.on('message', (mes: IMessage) => {
-                if (mes.type === IMessageType.login) {
-                    username = (mes.content as ILogin).username;
-                    this.login(username, socket);
-                }
+            socket.on('login', (mes: ILogin) => {
+                username = mes.username;
+                this.login(username, socket);
             });
 
             // event is called when client disconnects
@@ -38,6 +36,6 @@ export class WebsocketService {
     }
 
     private login(username: string, socket: io.Socket): void {
-        this.users.addUser(username, socket);
+        this.users.addUser({username: username, socketId: socket.id});
     }
 }

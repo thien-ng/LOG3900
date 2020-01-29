@@ -1,21 +1,21 @@
 import { injectable } from "inversify";
-import * as io from 'socket.io';
+import { IUser } from '../interfaces/user-manager';
 
 @injectable()
 export class UserManagerService {
 
-    private usersMap: Map<string, io.Socket>;
+    private users: IUser[];
 
     public constructor() {
-        this.usersMap = new Map<string, io.Socket>();
+        this.users = [];
     }
 
-    public addUser(username: string, socket: io.Socket): void {
-        this.usersMap.set(username, socket);
+    public addUser(user: IUser): void {
+        this.users.push(user);
     }
 
     public deleteUser(username: string): void {
-        this.usersMap.delete(username);
+        this.users = this.users.filter((obj: IUser) => obj.username !== username);
     }
 
 }
