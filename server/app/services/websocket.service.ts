@@ -2,26 +2,26 @@ import { injectable, inject } from 'inversify';
 import { UserManagerService } from './user-manager.service';
 import { IMessage, IMessageType, ILogin } from '../interfaces/communication';
 import 'reflect-metadata';
-import Types from '../types';
-import * as ws from 'ws';
+import * as io from 'socket.io';
 import * as http from 'http';
+import Types from '../types';
 
 @injectable()
 export class WebsocketService {
 
-    private ws: ws.Server;
+    private io: io.Server;
 
     public constructor(
         @inject(Types.UserManagerService) private users: UserManagerService
         ) {}
 
     public initWebsocket(server: http.Server): void {
-        this.ws = new ws.Server({ server });
+        this.io = io(server);
         
         // event is called when client connects
-        this.ws.on('connection', (socket: ws) => {
+        this.io.on('connection', (socket: io.Socket) => {
             let username: string;
-
+            
             // test event to check if socket is on
             socket.on('message', (mes: IMessage) => {
                 if (mes.type === IMessageType.login) {
@@ -31,13 +31,13 @@ export class WebsocketService {
             });
 
             // event is called when client disconnects
-            socket.on('close', () => {
+            socket.on('disconnect', () => {
                 this.users.deleteUser(username);
             });
         });
     }
 
-    private login(username: string, socket: ws): void {
+    private login(username: string, socket: io.Socket): void {
         this.users.addUser(username, socket);
     }
 }
