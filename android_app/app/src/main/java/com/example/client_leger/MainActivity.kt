@@ -10,9 +10,9 @@ import android.widget.EditText
 import kotlinx.android.synthetic.main.fragment_chat.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import java.io.InputStreamReader
-import java.net.Socket
-import java.io.OutputStreamWriter
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,24 +24,33 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = GroupAdapter<ViewHolder>()
 
-        val thread = Thread(Runnable {
-            try {
-                val socket = Socket("10.200.21.11", 3333)
-                val osw = OutputStreamWriter(socket.getOutputStream(), "UTF-8")
-                val isr = InputStreamReader(socket.getInputStream())
-                val str = "testHenlo"
-                osw.write(str, 0, str.length)
-                var testStr = isr.readText()
-                adapter.add(ChatItemSent(testStr))
-                Log.w("socket", testStr)
-                Log.w("socket", "AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        })
+        val socket = IO.socket("http://10.200.21.11:3000")
 
-        thread.start()
-        thread.run()
+        Log.w("socket", "after connect")
+
+        socket.on(Socket.EVENT_CONNECT) {
+          Log.w("","===================connect")
+        }
+        socket.connect()
+//
+//        val thread = Thread(Runnable {
+//            try {
+//                val socket = Socket("10.200.21.11", 3333)
+//                val osw = OutputStreamWriter(socket.getOutputStream(), "UTF-8")
+//                val isr = InputStreamReader(socket.getInputStream())
+//                val str = "testHenlo"
+//                osw.write(str, 0, str.length)
+//                var testStr = isr.readText()
+//                adapter.add(ChatItemSent(testStr))
+//                Log.w("socket", testStr)
+//                Log.w("socket", "AAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        })
+//
+//        thread.start()
+//        thread.run()
         chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 sendMessage(adapter, chat_message_editText, recyclerView_chat_log)
