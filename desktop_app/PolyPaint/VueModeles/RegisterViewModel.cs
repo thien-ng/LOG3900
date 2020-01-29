@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PolyPaint.Services;
 
 namespace PolyPaint.VueModeles
 {
@@ -69,7 +70,7 @@ namespace PolyPaint.VueModeles
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await client.PostAsync("http://72.53.102.93:3000/account/register", content);
+            var response = await ServerService.instance.client.PostAsync("http://72.53.102.93:3000/account/register", content);
 
             var responseString = await response.Content.ReadAsStringAsync();
 
