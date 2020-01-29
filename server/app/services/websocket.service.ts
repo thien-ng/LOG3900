@@ -28,6 +28,10 @@ export class WebsocketService {
                 this.login(username, socket);
             });
 
+            socket.on('chat', (data) => {
+                
+            });
+
             // event is called when client disconnects
             socket.on('disconnect', () => {
                 this.users.deleteUser(username);
