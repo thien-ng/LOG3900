@@ -15,11 +15,14 @@ import kotlinx.android.synthetic.main.fragment_chat.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_chat)
         chat_message_editText.requestFocus()
         val adapter = GroupAdapter<ViewHolder>()
-        val socket = IO.socket("http://72.53.102.93:3000")
+        val socket = IO.socket("http://192.168.0.182:5000") //Your IPV4 here!!
+
+        socket.connect()
 
         socket.on(Socket.EVENT_CONNECT) {
           Log.w("socket","bitconneeeeeeeeeect")
@@ -28,8 +31,6 @@ class MainActivity : AppCompatActivity() {
         socket.on(Socket.EVENT_MESSAGE) { arg0 ->
             Log.w("socket", "socket event message$arg0")
         }
-
-        socket.connect()
 
         socket.emit("chat message", "android to server from event message")
 
