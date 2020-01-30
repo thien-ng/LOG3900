@@ -20,9 +20,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.fragment_chat)
         chat_message_editText.requestFocus()
         val adapter = GroupAdapter<ViewHolder>()
-        val socket = IO.socket("http://192.168.0.182:5000") //Your IPV4 here!!
+        val socket = IO.socket("http://10.200.29.191:3000/") //Your IPV4 here!!
 
         socket.connect()
+        Log.w("socket","is connecting")
 
         socket.on(Socket.EVENT_CONNECT) {
           Log.w("socket","bitconneeeeeeeeeect")
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             Log.w("socket", "socket event message$arg0")
         }
 
-        socket.emit("chat message", "android to server from event message")
+        socket.emit("chat", "android to server from event message")
 
         chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
