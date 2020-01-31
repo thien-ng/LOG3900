@@ -21,14 +21,15 @@ class SocketIO(){
             Log.w("socket","Connected to server!")
         }
 
-        socket.on(Socket.EVENT_MESSAGE) {
+        socket.on("chat") {
             val data = it[0] as JSONObject
-            receiveMessage(adapter, data.getString("username"), data.getString("message"), recyclerView, activity)
+            receiveMessage(adapter, data.getString("username"), data.getString("content"), recyclerView, activity)
         }
     }
 
-    fun connect() {
+    fun connect(username: String) {
         socket.connect()
+        socket.emit("login", username);
     }
 
     fun sendMessage(adapter: GroupAdapter<ViewHolder>, textInput: EditText, username: String, recyclerView: RecyclerView){
@@ -36,10 +37,11 @@ class SocketIO(){
         recyclerView.smoothScrollToPosition(adapter.itemCount)
         val obj = JSONObject()
         obj.put("username", username)
-        obj.put("message", textInput.text.toString())
+        obj.put("channel_id", 1)
+        obj.put("content", textInput.text.toString())
 
         textInput.text.clear()
-        socket.emit("message", obj)
+        socket.emit("chat", obj)
     }
 
     private fun receiveMessage(adapter: GroupAdapter<ViewHolder>, username: String, message: String, recyclerView: RecyclerView, activity: Activity){

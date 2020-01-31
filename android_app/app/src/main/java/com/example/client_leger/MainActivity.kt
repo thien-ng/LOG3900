@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
         val socket = SocketIO()
         socket.init(adapter, recyclerView_chat_log, this)
-        socket.connect()
+        socket.connect(username)
 
         chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
