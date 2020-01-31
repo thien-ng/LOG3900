@@ -37,6 +37,7 @@
     "dependencies": {
         "@types/chai-spies": "^1.0.1",
         "@types/pg": "^7.14.1",
+        "@types/socket.io": "^2.1.4",
         "@types/ws": "^7.2.0",
         "body-parser": "^1.18.3",
         "chai-spies": "^1.0.0",
@@ -51,6 +52,7 @@
         "prettier": "^1.19.1",
         "reflect-metadata": "^0.1.10",
         "serve-favicon": "~2.5.0",
+        "socket.io": "^2.3.0",
         "ws": "^7.2.1"
     },
     "devDependencies": {
