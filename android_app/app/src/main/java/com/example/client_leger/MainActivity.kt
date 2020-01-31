@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.fragment_chat)
         chat_message_editText.requestFocus()
         val adapter = GroupAdapter<ViewHolder>()
+        val username = intent.getStringExtra("username")
 
         val socket = SocketIO()
         socket.init(adapter, recyclerView_chat_log, this)
@@ -21,14 +22,14 @@ class MainActivity : AppCompatActivity() {
 
         chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                socket.sendMessage(adapter, chat_message_editText, intent.getStringExtra("username"), recyclerView_chat_log)
+                socket.sendMessage(adapter, chat_message_editText, username, recyclerView_chat_log)
                 return@OnKeyListener true
             }
             false
         })
 
         chat_send_button.setOnClickListener {
-            socket.sendMessage(adapter, chat_message_editText, intent.getStringExtra("username"), recyclerView_chat_log)
+            socket.sendMessage(adapter, chat_message_editText, username, recyclerView_chat_log)
         }
 
         recyclerView_chat_log.adapter = adapter

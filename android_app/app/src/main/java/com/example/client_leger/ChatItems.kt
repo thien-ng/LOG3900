@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.their_message_layout.view.*
 class ChatItemReceived(val message: String, val username: String): Item<ViewHolder>(){
     override fun bind(viewHolder: ViewHolder, position: Int){
         viewHolder.itemView.their_message_body.text = message
-        viewHolder.itemView.name.text =username
+        viewHolder.itemView.name.text = username
     }
 
     override fun getLayout(): Int {

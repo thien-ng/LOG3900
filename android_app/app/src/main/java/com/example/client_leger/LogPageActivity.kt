@@ -26,14 +26,12 @@ class LogPageActivity : AppCompatActivity() {
 
         register_button.setOnClickListener {
             var body = JSONObject()
-            body.accumulate("username",register_editText_name.text.toString())
+            body.accumulate("username", register_editText_name.text.toString())
             body.accumulate("password", register_editText_password.text.toString())
             val endpoint = "/account/register"
             var status = authenticateUser( body, endpoint )
             if(status == 200) {
-              val intent = Intent(this, MainActivity::class.java)
-              intent.putExtra("username",register_editText_name.text.toString())
-              startActivity(intent)
+                setContentView(R.layout.fragment_login)
             }
         }
 
@@ -47,9 +45,9 @@ class LogPageActivity : AppCompatActivity() {
                 var endpoint = "/account/login"
                 var status = authenticateUser( body,endpoint )
                 if(status == 200) {
-                  val intent = Intent(this, MainActivity::class.java)
-                  intent.putExtra("username", login_editText_name.text.toString())
-                  startActivity(intent)
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("username", login_editText_name.text.toString())
+                    startActivity(intent)
                 }
             }
           
