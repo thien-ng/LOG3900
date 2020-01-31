@@ -11,7 +11,7 @@ namespace PolyPaint
     /// <summary>
     /// Logique d'interaction pour FenetreDessin.xaml
     /// </summary>
-    public partial class FenetreDessin : UserControl
+    public partial class FenetreDessin : Grid
     {
         public FenetreDessin()
         {
