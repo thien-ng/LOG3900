@@ -9,6 +9,7 @@ import { AccountService } from './services/account.service';
 import { WebsocketService } from './services/websocket.service';
 import { ChatService } from './services/chat.service';
 import { UserManagerService } from './services/user-manager.service';
+import { ChatController } from './controllers/chat.controller';
 import Types from './types';
 
 const container: Container = new Container();
@@ -18,6 +19,7 @@ container.bind(Types.Application).to(Application);
 
 container.bind(Types.DateController).to(DateController);
 container.bind(Types.AccountController).to(AccountController);
+container.bind(Types.ChatController).to(ChatController);
 
 container.bind(Types.DateService).to(DateService);
 container.bind(Types.AccountService).to(AccountService);

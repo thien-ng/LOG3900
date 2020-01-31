@@ -4,6 +4,7 @@ export default {
     
     DateController:     Symbol('DateController'),
     AccountController:  Symbol('AccountController'),
+    ChatController:     Symbol('ChatController'),
 
     DateService:        Symbol('DateService'),
     DatabaseService:    Symbol('DatabaseService'),
