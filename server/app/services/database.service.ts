@@ -34,6 +34,12 @@ export class DatabaseService {
                                     CAST('${login.password}' AS VARCHAR));`);
     }
 
+    public async getAccountIdByUsername(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT a.id
+                                FROM log3900.Account as a
+                                WHERE  a.username = '${username}';`);
+    }
+
     public async getMessagesWithChannelId(id: number): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT LOG3900.getMessagesWithChannelId(
                                     CAST('${id}' AS INTEGER));`);

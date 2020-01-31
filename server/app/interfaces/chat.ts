@@ -3,3 +3,13 @@ export interface IChannelMessage {
     account_id: number,
     content:    string,
 }
+
+export interface IReceptMes {
+    username:   string,
+    channel_id: number,
+    content:    string,
+}
+
+export interface IChannelIds {
+    id: number
+}
