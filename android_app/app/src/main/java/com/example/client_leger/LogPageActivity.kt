@@ -19,18 +19,24 @@ class LogPageActivity : AppCompatActivity() {
 
 
         register_button.setOnClickListener {
-            //TODO: Create an account for the user.
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            if (register_editText_name.text.toString().isNotEmpty()) {
+                //TODO: Create an account for the user.
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra("username",register_editText_name.text.toString())
+                startActivity(intent)
+            }
         }
 
         textView_alreadyHaveAccount.setOnClickListener {
             setContentView(R.layout.fragment_login)
 
             login_button.setOnClickListener {
-                //TODO: Login the user.
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                if (login_editText_name.text.toString().isNotEmpty()) {
+                    //TODO: Login the user.
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("username", login_editText_name.text.toString())
+                    startActivity(intent)
+                }
             }
         }
     }
