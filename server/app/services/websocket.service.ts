@@ -29,8 +29,8 @@ export class WebsocketService {
             let username: string;
             
             // test event to check if socket is on
-            socket.on('login', (mes: ILogin) => {                
-                username = mes.username;
+            socket.on('login', (name: string) => {                
+                username = name;
                 this.login(username, socket);
             });
 
