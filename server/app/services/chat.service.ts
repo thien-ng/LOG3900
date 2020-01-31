@@ -70,7 +70,7 @@ export class ChatService {
 
         if (list) {
             list.forEach((user: IUser) => {
-                this.socket.to(user.socketId).emit("chat", mes.content);
+                this.socket.to(user.socketId).emit("chat", mes);
             });
         }
 
