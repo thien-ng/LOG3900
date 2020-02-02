@@ -1,13 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using PropertyChanged;
 using Quobject.SocketIoClientDotNet.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,9 +13,10 @@ namespace PolyPaint.VueModeles
 {
     class LoginViewModel : VueModele, IPageViewModel
     {
-        private ICommand _login;
-        private ICommand _goToRegister;
-        private string   _username;
+        private ICommand    _login;
+        private ICommand    _goToRegister;
+        private bool        _isButtonEnabled;
+        private string      _username;
         
         public PasswordBox Password { private get; set; }
 
@@ -28,10 +26,26 @@ namespace PolyPaint.VueModeles
             set
             {
                 if (value != _username)
-                {
                     _username = value;
-                    ProprieteModifiee("Username");
-                }
+
+                bool condition = Password != null &&
+                                 value.Length >= Constants.USR_MIN_LENGTH && 
+                                 Password.SecurePassword.Length >= Constants.PWD_MIN_LENGTH;
+
+                if (condition)
+                    IsButtonEnabled = true;
+                else
+                    IsButtonEnabled = false;
+            }
+        }
+
+        public bool IsButtonEnabled
+        {
+            get { return _isButtonEnabled; }
+            set
+            {
+                _isButtonEnabled = value;
+                ProprieteModifiee(nameof(IsButtonEnabled));
             }
         }
 
@@ -45,12 +59,11 @@ namespace PolyPaint.VueModeles
 
                     if (res.ContainsKey("status"))
                     {
-                        if (res.GetValue("status").ToString() == "200")
+                        if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
                         {
                             Socket socket = IO.Socket(Constants.SERVER_PATH);
                             socket.On(Socket.EVENT_CONNECT, () =>
                             {
-                                Console.WriteLine(Socket.EVENT_CONNECT);
                                 ServerService.instance.socket = socket;
                             });
 
@@ -72,7 +85,7 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        public async Task<JObject> LoginRequestAsync(string username, string password)
+        private async Task<JObject> LoginRequestAsync(string username, string password)
         {
             var values = new Dictionary<string, string>
                 {
@@ -87,6 +100,18 @@ namespace PolyPaint.VueModeles
             var responseString = await response.Content.ReadAsStringAsync();
 
             return JObject.Parse(responseString);
+        }
+
+        public void OnPasswordPropertyChanged()
+        {
+            bool condition = _username != null &&
+                             _username.Length >= Constants.USR_MIN_LENGTH &&
+                             Password.SecurePassword.Length >= Constants.PWD_MIN_LENGTH;
+
+            if (condition)
+                IsButtonEnabled = true;
+            else
+                IsButtonEnabled = false;
         }
 
     }

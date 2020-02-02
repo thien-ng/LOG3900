@@ -19,7 +19,7 @@ namespace PolyPaint.Vues
     /// <summary>
     /// Interaction logic for Register.xaml
     /// </summary>
-    public partial class Register : UserControl
+    public partial class Register : Page
     {
         public Register()
         {

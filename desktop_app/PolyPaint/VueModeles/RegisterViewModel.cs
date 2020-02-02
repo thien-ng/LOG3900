@@ -53,7 +53,7 @@ namespace PolyPaint.VueModeles
 
                     if (res.ContainsKey("status"))
                     {
-                        if (res.GetValue("status").ToString() == "200")
+                        if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
                             Mediator.Notify("GoToLoginScreen", "");
                     }
                 }));

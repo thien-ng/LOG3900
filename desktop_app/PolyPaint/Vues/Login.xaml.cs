@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using PolyPaint.VueModeles;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace PolyPaint.Vues
@@ -6,7 +7,7 @@ namespace PolyPaint.Vues
     /// <summary>
     /// Interaction logic for Login.xaml
     /// </summary>
-    public partial class Login : UserControl
+    public partial class Login : Page
     {
         public Login()
         {
@@ -16,7 +17,10 @@ namespace PolyPaint.Vues
         private void PasswordChanged(object sender, RoutedEventArgs e)
         {
             if (DataContext != null)
-            { ((dynamic)DataContext).Password = ((PasswordBox)sender); }
+            { 
+                ((LoginViewModel)DataContext).Password = ((PasswordBox)sender);
+                ((LoginViewModel)DataContext).OnPasswordPropertyChanged();
+            }
         }
     }
 }

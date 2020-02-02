@@ -8,10 +8,15 @@ namespace PolyPaint.Utilitaires
 {
     class Constants
     {
-        public const string SERVER_PATH   = "http://72.53.102.93:3000";
-        public const string ACCOUNT_PATH  = "/account";
-        public const string LOGIN_PATH    = ACCOUNT_PATH + "/login";
-        public const string REGISTER_PATH = ACCOUNT_PATH + "/register";
+        //SERVER
+        public const string SERVER_PATH    = "http://72.53.102.93:3000";
+        public const string ACCOUNT_PATH   = "/account";
+        public const string LOGIN_PATH     = ACCOUNT_PATH + "/login";
+        public const string REGISTER_PATH  = ACCOUNT_PATH + "/register";
+        public const int    SUCCESS_CODE   = 200;
+        public const int    PWD_MIN_LENGTH = 4;
+        public const int    USR_MIN_LENGTH = 4;
+
 
         public static class Vues
         {
