@@ -70,7 +70,7 @@ namespace PolyPaint.VueModeles
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await ServerService.instance.client.PostAsync("http://72.53.102.93:3000/account/register", content);
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.REGISTER_PATH, content);
 
             var responseString = await response.Content.ReadAsStringAsync();
 

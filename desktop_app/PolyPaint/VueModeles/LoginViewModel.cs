@@ -47,14 +47,14 @@ namespace PolyPaint.VueModeles
                     {
                         if (res.GetValue("status").ToString() == "200")
                         {
-                            Socket socket = IO.Socket("http://10.200.21.11:3000");
+                            Socket socket = IO.Socket(Constants.SERVER_PATH);
                             socket.On(Socket.EVENT_CONNECT, () =>
                             {
                                 Console.WriteLine(Socket.EVENT_CONNECT);
                                 ServerService.instance.socket = socket;
                             });
 
-                            Mediator.Notify("GoToDrawScreen", "");
+                            Mediator.Notify("GoToChatScreen", "");
                         }
                     }
                 }));
@@ -82,7 +82,7 @@ namespace PolyPaint.VueModeles
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await ServerService.instance.client.PostAsync("http://72.53.102.93:3000/account/login", content);
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.LOGIN_PATH, content);
 
             var responseString = await response.Content.ReadAsStringAsync();
 
