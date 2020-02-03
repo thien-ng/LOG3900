@@ -12,7 +12,7 @@ namespace PolyPaint.VueModeles
         private IPageViewModel _currentPageViewModel;
         private List<IPageViewModel> _pageViewModels;
 
-        public List<Utilitaires.IPageViewModel> PageViewModels
+        public List<IPageViewModel> PageViewModels
         {
             get
             {
@@ -50,6 +50,11 @@ namespace PolyPaint.VueModeles
             ChangeViewModel(PageViewModels[0]);
         }
 
+        private void OnGoToRegisterScreen(object obj)
+        {
+            ChangeViewModel(PageViewModels[2]);
+        }
+
         private void OnGoToDrawScreen(object obj)
         {
             ChangeViewModel(PageViewModels[1]);
@@ -60,11 +65,13 @@ namespace PolyPaint.VueModeles
             // Add available pages and set page
             PageViewModels.Add(new LoginViewModel());
             PageViewModels.Add(new DessinViewModel());
+            PageViewModels.Add(new RegisterViewModel());
 
             CurrentPageViewModel = PageViewModels[0];
 
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
             Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);
+            Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
         }
     }
 }

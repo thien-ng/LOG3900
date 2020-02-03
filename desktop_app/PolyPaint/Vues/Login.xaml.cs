@@ -17,5 +17,11 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
         }
+
+        private void PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext != null)
+            { ((dynamic)DataContext).Password = ((PasswordBox)sender); }
+        }
     }
 }
