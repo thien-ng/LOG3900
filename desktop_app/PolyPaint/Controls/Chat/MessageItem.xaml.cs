@@ -18,9 +18,9 @@ namespace PolyPaint.Controls.Chat
     /// <summary>
     /// Interaction logic for message.xaml
     /// </summary>
-    public partial class message : UserControl
+    public partial class MessageItem : UserControl
     {
-        public message()
+        public MessageItem()
         {
             InitializeComponent();
         }

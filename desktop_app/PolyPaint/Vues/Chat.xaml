@@ -37,6 +37,12 @@
                 <materialDesign:PackIcon Kind="UserSearchOutline" />
             </Button>
         </StackPanel>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <chat:MessageItem/>
+        </Grid>
+       
+        
         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="center" ></TextBox>
         <Button  Grid.Row="2" Grid.Column="2" Width="100" Content="Envoyé"/>
     </Grid>

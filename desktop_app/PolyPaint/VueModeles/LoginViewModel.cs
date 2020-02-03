@@ -16,7 +16,13 @@ namespace PolyPaint.VueModeles
         private ICommand    _login;
         private ICommand    _goToRegister;
         private bool        _isButtonEnabled;
+        private bool        _loginIsRunning;
         private string      _username;
+
+        public LoginViewModel()
+        {
+            _loginIsRunning = false;
+        }
         
         public PasswordBox Password { private get; set; }
 
@@ -55,20 +61,33 @@ namespace PolyPaint.VueModeles
             {
                 return _login ?? (_login = new RelayCommand(async x =>
                 {
-                    JObject res = await LoginRequestAsync(_username, Password.Password);
-
-                    if (res.ContainsKey("status"))
+                    if (_loginIsRunning)
+                        return;
+                    try
                     {
-                        if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
-                        {
-                            Socket socket = IO.Socket(Constants.SERVER_PATH);
-                            socket.On(Socket.EVENT_CONNECT, () =>
-                            {
-                                ServerService.instance.socket = socket;
-                            });
+                        _loginIsRunning = true;
 
-                            Mediator.Notify("GoToChatScreen", "");
+                        JObject res = await LoginRequestAsync(_username, Password.Password);
+
+                        if (res.ContainsKey("status"))
+                        {
+                            if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
+                            {
+                                Socket socket = IO.Socket(Constants.SERVER_PATH);
+                                socket.On(Socket.EVENT_CONNECT, () =>
+                                {
+                                    Console.WriteLine("connect");
+                                    ServerService.instance.socket = socket;
+                                });
+
+                                Mediator.Notify("GoToChatScreen", "");
+                            }
                         }
+
+                    } catch { }
+                    finally
+                    {
+                        _loginIsRunning = false;
                     }
                 }));
             }
