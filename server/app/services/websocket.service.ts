@@ -1,6 +1,5 @@
 import { injectable, inject } from 'inversify';
 import { UserManagerService } from './user-manager.service';
-import { ILogin } from '../interfaces/communication';
 import 'reflect-metadata';
 import * as io from 'socket.io';
 import * as http from 'http';
