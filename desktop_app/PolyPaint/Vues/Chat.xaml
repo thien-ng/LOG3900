@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PolyPaint.Vues"
              xmlns:style="clr-namespace:PolyPaint.Utilitaires"
+             xmlns:chat="clr-namespace:PolyPaint.Controls.Chat"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              Background="White"
@@ -15,12 +16,15 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Rectangle Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Fill="{StaticResource PrimaryHueLightBrush}"/>
+        <Rectangle Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Fill="{StaticResource PrimaryHueLightBrush}"/>
+        <chat:Channel Grid.Row="1" Height="60" VerticalAlignment="Top" BorderBrush="{StaticResource PrimaryHueLightBrush}"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
             <Button Width="83" Style="{StaticResource MaterialDesignFlatLightBgButton}"  Foreground="white" materialDesign:ButtonAssist.CornerRadius="0" >
@@ -28,10 +32,12 @@
             </Button>
             <Button Width="83" Style="{StaticResource MaterialDesignFlatLightBgButton}"  Foreground="white" materialDesign:ButtonAssist.CornerRadius="0" >
                 <materialDesign:PackIcon Kind="CardPlus" />
-                </Button>
+            </Button>
             <Button Width="83" Style="{StaticResource MaterialDesignFlatLightBgButton}" Foreground="white" materialDesign:ButtonAssist.CornerRadius="0" >
                 <materialDesign:PackIcon Kind="UserSearchOutline" />
             </Button>
         </StackPanel>
+        <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="center" ></TextBox>
+        <Button  Grid.Row="2" Grid.Column="2" Width="100" Content="Envoyé"/>
     </Grid>
 </Page>
