@@ -22,6 +22,9 @@
             <DataTemplate DataType="{x:Type localViewModel:LoginViewModel}">
                 <localView:Login/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type localViewModel:RegisterViewModel}">
+                <localView:Register/>
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

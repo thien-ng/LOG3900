@@ -110,7 +110,7 @@
 
         <Border DockPanel.Dock="Bottom" Height="25" BorderThickness="0,0.75,0,0.75" BorderBrush="#77000000">
             <StackPanel Orientation="Horizontal" Background="#FFF0F0F0">
-                <Image Source="position.png" Margin="5,5,5,5" VerticalAlignment="Center"/>
+                <Image Source="/PolyPaint;component/Resources/position.png" Margin="5,5,5,5" VerticalAlignment="Center"/>
                 <TextBlock Name="textBlockPosition" VerticalAlignment="Center" HorizontalAlignment="Left"/>
             </StackPanel>
         </Border>
