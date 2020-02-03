@@ -5,9 +5,10 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.my_message_layout.view.*
 import kotlinx.android.synthetic.main.their_message_layout.view.*
 
-class ChatItemReceived(val text: String): Item<ViewHolder>(){
+class ChatItemReceived(val message: String, val username: String): Item<ViewHolder>(){
     override fun bind(viewHolder: ViewHolder, position: Int){
-        viewHolder.itemView.their_message_body.text = text
+        viewHolder.itemView.their_message_body.text = message
+        viewHolder.itemView.name.text = username
     }
 
     override fun getLayout(): Int {
