@@ -110,6 +110,9 @@
     <Compile Include="Controls\Chat\Channel.xaml.cs">
       <DependentUpon>Channel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Chat\message.xaml.cs">
+      <DependentUpon>message.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
     <Compile Include="Modeles\Editeur.cs" />
     <Compile Include="Modeles\User.cs" />
@@ -139,6 +142,10 @@
       <DependentUpon>Register.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\Chat\Channel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Chat\message.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
