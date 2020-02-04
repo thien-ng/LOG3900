@@ -46,12 +46,15 @@ namespace PolyPaint.VueModeles.Chat
         private void ReceiveMessage(JObject response)
         {
             Message test = response.ToObject<Message>();
+
+            bool con = test.username == ServerService.instance.username;
+
             App.Current.Dispatcher.Invoke(delegate
             {
                 Items.Add(new MessageItemViewModel
                 {
                     Message = test.content,
-                    SentByMe = test.username == ServerService.instance.username,
+                    SentByMe =con,
                     Username = test.username,
                     TimeStamp = "10:55am"
                 });
