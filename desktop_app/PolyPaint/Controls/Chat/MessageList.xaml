@@ -7,7 +7,7 @@
              xmlns:design="clr-namespace:PolyPaint.VueModeles.Chat.Design"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid DataContext="{x:Static design:MessageListDesignModel.Instance}">
+    <Grid d:DataContext="{x:Static design:MessageListDesignModel.Instance}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
             <ItemsControl ItemsSource="{Binding Items}">
                 <ItemsControl.ItemTemplate>

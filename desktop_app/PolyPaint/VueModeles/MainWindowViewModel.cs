@@ -1,4 +1,5 @@
 ﻿using PolyPaint.Utilitaires;
+using PolyPaint.VueModeles.Chat;
 using System.Collections.Generic;
 using System.Linq;
 using static PolyPaint.Utilitaires.Constants;
@@ -46,25 +47,21 @@ namespace PolyPaint.VueModeles
         private void OnGoToLoginScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Login]);
-            //ChangeViewModel(PageViewModels[Constants.Vues.Login]);
         }
 
         private void OnGoToRegisterScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Register]);
-            //ChangeViewModel(PageViewModels[Constants.Vues.Register]);
         }
 
         private void OnGoToDrawScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Draw]);
-            //ChangeViewModel(PageViewModels[Constants.Vues.Draw]);
         }
 
         private void OnGoToChatScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Chat]);
-            //ChangeViewModel(new ChatViewModel);
         }
         
         public MainWindowViewModel()
@@ -73,7 +70,7 @@ namespace PolyPaint.VueModeles
             PageViewModels.Add(new LoginViewModel());
             PageViewModels.Add(new RegisterViewModel());
             PageViewModels.Add(new DessinViewModel());
-            PageViewModels.Add(new ChatViewModel());
+            PageViewModels.Add(new MessageListViewModel());
 
             CurrentPageViewModel = PageViewModels[Constants.Vues.Chat];
 

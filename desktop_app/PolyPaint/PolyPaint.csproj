@@ -130,7 +130,6 @@
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
     <Compile Include="VueModeles\BaseViewModel.cs" />
-    <Compile Include="VueModeles\Chat\ChatViewModel.cs" />
     <Compile Include="VueModeles\Chat\Design\MessageListDesignModel.cs" />
     <Compile Include="VueModeles\Chat\Design\MessageItemDesignModel.cs" />
     <Compile Include="VueModeles\Chat\MessageListViewModel.cs" />

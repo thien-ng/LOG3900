@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PolyPaint.VueModeles.Chat.Design
 {
@@ -8,7 +9,7 @@ namespace PolyPaint.VueModeles.Chat.Design
 
         public MessageListDesignModel()
         {
-            Items = new List<MessageItemViewModel>
+            Items = new ObservableCollection<MessageItemViewModel>
             {
                 new MessageItemViewModel
                 {

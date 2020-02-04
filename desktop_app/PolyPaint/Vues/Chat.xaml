@@ -52,12 +52,14 @@
             </Grid.ColumnDefinitions>
             
             <TextBox Grid.Column="0" Width="auto"
+                     Text="{Binding PendingMessage, UpdateSourceTrigger=PropertyChanged}"
                      AcceptsTab="True"
                      AcceptsReturn="True"
                      Margin="20,0,0,0"
                      VerticalAlignment="center" />
             <Button Grid.Column="1" Width="100"
                     Margin="20,0,15,0"
+                    Command="{Binding SendCommand}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Content="Envoyer"/>
