@@ -13,6 +13,7 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
+        MinHeight="800" MinWidth="900"
         Title="MainWindow" Height="auto" Width="auto">
 
     <Frame NavigationUIVisibility="Hidden" Content="{Binding CurrentPageViewModel}" />

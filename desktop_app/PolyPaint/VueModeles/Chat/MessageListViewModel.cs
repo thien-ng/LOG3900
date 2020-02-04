@@ -40,6 +40,7 @@ namespace PolyPaint.VueModeles.Chat
 
         private void Setup()
         {
+            Items = new ObservableCollection<MessageItemViewModel>();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
         }
 
@@ -66,10 +67,7 @@ namespace PolyPaint.VueModeles.Chat
             if (string.IsNullOrWhiteSpace(PendingMessage))
                 return;
 
-            if (Items == null)
-                Items = new ObservableCollection<MessageItemViewModel>();
-
-            Message message = new Message("username", PendingMessage, 1);
+            Message message = new Message(ServerService.instance.username, PendingMessage, 1);
 
             var messageJson = JObject.FromObject(message);
             ServerService.instance.socket.Emit("chat", messageJson);
