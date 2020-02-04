@@ -38,8 +38,8 @@
             </Button>
         </StackPanel>
 
-        <Grid Grid.Row="1" Grid.Column="1">
-            <chat:MessageItem/>
+        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+            <chat:MessageList/>
         </Grid>
        
         

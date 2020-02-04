@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\PropertyChanged.Fody.3.2.4\build\PropertyChanged.Fody.props" Condition="Exists('..\packages\PropertyChanged.Fody.3.2.4\build\PropertyChanged.Fody.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -54,9 +53,6 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PropertyChanged, Version=3.2.4.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
-      <HintPath>..\packages\PropertyChanged.Fody.3.2.4\lib\net40\PropertyChanged.dll</HintPath>
     </Reference>
     <Reference Include="SocketIoClientDotNet, Version=0.9.13.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SocketIoClientDotNet.0.9.13\lib\net45\SocketIoClientDotNet.dll</HintPath>
@@ -119,7 +115,11 @@
     <Compile Include="Controls\FenetreDessin.xaml.cs">
       <DependentUpon>FenetreDessin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
+    <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
+    <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Editeur.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
@@ -129,7 +129,11 @@
     <Compile Include="Utilitaires\IPageViewModel.cs" />
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
+    <Compile Include="VueModeles\BaseViewModel.cs" />
     <Compile Include="VueModeles\Chat\ChatViewModel.cs" />
+    <Compile Include="VueModeles\Chat\Design\MessageListDesignModel.cs" />
+    <Compile Include="VueModeles\Chat\Design\MessageItemDesignModel.cs" />
+    <Compile Include="VueModeles\Chat\MessageListViewModel.cs" />
     <Compile Include="VueModeles\Chat\MessageItemViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />
@@ -245,8 +249,5 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MaterialDesignThemes.3.0.1\build\MaterialDesignThemes.targets'))" />
-    <Error Condition="!Exists('..\packages\Fody.6.0.6\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.6.0.6\build\Fody.targets'))" />
-    <Error Condition="!Exists('..\packages\PropertyChanged.Fody.3.2.4\build\PropertyChanged.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PropertyChanged.Fody.3.2.4\build\PropertyChanged.Fody.props'))" />
   </Target>
-  <Import Project="..\packages\Fody.6.0.6\build\Fody.targets" Condition="Exists('..\packages\Fody.6.0.6\build\Fody.targets')" />
 </Project>

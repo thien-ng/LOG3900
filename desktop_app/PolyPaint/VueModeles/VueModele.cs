@@ -14,9 +14,8 @@ namespace PolyPaint.VueModeles
     /// Expose des commandes et propriétés connectées au modèle aux des éléments de la vue peuvent se lier.
     /// Reçoit des avis de changement du modèle et envoie des avis de changements à la vue.
     /// </summary>
-    class VueModele : INotifyPropertyChanged
+    class VueModele : BaseViewModel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         private Editeur editeur = new Editeur();
 
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
@@ -74,18 +73,6 @@ namespace PolyPaint.VueModeles
             // Donc, aucune vérification de type Peut"Action" à faire.
             ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);      
-        }
-
-        /// <summary>
-        /// Appelee lorsqu'une propriété de VueModele est modifiée.
-        /// Un évènement indiquant qu'une propriété a été modifiée est alors émis à partir de VueModèle.
-        /// L'évènement qui contient le nom de la propriété modifiée sera attrapé par la vue qui pourra
-        /// alors mettre à jour les composants concernés.
-        /// </summary>
-        /// <param name="propertyName">Nom de la propriété modifiée.</param>
-        protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>

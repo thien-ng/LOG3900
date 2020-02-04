@@ -10,7 +10,7 @@ using PolyPaint.Services;
 
 namespace PolyPaint.VueModeles
 {
-    class RegisterViewModel : VueModele, IPageViewModel
+    class RegisterViewModel : BaseViewModel, IPageViewModel
     {
         private ICommand _goToLogin;
         private ICommand _register;

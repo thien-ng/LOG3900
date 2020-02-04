@@ -46,21 +46,25 @@ namespace PolyPaint.VueModeles
         private void OnGoToLoginScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Login]);
+            //ChangeViewModel(PageViewModels[Constants.Vues.Login]);
         }
 
         private void OnGoToRegisterScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Register]);
+            //ChangeViewModel(PageViewModels[Constants.Vues.Register]);
         }
 
         private void OnGoToDrawScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Draw]);
+            //ChangeViewModel(PageViewModels[Constants.Vues.Draw]);
         }
 
         private void OnGoToChatScreen(object obj)
         {
             ChangeViewModel(PageViewModels[Constants.Vues.Chat]);
+            //ChangeViewModel(new ChatViewModel);
         }
         
         public MainWindowViewModel()
@@ -71,7 +75,7 @@ namespace PolyPaint.VueModeles
             PageViewModels.Add(new DessinViewModel());
             PageViewModels.Add(new ChatViewModel());
 
-            CurrentPageViewModel = PageViewModels[Constants.Vues.Login];
+            CurrentPageViewModel = PageViewModels[Constants.Vues.Chat];
 
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
             Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);

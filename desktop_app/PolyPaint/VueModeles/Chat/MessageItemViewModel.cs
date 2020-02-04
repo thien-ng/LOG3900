@@ -1,7 +1,13 @@
-﻿
-namespace PolyPaint.VueModeles.Chat
+﻿namespace PolyPaint.VueModeles.Chat
 {
-    class MessageItemViewModel
+    public class MessageItemViewModel : BaseViewModel
     {
+        public string Username  { get; set; }
+
+        public string Message   {  get; set; }
+
+        public bool   SentByMe  { get; set; }
+
+        public string TimeStamp { get; set; }
     }
 }
