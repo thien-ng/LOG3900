@@ -45,15 +45,17 @@
               Grid.Column="1"
               MinHeight="60"
               MaxHeight="200">
-            
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="0 1 0 0" BorderBrush="{StaticResource PrimaryHueLightBrush}"/>
             
             <TextBox Grid.Column="0" Width="auto"
                      Text="{Binding PendingMessage, UpdateSourceTrigger=PropertyChanged}"
                      AcceptsTab="True"
+                     x:Name="chatBox"
                      AcceptsReturn="True"
                      Margin="20,0,0,0"
                      VerticalAlignment="center" />
