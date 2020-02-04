@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
 import { IRegistration, ILogin } from "../interfaces/communication";
+import { IChannelMessage } from '../interfaces/chat'; 
 import * as pg from "pg";
 
 @injectable()
@@ -31,6 +32,36 @@ export class DatabaseService {
         return this.pool.query(`SELECT LOG3900.loginAccount(
                                     CAST('${login.username}' AS VARCHAR),
                                     CAST('${login.password}' AS VARCHAR));`);
+    }
+
+    public async getAccountIdByUsername(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT a.id
+                                FROM log3900.Account as a
+                                WHERE  a.username = '${username}';`);
+    }
+
+    public async getMessagesWithChannelId(id: number): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.getMessagesWithChannelId(
+                                    CAST('${id}' AS INTEGER));`);
+    }
+
+    public async createChannelWithAccountId(id: number): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.createChannelWithAccountId(
+                                    CAST('${id}' AS INTEGER));`);
+    }
+
+    public async insertChannelMessage(mes: IChannelMessage): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.insertChannelMessage(
+                                    CAST('${mes.channel_id}' AS INTEGER),
+                                    CAST('${mes.account_id}' AS INTEGER),
+                                    CAST('${mes.content}'    AS TEXT));`);
+    }
+
+    public async getChannelsWithAccountId(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT DISTINCT a.channel_id
+                                FROM log3900.account as acc, log3900.accountchannel as a
+                                WHERE acc.id = a.account_id
+                                AND acc.username = '${username}';`);
     }
 
 }

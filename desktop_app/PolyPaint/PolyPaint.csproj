@@ -126,6 +126,7 @@
     <Compile Include="Utilitaires\Constants.cs" />
     <Compile Include="Utilitaires\EventRaiser.cs" />
     <Compile Include="Utilitaires\EventArgs.cs" />
+    <Compile Include="Utilitaires\Rules.cs" />
     <Compile Include="Utilitaires\IPageViewModel.cs" />
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
