@@ -121,6 +121,7 @@
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Modeles\Message.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Utilitaires\Constants.cs" />

@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LoginViewModel : VueModele, IPageViewModel
+    class LoginViewModel : BaseViewModel, IPageViewModel
     {
         private ICommand    _login;
         private ICommand    _goToRegister;
@@ -73,18 +73,15 @@ namespace PolyPaint.VueModeles
                         {
                             if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
                             {
-                                Socket socket = IO.Socket(Constants.SERVER_PATH);
-                                socket.On(Socket.EVENT_CONNECT, () =>
-                                {
-                                    Console.WriteLine("connect");
-                                    ServerService.instance.socket = socket;
-                                });
+
+                                ServerService.instance.username = _username;
+                                ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
 
                                 Mediator.Notify("GoToChatScreen", "");
                             }
                         }
 
-                    } catch { }
+                        }
                     finally
                     {
                         _loginIsRunning = false;
