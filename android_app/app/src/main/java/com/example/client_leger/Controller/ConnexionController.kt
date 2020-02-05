@@ -8,7 +8,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 
-class Controller {
+class ConnexionController {
 
     fun loginUser(activity: LogPageActivity,applicationContext: Context,body: JSONObject){
 

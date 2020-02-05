@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONObject
 
 class LogPageActivity : AppCompatActivity() {
-    private var controller  = Controller()
+    private var controller = ConnexionController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +22,7 @@ class LogPageActivity : AppCompatActivity() {
             var body = JSONObject()
             body.accumulate("username", register_editText_name.text.toString())
             body.accumulate("password", register_editText_password.text.toString())
-            controller.registerUser(this, this,body )
+            controller.registerUser(this, this, body )
         }
 
         textView_alreadyHaveAccount.setOnClickListener {
@@ -32,7 +32,7 @@ class LogPageActivity : AppCompatActivity() {
                 var body = JSONObject()
                 body.accumulate("username",login_editText_name.text.toString())
                 body.accumulate("password", login_editText_password.text.toString())
-                controller.loginUser(this, this,body )
+                controller.loginUser(this, this, body )
             }
           
         }
