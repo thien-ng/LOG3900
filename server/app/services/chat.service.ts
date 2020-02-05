@@ -74,7 +74,6 @@ export class ChatService {
             content: mes.content,
             time: this.convertDateTemplate(currTime),
         }
-        console.log(currTime.toUTCString());
         
         // send to everyone in channel
         const list: IUser[] | undefined = this.channelMapUsersList.get(mes.channel_id);

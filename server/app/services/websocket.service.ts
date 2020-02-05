@@ -25,10 +25,14 @@ export class WebsocketService {
         
         // event is called when client connects
         this.io.on('connection', (socket: io.Socket) => {
+            console.log("connection to socket");
+            
             let username: string;
             
             // test event to check if socket is on
-            socket.on('login', (name: string) => {                
+            socket.on('login', (name: string) => {    
+                console.log(name + " has connected");
+                            
                 username = name;
                 this.login(username, socket);
             });
@@ -39,6 +43,7 @@ export class WebsocketService {
 
             // event is called when client disconnects
             socket.on('disconnect', () => {
+                console.log(name + " has disconnected");
                 this.logout(username);
             });
         });
