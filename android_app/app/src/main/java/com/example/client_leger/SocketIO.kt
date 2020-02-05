@@ -15,7 +15,7 @@ class SocketIO(){
     lateinit var socket: Socket
 
     fun init(adapter: GroupAdapter<ViewHolder>, recyclerView: RecyclerView, activity: Activity) {
-        socket = IO.socket("http://72.53.102.93:3000/")
+        socket = IO.socket(Constants.SERVER_URL)
 
         socket.on(Socket.EVENT_CONNECT) {
             Log.w("socket","Connected to server!")
