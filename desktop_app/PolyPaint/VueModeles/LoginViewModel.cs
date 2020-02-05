@@ -1,21 +1,28 @@
 ﻿using Newtonsoft.Json.Linq;
+using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LoginViewModel : VueModele, IPageViewModel
+    // TODO unit test
+    class LoginViewModel : BaseViewModel, IPageViewModel
     {
-        private ICommand _login;
-        private ICommand _goToRegister;
-        private string   _username;
+        private ICommand    _login;
+        private ICommand    _goToRegister;
+        private bool        _isButtonEnabled;
+        private bool        _loginIsRunning;
+        private string      _username;
+
+        public LoginViewModel()
+        {
+            _loginIsRunning = false;
+        }
         
         public PasswordBox Password { private get; set; }
 
@@ -25,10 +32,23 @@ namespace PolyPaint.VueModeles
             set
             {
                 if (value != _username)
-                {
                     _username = value;
-                    ProprieteModifiee("Username");
-                }
+
+                bool condition = Password != null &&
+                                 value.Length >= Constants.USR_MIN_LENGTH && 
+                                 Password.SecurePassword.Length >= Constants.PWD_MIN_LENGTH;
+
+                IsButtonEnabled = condition;
+            }
+        }
+
+        public bool IsButtonEnabled
+        {
+            get { return _isButtonEnabled; }
+            set
+            {
+                _isButtonEnabled = value;
+                ProprieteModifiee(nameof(IsButtonEnabled));
             }
         }
 
@@ -38,12 +58,33 @@ namespace PolyPaint.VueModeles
             {
                 return _login ?? (_login = new RelayCommand(async x =>
                 {
-                    JObject res = await LoginRequestAsync(_username, Password.Password);
-
-                    if (res.ContainsKey("status"))
+                    if (_loginIsRunning)
+                        return;
+                    try
                     {
-                        if (res.GetValue("status").ToString() == "200")
-                            Mediator.Notify("GoToDrawScreen", "");
+                        _loginIsRunning = true;
+
+                        JObject res = await LoginRequestAsync(_username, Password.Password);
+
+                        if (res.ContainsKey("status"))
+                        {
+                            if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
+                            {
+
+                                ServerService.instance.username = _username;
+                                ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
+
+                                Mediator.Notify("GoToChatScreen", "");
+                            }
+                            else
+                            {
+                                MessageBox.Show(res.GetValue("message").ToString());
+                            }
+                        } 
+                    }
+                    finally
+                    {
+                        _loginIsRunning = false;
                     }
                 }));
             }
@@ -60,7 +101,7 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        public async Task<JObject> LoginRequestAsync(string username, string password)
+        private async Task<JObject> LoginRequestAsync(string username, string password)
         {
             var values = new Dictionary<string, string>
                 {
@@ -70,11 +111,26 @@ namespace PolyPaint.VueModeles
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await client.PostAsync("http://72.53.102.93:3000/account/login", content);
+            try
+            {
+                var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.LOGIN_PATH, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                return JObject.Parse(responseString);
+            }
+            catch
+            {
+                return JObject.Parse("{ status: '500', content: 'Could not connect to server' }");
+            }
+        }
 
-            var responseString = await response.Content.ReadAsStringAsync();
+        public void OnPasswordPropertyChanged()
+        {
+            bool condition = _username != null &&
+                             _username.Length >= Constants.USR_MIN_LENGTH &&
+                             Password.SecurePassword.Length >= Constants.PWD_MIN_LENGTH;
 
-            return JObject.Parse(responseString);
+
+            IsButtonEnabled = condition;
         }
 
     }

@@ -11,13 +11,13 @@ namespace PolyPaint
     /// <summary>
     /// Logique d'interaction pour FenetreDessin.xaml
     /// </summary>
-    public partial class FenetreDessin : UserControl
+    public partial class FenetreDessin : Grid
     {
         public FenetreDessin()
         {
             InitializeComponent();
         }
-        
+
         // Pour gérer les points de contrôles.
         //private void GlisserCommence(object sender, DragStartedEventArgs e) => (sender as Thumb).Background = Brushes.Black;
         //private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
