@@ -43,7 +43,7 @@ export class WebsocketService {
 
             // event is called when client disconnects
             socket.on('disconnect', () => {
-                console.log(name + " has disconnected");
+                console.log(username + " has disconnected");
                 this.logout(username);
             });
         });
