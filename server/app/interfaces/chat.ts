@@ -10,6 +10,10 @@ export interface IReceptMes {
     content:    string,
 }
 
+export interface IEmitMes extends IReceptMes {
+    time:      string,
+}
+
 export interface IChannelIds {
     id: number
 }
