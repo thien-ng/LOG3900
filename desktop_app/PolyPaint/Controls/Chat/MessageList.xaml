@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom" ScrollChanged="ScrollViewer_ScrollChanged">
             <ItemsControl ItemsSource="{Binding Items}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

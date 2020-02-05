@@ -24,5 +24,29 @@ namespace PolyPaint.Controls.Chat
         {
             InitializeComponent();
         }
+
+        private bool AutoScroll = true;
+
+        private void ScrollViewer_ScrollChanged(Object sender, ScrollChangedEventArgs e)
+        {
+            ScrollViewer sv = sender as ScrollViewer;
+            
+            if (e.ExtentHeightChange == 0)
+            {
+                if (sv.VerticalOffset == sv.ScrollableHeight)
+                {
+                    AutoScroll = true;
+                }
+                else
+                {
+                    AutoScroll = false;
+                }
+            }
+
+            if (AutoScroll && e.ExtentHeightChange != 0)
+            {
+                sv.ScrollToEnd();
+            }
+        }
     }
 }
