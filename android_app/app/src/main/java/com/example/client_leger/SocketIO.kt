@@ -23,7 +23,7 @@ class SocketIO(){
 
         socket.on("chat") {
             val data = it[0] as JSONObject
-            receiveMessage(adapter, data.getString("username"), data.getString("content"), recyclerView, activity)
+            receiveMessage(adapter, data.getString("username"), data.getString("content"), data.getString("time"), recyclerView, activity)
         }
     }
 
@@ -32,9 +32,7 @@ class SocketIO(){
         socket.emit("login", username);
     }
 
-    fun sendMessage(adapter: GroupAdapter<ViewHolder>, textInput: EditText, username: String, recyclerView: RecyclerView){
-        adapter.add(ChatItemSent(textInput.text.toString()))
-        recyclerView.smoothScrollToPosition(adapter.itemCount)
+    fun sendMessage(textInput: EditText, username: String){
         val obj = JSONObject()
         obj.put("username", username)
         obj.put("channel_id", 1)
@@ -48,12 +46,17 @@ class SocketIO(){
         socket.emit("logout")
     }
 
-    private fun receiveMessage(adapter: GroupAdapter<ViewHolder>, username: String, message: String, recyclerView: RecyclerView, activity: Activity){
+    private fun receiveMessage(adapter: GroupAdapter<ViewHolder>, username: String, message: String, time: String, recyclerView: RecyclerView, activity: Activity){
         activity.runOnUiThread {
             if(username != activity.intent.getStringExtra("username")){
-                adapter.add(ChatItemReceived(message, username))
-                recyclerView.smoothScrollToPosition(adapter.itemCount)
+                adapter.add(ChatItemReceived(message, username, time))
             }
+            else
+            {
+                adapter.add(ChatItemSent(message, time))
+            }
+
+            recyclerView.smoothScrollToPosition(adapter.itemCount)
         }
     }
 }
