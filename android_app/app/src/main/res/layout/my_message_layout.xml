@@ -20,4 +20,12 @@
             android:text="Test message"
             />
 
+    <TextView
+            android:id="@+id/my_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/my_message_body"
+            android:layout_alignParentRight="true"
+            android:text="TextView" />
+
 </RelativeLayout>
