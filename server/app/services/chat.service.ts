@@ -69,14 +69,14 @@ export class ChatService {
 
     public sendMessages(mes: IReceptMes): void {
 
-        const currTime: Date = new Date();
+        const currTime = this.convertDateTemplate(new Date());
 
         
         const mesToSend: IEmitMes = {
             username: mes.username,
             channel_id: mes.channel_id,
             content: mes.content,
-            time: this.convertDateTemplate(currTime),
+            time: currTime,
         }
         
         // send to everyone in channel
@@ -93,6 +93,7 @@ export class ChatService {
             channel_id: mes.channel_id,
             account_id: this.usernameMapUserId.get(mes.username) as number,
             content:    mes.content,
+            time:       currTime,
         });
     }
 

@@ -1,7 +1,15 @@
-export interface IChannelMessage {
+interface IMessage {
+    content:    string,
+    time:       string,
+}
+
+export interface IChannelMessageDB extends IMessage {
     channel_id: number,
     account_id: number,
-    content:    string,
+}
+
+export interface IChannelMessageReq extends IMessage {
+    username: string,
 }
 
 export interface IReceptMes {

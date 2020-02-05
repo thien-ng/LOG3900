@@ -23,7 +23,7 @@ CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_pass
 $$LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION LOG3900.getMessagesWithChannelId(in_id INTEGER)
-RETURNS TABLE (out_account_id INT, out_content TEXT, out_times TIMESTAMP) AS $$
+RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8)) AS $$
     BEGIN
         RETURN QUERY
         WITH RECURSIVE messageOrder(parent_id, id, content, level, ts, account_id)
@@ -39,7 +39,9 @@ RETURNS TABLE (out_account_id INT, out_content TEXT, out_times TIMESTAMP) AS $$
             FROM LOG3900.MESSAGES as messages
             JOIN messageOrder ON (messages.parent_id = messageOrder.id)
         )
-        SELECT account_id, content, ts FROM messageOrder
+        SELECT a.username, content, ts
+        FROM messageOrder, LOG3900.account as a
+        WHERE account_id = a.id
         ORDER BY level;
     END;
 $$LANGUAGE plpgsql;
@@ -53,7 +55,7 @@ CREATE OR REPLACE FUNCTION LOG3900.createChannelWithAccountId(in_id INTEGER) RET
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id INT, in_account_id INT, in_content TEXT) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id INT, in_account_id INT, in_content TEXT, in_ts VARCHAR(8)) RETURNS VOID AS $$
     DECLARE
         last_id INT;
     BEGIN
@@ -65,9 +67,9 @@ CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id INT, in_ac
         INTO last_id;
 
         IF last_id IS NULL THEN
-            INSERT INTO LOG3900.messages VALUES(DEFAULT, null, DEFAULT, in_content, in_channel_id, in_account_id);
+            INSERT INTO LOG3900.messages VALUES(DEFAULT, null, in_ts, in_content, in_channel_id, in_account_id);
         ELSE
-            INSERT INTO LOG3900.messages VALUES(DEFAULT, last_id, DEFAULT, in_content, in_channel_id, in_account_id);
+            INSERT INTO LOG3900.messages VALUES(DEFAULT, last_id, in_ts, in_content, in_channel_id, in_account_id);
         END IF;
     END;
 $$LANGUAGE plpgsql;
