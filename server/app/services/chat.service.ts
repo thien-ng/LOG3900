@@ -4,7 +4,7 @@ import Types from '../types';
 import { IUser } from "../interfaces/user-manager";
 import * as pg from "pg";
 import * as io from 'socket.io';
-import { IChannelIds, IReceptMes } from "../interfaces/chat";
+import { IChannelIds, IReceptMes, IEmitMes } from "../interfaces/chat";
 import { IUserId } from '../interfaces/user-manager';
 
 @injectable()
@@ -43,7 +43,7 @@ export class ChatService {
                     list.push(user);
                 }
                 
-                this.channelMapUsersList.set(chan.id, list);                
+                this.channelMapUsersList.set(chan.id, list);              
             });
         });
 
@@ -65,12 +65,22 @@ export class ChatService {
 
     public sendMessages(mes: IReceptMes): void {
 
+        const currTime: Date = new Date();
+
+        
+        const mesToSend: IEmitMes = {
+            username: mes.username,
+            channel_id: mes.channel_id,
+            content: mes.content,
+            time: this.convertDateTemplate(currTime),
+        }
+        
         // send to everyone in channel
         const list: IUser[] | undefined = this.channelMapUsersList.get(mes.channel_id);
 
         if (list) {
             list.forEach((user: IUser) => {
-                this.socket.to(user.socketId).emit("chat", mes);
+                this.socket.to(user.socketId).emit("chat", mesToSend);
             });
         }
 
@@ -80,6 +90,14 @@ export class ChatService {
             account_id: this.usernameMapUserId.get(mes.username) as number,
             content:    mes.content,
         });
+    }
+
+    private convertDateTemplate(today: Date): string {
+        const hour: string = today.getHours().toString();
+        const minute: string = today.getMinutes().toString();
+        const second: string = today.getSeconds().toString();
+
+        return hour + ":" + minute + ":" + second;
     }
 
 
