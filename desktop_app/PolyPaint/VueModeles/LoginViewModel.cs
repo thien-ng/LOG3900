@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using Quobject.SocketIoClientDotNet.Client;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -79,9 +78,12 @@ namespace PolyPaint.VueModeles
 
                                 Mediator.Notify("GoToChatScreen", "");
                             }
-                        }
-
-                        }
+                            else
+                            {
+                                MessageBox.Show(res.GetValue("message").ToString());
+                            }
+                        } 
+                    }
                     finally
                     {
                         _loginIsRunning = false;

@@ -121,7 +121,9 @@
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Editeur.cs" />
-    <Compile Include="Modeles\Message.cs" />
+    <Compile Include="Modeles\MessageChat.cs" />
+    <Compile Include="Modeles\MessageReception.cs" />
+    <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\MessageChannel.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
@@ -133,10 +135,7 @@
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
     <Compile Include="VueModeles\BaseViewModel.cs" />
-    <Compile Include="VueModeles\Chat\Design\MessageListDesignModel.cs" />
-    <Compile Include="VueModeles\Chat\Design\MessageItemDesignModel.cs" />
     <Compile Include="VueModeles\Chat\MessageListViewModel.cs" />
-    <Compile Include="VueModeles\Chat\MessageItemViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />
     <Compile Include="VueModeles\LoginViewModel.cs" />

@@ -10,14 +10,14 @@ namespace PolyPaint.VueModeles.Chat
 {
     public class MessageListViewModel : BaseViewModel, IPageViewModel
     {
-        private int counter = 0;
         private ICommand _sendCommand;
         private string _pendingMessage;
-        private ObservableCollection<MessageItemViewModel> _list;
+        private MessageChannel Channel;
 
         public MessageListViewModel()
         {
-            Setup();
+            //TODO Channel ID 1 temp
+            Channel = new MessageChannel(1);
         }
 
         ////// vvvvTemporaire pour le prototype vvvv//////
@@ -33,9 +33,11 @@ namespace PolyPaint.VueModeles.Chat
 
         private void Disconnect()
         {
-            ServerService.instance.socket.Emit("disconnect");
+            ServerService.instance.socket.Emit("logout");
             ServerService.instance.username = "";
             Mediator.Notify("GoToLoginScreen", "");
+            //TODO Channel ID 1 temp
+            Channel = new MessageChannel(1);
         }
 
         //////^^^^ Temporaire pour le prototype ^^^^//////
@@ -44,56 +46,23 @@ namespace PolyPaint.VueModeles.Chat
         {
             get
             {
-                return _sendCommand ?? (_sendCommand = new RelayCommand(x => SendMessage()));
+                return _sendCommand ?? (_sendCommand = new RelayCommand<string>(x => 
+                {
+                    Channel.SendMessage(PendingMessage);
+                    PendingMessage = "";
+                }));
             }
         }
 
-        public ObservableCollection<MessageItemViewModel> Items { 
-            get { return _list; }
-            set { _list = value; ProprieteModifiee(); }
+        public ObservableCollection<MessageChat> Items 
+        { 
+            get { return Channel.Items; }
         }
 
         public string PendingMessage
         {
             get { return _pendingMessage; }
             set { _pendingMessage = value; ProprieteModifiee(); }
-        }
-
-        private void Setup()
-        {
-            Items = new ObservableCollection<MessageItemViewModel>();
-            ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
-        }
-
-        private void ReceiveMessage(JObject response)
-        {
-            Message test = response.ToObject<Message>();
-
-            bool con = test.username == ServerService.instance.username;
-
-            App.Current.Dispatcher.Invoke(delegate
-            {
-                Items.Add(new MessageItemViewModel
-                {
-                    Message = test.content,
-                    SentByMe =con,
-                    Username = test.username,
-                    TimeStamp = "10:55am"
-                });
-            });
-        }
-
-        private void SendMessage()
-        {
-            if (string.IsNullOrWhiteSpace(PendingMessage))
-                return;
-
-            Message message = new Message(ServerService.instance.username, PendingMessage, 1);
-
-            var messageJson = JObject.FromObject(message);
-            ServerService.instance.socket.Emit("chat", messageJson);
-
-            PendingMessage = "";
         }
     }
 }
