@@ -11,7 +11,7 @@ export interface IReceptMes {
 }
 
 export interface IEmitMes extends IReceptMes {
-    time:      string,
+    time: string,
 }
 
 export interface IChannelIds {

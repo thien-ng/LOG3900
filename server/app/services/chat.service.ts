@@ -43,7 +43,7 @@ export class ChatService {
                     list.push(user);
                 }
                 
-                this.channelMapUsersList.set(chan.id, list);                
+                this.channelMapUsersList.set(chan.id, list);              
             });
         });
 
