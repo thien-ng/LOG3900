@@ -10,7 +10,7 @@ import org.json.JSONObject
 
 class ConnexionController {
 
-    fun loginUser(activity: LogPageActivity,applicationContext: Context,body: JSONObject){
+    fun loginUser(activity: LogPageActivity, applicationContext: Context, body: JSONObject){
 
         var mRequestQueue = Volley.newRequestQueue(applicationContext)
 
@@ -25,7 +25,7 @@ class ConnexionController {
                     Toast.LENGTH_SHORT
                 ).show()
                 if(response["status"].toString().toInt() == 200)
-                    activity.connect()
+                    activity.connect(body.get("username").toString())
             },
             Response.ErrorListener {
                 Toast.makeText(
@@ -47,7 +47,7 @@ class ConnexionController {
         mRequestQueue!!.add(mStringRequest)
 
     }
-    fun registerUser(activity: LogPageActivity,applicationContext: Context,body: JSONObject){
+    fun registerUser(activity: LogPageActivity, applicationContext: Context, body: JSONObject){
         var mRequestQueue = Volley.newRequestQueue(applicationContext)
 
         var mStringRequest = object : JsonObjectRequest(
@@ -61,7 +61,7 @@ class ConnexionController {
                     Toast.LENGTH_SHORT
                 ).show()
                 if(response["status"].toString().toInt() == 200){
-                    activity.register()
+                    activity.connect(body.get("username").toString())
                 }
             },
             Response.ErrorListener {
