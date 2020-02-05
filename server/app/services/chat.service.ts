@@ -51,9 +51,13 @@ export class ChatService {
     }
 
     public removeUserFromChannelMap(username: string): void {
-        this.channelMapUsersList.forEach((list: IUser[]) => {
-            list = list.filter(user => user.username !== username);
+        const newList = new Map<number, IUser[]>()
+
+        this.channelMapUsersList.forEach((list: IUser[], key: number) => {
+            newList.set(key, list.filter(user => user.username != username));
         });
+
+        this.channelMapUsersList = newList
     }
 
     private getUserId(username: string): Promise<number> {
