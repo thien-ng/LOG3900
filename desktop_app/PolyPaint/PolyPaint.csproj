@@ -42,6 +42,9 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EngineIoClientDotNet, Version=0.9.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\EngineIoClientDotNet.0.9.22\lib\net45\EngineIoClientDotNet.dll</HintPath>
+    </Reference>
     <Reference Include="MaterialDesignColors, Version=1.2.2.920, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MaterialDesignColors.1.2.2\lib\net45\MaterialDesignColors.dll</HintPath>
     </Reference>
@@ -51,9 +54,13 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SocketIoClientDotNet, Version=0.9.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SocketIoClientDotNet.0.9.13\lib\net45\SocketIoClientDotNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -65,6 +72,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -93,20 +103,47 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\Chat\Channel.xaml.cs">
+      <DependentUpon>Channel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chat\MessageItem.xaml.cs">
+      <DependentUpon>MessageItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Chat\MessageList.xaml.cs">
+      <DependentUpon>MessageList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FenetreDessin.xaml.cs">
+      <DependentUpon>FenetreDessin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
+    <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
+    <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Modeles\MessageChat.cs" />
+    <Compile Include="Modeles\MessageReception.cs" />
+    <Compile Include="Modeles\MessageSend.cs" />
+    <Compile Include="Modeles\MessageChannel.cs" />
     <Compile Include="Modeles\User.cs" />
+    <Compile Include="Services\ServerService.cs" />
+    <Compile Include="Utilitaires\Constants.cs" />
     <Compile Include="Utilitaires\EventRaiser.cs" />
     <Compile Include="Utilitaires\EventArgs.cs" />
     <Compile Include="Utilitaires\Rules.cs" />
     <Compile Include="Utilitaires\IPageViewModel.cs" />
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
+    <Compile Include="VueModeles\BaseViewModel.cs" />
+    <Compile Include="VueModeles\Chat\MessageListViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />
     <Compile Include="VueModeles\LoginViewModel.cs" />
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="VueModeles\VueModele.cs" />
+    <Compile Include="Vues\Chat.xaml.cs">
+      <DependentUpon>Chat.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -116,16 +153,29 @@
     <Compile Include="Vues\Register.xaml.cs">
       <DependentUpon>Register.xaml</DependentUpon>
     </Compile>
-    <Page Include="Vues\FenetreDessin.xaml">
+    <Page Include="Controls\Chat\Channel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Chat\MessageItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Chat\MessageList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FenetreDessin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\Chat.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Vues\FenetreDessin.xaml.cs">
-      <DependentUpon>FenetreDessin.xaml</DependentUpon>
     </Compile>
     <Page Include="Vues\Login.xaml">
       <SubType>Designer</SubType>

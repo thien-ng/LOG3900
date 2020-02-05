@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:PolyPaint"
              xmlns:localView="clr-namespace:PolyPaint.Vues"
-             xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles">
+             xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles"
+             xmlns:chat="clr-namespace:PolyPaint.VueModeles.Chat">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -24,6 +25,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type localViewModel:RegisterViewModel}">
                 <localView:Register/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type chat:MessageListViewModel}">
+                <localView:Chat/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>

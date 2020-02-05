@@ -1,13 +1,12 @@
-﻿<UserControl x:Class="PolyPaint.Vues.Login"
+﻿<Page x:Class="PolyPaint.Vues.Login"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      xmlns:local="clr-namespace:PolyPaint.Vues"
       mc:Ignorable="d" 
       Background="White"
-      d:DesignHeight="450" d:DesignWidth="800">
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Login">
 
 
 
@@ -41,12 +40,12 @@
         <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Text="Password:" VerticalAlignment="Bottom" FontSize="20" Padding="5,0,5,0"/>
         <PasswordBox  Grid.Row="4" Grid.Column="3"  x:Name="FloatingPasswordBox" 
                       PasswordChanged="PasswordChanged"
-                      Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" />
+                      Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
         <StackPanel Grid.Column="3" Grid.Row="5" Orientation="Vertical" VerticalAlignment="Center">
-            <Button Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="100" Command="{Binding Login}" >
+            <Button IsDefault="True" Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="100" Command="{Binding Login}" IsEnabled="{Binding IsButtonEnabled}" >
             _LOGIN
             </Button>
             <TextBlock Padding="0,5,0,0" HorizontalAlignment="Center"><Hyperlink Foreground="Black" TextDecorations="underline" Cursor="Hand" Command="{Binding GoToRegister}" >Register</Hyperlink></TextBlock>
         </StackPanel>
     </Grid>
-</UserControl>
+</Page>

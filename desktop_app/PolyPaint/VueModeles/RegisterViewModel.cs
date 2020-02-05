@@ -6,14 +6,17 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using PolyPaint.Services;
+using System.Windows;
 
 namespace PolyPaint.VueModeles
 {
-    class RegisterViewModel : VueModele, IPageViewModel
+    class RegisterViewModel : BaseViewModel, IPageViewModel
     {
         private ICommand _goToLogin;
         private ICommand _register;
         private string   _username;
+        private bool     _registerIsRunning;
 
         public PasswordBox Password { private get; set; }
         public PasswordBox PasswordConfirm { private get; set; }
@@ -48,12 +51,32 @@ namespace PolyPaint.VueModeles
             {
                 return _register ?? (_register = new RelayCommand(async x =>
                 {
-                    JObject res = await RegisterRequestAsync(_username,Password.Password);
+                    if (_registerIsRunning)
+                        return;
 
-                    if (res.ContainsKey("status"))
+                    if (_username == null || Password.SecurePassword.Length == 0)
                     {
-                        if (res.GetValue("status").ToString() == "200")
-                            Mediator.Notify("GoToLoginScreen", "");
+                        MessageBox.Show("Please fill every parameter");
+                        return;
+                    }
+
+                    try
+                    {
+                        _registerIsRunning = true;
+
+                        JObject res = await RegisterRequestAsync(_username,Password.Password);
+
+                        if (res.ContainsKey("status"))
+                        {
+                            if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
+                                Mediator.Notify("GoToLoginScreen", "");
+                            else
+                                MessageBox.Show(res.GetValue("message").ToString());
+                        }
+                    }
+                    finally
+                    {
+                        _registerIsRunning = false;
                     }
                 }));
             }
@@ -69,7 +92,7 @@ namespace PolyPaint.VueModeles
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await client.PostAsync("http://72.53.102.93:3000/account/register", content);
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.REGISTER_PATH, content);
 
             var responseString = await response.Content.ReadAsStringAsync();
 

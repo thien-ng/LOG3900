@@ -1,23 +1,23 @@
-﻿using PolyPaint.Utilitaires;
+﻿using PolyPaint.Services;
+using PolyPaint.Utilitaires;
+using PolyPaint.VueModeles.Chat;
+using Quobject.SocketIoClientDotNet.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PolyPaint.VueModeles
 {
-    class MainWindowViewModel : VueModele
+    class MainWindowViewModel : BaseViewModel
     {
         private IPageViewModel _currentPageViewModel;
-        private List<IPageViewModel> _pageViewModels;
+        private Dictionary<string, IPageViewModel> _pageViewModels;
 
-        public List<IPageViewModel> PageViewModels
+        public Dictionary<string, IPageViewModel> PageViewModels
         {
             get
             {
                 if (_pageViewModels == null)
-                    _pageViewModels = new List<IPageViewModel>();
+                    _pageViewModels = new Dictionary<string, IPageViewModel>();
 
                 return _pageViewModels;
             }
@@ -36,43 +36,53 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private void ChangeViewModel(IPageViewModel viewModel)
+        private void ChangeViewModel(string viewModelName, Type viewModelType)
         {
-            if (!PageViewModels.Contains(viewModel))
-                PageViewModels.Add(viewModel);
-
-            CurrentPageViewModel = PageViewModels
-                .FirstOrDefault(vm => vm == viewModel);
+            if (!PageViewModels.ContainsKey(viewModelName))
+                PageViewModels[viewModelName] = (IPageViewModel)Activator.CreateInstance(viewModelType);
+            
+            CurrentPageViewModel = PageViewModels[viewModelName];
         }
 
         private void OnGoToLoginScreen(object obj)
         {
-            ChangeViewModel(PageViewModels[0]);
+            
+            ChangeViewModel(nameof(LoginViewModel), typeof(LoginViewModel));
         }
 
         private void OnGoToRegisterScreen(object obj)
         {
-            ChangeViewModel(PageViewModels[2]);
+            ChangeViewModel(nameof(RegisterViewModel), typeof(RegisterViewModel));
         }
 
         private void OnGoToDrawScreen(object obj)
         {
-            ChangeViewModel(PageViewModels[1]);
+            ChangeViewModel(nameof(DessinViewModel), typeof(DessinViewModel));
+        }
+
+        private void OnGoToChatScreen(object obj)
+        {
+            ChangeViewModel(nameof(MessageListViewModel), typeof(MessageListViewModel));
         }
 
         public MainWindowViewModel()
         {
             // Add available pages and set page
-            PageViewModels.Add(new LoginViewModel());
-            PageViewModels.Add(new DessinViewModel());
-            PageViewModels.Add(new RegisterViewModel());
+            PageViewModels[nameof(LoginViewModel)] = new LoginViewModel();
 
-            CurrentPageViewModel = PageViewModels[0];
+            CurrentPageViewModel = PageViewModels[nameof(LoginViewModel)];
 
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
             Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);
             Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
+            Mediator.Subscribe("GoToChatScreen", OnGoToChatScreen);
+
+            Socket socket = IO.Socket(Constants.SERVER_PATH);
+            socket.On(Socket.EVENT_CONNECT, () =>
+            {
+                ServerService.instance.socket = socket;
+            });
         }
+
     }
 }
-
