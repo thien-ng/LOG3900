@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { IRegistration, ILogin } from "../interfaces/communication";
-import { IChannelMessage } from '../interfaces/chat'; 
+import { IChannelMessageDB } from '../interfaces/chat'; 
 import * as pg from "pg";
 
 @injectable()
@@ -41,8 +41,8 @@ export class DatabaseService {
     }
 
     public async getMessagesWithChannelId(id: number): Promise<pg.QueryResult> {
-        return this.pool.query(`SELECT LOG3900.getMessagesWithChannelId(
-                                    CAST('${id}' AS INTEGER));`);
+        return this.pool.query(`SELECT (LOG3900.getMessagesWithChannelId(
+                                    CAST('${id}' AS INTEGER))).*;`);
     }
 
     public async createChannelWithAccountId(id: number): Promise<pg.QueryResult> {
@@ -50,11 +50,12 @@ export class DatabaseService {
                                     CAST('${id}' AS INTEGER));`);
     }
 
-    public async insertChannelMessage(mes: IChannelMessage): Promise<pg.QueryResult> {
+    public async insertChannelMessage(mes: IChannelMessageDB): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT LOG3900.insertChannelMessage(
                                     CAST('${mes.channel_id}' AS INTEGER),
                                     CAST('${mes.account_id}' AS INTEGER),
-                                    CAST('${mes.content}'    AS TEXT));`);
+                                    CAST('${mes.content}'    AS TEXT),
+                                    CAST('${mes.time}'       AS VARCHAR));`);
     }
 
     public async getChannelsWithAccountId(username: string): Promise<pg.QueryResult> {
