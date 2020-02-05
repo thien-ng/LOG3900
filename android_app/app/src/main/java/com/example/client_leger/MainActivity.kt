@@ -8,7 +8,6 @@ import android.view.View
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_chat.*
-import kotlinx.android.synthetic.main.fragment_login.*
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        disconect_button.setOnClickListener {
+        disconnect_button.setOnClickListener {
             socket.disconnect()
             val intent = Intent(this, LogPageActivity::class.java)
             startActivity(intent)

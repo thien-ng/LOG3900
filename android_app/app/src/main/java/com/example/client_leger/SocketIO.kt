@@ -44,8 +44,7 @@ class SocketIO(){
         socket.emit("chat", obj)
     }
 
-    fun disconnect()
-    {
+    fun disconnect() {
         socket.emit("logout")
     }
 
