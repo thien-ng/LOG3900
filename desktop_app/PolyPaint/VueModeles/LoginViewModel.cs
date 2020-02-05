@@ -10,6 +10,7 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
+    // TODO unit test
     class LoginViewModel : BaseViewModel, IPageViewModel
     {
         private ICommand    _login;
@@ -37,10 +38,7 @@ namespace PolyPaint.VueModeles
                                  value.Length >= Constants.USR_MIN_LENGTH && 
                                  Password.SecurePassword.Length >= Constants.PWD_MIN_LENGTH;
 
-                if (condition)
-                    IsButtonEnabled = true;
-                else
-                    IsButtonEnabled = false;
+                IsButtonEnabled = condition;
             }
         }
 
@@ -131,10 +129,8 @@ namespace PolyPaint.VueModeles
                              _username.Length >= Constants.USR_MIN_LENGTH &&
                              Password.SecurePassword.Length >= Constants.PWD_MIN_LENGTH;
 
-            if (condition)
-                IsButtonEnabled = true;
-            else
-                IsButtonEnabled = false;
+
+            IsButtonEnabled = condition;
         }
 
     }

@@ -12,12 +12,12 @@ namespace PolyPaint.VueModeles.Chat
     {
         private ICommand _sendCommand;
         private string _pendingMessage;
-        private MessageChannel Channel;
+        private MessageChannel _channel;
 
         public MessageListViewModel()
         {
             //TODO Channel ID 1 temp
-            Channel = new MessageChannel(1);
+            _channel = new MessageChannel(1);
         }
 
         ////// vvvvTemporaire pour le prototype vvvv//////
@@ -37,7 +37,7 @@ namespace PolyPaint.VueModeles.Chat
             ServerService.instance.username = "";
             Mediator.Notify("GoToLoginScreen", "");
             //TODO Channel ID 1 temp
-            Channel = new MessageChannel(1);
+            _channel = new MessageChannel(1);
         }
 
         //////^^^^ Temporaire pour le prototype ^^^^//////
@@ -48,7 +48,7 @@ namespace PolyPaint.VueModeles.Chat
             {
                 return _sendCommand ?? (_sendCommand = new RelayCommand<string>(x => 
                 {
-                    Channel.SendMessage(PendingMessage);
+                    _channel.SendMessage(PendingMessage);
                     PendingMessage = "";
                 }));
             }
@@ -56,7 +56,7 @@ namespace PolyPaint.VueModeles.Chat
 
         public ObservableCollection<MessageChat> Items 
         { 
-            get { return Channel.Items; }
+            get { return _channel.Items; }
         }
 
         public string PendingMessage
