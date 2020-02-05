@@ -22,14 +22,14 @@ class MainActivity : AppCompatActivity() {
 
         chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                socket.sendMessage(adapter, chat_message_editText, username, recyclerView_chat_log)
+                socket.sendMessage(chat_message_editText, username)
                 return@OnKeyListener true
             }
             false
         })
 
         chat_send_button.setOnClickListener {
-            socket.sendMessage(adapter, chat_message_editText, username, recyclerView_chat_log)
+            socket.sendMessage(chat_message_editText, username)
         }
 
         recyclerView_chat_log.adapter = adapter
