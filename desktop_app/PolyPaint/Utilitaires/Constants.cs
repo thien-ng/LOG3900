@@ -9,7 +9,7 @@ namespace PolyPaint.Utilitaires
     class Constants
     {
         //SERVER
-        public const string SERVER_PATH    = "http://10.200.30.118:3000";
+        public const string SERVER_PATH    = "http://localhost:3000";
         public const string ACCOUNT_PATH   = "/account";
         public const string LOGIN_PATH     = ACCOUNT_PATH + "/login";
         public const string REGISTER_PATH  = ACCOUNT_PATH + "/register";
@@ -20,6 +20,7 @@ namespace PolyPaint.Utilitaires
         //SOCKET
         public const string LOGIN_EVENT    = "login";
         public const string MESSAGE_EVENT  = "chat";
+        public const string LOGOUT_EVENT   = "logout";
 
 
         public static class Vues

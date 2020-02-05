@@ -10,6 +10,7 @@ namespace PolyPaint.VueModeles.Chat
 {
     public class MessageListViewModel : BaseViewModel, IPageViewModel
     {
+        private int counter = 0;
         private ICommand _sendCommand;
         private string _pendingMessage;
         private ObservableCollection<MessageItemViewModel> _list;
@@ -18,6 +19,26 @@ namespace PolyPaint.VueModeles.Chat
         {
             Setup();
         }
+
+        ////// vvvvTemporaire pour le prototype vvvv//////
+
+        private ICommand _disconnectCommand;
+        public ICommand DisconnectCommand
+        {
+            get
+            {
+                return _disconnectCommand ?? (_disconnectCommand = new RelayCommand(x => Disconnect()));
+            }
+        }
+
+        private void Disconnect()
+        {
+            ServerService.instance.socket.Emit("disconnect");
+            ServerService.instance.username = "";
+            Mediator.Notify("GoToLoginScreen", "");
+        }
+
+        //////^^^^ Temporaire pour le prototype ^^^^//////
 
         public ICommand SendCommand
         {

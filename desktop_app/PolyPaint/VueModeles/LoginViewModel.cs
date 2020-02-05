@@ -111,11 +111,16 @@ namespace PolyPaint.VueModeles
 
             var content = new FormUrlEncodedContent(values);
 
-            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.LOGIN_PATH, content);
-
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            return JObject.Parse(responseString);
+            try
+            {
+                var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.LOGIN_PATH, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                return JObject.Parse(responseString);
+            }
+            catch
+            {
+                return JObject.Parse("{ status: '500', content: 'Could not connect to server' }");
+            }
         }
 
         public void OnPasswordPropertyChanged()

@@ -2,6 +2,7 @@
 using PolyPaint.Utilitaires;
 using PolyPaint.VueModeles.Chat;
 using Quobject.SocketIoClientDotNet.Client;
+using System;
 using System.Collections.Generic;
 
 namespace PolyPaint.VueModeles
@@ -35,32 +36,33 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private void ChangeViewModel(IPageViewModel viewModel)
+        private void ChangeViewModel(string viewModelName, Type viewModelType)
         {
-            if (!PageViewModels.ContainsKey(nameof(viewModel)))
-                PageViewModels[nameof(viewModel)] = viewModel;
-
-            CurrentPageViewModel = PageViewModels[nameof(viewModel)];
+            if (!PageViewModels.ContainsKey(viewModelName))
+                PageViewModels[viewModelName] = (IPageViewModel)Activator.CreateInstance(viewModelType);
+            
+            CurrentPageViewModel = PageViewModels[viewModelName];
         }
 
         private void OnGoToLoginScreen(object obj)
         {
-            ChangeViewModel(new LoginViewModel());
+            
+            ChangeViewModel(nameof(LoginViewModel), typeof(LoginViewModel));
         }
 
         private void OnGoToRegisterScreen(object obj)
         {
-            ChangeViewModel(new RegisterViewModel());
+            ChangeViewModel(nameof(RegisterViewModel), typeof(RegisterViewModel));
         }
 
         private void OnGoToDrawScreen(object obj)
         {
-            ChangeViewModel(new DessinViewModel());
+            ChangeViewModel(nameof(DessinViewModel), typeof(DessinViewModel));
         }
 
         private void OnGoToChatScreen(object obj)
         {
-            ChangeViewModel(new MessageListViewModel());
+            ChangeViewModel(nameof(MessageListViewModel), typeof(MessageListViewModel));
         }
 
         public MainWindowViewModel()
@@ -78,7 +80,6 @@ namespace PolyPaint.VueModeles
             Socket socket = IO.Socket(Constants.SERVER_PATH);
             socket.On(Socket.EVENT_CONNECT, () =>
             {
-                //Console.WriteLine("connect");
                 ServerService.instance.socket = socket;
             });
         }
