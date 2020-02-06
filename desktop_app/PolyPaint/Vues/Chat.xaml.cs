@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace PolyPaint.Vues
 {
@@ -10,6 +12,12 @@ namespace PolyPaint.Vues
         public Chat()
         {
             InitializeComponent();
+            Keyboard.Focus(chatBox);
+        }
+
+        private void chatBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            Keyboard.Focus(chatBox);
         }
     }
 }

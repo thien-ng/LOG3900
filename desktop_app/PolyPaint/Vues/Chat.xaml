@@ -54,6 +54,7 @@
             
             <TextBox Grid.Column="0" Width="auto"
                      Text="{Binding PendingMessage, UpdateSourceTrigger=PropertyChanged}"
+                     LostKeyboardFocus="chatBox_LostKeyboardFocus"
                      AcceptsTab="True"
                      x:Name="chatBox"
                      Margin="20,0,0,0"
