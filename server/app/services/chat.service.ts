@@ -97,11 +97,15 @@ export class ChatService {
     }
 
     private convertDateTemplate(today: Date): string {
-        const hour: string = today.getHours().toString();
-        const minute: string = today.getMinutes().toString();
-        const second: string = today.getSeconds() > 9 ? today.getSeconds().toString() : "0" + today.getSeconds().toString();
+        const hour: string = this.formatTime(today.getHours());
+        const minute: string = this.formatTime(today.getMinutes());
+        const second: string = this.formatTime(today.getSeconds());
 
         return hour + ":" + minute + ":" + second;
+    }
+
+    private formatTime(time: number): string {
+        return time > 9 ? time.toString() : `0${time}`;
     }
 
 
