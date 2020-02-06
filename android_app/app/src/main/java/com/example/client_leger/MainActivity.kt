@@ -1,5 +1,6 @@
 package com.example.client_leger
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
@@ -34,6 +35,12 @@ class MainActivity : AppCompatActivity() {
             if (chat_message_editText.text.trim().length > 0) {
                 socket.sendMessage(chat_message_editText, username)
             }
+        }
+
+        disconnect_button.setOnClickListener {
+            socket.disconnect()
+            val intent = Intent(this, LogPageActivity::class.java)
+            startActivity(intent)
         }
 
         recyclerView_chat_log.adapter = adapter

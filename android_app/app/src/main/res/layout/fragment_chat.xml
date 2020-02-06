@@ -18,7 +18,7 @@
             app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/disconnect_button" />
 
     <EditText
             android:id="@+id/chat_message_editText"
@@ -39,5 +39,13 @@
             android:text="Send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+            android:id="@+id/disconnect_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Disconect"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
