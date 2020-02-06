@@ -42,6 +42,10 @@ class SocketIO(){
         socket.emit("chat", obj)
     }
 
+    fun disconnect() {
+        socket.emit("logout")
+    }
+
     private fun receiveMessage(adapter: GroupAdapter<ViewHolder>, username: String, message: String, time: String, recyclerView: RecyclerView, activity: Activity){
         activity.runOnUiThread {
             if(username != activity.intent.getStringExtra("username")){
