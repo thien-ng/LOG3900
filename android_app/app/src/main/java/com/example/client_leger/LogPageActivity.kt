@@ -34,7 +34,6 @@ class LogPageActivity : AppCompatActivity() {
                 body.accumulate("password", login_editText_password.text.toString().trim())
                 controller.loginUser(this, this, body )
             }
-          
         }
     }
 

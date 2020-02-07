@@ -9,7 +9,14 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_chat.*
 
+
 class MainActivity : AppCompatActivity() {
+
+    override fun onBackPressed() {
+        // To ignore back button pressed.
+        //super.onBackPressed()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_chat)
