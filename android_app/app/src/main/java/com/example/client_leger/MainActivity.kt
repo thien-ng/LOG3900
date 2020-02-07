@@ -14,7 +14,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         // To ignore back button pressed.
-        //super.onBackPressed()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
