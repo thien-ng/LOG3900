@@ -30,6 +30,7 @@
                                Foreground="DarkGray"
                                Padding="5,0,0,0"
                                Margin="0,0,20,0"
+                               Visibility="{Binding SentByMe, Converter={converter:SentByMeToVisibleConverter}}"
                                HorizontalAlignment="Left"/>
 
                     <!-- Timestamp -->

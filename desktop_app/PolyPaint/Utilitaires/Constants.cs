@@ -9,7 +9,7 @@ namespace PolyPaint.Utilitaires
     class Constants
     {
         //SERVER
-        public const string SERVER_PATH    = "http://72.53.102.93:3000";
+        public const string SERVER_PATH    = "http://10.200.21.14:3000";
         public const string ACCOUNT_PATH   = "/account";
         public const string LOGIN_PATH     = ACCOUNT_PATH + "/login";
         public const string REGISTER_PATH  = ACCOUNT_PATH + "/register";
