@@ -69,7 +69,12 @@ namespace PolyPaint.VueModeles
                         if (res.ContainsKey("status"))
                         {
                             if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
-                                Mediator.Notify("GoToLoginScreen", "");
+                            {
+                                ServerService.instance.username = _username;
+                                ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
+
+                                Mediator.Notify("GoToChatScreen", "");
+                            }
                             else
                                 MessageBox.Show(res.GetValue("message").ToString());
                         }

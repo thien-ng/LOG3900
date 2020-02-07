@@ -117,6 +117,7 @@
     </Compile>
     <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="Convertisseurs\SentByMeToVisibleConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
