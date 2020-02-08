@@ -8,8 +8,6 @@ matrix:
       script:
         - npm install
         - npm test
-      before_deploy:
-        - cd server
       deploy:
         - provider: s3
         - access_key_id: $ACCESS_KEY
