@@ -8,6 +8,12 @@ matrix:
       script:
         - npm install
         - npm test
+      before_deploy:
+        - cd server
+      deploy:
+        - provider: heroku
+        - api_key: 88bced2f-2946-4217-98e9-9d22b70e506a
+        - app: log3000-app
     
     - language: android
       jdk: oraclejdk8
