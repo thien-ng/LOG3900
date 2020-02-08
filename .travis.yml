@@ -11,9 +11,12 @@ matrix:
       before_deploy:
         - cd server
       deploy:
-        - provider: heroku
-        - api_key: 88bced2f-2946-4217-98e9-9d22b70e506a
-        - app: log3000-app
+        - provider: s3
+        - access_key_id: $ACCESS_KEY
+        - secret_access_key: $SECRET_KEY
+        - bucket: "log3900-deploy-server"
+        - skip_cleanup: true
+        - local_dir: server
     
     - language: android
       jdk: oraclejdk8
