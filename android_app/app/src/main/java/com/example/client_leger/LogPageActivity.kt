@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 
 import android.content.Intent
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_logpage.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
@@ -19,20 +20,36 @@ class LogPageActivity : AppCompatActivity() {
         setContentView(R.layout.fragment_registration)
         setSupportActionBar(toolbar)
         register_button.setOnClickListener {
-            var body = JSONObject()
-            body.accumulate("username", register_editText_name.text.toString().trim())
-            body.accumulate("password", register_editText_password.text.toString().trim())
-            controller.registerUser(this, this, body )
+            if(register_editText_name.text.isNotBlank() && register_editText_password.text.isNotBlank()) {
+                var body = JSONObject()
+                body.accumulate("username", register_editText_name.text.toString().trim())
+                body.accumulate("password", register_editText_password.text.toString().trim())
+                controller.registerUser(this, this, body)
+            }else {
+                Toast.makeText(
+                    applicationContext,
+                    "Veuillez remplir tout les champs",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         textView_alreadyHaveAccount.setOnClickListener {
             setContentView(R.layout.fragment_login)
 
             login_button.setOnClickListener {
-                var body = JSONObject()
-                body.accumulate("username",login_editText_name.text.toString().trim())
-                body.accumulate("password", login_editText_password.text.toString().trim())
-                controller.loginUser(this, this, body )
+                if(register_editText_name.text.isNotBlank() && register_editText_password.text.isNotBlank()) {
+                    var body = JSONObject()
+                    body.accumulate("username", login_editText_name.text.toString().trim())
+                    body.accumulate("password", login_editText_password.text.toString().trim())
+                    controller.loginUser(this, this, body)
+                }else {
+                    Toast.makeText(
+                        applicationContext,
+                        "Veuillez remplir tout les champs",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
