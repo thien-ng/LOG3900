@@ -38,7 +38,7 @@ class LogPageActivity : AppCompatActivity() {
             setContentView(R.layout.fragment_login)
 
             login_button.setOnClickListener {
-                if(register_editText_name.text.isNotBlank() && register_editText_password.text.isNotBlank()) {
+                if(login_editText_name.text.isNotBlank() && login_editText_password.text.isNotBlank()) {
                     var body = JSONObject()
                     body.accumulate("username", login_editText_name.text.toString().trim())
                     body.accumulate("password", login_editText_password.text.toString().trim())
