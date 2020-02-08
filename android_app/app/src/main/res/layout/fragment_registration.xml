@@ -26,16 +26,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-            android:id="@+id/register_editText_email"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Email adress"
-            android:inputType="textEmailAddress"
-            app:layout_constraintEnd_toEndOf="@+id/register_editText_name"
-            app:layout_constraintStart_toStartOf="@+id/register_editText_name"
-            app:layout_constraintTop_toBottomOf="@+id/register_editText_name" />
+<!--    <EditText-->
+<!--            android:id="@+id/register_editText_email"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:ems="10"-->
+<!--            android:hint="Email adress"-->
+<!--            android:inputType="textEmailAddress"-->
+<!--            app:layout_constraintEnd_toEndOf="@+id/register_editText_name"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/register_editText_name"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/register_editText_name" />-->
 
     <EditText
             android:id="@+id/register_editText_password"
@@ -44,10 +44,11 @@
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
-            app:layout_constraintEnd_toEndOf="@+id/register_editText_email"
+            app:layout_constraintEnd_toEndOf="@+id/register_editText_name"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/register_editText_email"
-            app:layout_constraintTop_toBottomOf="@+id/register_editText_email" />
+            app:layout_constraintStart_toStartOf="@+id/register_editText_name"
+            app:layout_constraintTop_toBottomOf="@+id/register_editText_name"
+            />
 
     <Button
             android:id="@+id/register_button"
