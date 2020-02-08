@@ -8,13 +8,6 @@ matrix:
       script:
         - npm install
         - npm test
-      deploy:
-        - provider: s3
-        - access_key_id: $ACCESS_KEY
-        - secret_access_key: $SECRET_KEY
-        - bucket: "log3900-deploy-server"
-        - skip_cleanup: true
-        - local_dir: server
     
     - language: android
       jdk: oraclejdk8
@@ -40,3 +33,11 @@ after_failure:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
   - chmod +x send.sh
   - ./send.sh failure $WEBHOOK_URL
+
+deploy:
+  - provider: s3
+  - access_key_id: $ACCESS_KEY
+  - secret_access_key: $SECRET_KEY
+  - bucket: "log3900-deploy-server"
+  - skip_cleanup: true
+  - local_dir: server
