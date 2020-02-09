@@ -9,6 +9,7 @@ matrix:
         - npm install
         - npm test
       before_deploy:
+        - git rm yarn.lock
         - bash deploy.sh
       deploy:
         - provider: heroku
