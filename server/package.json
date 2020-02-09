@@ -4,7 +4,8 @@
     "version": "1.1.0",
     "private": true,
     "scripts": {
-        "start": "nodemon",
+        "start": "ts-node ./app/www.ts",
+        "start-dev": "nodemon",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "tslint --project tsconfig.json \"./app/**/*.ts\" --format stylish",
         "test": "mocha --exit",
