@@ -9,8 +9,8 @@ matrix:
         - npm install
         - npm test
       before_deploy:
-        - rm yarn.lock
-        - ls
+        - git rm yarn.lock
+        - git commit -m "Remove yarn lock file"
       deploy:
         - provider: heroku
           api_key: $HEROKU_KEY
