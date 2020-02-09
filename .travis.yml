@@ -41,3 +41,4 @@ deploy:
   - bucket: "log3900-deploy-server"
   - skip_cleanup: true
   - local_dir: server
+  - region: us-east-1
