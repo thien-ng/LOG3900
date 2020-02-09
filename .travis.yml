@@ -9,7 +9,7 @@ matrix:
         - npm install
         - npm test
       before_deploy:
-        - git rm yarn.lock
+        - rm yarn.lock
       deploy:
         - provider: heroku
           api_key: $HEROKU_KEY
