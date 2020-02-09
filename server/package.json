@@ -4,7 +4,7 @@
     "version": "1.1.0",
     "private": true,
     "scripts": {
-        "start": "node www.ts",
+        "start": "ts-node ./www.ts",
         "start-dev": "nodemon",
         "format": "prettier --config ../.prettierrc.yaml --write \"app/**/*\"",
         "lint": "tslint --project tsconfig.json \"./app/**/*.ts\" --format stylish",
