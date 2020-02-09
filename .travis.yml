@@ -16,6 +16,7 @@ matrix:
           skip_cleanup: true
           local_dir: server
           region: us-east-1
+          acl: public_read
     
     - language: android
       jdk: oraclejdk8
