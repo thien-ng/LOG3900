@@ -9,7 +9,7 @@ matrix:
         - npm install
         - npm test
       before_deploy:
-        - deploy.sh
+        - bash deploy.sh
       deploy:
         - provider: heroku
           api_key: $HEROKU_KEY
