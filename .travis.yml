@@ -8,8 +8,9 @@ matrix:
       script:
         - npm install
         - npm test
-      before_deploy:
         - rm yarn.lock
+      before_deploy:
+        - git commit -a
       deploy:
         - provider: heroku
           api_key: $HEROKU_KEY
@@ -30,6 +31,7 @@ matrix:
       script:
         - chmod +x gradlew
         - ./gradlew test
+
 
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
