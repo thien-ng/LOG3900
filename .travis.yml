@@ -10,7 +10,6 @@ matrix:
         - npm test
       before_deploy:
         - git rm yarn.lock
-        - bash deploy.sh
       deploy:
         - provider: heroku
           api_key: $HEROKU_KEY
