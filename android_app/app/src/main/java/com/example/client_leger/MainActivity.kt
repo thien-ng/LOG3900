@@ -3,6 +3,8 @@ package com.example.client_leger
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.view.KeyEvent
 import android.view.View
 import com.xwray.groupie.GroupAdapter
@@ -26,6 +28,10 @@ class MainActivity : AppCompatActivity() {
         val socket = SocketIO()
         socket.init(adapter, recyclerView_chat_log, this)
         socket.connect(username)
+
+        val fArray = arrayOfNulls<InputFilter>(1)
+        fArray[0] = LengthFilter(Constants.MESSAGE_MAX_LENGTH)
+        chat_message_editText.filters = fArray
 
         chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
