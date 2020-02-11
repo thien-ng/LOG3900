@@ -21,5 +21,9 @@ export class AccountController {
         this.router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.accountService.login(req.body));
         });
+
+        this.router.get('/users/online', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.accountService.getOnlineUsers());
+        });
     }
 }

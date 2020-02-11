@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { DatabaseService } from '../services/database.service';
 import Types from '../types';
 import * as pg from 'pg';
-import { IChannelMessageReq } from '../interfaces/chat';
+import { IChannelMessageReq, IChannelIds } from '../interfaces/chat';
 
 
 @injectable()
@@ -31,6 +31,19 @@ export class ChatController {
                 res.json(messages);
             }).catch((e: Error) => {
                 console.error(e.stack);
+            });
+        });
+
+        this.router.get('/channels/:username', async (req: Request, res: Response, next: NextFunction) => {
+            this.db.getChannelsWithAccountName(req.params.username).then((result: pg.QueryResult) => {
+
+                const channels: IChannelIds[] = result.rows.map((row: any) => (
+                    {
+                        id: row.out_id,
+                    }
+                ));
+
+                res.json(channels);
             });
         });
 
