@@ -43,7 +43,6 @@ export class WebsocketService {
 
             socket.on('logout', () => {
                 console.log(username + " logged out");
-
                 this.logout(username);
             });
 
@@ -61,7 +60,6 @@ export class WebsocketService {
 
     private login(username: string, socket: io.Socket): void {       
         const user: IUser = {username: username, socketId: socket.id};
-        this.userServ.addUser(user);
         this.chatServ.addUserToChannelMap(user);
     }
 

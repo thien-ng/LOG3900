@@ -69,7 +69,7 @@ export class ChatService {
 
     public sendMessages(mes: IReceptMes): void {
 
-        const currTime = this.convertDateTemplate(new Date());
+        const currTime = this.convertDateTemplate();
         
         const mesToSend: IEmitMes = {
             username: mes.username,
@@ -96,7 +96,8 @@ export class ChatService {
         });
     }
 
-    private convertDateTemplate(today: Date): string {
+    private convertDateTemplate(): string {
+        const today = new Date();
         const hour: string = this.formatTime(today.getHours());
         const minute: string = this.formatTime(today.getMinutes());
         const second: string = this.formatTime(today.getSeconds());
