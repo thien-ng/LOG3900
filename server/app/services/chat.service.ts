@@ -54,7 +54,10 @@ export class ChatService {
         const newList = new Map<number, IUser[]>()
 
         this.channelMapUsersList.forEach((list: IUser[], key: number) => {
-            newList.set(key, list.filter(user => user.username != username));
+            const filteredList = list.filter(user => user.username != username);
+            if (filteredList.length !== 0) {
+                newList.set(key, filteredList);
+            }
         });
 
         this.channelMapUsersList = newList
