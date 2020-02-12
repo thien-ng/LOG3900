@@ -35,7 +35,6 @@ describe("ChatService", () => {
         service["channelMapUsersList"].set("general", [{username: "name1", socketId: "yomama"}]);
         service["channelMapUsersList"].set("general", [{username: "name2", socketId: "yomama"}]);
 
-
         //when
         service.removeUserFromChannelMap("name1");
                 
