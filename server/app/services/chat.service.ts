@@ -54,7 +54,10 @@ export class ChatService {
         const newList = new Map<number, IUser[]>()
 
         this.channelMapUsersList.forEach((list: IUser[], key: number) => {
-            newList.set(key, list.filter(user => user.username != username));
+            const filteredList = list.filter(user => user.username != username);
+            if (filteredList.length !== 0) {
+                newList.set(key, filteredList);
+            }
         });
 
         this.channelMapUsersList = newList
@@ -69,7 +72,7 @@ export class ChatService {
 
     public sendMessages(mes: IReceptMes): void {
 
-        const currTime = this.convertDateTemplate(new Date());
+        const currTime = this.convertDateTemplate();
         
         const mesToSend: IEmitMes = {
             username: mes.username,
@@ -96,7 +99,8 @@ export class ChatService {
         });
     }
 
-    private convertDateTemplate(today: Date): string {
+    private convertDateTemplate(): string {
+        const today = new Date();
         const hour: string = this.formatTime(today.getHours());
         const minute: string = this.formatTime(today.getMinutes());
         const second: string = this.formatTime(today.getSeconds());

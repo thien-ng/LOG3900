@@ -21,35 +21,64 @@ describe("AccountService", () =>{
     });
 
     it("Should return status 400 register fail", async () => {
+        // given
         chai.spy.on(service["database"], "registerAccount", () => {throw new Error("potatoes")});
+
+        //when
         const status: IStatus = await service.register({username: "username", password: "password"});
         
+        //then
         chai.expect(status.status).to.be.equal(400);
         chai.expect(status.message).to.be.equal("potatoes");
     });
 
     it("Should return status 200 when register pass", async () => {
+        //given
         chai.spy.on(service["database"], "registerAccount", () => {null});
+
+        //when
         const status: IStatus = await service.register({username: "username", password: "password"});
         
+        //then
         chai.expect(status.status).to.be.equal(200);
         chai.expect(status.message).to.be.equal("Succesfully registered account.");
     });
 
     it("Should return status 400 when login fail", async () => {
+        //given
         chai.spy.on(service["database"], "loginAccount", () => {throw new Error("potatoes")});
+
+        //when
         const status: IStatus = await service.login({username: "username", password: "password"});
         
+        //then
         chai.expect(status.status).to.be.equal(400);
         chai.expect(status.message).to.be.equal("potatoes");
     });
 
     it("Should return status 200 when login pass", async () => {
+        //given
         chai.spy.on(service["database"], "loginAccount", () => {null});
+
+        //when
         const status: IStatus = await service.login({username: "username", password: "password"});
         
+        //then
         chai.expect(status.status).to.be.equal(200);
         chai.expect(status.message).to.be.equal("Succesfully logged in.");
+    });
+
+    it("Should return status 400 when logging in with an already logged account", async () => {
+        //given
+        chai.spy.on(service["database"], "loginAccount", () => {null});
+        await service.login({username: "username", password: "password"});
+
+        //when
+        const status: IStatus = await service.login({username: "username", password: "password"});
+
+        //then
+        chai.expect(status.status).to.be.equal(400);
+        chai.expect(status.message).to.be.equal("username is already logged in.");
     });
 
 
