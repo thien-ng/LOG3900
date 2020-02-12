@@ -1,11 +1,11 @@
 import { injectable, inject } from "inversify";
-import { DatabaseService } from "./database.service";
 import Types from '../types';
 import { IUser } from "../interfaces/user-manager";
 import * as pg from "pg";
 import * as io from 'socket.io';
 import { IChannelIds, IReceptMes, IEmitMes } from "../interfaces/chat";
 import { IUserId } from '../interfaces/user-manager';
+import { ChatDbService } from "../database/chat-db.service";
 
 @injectable()
 export class ChatService {
@@ -18,7 +18,7 @@ export class ChatService {
     // for saving conversations in db
     private usernameMapUserId: Map<string, number>;
 
-    public constructor(@inject(Types.DatabaseService) private db: DatabaseService) {
+    public constructor(@inject(Types.ChatDbService) private db: ChatDbService) {
         this.channelMapUsersList = new Map<string, IUser[]>();
         this.usernameMapUserId = new Map<string, number>();
     }
