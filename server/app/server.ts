@@ -21,7 +21,7 @@ export class Server {
 
         this.ws.initWebsocket(this.server);
 
-        this.server.listen(this.appPort as number, "10.200.21.14");
+        this.server.listen(this.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());
     }
