@@ -3,7 +3,7 @@ import Types from '../types';
 import { IUser } from "../interfaces/user-manager";
 import * as pg from "pg";
 import * as io from 'socket.io';
-import { IChannelIds, IReceptMes, IEmitMes } from "../interfaces/chat";
+import { IChannelIds, IReceptMes, IEmitMes, IChannelMessageReq } from "../interfaces/chat";
 import { IUserId } from '../interfaces/user-manager';
 import { ChatDbService } from "../database/chat-db.service";
 
@@ -110,6 +110,28 @@ export class ChatService {
 
     private formatTime(time: number): string {
         return time > 9 ? time.toString() : `0${time}`;
+    }
+
+    public async getMessagesWithChannelId(id: string): Promise<void | IChannelMessageReq[]> {
+        const result: pg.QueryResult = await this.db.getMessagesWithChannelId(id);
+        const messages: IChannelMessageReq[] = result.rows.map((row: any) => (
+            {
+                username: row.out_username,
+                content:  row.out_content,
+                time:     row.out_times,
+            }
+        ));
+        return messages;
+    }
+
+    public async getChannelsWithAccountName(username: string): Promise<void | IChannelIds[]> {
+        const result: pg.QueryResult = await this.db.getChannelsWithAccountName(username);
+        const channels: IChannelIds[] = result.rows.map((row: any) => (
+            {
+                id: row.out_id,
+            }
+        ));
+        return channels;
     }
 
 
