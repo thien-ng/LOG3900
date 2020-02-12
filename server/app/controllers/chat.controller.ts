@@ -18,7 +18,7 @@ export class ChatController {
         this.router = Router();
 
         this.router.get('/messages/:id', async (req: Request, res: Response, next: NextFunction) => {
-            this.db.getMessagesWithChannelId(Number(req.params.id)).then((result: pg.QueryResult) => {
+            this.db.getMessagesWithChannelId(req.params.id).then((result: pg.QueryResult) => {
                 
                 const messages: IChannelMessageReq[] = result.rows.map((row: any) => (
                     {

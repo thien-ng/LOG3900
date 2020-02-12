@@ -40,9 +40,9 @@ export class DatabaseService {
                                 WHERE  a.username = '${username}';`);
     }
 
-    public async getMessagesWithChannelId(id: number): Promise<pg.QueryResult> {
+    public async getMessagesWithChannelId(id: string): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT (LOG3900.getMessagesWithChannelId(
-                                    CAST('${id}' AS INTEGER))).*;`);
+                                    CAST('${id}' AS VARCHAR))).*;`);
     }
 
     public async createChannelWithAccountId(id: number): Promise<pg.QueryResult> {
@@ -52,7 +52,7 @@ export class DatabaseService {
 
     public async insertChannelMessage(mes: IChannelMessageDB): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT LOG3900.insertChannelMessage(
-                                    CAST('${mes.channel_id}' AS INTEGER),
+                                    CAST('${mes.channel_id}' AS VARCHAR),
                                     CAST('${mes.account_id}' AS INTEGER),
                                     CAST('${mes.content}'    AS TEXT),
                                     CAST('${mes.time}'       AS VARCHAR));`);

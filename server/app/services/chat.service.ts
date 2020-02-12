@@ -13,13 +13,13 @@ export class ChatService {
     private socket: io.Server;
 
     // for sending messages to specific channels
-    private channelMapUsersList: Map<number, IUser[]>;
+    private channelMapUsersList: Map<string, IUser[]>;
 
     // for saving conversations in db
     private usernameMapUserId: Map<string, number>;
 
     public constructor(@inject(Types.DatabaseService) private db: DatabaseService) {
-        this.channelMapUsersList = new Map<number, IUser[]>();
+        this.channelMapUsersList = new Map<string, IUser[]>();
         this.usernameMapUserId = new Map<string, number>();
     }
 
@@ -51,9 +51,9 @@ export class ChatService {
     }
 
     public removeUserFromChannelMap(username: string): void {
-        const newList = new Map<number, IUser[]>()
+        const newList = new Map<string, IUser[]>()
 
-        this.channelMapUsersList.forEach((list: IUser[], key: number) => {
+        this.channelMapUsersList.forEach((list: IUser[], key: string) => {
             const filteredList = list.filter(user => user.username != username);
             if (filteredList.length !== 0) {
                 newList.set(key, filteredList);
