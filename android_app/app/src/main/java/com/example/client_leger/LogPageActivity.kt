@@ -17,16 +17,17 @@ class LogPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_registration)
+        setContentView(R.layout.fragment_login)
         setSupportActionBar(toolbar)
-        register_button.isEnabled = true
-        register_button.setOnClickListener {
-            if(register_editText_name.text.isNotBlank() && register_editText_password.text.isNotBlank()) {
-                register_button.isEnabled = false
+        login_button.isEnabled = true
+        login_button.setOnClickListener {
+            if(login_editText_name.text.isNotBlank() && login_editText_password.text.isNotBlank()) {
+                login_button.isEnabled = false
                 var body = JSONObject()
-                body.accumulate("username", register_editText_name.text.toString().trim())
-                body.accumulate("password", register_editText_password.text.toString().trim())
-                controller.registerUser(this, this, body)
+                body.accumulate("username", login_editText_name.text.toString().trim())
+                body.accumulate("password", login_editText_password.text.toString().trim())
+                controller.loginUser(this, this, body)
+
             }else {
                 Toast.makeText(
                     applicationContext,
@@ -36,17 +37,16 @@ class LogPageActivity : AppCompatActivity() {
             }
         }
 
-        textView_alreadyHaveAccount.setOnClickListener {
-            setContentView(R.layout.fragment_login)
-            login_button.isEnabled = true
-            login_button.setOnClickListener {
-                if(login_editText_name.text.isNotBlank() && login_editText_password.text.isNotBlank()) {
-                    login_button.isEnabled = false
+        textView_dontHaveAccount.setOnClickListener {
+            setContentView(R.layout.fragment_registration)
+            register_button.isEnabled = true
+            register_button.setOnClickListener {
+                if(register_editText_name.text.isNotBlank() && register_editText_password.text.isNotBlank()) {
+                    register_button.isEnabled = false
                     var body = JSONObject()
-                    body.accumulate("username", login_editText_name.text.toString().trim())
-                    body.accumulate("password", login_editText_password.text.toString().trim())
-                    controller.loginUser(this, this, body)
-
+                    body.accumulate("username", register_editText_name.text.toString().trim())
+                    body.accumulate("password", register_editText_password.text.toString().trim())
+                    controller.registerUser(this, this, body)
                 }else {
                     Toast.makeText(
                         applicationContext,
