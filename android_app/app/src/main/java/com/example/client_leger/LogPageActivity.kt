@@ -105,7 +105,7 @@ class LogPageActivity : AppCompatActivity() {
                 return false
             }
             register_editText_confirmPassword.text.toString() != register_editText_password.text.toString() -> {
-                register_editText_confirmPassword.error = "Password does not match"
+                register_editText_confirmPassword.error = "Password doesn't match"
                 register_editText_confirmPassword.requestFocus()
                 return false
             }
