@@ -58,8 +58,8 @@ export class DatabaseService {
                                     CAST('${mes.time}'       AS VARCHAR));`);
     }
 
-    public async getChannelsWithAccountId(username: string): Promise<pg.QueryResult> {
-        return this.pool.query(`SELECT DISTINCT a.channel_id
+    public async getChannelsWithAccountName(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT DISTINCT a.channel_id as out_id
                                 FROM log3900.account as acc, log3900.accountchannel as a
                                 WHERE acc.id = a.account_id
                                 AND acc.username = '${username}';`);

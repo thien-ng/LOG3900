@@ -30,7 +30,7 @@ export class ChatService {
     public addUserToChannelMap(user: IUser): void {
         const name: string = user.username;
         
-        this.db.getChannelsWithAccountId(name).then((result: pg.QueryResult) => {
+        this.db.getChannelsWithAccountName(name).then((result: pg.QueryResult) => {
             const channelList: IChannelIds[] = result.rows.map((row: any) => ({id: row.channel_id}));
             
             channelList.forEach((chan: IChannelIds) => {

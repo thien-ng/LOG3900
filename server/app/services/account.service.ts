@@ -49,6 +49,10 @@ export class AccountService {
         return result;
     }
 
+    public getOnlineUsers(): string[] {
+        return this.userServ.getUsers();
+    }
+
     private verifyUserIsLogged(username: string): boolean {
         const users = this.userServ.getUsers();        
         return users.some((user) => user === username);
