@@ -28,14 +28,14 @@ RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8))
         RETURN QUERY
         WITH RECURSIVE messageOrder(parent_id, id, content, level, ts, account_id)
         AS (
-            SELECT parent_id, id, content, 0, times, account_id
+            SELECT parent_id, id, content, 0, ts, account_id
             FROM LOG3900.MESSAGES as messages
             WHERE parent_id IS NULL
             AND channel_id = in_id
 
             UNION ALL
 
-            SELECT messages.parent_id, messages.id, messages.content, messageOrder.level+1, messageOrder.ts, messageOrder.account_id
+            SELECT messages.parent_id, messages.id, messages.content, messageOrder.level+1, messages.ts, messageOrder.account_id
             FROM LOG3900.MESSAGES as messages
             JOIN messageOrder ON (messages.parent_id = messageOrder.id)
         )
