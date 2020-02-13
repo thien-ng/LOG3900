@@ -4,7 +4,7 @@ interface IMessage {
 }
 
 export interface IChannelMessageDB extends IMessage {
-    channel_id: number,
+    channel_id: string,
     account_id: number,
 }
 
@@ -14,7 +14,7 @@ export interface IChannelMessageReq extends IMessage {
 
 export interface IReceptMes {
     username:   string,
-    channel_id: number,
+    channel_id: string,
     content:    string,
 }
 
@@ -23,5 +23,5 @@ export interface IEmitMes extends IReceptMes {
 }
 
 export interface IChannelIds {
-    id: number
+    id: string
 }

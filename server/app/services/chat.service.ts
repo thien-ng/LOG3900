@@ -1,11 +1,11 @@
 import { injectable, inject } from "inversify";
-import { DatabaseService } from "./database.service";
 import Types from '../types';
 import { IUser } from "../interfaces/user-manager";
 import * as pg from "pg";
 import * as io from 'socket.io';
-import { IChannelIds, IReceptMes, IEmitMes } from "../interfaces/chat";
+import { IChannelIds, IReceptMes, IEmitMes, IChannelMessageReq } from "../interfaces/chat";
 import { IUserId } from '../interfaces/user-manager';
+import { ChatDbService } from "../database/chat-db.service";
 
 @injectable()
 export class ChatService {
@@ -13,13 +13,13 @@ export class ChatService {
     private socket: io.Server;
 
     // for sending messages to specific channels
-    private channelMapUsersList: Map<number, IUser[]>;
+    private channelMapUsersList: Map<string, IUser[]>;
 
     // for saving conversations in db
     private usernameMapUserId: Map<string, number>;
 
-    public constructor(@inject(Types.DatabaseService) private db: DatabaseService) {
-        this.channelMapUsersList = new Map<number, IUser[]>();
+    public constructor(@inject(Types.ChatDbService) private db: ChatDbService) {
+        this.channelMapUsersList = new Map<string, IUser[]>();
         this.usernameMapUserId = new Map<string, number>();
     }
 
@@ -51,9 +51,9 @@ export class ChatService {
     }
 
     public removeUserFromChannelMap(username: string): void {
-        const newList = new Map<number, IUser[]>()
+        const newList = new Map<string, IUser[]>()
 
-        this.channelMapUsersList.forEach((list: IUser[], key: number) => {
+        this.channelMapUsersList.forEach((list: IUser[], key: string) => {
             const filteredList = list.filter(user => user.username != username);
             if (filteredList.length !== 0) {
                 newList.set(key, filteredList);
@@ -110,6 +110,28 @@ export class ChatService {
 
     private formatTime(time: number): string {
         return time > 9 ? time.toString() : `0${time}`;
+    }
+
+    public async getMessagesWithChannelId(id: string): Promise<void | IChannelMessageReq[]> {
+        const result: pg.QueryResult = await this.db.getMessagesWithChannelId(id);
+        const messages: IChannelMessageReq[] = result.rows.map((row: any) => (
+            {
+                username: row.out_username,
+                content:  row.out_content,
+                time:     row.out_times,
+            }
+        ));
+        return messages;
+    }
+
+    public async getChannelsWithAccountName(username: string): Promise<void | IChannelIds[]> {
+        const result: pg.QueryResult = await this.db.getChannelsWithAccountName(username);
+        const channels: IChannelIds[] = result.rows.map((row: any) => (
+            {
+                id: row.out_id,
+            }
+        ));
+        return channels;
     }
 
 
