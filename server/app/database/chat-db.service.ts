@@ -31,7 +31,7 @@ export class ChatDbService extends DatabaseService {
     }
 
     public async getChannelsWithAccountName(username: string): Promise<pg.QueryResult> {
-        return this.pool.query(`SELECT DISTINCT a.channel_id as out_id
+        return this.pool.query(`SELECT DISTINCT a.channel_id
                                 FROM log3900.account as acc, log3900.accountchannel as a
                                 WHERE acc.id = a.account_id
                                 AND acc.username = '${username}';`);
