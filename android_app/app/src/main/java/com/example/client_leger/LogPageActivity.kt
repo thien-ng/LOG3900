@@ -44,36 +44,17 @@ class LogPageActivity : AppCompatActivity() {
             register_button.isEnabled = true
             register_button.setOnClickListener {
 
-                when {
-                    register_editText_name.text.isBlank() -> {
-                        register_editText_name.error = "Enter a valid name"
-                        register_editText_name.requestFocus()
-                    }
-                    register_editText_password.text.isBlank() -> {
-                        register_editText_password.error = "Enter a valid password"
-                        register_editText_password.requestFocus()
-                    }
-                    register_editText_confirmPassword.text.isBlank() -> {
-                        register_editText_confirmPassword.error = "You need to confirm the password"
-                        register_editText_confirmPassword.requestFocus()
-                    }
-                    register_editText_confirmPassword.text.toString() != register_editText_password.text.toString() -> {
-                        register_editText_confirmPassword.error = "Password does not match"
-                        register_editText_confirmPassword.requestFocus()
-                    }
-                    else -> {
-                        closeKeyboard()
-                        register_button.isEnabled = false
-                        var body = JSONObject()
-                        body.accumulate("username", register_editText_name.text.toString().trim())
-                        body.accumulate(
-                            "password",
-                            register_editText_password.text.toString().trim()
-                        )
-                        controller.registerUser(this, this, body)
-                    }
+                if(validRegisterFields()) {
+                    closeKeyboard()
+                    register_button.isEnabled = false
+                    var body = JSONObject()
+                    body.accumulate("username", register_editText_name.text.toString().trim())
+                    body.accumulate(
+                        "password",
+                        register_editText_password.text.toString().trim()
+                    )
+                    controller.registerUser(this, this, body)
                 }
-
             }
         }
     }
@@ -105,4 +86,31 @@ class LogPageActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(this.currentFocus.windowToken, 0)
         }
     }
+
+    private fun validRegisterFields(): Boolean{
+        when {
+            register_editText_name.text.isBlank() -> {
+                register_editText_name.error = "Enter a valid name"
+                register_editText_name.requestFocus()
+                return false
+            }
+            register_editText_password.text.isBlank() -> {
+                register_editText_password.error = "Enter a valid password"
+                register_editText_password.requestFocus()
+                return false
+            }
+            register_editText_confirmPassword.text.isBlank() -> {
+                register_editText_confirmPassword.error = "You need to confirm the password"
+                register_editText_confirmPassword.requestFocus()
+                return false
+            }
+            register_editText_confirmPassword.text.toString() != register_editText_password.text.toString() -> {
+                register_editText_confirmPassword.error = "Password does not match"
+                register_editText_confirmPassword.requestFocus()
+                return false
+            }
+            else -> return true
+        }
+    }
+
 }
