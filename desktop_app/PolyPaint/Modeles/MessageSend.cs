@@ -9,10 +9,10 @@ namespace PolyPaint.Modeles
     class MessageSend
     {
         public string username   { get; set; }
-        public int    channel_id { get; set; }
+        public string channel_id { get; set; }
         public string content    { get; set; }
 
-        public MessageSend(string username, string content, int channel_id)
+        public MessageSend(string username, string content, string channel_id)
         {
             this.username = username;
             this.channel_id = channel_id; 
