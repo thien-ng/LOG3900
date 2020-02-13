@@ -1,14 +1,14 @@
 import { injectable, inject } from "inversify";
-import { DatabaseService } from "./database.service";
 import { IRegistration, IStatus, ILogin } from "../interfaces/communication";
 import { UserManagerService } from "./user-manager.service"; 
+import { AccountDbService } from "../database/account-db.service";
 import Types from '../types';
 
 @injectable()
 export class AccountService {
 
     public constructor(
-        @inject(Types.DatabaseService) private database: DatabaseService,
+        @inject(Types.AccountDbService) private database: AccountDbService,
         @inject(Types.UserManagerService) private userServ: UserManagerService) {}
 
     public async register(registration: IRegistration): Promise<IStatus> {

@@ -7,7 +7,7 @@ CREATE OR REPLACE FUNCTION LOG3900.registerAccount(in_username VARCHAR(20), in_p
             RAISE EXCEPTION 'Username exist already.';
        END IF;
        INSERT INTO LOG3900.Account VALUES(DEFAULT, in_username, in_password) RETURNING id INTO account_id;
-       INSERT INTO LOG3900.accountchannel VALUES(account_id, 1);
+       INSERT INTO LOG3900.accountchannel VALUES(account_id, 'general');
     END;
 $$LANGUAGE plpgsql;
 
@@ -22,7 +22,7 @@ CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_pass
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.getMessagesWithChannelId(in_id INTEGER)
+CREATE OR REPLACE FUNCTION LOG3900.getMessagesWithChannelId(in_id VARCHAR(20))
 RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8)) AS $$
     BEGIN
         RETURN QUERY
@@ -46,16 +46,16 @@ RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8))
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.createChannelWithAccountId(in_id INTEGER) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.createChannelWithAccountId(in_id VARCHAR(20)) RETURNS VOID AS $$
     DECLARE
-        channel_id INT;
+        channel_id VARCHAR(20);
     BEGIN
         INSERT INTO LOG3900.Channel VALUES(DEFAULT) RETURNING id INTO channel_id;
         INSERT INTO LOG3900.accountchannel VALUES(in_id, channel_id);
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id INT, in_account_id INT, in_content TEXT, in_ts VARCHAR(8)) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id VARCHAR(20), in_account_id INT, in_content TEXT, in_ts VARCHAR(8)) RETURNS VOID AS $$
     DECLARE
         last_id INT;
     BEGIN
