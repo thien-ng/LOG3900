@@ -25,9 +25,12 @@ class LogPageActivity : AppCompatActivity() {
         login_button.setOnClickListener {
             if (login_editText_name.text.isNotBlank() && login_editText_password.text.isNotBlank()) {
                 login_button.isEnabled = false
-                var body = JSONObject()
-                body.accumulate("username", login_editText_name.text.toString().trim())
-                body.accumulate("password", login_editText_password.text.toString().trim())
+
+                var body = JSONObject( mapOf(
+                    "username" to login_editText_name.text.toString().trim(),
+                    "password" to login_editText_password.text.toString().trim()
+                ))
+
                 controller.loginUser(this, this, body)
 
             } else {
@@ -47,12 +50,12 @@ class LogPageActivity : AppCompatActivity() {
                 if(validRegisterFields()) {
                     closeKeyboard()
                     register_button.isEnabled = false
-                    var body = JSONObject()
-                    body.accumulate("username", register_editText_name.text.toString().trim())
-                    body.accumulate(
-                        "password",
-                        register_editText_password.text.toString().trim()
-                    )
+
+                    var body = JSONObject( mapOf(
+                        "username" to register_editText_name.text.toString().trim(),
+                        "password" to register_editText_password.text.toString().trim()
+                    ))
+
                     controller.registerUser(this, this, body)
                 }
             }
