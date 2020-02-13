@@ -38,7 +38,7 @@ namespace PolyPaint.Modeles
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, 1);
+            MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, "general");
 
             var messageJson = JObject.FromObject(messageToSend);
             ServerService.instance.socket.Emit("chat", messageJson);

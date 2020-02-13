@@ -10,7 +10,7 @@ namespace PolyPaint.Modeles
     {
         public string time { get; set; }
 
-        public MessageReception(string username, string content, int channel_id, string time): base(username, content, channel_id)
+        public MessageReception(string username, string content, string channel_id, string time): base(username, content, channel_id)
         {
             this.time = time;
         }
