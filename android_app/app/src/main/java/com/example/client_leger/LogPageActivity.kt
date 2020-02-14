@@ -91,7 +91,7 @@ class LogPageActivity : AppCompatActivity() {
         if (resultCode === Activity.RESULT_OK) when (requestCode) {
             GALLERY_REQUEST_CODE -> {
                 val selectedImage: Uri = data?.data!!
-                register_pickAvatar.setImageBitmap(decodeUri(this,selectedImage, 150))
+                register_pickAvatar.setImageBitmap(decodeUri(this,selectedImage, 50))
             }
         }
 
