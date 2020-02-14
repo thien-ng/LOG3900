@@ -23,8 +23,12 @@ export class ChatController {
             res.json(await this.chatServ.getChannelsWithAccountName(req.params.username));
         });
 
-        this.router.get('/channels/join/:channel/:username', (req: Request, res: Response, next: NextFunction) => {
-            
+        this.router.put('/channels/join/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.joinChannel(req.params.username, req.params.channel));
+        });
+
+        this.router.delete('/channels/leave/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.leaveChannel(req.params.username, req.params.channel));
         });
 
 
