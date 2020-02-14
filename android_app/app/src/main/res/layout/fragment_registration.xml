@@ -9,7 +9,21 @@
         app:errorEnabled="true"
         tools:showIn="@layout/activity_logpage"
         tools:context=".LogPageActivity">
+    <ImageButton
+            android:layout_height="0dp"
+            android:layout_width="wrap_content"
+            android:scaleType="fitXY"
+            android:id="@+id/register_pickAvatar"
+            android:src="@drawable/default_avatar"
 
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            android:text="Pick avatar"
+
+            />
     <EditText
             android:id="@+id/register_editText_name"
             android:layout_width="0dp"
@@ -24,8 +38,9 @@
             android:inputType="textPersonName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/register_pickAvatar"
+            app:layout_constraintTop_toTopOf="@+id/register_pickAvatar"
+             />
 
 
     <EditText
