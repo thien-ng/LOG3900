@@ -12,3 +12,8 @@ export interface IStatus {
     status:  number;
     message: string;
 }
+
+export interface IInvitationChannel {
+    message: string,
+    channel: string,
+}

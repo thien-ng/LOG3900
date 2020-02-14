@@ -35,5 +35,9 @@ export class ChatController {
             res.json(await this.chatServ.leaveChannel(req.params.username, req.params.channel));
         });
 
+        this.router.post('/channels/invite', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.sendInviteToChannel(req.body.inviter, req.body.invitee, req.body.channel));
+        });
+
     }
 }

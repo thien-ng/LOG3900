@@ -6,7 +6,7 @@ import * as io from 'socket.io';
 import { IChannelIds, IReceptMes, IEmitMes, IChannelMessageReq } from "../interfaces/chat";
 import { IUserId } from '../interfaces/user-manager';
 import { ChatDbService } from "../database/chat-db.service";
-import { IStatus } from '../interfaces/communication';
+import { IStatus, IInvitationChannel } from '../interfaces/communication';
 
 @injectable()
 export class ChatService {
@@ -19,9 +19,12 @@ export class ChatService {
     // for saving conversations in db
     private usernameMapUserId: Map<string, number>;
 
+    private usernameMapSocketId: Map<string, string>;
+
     public constructor(@inject(Types.ChatDbService) private db: ChatDbService) {
         this.channelMapUsersList = new Map<string, IUser[]>();
         this.usernameMapUserId = new Map<string, number>();
+        this.usernameMapSocketId = new Map<string, string>();
     }
 
     public setSocket(socket: io.Server): void {
@@ -46,6 +49,7 @@ export class ChatService {
         });
     
         this.getUserId(name).then((id: number) => {this.usernameMapUserId.set(name, id)});
+        this.usernameMapSocketId.set(user.username, user.socketId);
     }
 
     public removeUserFromChannelMap(username: string): void {
@@ -59,6 +63,7 @@ export class ChatService {
         });
 
         this.channelMapUsersList = newList
+        this.usernameMapSocketId.delete(username);
     }
 
     private getUserId(username: string): Promise<number> {
@@ -132,10 +137,8 @@ export class ChatService {
 
     public async joinChannel(username: string, channel: string): Promise<IStatus> {
         const subbedChannels = (await this.db.getChannelsWithAccountName(username)).rows.map((row: any) => ({id: row.channel_id}));
-        let result: IStatus = {
-            status: 200,
-            message: `Successfully joined ${channel}`,
-        };
+        let result = this.buildReturnStatus(`Successfully joined ${channel}`);
+
         try {
             if (subbedChannels.some(chan => chan.id === channel))
                 throw new Error(`${username} is already subscribed to ${channel}.`);
@@ -151,10 +154,8 @@ export class ChatService {
 
     public async leaveChannel(username: string, channel: string): Promise<IStatus> {
         const subbedChannels = (await this.db.getChannelsWithAccountName(username)).rows.map((row: any) => ({id: row.channel_id}));
-        let result: IStatus = {
-            status: 200,
-            message: `Successfully left ${channel}`,
-        };
+        let result = this.buildReturnStatus(`Successfully left ${channel}`);
+    
         try {
             if (!subbedChannels.some(chan => chan.id === channel))
                 throw new Error(`${username} is not subscribed to ${channel}.`);
@@ -172,6 +173,38 @@ export class ChatService {
 
     public async getAllExistingChannels(): Promise<IChannelIds[]> {
         return (await this.db.getAllExistingChannels()).rows.map((row: any) => ({id: row.id}));
+    }
+
+    public async sendInviteToChannel(inviter: string, invitee: string, channel: string): Promise<IStatus> {
+
+        let result = this.buildReturnStatus("Invitation sent successfully");
+        const socketId = this.usernameMapSocketId.get(invitee);
+
+        try {
+            if (!socketId) {
+                throw new Error(`cannot find ${invitee}'s socketID`);
+            }
+            const joinResult = await this.joinChannel(invitee, channel);
+
+            if (joinResult.status === 400) {
+                result = joinResult
+            } else {
+                this.socket.to(socketId).emit("invitation", {
+                    message: `${inviter} has invited you to channel ${channel}.`,
+                    channel: channel,
+                });
+            }
+            
+        } catch(e) {
+            result.status = 400;
+            result.message = e.message;
+        }
+
+        return result;
+    }
+
+    private buildReturnStatus(message: string): IStatus {
+        return {status: 200, message: message}
     }
 
 }
