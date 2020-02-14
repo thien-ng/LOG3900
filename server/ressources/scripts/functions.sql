@@ -46,9 +46,10 @@ RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8))
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_id INTEGER, in_channel_id VARCHAR(20)) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS VOID AS $$
     DECLARE
         channel_id VARCHAR(20);
+        account_id INTEGER;
     BEGIN
         SELECT DISTINCT acc.channel_id
         FROM log3900.accountChannel as acc
@@ -56,20 +57,26 @@ CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_id INTEGER, in_channel
         AND acc.channel_id = in_channel_id
         INTO channel_id;
 
+        SELECT id FROM log3900.account WHERE username = in_account_un INTO account_id;
+
         IF channel_id IS NOT NULL THEN
-            INSERT INTO LOG3900.accountchannel VALUES(in_account_id, channel_id);
+            INSERT INTO LOG3900.accountchannel VALUES(account_id, channel_id);
         ELSE
             INSERT INTO log3900.channel VALUES(in_channel_id, DEFAULT);
-            INSERT INTO LOG3900.accountchannel VALUES(in_account_id, in_channel_id);
+            INSERT INTO LOG3900.accountchannel VALUES(account_id, in_channel_id);
         END IF;
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_id INTEGER, in_channel_id VARCHAR(20)) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS VOID AS $$
+    DECLARE
+        delete_id INTEGER;
     BEGIN
-        DELETE FROM LOG3900.accountChannel
-        WHERE account_id = in_account_id
-        AND channel_id = in_channel_id;
+        SELECT account.id FROM log3900.account WHERE username = in_account_un INTO delete_id;
+
+        DELETE FROM LOG3900.accountChannel as acc
+        WHERE acc.account_id = delete_id
+        AND acc.channel_id = in_channel_id;
     END;
 $$LANGUAGE plpgsql;
 

@@ -133,18 +133,15 @@ export class ChatService {
 
     public async joinChannel(username: string, channel: string): Promise<IStatus> {
         const subbedChannels = (await this.db.getChannelsWithAccountName(username)).rows.map((row: any) => ({id: row.channel_id}));
-        const account_id = this.usernameMapUserId.get(username);
         let result: IStatus = {
             status: 200,
             message: `Successfully joined ${channel}`,
         };
         try {
-            if (!account_id)
-                throw new Error(`${username} not found in usernameMapUserId`);
             if (subbedChannels.some(chan => chan.id === channel))
                 throw new Error(`${username} is already subscribed to ${channel}.`);
 
-            await this.db.joinChannel(account_id, channel);
+            await this.db.joinChannel(username, channel);
         } catch(e) {
             result.status = 400
             result.message = e.message;
@@ -155,20 +152,17 @@ export class ChatService {
 
     public async leaveChannel(username: string, channel: string): Promise<IStatus> {
         const subbedChannels = (await this.db.getChannelsWithAccountName(username)).rows.map((row: any) => ({id: row.channel_id}));
-        const account_id = this.usernameMapUserId.get(username);
         let result: IStatus = {
             status: 200,
             message: `Successfully left ${channel}`,
         };
         try {
-            if (!account_id)
-                throw new Error(`${username} not found in usernameMapUserId`);
             if (!subbedChannels.some(chan => chan.id === channel))
                 throw new Error(`${username} is not subscribed to ${channel}.`);
             if (channel === "general")
                 throw new Error(`cannot leave default channel: ${channel}.`);
     
-            await this.db.leaveChannel(account_id, channel);
+            await this.db.leaveChannel(username, channel);
         } catch(e) {
             result.status = 400
             result.message = e.message;
