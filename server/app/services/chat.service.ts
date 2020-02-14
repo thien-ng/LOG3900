@@ -28,26 +28,23 @@ export class ChatService {
         this.socket = socket;
     }
 
-    public addUserToChannelMap(user: IUser): void {
+    public async addUserToChannelMap(user: IUser): Promise<void> {
         const name: string = user.username;
-        
-        this.db.getChannelsWithAccountName(name).then((result: pg.QueryResult) => {
-            const channelList: IChannelIds[] = result.rows.map((row: any) => ({id: row.channel_id}));
-            
-            channelList.forEach((chan: IChannelIds) => {
-                let list: IUser[] | undefined = this.channelMapUsersList.get(chan.id);
-                
-                if (list) {
-                    list.push(user);
-                } else {
-                    list = [];
-                    list.push(user);
-                }
-                
-                this.channelMapUsersList.set(chan.id, list);              
-            });
-        });
 
+        const channelList: IChannelIds[] = (await this.db.getChannelsWithAccountName(name)).rows.map((row: any) => ({id: row.channel_id}));
+        channelList.forEach((chan: IChannelIds) => {
+            let list: IUser[] | undefined = this.channelMapUsersList.get(chan.id);
+            
+            if (list) {
+                list.push(user);
+            } else {
+                list = [];
+                list.push(user);
+            }
+            
+            this.channelMapUsersList.set(chan.id, list);              
+        });
+    
         this.getUserId(name).then((id: number) => {this.usernameMapUserId.set(name, id)});
     }
 
