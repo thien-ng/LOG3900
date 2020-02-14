@@ -18,6 +18,10 @@ export class ChatController {
         this.router.get('/messages/:id', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.chatServ.getMessagesWithChannelId(req.params.id));
         });
+        
+        this.router.get('/channels/all', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.getAllExistingChannels());
+        });
 
         this.router.get('/channels/:username', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.chatServ.getChannelsWithAccountName(req.params.username));
@@ -30,7 +34,6 @@ export class ChatController {
         this.router.delete('/channels/leave/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.chatServ.leaveChannel(req.params.username, req.params.channel));
         });
-
 
     }
 }

@@ -170,5 +170,8 @@ export class ChatService {
         return result;
     }
 
+    public async getAllExistingChannels(): Promise<IChannelIds[]> {
+        return (await this.db.getAllExistingChannels()).rows.map((row: any) => ({id: row.id}));
+    }
 
 }
