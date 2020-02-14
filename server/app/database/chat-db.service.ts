@@ -36,4 +36,20 @@ export class ChatDbService extends DatabaseService {
                                 WHERE acc.id = a.account_id
                                 AND acc.username = '${username}';`);
     }
+
+    public async getAllExistingChannels(): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT DISTINCT id FROM log3900.Channel;`);
+    }
+
+    public async joinChannel(account_id: string, channel: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.joinChannel(
+                                    CAST('${account_id}' AS VARCHAR),
+                                    CAST('${channel}'    AS VARCHAR));`);
+    }
+    public async leaveChannel(account_id: string, channel: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.leaveChannel(
+                                    CAST('${account_id}' AS VARCHAR),
+                                    CAST('${channel}'    AS VARCHAR));`);
+    }
+
 } 
