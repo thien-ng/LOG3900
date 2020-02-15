@@ -1,6 +1,5 @@
 ﻿using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using PolyPaint.VueModeles.Chat;
 using Quobject.SocketIoClientDotNet.Client;
 using System;
 using System.Collections.Generic;

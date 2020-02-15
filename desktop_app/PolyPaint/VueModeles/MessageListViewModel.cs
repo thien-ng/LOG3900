@@ -6,7 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace PolyPaint.VueModeles.Chat
+namespace PolyPaint.VueModeles
 {
     public class MessageListViewModel : BaseViewModel, IPageViewModel
     {
