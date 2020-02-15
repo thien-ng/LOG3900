@@ -35,7 +35,7 @@ class SocketIO(){
     fun sendMessage(textInput: EditText, username: String){
         val obj = JSONObject()
         obj.put("username", username)
-        obj.put("channel_id", 1)
+        obj.put("channel_id", "general")
         obj.put("content", textInput.text.toString())
 
         textInput.text.clear()

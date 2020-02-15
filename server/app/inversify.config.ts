@@ -4,12 +4,14 @@ import { Server } from './server';
 import { DateController } from './controllers/date.controller';
 import { AccountController } from './controllers/account.controller';
 import { DateService } from './services/date.service';
-import { DatabaseService } from './services/database.service';
 import { AccountService } from './services/account.service';
 import { WebsocketService } from './services/websocket.service';
 import { ChatService } from './services/chat.service';
 import { UserManagerService } from './services/user-manager.service';
 import { ChatController } from './controllers/chat.controller';
+import { AccountDbService } from './database/account-db.service';
+import { ChatDbService } from './database/chat-db.service';
+import { DatabaseService } from './database/database';
 import Types from './types';
 
 const container: Container = new Container();
@@ -25,8 +27,11 @@ container.bind(Types.DateService).to(DateService);
 container.bind(Types.AccountService).to(AccountService);
 container.bind(Types.WebsocketService).to(WebsocketService);
 
+
+container.bind(Types.ChatDbService).to(ChatDbService).inSingletonScope();
+container.bind(Types.AccountDbService).to(AccountDbService).inSingletonScope();
 container.bind(Types.ChatService).to(ChatService).inSingletonScope();
-container.bind(Types.DatabaseService).to(DatabaseService).inSingletonScope();
 container.bind(Types.UserManagerService).to(UserManagerService).inSingletonScope();
+container.bind(Types.DatabaseService).to(DatabaseService).inRequestScope();
 
 export { container };

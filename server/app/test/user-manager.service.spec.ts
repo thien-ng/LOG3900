@@ -21,7 +21,7 @@ describe("UserManagementService", () => {
 
     it("Should add and delete user succesfully", () => {
 
-        service.addUser({username: "username", socketId: "id"});
+        service.addUser("username");
 
         chai.expect(service["users"].length).to.be.equal(1);
 

@@ -6,6 +6,8 @@ import com.android.volley.AuthFailureError
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONObject
 
 class ConnexionController {
@@ -26,6 +28,8 @@ class ConnexionController {
                 ).show()
                 if(response["status"].toString().toInt() == 200)
                     activity.connect(body.get("username").toString())
+                else
+                    activity.login_button.isEnabled = true
             },
             Response.ErrorListener {
                 Toast.makeText(
@@ -33,6 +37,7 @@ class ConnexionController {
                     "Something went wrong...",
                     Toast.LENGTH_SHORT
                 ).show()
+                activity.login_button.isEnabled = true
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"
@@ -42,7 +47,6 @@ class ConnexionController {
             override fun getBody(): ByteArray {
                 return body.toString().toByteArray()
             }
-
         }
         mRequestQueue!!.add(mStringRequest)
 
@@ -60,9 +64,10 @@ class ConnexionController {
                     response["message"].toString(),
                     Toast.LENGTH_SHORT
                 ).show()
-                if(response["status"].toString().toInt() == 200){
+                if(response["status"].toString().toInt() == 200)
                     activity.connect(body.get("username").toString())
-                }
+                else
+                    activity.register_button.isEnabled = true
             },
             Response.ErrorListener {
                 Toast.makeText(
@@ -70,6 +75,7 @@ class ConnexionController {
                     "Something went wrong...",
                     Toast.LENGTH_SHORT
                 ).show()
+                activity.register_button.isEnabled = true
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"

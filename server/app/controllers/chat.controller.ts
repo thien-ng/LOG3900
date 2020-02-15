@@ -1,16 +1,14 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
-import { DatabaseService } from '../services/database.service';
 import Types from '../types';
-import * as pg from 'pg';
-import { IChannelMessageReq } from '../interfaces/chat';
+import { ChatService } from '../services/chat.service';
 
 
 @injectable()
 export class ChatController {
     public router: Router;
 
-    public constructor(@inject(Types.DatabaseService) private db: DatabaseService) {
+    public constructor(@inject(Types.ChatService) private chatServ: ChatService) {
         this.configureRouter();
     }
 
@@ -18,20 +16,23 @@ export class ChatController {
         this.router = Router();
 
         this.router.get('/messages/:id', async (req: Request, res: Response, next: NextFunction) => {
-            this.db.getMessagesWithChannelId(Number(req.params.id)).then((result: pg.QueryResult) => {
-                
-                const messages: IChannelMessageReq[] = result.rows.map((row: any) => (
-                    {
-                        username: row.out_username,
-                        content:  row.out_content,
-                        time:     row.out_times,
-                    }
-                ));
-            
-                res.json(messages);
-            }).catch((e: Error) => {
-                console.error(e.stack);
-            });
+            res.json(await this.chatServ.getMessagesWithChannelId(req.params.id));
+        });
+        
+        this.router.get('/channels/all', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.getAllExistingChannels());
+        });
+
+        this.router.get('/channels/:username', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.getChannelsWithAccountName(req.params.username));
+        });
+
+        this.router.put('/channels/join/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.joinChannel(req.params.username, req.params.channel));
+        });
+
+        this.router.delete('/channels/leave/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.leaveChannel(req.params.username, req.params.channel));
         });
 
     }

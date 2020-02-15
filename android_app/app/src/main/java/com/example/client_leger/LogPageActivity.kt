@@ -1,11 +1,13 @@
 package com.example.client_leger
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 
 import android.content.Intent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_logpage.*
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -17,15 +19,21 @@ class LogPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_registration)
+        setContentView(R.layout.fragment_login)
         setSupportActionBar(toolbar)
-        register_button.setOnClickListener {
-            if(register_editText_name.text.isNotBlank() && register_editText_password.text.isNotBlank()) {
-                var body = JSONObject()
-                body.accumulate("username", register_editText_name.text.toString().trim())
-                body.accumulate("password", register_editText_password.text.toString().trim())
-                controller.registerUser(this, this, body)
-            }else {
+        login_button.isEnabled = true
+        login_button.setOnClickListener {
+            if (login_editText_name.text.isNotBlank() && login_editText_password.text.isNotBlank()) {
+                login_button.isEnabled = false
+
+                var body = JSONObject( mapOf(
+                    "username" to login_editText_name.text.toString().trim(),
+                    "password" to login_editText_password.text.toString().trim()
+                ))
+
+                controller.loginUser(this, this, body)
+
+            } else {
                 Toast.makeText(
                     applicationContext,
                     "Veuillez remplir tout les champs",
@@ -34,21 +42,21 @@ class LogPageActivity : AppCompatActivity() {
             }
         }
 
-        textView_alreadyHaveAccount.setOnClickListener {
-            setContentView(R.layout.fragment_login)
+        textView_dontHaveAccount.setOnClickListener {
+            setContentView(R.layout.fragment_registration)
+            register_button.isEnabled = true
+            register_button.setOnClickListener {
 
-            login_button.setOnClickListener {
-                if(login_editText_name.text.isNotBlank() && login_editText_password.text.isNotBlank()) {
-                    var body = JSONObject()
-                    body.accumulate("username", login_editText_name.text.toString().trim())
-                    body.accumulate("password", login_editText_password.text.toString().trim())
-                    controller.loginUser(this, this, body)
-                }else {
-                    Toast.makeText(
-                        applicationContext,
-                        "Veuillez remplir tout les champs",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if(validRegisterFields()) {
+                    closeKeyboard()
+                    register_button.isEnabled = false
+
+                    var body = JSONObject( mapOf(
+                        "username" to register_editText_name.text.toString().trim(),
+                        "password" to register_editText_password.text.toString().trim()
+                    ))
+
+                    controller.registerUser(this, this, body)
                 }
             }
         }
@@ -70,10 +78,42 @@ class LogPageActivity : AppCompatActivity() {
         }
     }
 
-    fun connect(username: String){
+    fun connect(username: String) {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
     }
-    
+    private fun closeKeyboard(){
+        if ( this.currentFocus != null){
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(this.currentFocus.windowToken, 0)
+        }
+    }
+
+    private fun validRegisterFields(): Boolean{
+        when {
+            register_editText_name.text.isBlank() -> {
+                register_editText_name.error = "Enter a valid name"
+                register_editText_name.requestFocus()
+                return false
+            }
+            register_editText_password.text.isBlank() -> {
+                register_editText_password.error = "Enter a valid password"
+                register_editText_password.requestFocus()
+                return false
+            }
+            register_editText_confirmPassword.text.isBlank() -> {
+                register_editText_confirmPassword.error = "You need to confirm the password"
+                register_editText_confirmPassword.requestFocus()
+                return false
+            }
+            register_editText_confirmPassword.text.toString() != register_editText_password.text.toString() -> {
+                register_editText_confirmPassword.error = "Password doesn't match"
+                register_editText_confirmPassword.requestFocus()
+                return false
+            }
+            else -> return true
+        }
+    }
+
 }

@@ -6,6 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:errorEnabled="true"
         tools:showIn="@layout/activity_logpage"
         tools:context=".LogPageActivity">
 
@@ -26,16 +27,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-<!--    <EditText-->
-<!--            android:id="@+id/register_editText_email"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:ems="10"-->
-<!--            android:hint="Email adress"-->
-<!--            android:inputType="textEmailAddress"-->
-<!--            app:layout_constraintEnd_toEndOf="@+id/register_editText_name"-->
-<!--            app:layout_constraintStart_toStartOf="@+id/register_editText_name"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/register_editText_name" />-->
 
     <EditText
             android:id="@+id/register_editText_password"
@@ -50,23 +41,26 @@
             app:layout_constraintTop_toBottomOf="@+id/register_editText_name"
             />
 
+    <EditText
+        android:id="@+id/register_editText_confirmPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Confirm Password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="@+id/register_editText_password"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/register_editText_password"
+        app:layout_constraintTop_toBottomOf="@+id/register_editText_password"
+            />
+
     <Button
             android:id="@+id/register_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Register"
-            app:layout_constraintEnd_toEndOf="@+id/register_editText_password"
-            app:layout_constraintStart_toStartOf="@+id/register_editText_password"
-            app:layout_constraintTop_toBottomOf="@+id/register_editText_password" />
+            app:layout_constraintEnd_toEndOf="@+id/register_editText_confirmPassword"
+            app:layout_constraintStart_toStartOf="@+id/register_editText_confirmPassword"
+            app:layout_constraintTop_toBottomOf="@+id/register_editText_confirmPassword" />
 
-    <TextView
-            android:id="@+id/textView_alreadyHaveAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Already have an account?"
-            app:layout_constraintEnd_toEndOf="@+id/register_button"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="@+id/register_button"
-            app:layout_constraintTop_toBottomOf="@+id/register_button" />
 </android.support.constraint.ConstraintLayout>

@@ -7,9 +7,12 @@ export default {
     ChatController:     Symbol('ChatController'),
 
     DateService:        Symbol('DateService'),
-    DatabaseService:    Symbol('DatabaseService'),
     AccountService:     Symbol('AccountService'),
     WebsocketService:   Symbol('WebsocketService'),
     ChatService:        Symbol('ChatService'),
-    UserManagerService: Symbol('UserManagerService',)
+    UserManagerService: Symbol('UserManagerService',),
+
+    AccountDbService:   Symbol('AccountDbService'),
+    ChatDbService:      Symbol('ChatDbService'),
+    DatabaseService:    Symbol('DatabaseService'),
 };
