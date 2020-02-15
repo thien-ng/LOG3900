@@ -192,7 +192,7 @@ export class ChatService {
                 this.socket.to(socketId).emit("invitation", {
                     message: `${inviter} has invited you to channel ${channel}.`,
                     channel: channel,
-                });
+                } as IInvitationChannel);
             }
             
         } catch(e) {

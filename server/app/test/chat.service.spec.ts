@@ -4,6 +4,7 @@ import Types from '../types';
 import { container } from "../inversify.config";
 import { ChatService } from "../services/chat.service";
 import { IUser } from "../interfaces/user-manager";
+import * as io from 'socket.io';
 
 chai.use(spies);
 
@@ -81,9 +82,24 @@ describe("ChatService", () => {
         //then
         chai.expect(time.length).to.be.equal(8);
     });
+
+    it("Should send to invitee invite notification", async () => {
+        //given
+        service["usernameMapSocketId"].set("invitee", "socketId")
+        chai.spy.on(service, "joinChannel", () => { return {status: 200, message:"success"}});
+        const spy = chai.spy.on(service["socket"], "to");
+
+        //when
+        const result = await service.sendInviteToChannel("inviter", "invitee", "channel");
+
+        //then
+        chai.expect(result.message).to.be.equal("Invitation sent successfully");
+        chai.expect(spy).to.have.been.called();
+    });
+
 });
 
-describe("ChatService", () => {
+describe("ChatService, Join/Leave", () => {
 
     let service: ChatService;
 
