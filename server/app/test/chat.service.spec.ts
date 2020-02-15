@@ -4,7 +4,6 @@ import Types from '../types';
 import { container } from "../inversify.config";
 import { ChatService } from "../services/chat.service";
 import { IUser } from "../interfaces/user-manager";
-import * as io from 'socket.io';
 
 chai.use(spies);
 
@@ -83,18 +82,27 @@ describe("ChatService", () => {
         chai.expect(time.length).to.be.equal(8);
     });
 
-    it("Should send to invitee invite notification", async () => {
+    it("Should return error message when joining message fails", async () => {
         //given
         service["usernameMapSocketId"].set("invitee", "socketId")
-        chai.spy.on(service, "joinChannel", () => { return {status: 200, message:"success"}});
-        const spy = chai.spy.on(service["socket"], "to");
+        chai.spy.on(service, "joinChannel", () => { return {status: 400, message:"error while joining"}});
 
         //when
         const result = await service.sendInviteToChannel("inviter", "invitee", "channel");
 
         //then
-        chai.expect(result.message).to.be.equal("Invitation sent successfully");
-        chai.expect(spy).to.have.been.called();
+        chai.expect(result.status).to.be.equal(400);
+        chai.expect(result.message).to.be.equal("error while joining");
+    });
+
+    it("Should return error message when socketID not found", async () => {
+        //given
+        //when
+        const result = await service.sendInviteToChannel("inviter", "invitee", "channel");
+
+        //then
+        chai.expect(result.status).to.be.equal(400);
+        chai.expect(result.message).to.be.equal("cannot find invitee's socketID");
     });
 
 });
