@@ -1,0 +1,24 @@
+﻿<Page x:Class="PolyPaint.Vues.Home"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PolyPaint.Vues"
+      xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles.Chat"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="1000"
+      Title="Home">
+    <Page.Resources>
+        <localViewModel:MessageListViewModel x:Key="MessageListViewModel"/>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+        </Grid.RowDefinitions>
+        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" x:Name="chatHome" ></local:Chat>
+        <Button Content="cick me" Grid.Column="1" VerticalAlignment="Top" Click="Button_Click"></Button>
+    </Grid>
+</Page>

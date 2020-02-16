@@ -74,7 +74,7 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.username = _username;
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
 
-                                Mediator.Notify("GoToChatScreen", "");
+                                Mediator.Notify("GoToHomeScreen", "");
                             }
                             else
                             {
