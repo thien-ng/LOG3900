@@ -13,12 +13,12 @@
     </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
-        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" x:Name="chatHome" ></local:Chat>
+        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" Width="800" x:Name="chatHome" ></local:Chat>
         <Button Content="cick me" Grid.Column="1" VerticalAlignment="Top" Click="Button_Click"></Button>
     </Grid>
 </Page>

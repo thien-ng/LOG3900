@@ -38,7 +38,7 @@ namespace PolyPaint.Vues
             window.Content = chatView;
             window.DataContext = chat;
             window.Show();
-            chatHome.Visibility = Visibility.Hidden;
+            chatHome.Visibility = Visibility.Collapsed;
 
             }
         }
