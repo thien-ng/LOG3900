@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PolyPaint;
+using System.ComponentModel;
 
 namespace PolyPaint.Vues
 {
@@ -22,24 +23,47 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class Home : Page
     {
-        private int _instanceCounter;
+        bool _isOpen;
+        Chat _chatView;
+        Window _window;
+        MessageListViewModel _chat;
         public Home()
         {
             InitializeComponent();
-            _instanceCounter = 0;
+            if(App.Current.Windows.Count <= 2)
+            {
+                chatHome.Visibility = Visibility.Visible;
+            }
+            _isOpen = false;
+            _chat = new MessageListViewModel();
+            _chatView = new Chat();
+            _window = new Window();
+            _window.Content = _chatView;
+            _window.DataContext = _chat;
+            _window.Closing += new CancelEventHandler(this.onWindowClosing);
+        }
+        private void onWindowClosing(Object sender, CancelEventArgs e)
+        {
+            e.Cancel =true;
+            _window.Hide();
+            chatHome.Visibility = Visibility.Visible;
+            _isOpen = false;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(App.Current.Windows.Count <= 2) { 
-            MessageListViewModel chat = new MessageListViewModel();
-            Chat chatView = new Chat();
-            Window window = new Window();
-            window.Content = chatView;
-            window.DataContext = chat;
-            window.Show();
-            chatHome.Visibility = Visibility.Collapsed;
-
+            
+            
+            if(!_isOpen) { 
+                _window.Show();
+                chatHome.Visibility = Visibility.Collapsed;
+                _isOpen = true;
+            }
+            else
+            {
+                _window.Hide();
+                chatHome.Visibility = Visibility.Visible;
+                _isOpen = false;
             }
         }
     }
