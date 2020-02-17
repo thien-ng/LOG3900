@@ -1,4 +1,5 @@
-﻿using PolyPaint.Utilitaires;
+﻿using PolyPaint.Services;
+using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,22 @@ namespace PolyPaint.VueModeles
                     Mediator.Notify("GoToLoginScreen", "");
                 }));
             }
+        }
+        private ICommand _disconnectCommand;
+        public ICommand DisconnectCommand
+        {
+            get
+            {
+                return _disconnectCommand ?? (_disconnectCommand = new RelayCommand(x => Disconnect()));
+            }
+        }
+
+        private void Disconnect()
+        {
+            ServerService.instance.socket.Emit("logout");
+            ServerService.instance.username = "";
+            Mediator.Notify("GoToLoginScreen", "");
+            //TODO Channel ID 1 temp
         }
     }
 }

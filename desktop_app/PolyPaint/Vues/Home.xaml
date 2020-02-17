@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:local="clr-namespace:PolyPaint.Vues"
       xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles.Chat"
       mc:Ignorable="d" 
@@ -19,6 +20,9 @@
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
         <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" Width="800" x:Name="chatHome" ></local:Chat>
-        <Button Content="cick me" Grid.Column="1" VerticalAlignment="Top" Click="Button_Click"></Button>
+        <Button Width="50" Grid.Column="1" VerticalAlignment="Top" Click="Button_Click">
+            <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Button>
+        <Button Content="Disconnect" Margin="0,7,15,0" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Command="{Binding DisconnectCommand}"/>
     </Grid>
 </Page>

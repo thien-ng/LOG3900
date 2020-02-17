@@ -35,8 +35,6 @@
             </Button>
         </StackPanel>
 
-        <Button Content="Disconnect" Margin="0,7,15,0" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Command="{Binding DisconnectCommand}"/>
-
         <Grid Grid.Row="1" Grid.Column="1">
             <chat:MessageList/>
         </Grid>

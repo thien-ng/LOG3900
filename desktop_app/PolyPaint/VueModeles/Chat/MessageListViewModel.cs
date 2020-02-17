@@ -22,23 +22,6 @@ namespace PolyPaint.VueModeles.Chat
 
         ////// vvvvTemporaire pour le prototype vvvv//////
 
-        private ICommand _disconnectCommand;
-        public ICommand DisconnectCommand
-        {
-            get
-            {
-                return _disconnectCommand ?? (_disconnectCommand = new RelayCommand(x => Disconnect()));
-            }
-        }
-
-        private void Disconnect()
-        {
-            ServerService.instance.socket.Emit("logout");
-            ServerService.instance.username = "";
-            Mediator.Notify("GoToLoginScreen", "");
-            //TODO Channel ID 1 temp
-            _channel = new MessageChannel(1);
-        }
 
         //////^^^^ Temporaire pour le prototype ^^^^//////
 
