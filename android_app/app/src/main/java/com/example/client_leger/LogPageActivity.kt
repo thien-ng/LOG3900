@@ -8,6 +8,7 @@ import android.view.MenuItem
 import com.example.client_leger.Fragments.LoginFragment
 import kotlinx.android.synthetic.main.activity_logpage.*
 
+
 class LogPageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +34,5 @@ class LogPageActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 
 }
