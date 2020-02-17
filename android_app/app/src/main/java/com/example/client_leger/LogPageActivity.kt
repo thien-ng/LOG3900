@@ -9,7 +9,6 @@ import com.example.client_leger.Fragments.LoginFragment
 import kotlinx.android.synthetic.main.activity_logpage.*
 
 class LogPageActivity : AppCompatActivity() {
-    private var controller = ConnexionController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,7 +16,6 @@ class LogPageActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         supportFragmentManager.beginTransaction().replace(R.id.container_view, LoginFragment()).commit()
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
