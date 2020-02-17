@@ -1,11 +1,13 @@
 package com.example.client_leger.Fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
@@ -20,21 +22,19 @@ class RegisterFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_registration, container, false)
 
+        v.register_button.isEnabled = true
         v.register_button.setOnClickListener {
-            v.register_button.isEnabled = true
-            v.register_button.setOnClickListener {
 
-                if(validRegisterFields()) {
-                    closeKeyboard()
-                    v.register_button.isEnabled = false
+            if(validRegisterFields()) {
+                closeKeyboard()
+                v.register_button.isEnabled = false
 
-                    var body = JSONObject( mapOf(
-                        "username" to v.register_editText_name.text.toString().trim(),
-                        "password" to v.register_editText_password.text.toString().trim()
-                    ))
+                var body = JSONObject( mapOf(
+                    "username" to v.register_editText_name.text.toString().trim(),
+                    "password" to v.register_editText_password.text.toString().trim()
+                ))
 
-                    controller.registerUser(this, activity!!.applicationContext, body)
-                }
+                controller.registerUser(this, activity!!.applicationContext, body)
             }
         }
 
@@ -49,10 +49,10 @@ class RegisterFragment: Fragment() {
 
 
     private fun closeKeyboard(){
-//        if ( this.currentFocus != null){
-//            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//            imm.hideSoftInputFromWindow(this.currentFocus.windowToken, 0)
-//        }
+        if ( activity!!.currentFocus != null){
+            val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(activity!!.currentFocus.windowToken, 0)
+        }
     }
 
     private fun validRegisterFields(): Boolean{

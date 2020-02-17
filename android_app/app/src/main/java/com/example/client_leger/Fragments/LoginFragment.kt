@@ -1,19 +1,19 @@
 package com.example.client_leger.Fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
-import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_login.view.*
-import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONObject
 
 class LoginFragment : Fragment(), FragmentChangeListener {
@@ -26,6 +26,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
         v.login_button.isEnabled = true
         v.login_button.setOnClickListener {
             if (v.login_editText_name.text.isNotBlank() && v.login_editText_password.text.isNotBlank()) {
+                closeKeyboard()
                 v.login_button.isEnabled = false
 
                 var body = JSONObject( mapOf(
@@ -50,6 +51,14 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
         return v
     }
+
+    private fun closeKeyboard(){
+        if ( activity!!.currentFocus != null){
+            val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(activity!!.currentFocus.windowToken, 0)
+        }
+    }
+
 
     override fun replaceFragment(fragment: Fragment) {
          fragmentManager!!.beginTransaction().replace(R.id.container_view, fragment).addToBackStack(fragment.toString()).commit()
