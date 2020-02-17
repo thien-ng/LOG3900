@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import com.example.client_leger.ConnexionController
+import com.example.client_leger.Constants
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
 import kotlinx.android.synthetic.main.fragment_registration.*
@@ -23,7 +24,6 @@ import java.io.FileNotFoundException
 class RegisterFragment: Fragment() {
 
     private var controller = ConnexionController()
-    var GALLERY_REQUEST_CODE = 1
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_registration, container, false)
 
@@ -66,7 +66,7 @@ class RegisterFragment: Fragment() {
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode === Activity.RESULT_OK) when (requestCode) {
-            GALLERY_REQUEST_CODE -> {
+            Constants.GALLERY_REQUEST_CODE -> {
                 val selectedImage: Uri = data?.data!!
                 register_pickAvatar.setImageBitmap(this.context?.let { decodeUri(it,selectedImage, 50) })
             }
@@ -102,7 +102,7 @@ class RegisterFragment: Fragment() {
         intent.type = "image/*"
         val mimeTypes = arrayOf("image/jpeg", "image/png")
         intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes)
-        startActivityForResult(intent,GALLERY_REQUEST_CODE)
+        startActivityForResult(intent, Constants.GALLERY_REQUEST_CODE)
     }
 
     private fun validRegisterFields(): Boolean{
