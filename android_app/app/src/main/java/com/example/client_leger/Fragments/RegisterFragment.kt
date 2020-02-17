@@ -29,7 +29,7 @@ class RegisterFragment: Fragment() {
 
         v.register_button.isEnabled = true
 
-        register_pickAvatar.setOnClickListener{
+        v.register_pickAvatar.setOnClickListener{
             pickFromGallery()
         }
 
