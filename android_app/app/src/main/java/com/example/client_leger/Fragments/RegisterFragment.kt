@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_registration.view.*
 import org.json.JSONObject
 import java.io.FileNotFoundException
 
-class RegisterFragment: Fragment() {
+class RegisterFragment : Fragment() {
 
     private var controller = ConnexionController()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -29,20 +29,22 @@ class RegisterFragment: Fragment() {
 
         v.register_button.isEnabled = true
 
-        v.register_pickAvatar.setOnClickListener{
+        v.register_pickAvatar.setOnClickListener {
             pickFromGallery()
         }
 
         v.register_button.setOnClickListener {
 
-            if(validRegisterFields()) {
+            if (validRegisterFields()) {
                 closeKeyboard()
                 v.register_button.isEnabled = false
 
-                var body = JSONObject( mapOf(
-                    "username" to v.register_editText_name.text.toString().trim(),
-                    "password" to v.register_editText_password.text.toString().trim()
-                ))
+                var body = JSONObject(
+                    mapOf(
+                        "username" to v.register_editText_name.text.toString().trim(),
+                        "password" to v.register_editText_password.text.toString().trim()
+                    )
+                )
 
                 controller.registerUser(this, activity!!.applicationContext, body)
             }
@@ -58,28 +60,25 @@ class RegisterFragment: Fragment() {
     }
 
 
-    private fun closeKeyboard(){
-        if ( activity!!.currentFocus != null){
+    private fun closeKeyboard() {
+        if (activity!!.currentFocus != null) {
             val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(activity!!.currentFocus.windowToken, 0)
         }
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode === Activity.RESULT_OK) when (requestCode) {
             Constants.GALLERY_REQUEST_CODE -> {
                 val selectedImage: Uri = data?.data!!
-                register_pickAvatar.setImageBitmap(this.context?.let { decodeUri(it,selectedImage, 50) })
+                register_pickAvatar.setImageBitmap(this.context?.let { decodeUri(it, selectedImage, 50) })
             }
         }
 
     }
 
     @Throws(FileNotFoundException::class)
-    fun decodeUri(
-        c: Context,
-        uri: Uri?,
-        requiredSize: Int
-    ): Bitmap? {
+    fun decodeUri(c: Context, uri: Uri?, requiredSize: Int): Bitmap? {
         val o = BitmapFactory.Options()
         o.inJustDecodeBounds = true
         BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri), null, o)
@@ -97,15 +96,15 @@ class RegisterFragment: Fragment() {
         return BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri), null, o2)
     }
 
-    private fun pickFromGallery(){
+    private fun pickFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         val mimeTypes = arrayOf("image/jpeg", "image/png")
-        intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes)
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
         startActivityForResult(intent, Constants.GALLERY_REQUEST_CODE)
     }
 
-    private fun validRegisterFields(): Boolean{
+    private fun validRegisterFields(): Boolean {
         when {
             register_editText_name.text.isBlank() -> {
                 register_editText_name.error = "Enter a valid name"

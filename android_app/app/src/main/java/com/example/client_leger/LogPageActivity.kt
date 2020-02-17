@@ -1,11 +1,5 @@
 package com.example.client_leger
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -16,7 +10,6 @@ import kotlinx.android.synthetic.main.activity_logpage.*
 
 
 class LogPageActivity : AppCompatActivity() {
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +34,5 @@ class LogPageActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
-
-
-
 
 }
