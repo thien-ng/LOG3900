@@ -1,19 +1,22 @@
 package com.example.client_leger
 
 import android.content.Context
+import android.support.v4.app.FragmentActivity
+import android.util.Log
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.example.client_leger.Fragments.LoginFragment
+import com.example.client_leger.Fragments.RegisterFragment
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONObject
 
 class ConnexionController {
 
-    fun loginUser(activity: LogPageActivity, applicationContext: Context, body: JSONObject){
-
+    fun loginUser(activity: LoginFragment, applicationContext: Context, body: JSONObject){
         var mRequestQueue = Volley.newRequestQueue(applicationContext)
 
         var mStringRequest = object : JsonObjectRequest(
@@ -51,7 +54,7 @@ class ConnexionController {
         mRequestQueue!!.add(mStringRequest)
 
     }
-    fun registerUser(activity: LogPageActivity, applicationContext: Context, body: JSONObject){
+    fun registerUser(activity: RegisterFragment, applicationContext: Context, body: JSONObject){
         var mRequestQueue = Volley.newRequestQueue(applicationContext)
 
         var mStringRequest = object : JsonObjectRequest(
