@@ -7,7 +7,7 @@ import Types from '../types';
 export class AccountService {
 
     public constructor(
-        @inject(Types.AccountDbService) private database: AccountDbService) {}
+        @inject(Types.AccountDbService) private database: AccountDbService) { }
 
     public async register(registration: IRegistration): Promise<IStatus> {
         let result: IStatus = {
@@ -18,7 +18,7 @@ export class AccountService {
         try {
             this.verifyRegistration(registration);
             await this.database.registerAccount(registration);
-        } catch(e) {
+        } catch (e) {
             result.status = 400;
             result.message = e.message;
         }
@@ -33,11 +33,12 @@ export class AccountService {
         };
 
         try {
-            
+
             this.verifyLogin(login);
             await this.database.loginAccount(login);
+            this.userServ.addUser(login.username);
 
-        } catch(e) {
+        } catch (e) {
             result.status = 400
             result.message = e.message;
         }
