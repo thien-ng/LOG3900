@@ -3,15 +3,15 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.example.client_leger.LogPageActivity">
 
-    <item android:id="@+id/action_chat"
-          android:title="Chat"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
-    <item android:id="@+id/action_profil"
+    <item   android:id="@+id/action_chat"
+            android:title="Chat"
+            android:orderInCategory="100"
+            app:showAsAction="never"/>
+    <item   android:id="@+id/action_profil"
             android:title="Profil"
             android:orderInCategory="100"
             app:showAsAction="never"/>
-    <item android:id="@+id/action_game"
+    <item   android:id="@+id/action_game"
             android:title="Game"
             android:orderInCategory="100"
             app:showAsAction="never"/>
