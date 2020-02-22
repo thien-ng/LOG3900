@@ -5,6 +5,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import com.example.client_leger.Fragments.ChatFragment
 import com.example.client_leger.Fragments.DrawFragment
+import com.example.client_leger.Fragments.ProfilFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -28,12 +29,12 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_profil -> {
-                // TODO
-                return@OnNavigationItemSelectedListener false
+                supportFragmentManager.beginTransaction().replace(R.id.container_view, ProfilFragment()).commit()
+                return@OnNavigationItemSelectedListener true
             }
             R.id.action_game -> {
                 supportFragmentManager.beginTransaction().replace(R.id.container_view, DrawFragment()).commit()
-                return@OnNavigationItemSelectedListener false
+                return@OnNavigationItemSelectedListener true
             }
         }
         return@OnNavigationItemSelectedListener false
