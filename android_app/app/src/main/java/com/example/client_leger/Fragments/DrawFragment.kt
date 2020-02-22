@@ -5,11 +5,22 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 
-class DrawFragment: View {
+class DrawFragment: Fragment() {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return DrawCanvas(activity!!.applicationContext, null)
+    }
+}
+
+class DrawCanvas: View {
 
     private var paint = Paint()
     private var path = Path()

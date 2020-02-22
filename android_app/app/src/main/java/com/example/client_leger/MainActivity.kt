@@ -24,8 +24,7 @@ class MainActivity : AppCompatActivity() {
     private val onNavigationListener = BottomNavigationView.OnNavigationItemSelectedListener  {menuItem ->
         when (menuItem.itemId) {
             R.id.action_chat -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.container_view, ChatFragment()).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container_view, ChatFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_profil -> {
@@ -33,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener false
             }
             R.id.action_game -> {
-                setContentView(DrawFragment(this, null))
+                supportFragmentManager.beginTransaction().replace(R.id.container_view, DrawFragment()).commit()
                 return@OnNavigationItemSelectedListener false
             }
         }
