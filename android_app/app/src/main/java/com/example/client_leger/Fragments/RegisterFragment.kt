@@ -106,12 +106,12 @@ class RegisterFragment : Fragment() {
 
     private fun validRegisterFields(): Boolean {
         when {
-            register_editText_name.text.isBlank() -> {
+            register_editText_name.text.isBlank() || register_editText_name.text.length < Constants.MAX_USERNAME_SiZE  -> {
                 register_editText_name.error = "Enter a valid name"
                 register_editText_name.requestFocus()
                 return false
             }
-            register_editText_password.text.isBlank() -> {
+            register_editText_password.text.isBlank() || register_editText_password.text.length < Constants.MAX_PASSWORD_SiZE -> {
                 register_editText_password.error = "Enter a valid password"
                 register_editText_password.requestFocus()
                 return false

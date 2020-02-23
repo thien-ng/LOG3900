@@ -8,5 +8,9 @@ class Constants {
         //ENDPOINTS
         const val LOGIN_ENPOINT = "/account/login"
         const val REGISTER_ENDPOINT = "/account/register"
+
+        //char limits
+        const val MAX_USERNAME_SiZE = 20
+        const val MAX_PASSWORD_SiZE = 20
     }
 }
