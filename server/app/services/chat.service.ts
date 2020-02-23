@@ -1,12 +1,13 @@
 import { injectable, inject } from "inversify";
 import Types from '../types';
 import { IUser } from "../interfaces/user-manager";
-import * as pg from "pg";
-import * as io from 'socket.io';
 import { IChannelIds, IReceptMes, IEmitMes, IChannelMessageReq } from "../interfaces/chat";
 import { IUserId } from '../interfaces/user-manager';
 import { ChatDbService } from "../database/chat-db.service";
-import { IStatus, IInvitationChannel } from '../interfaces/communication';
+import { IStatus, IInvitationChannel, IInviteFriend, IChannelParticipation } from '../interfaces/communication';
+
+import * as pg from "pg";
+import * as io from 'socket.io';
 
 @injectable()
 export class ChatService {
@@ -117,7 +118,14 @@ export class ChatService {
         return time > 9 ? time.toString() : `0${time}`;
     }
 
-    public async getMessagesWithChannelId(id: string): Promise<void | IChannelMessageReq[]> {
+    public async getMessagesWithChannelId(id: string): Promise<IStatus | IChannelMessageReq[]> {
+        if (this.verifyName(id)) {
+            return {
+                status: 400,
+                message: "channel id length should be between 1 and 20",
+            }
+        }
+    
         const result: pg.QueryResult = await this.db.getMessagesWithChannelId(id);
         const messages: IChannelMessageReq[] = result.rows.map((row: any) => (
             {
@@ -129,21 +137,30 @@ export class ChatService {
         return messages;
     }
 
-    public async getChannelsWithAccountName(username: string): Promise<void | IChannelIds[]> {
+    public async getChannelsWithAccountName(username: string): Promise<IStatus | IChannelIds[]> {
+        if (this.verifyName(username)) {
+            return {
+                status: 400,
+                message: "username length should be between 1 and 20",
+            }
+        }
+
         const result: pg.QueryResult = await this.db.getChannelsWithAccountName(username);
         const channels: IChannelIds[] = result.rows.map((row: any) => ({id: row.channel_id}));
         return channels;
     }
 
-    public async joinChannel(username: string, channel: string): Promise<IStatus> {
-        const subbedChannels = (await this.db.getChannelsWithAccountName(username)).rows.map((row: any) => ({id: row.channel_id}));
-        let result = this.buildReturnStatus(`Successfully joined ${channel}`);
-
+    public async joinChannel(join: IChannelParticipation): Promise<IStatus> {
+        let result = this.buildReturnStatus(`Successfully joined ${join.channel}`);
+        
         try {
-            if (subbedChannels.some(chan => chan.id === channel))
-                throw new Error(`${username} is already subscribed to ${channel}.`);
+            this.verifyParticipationChannel(join);
+            const subbedChannels = (await this.db.getChannelsWithAccountName(join.username)).rows.map((row: any) => ({id: row.channel_id}));
+            
+            if (subbedChannels.some(chan => chan.id === join.channel))
+                throw new Error(`${join.username} is already subscribed to ${join.channel}.`);
 
-            await this.db.joinChannel(username, channel);
+            await this.db.joinChannel(join.username, join.channel);
         } catch(e) {
             result.status = 400
             result.message = e.message;
@@ -152,17 +169,20 @@ export class ChatService {
         return result;
     }
 
-    public async leaveChannel(username: string, channel: string): Promise<IStatus> {
-        const subbedChannels = (await this.db.getChannelsWithAccountName(username)).rows.map((row: any) => ({id: row.channel_id}));
-        let result = this.buildReturnStatus(`Successfully left ${channel}`);
-    
+    public async leaveChannel(leave: IChannelParticipation): Promise<IStatus> {
+        let result = this.buildReturnStatus(`Successfully left ${leave.channel}`);
+
         try {
-            if (!subbedChannels.some(chan => chan.id === channel))
-                throw new Error(`${username} is not subscribed to ${channel}.`);
-            if (channel === "general")
-                throw new Error(`cannot leave default channel: ${channel}.`);
+            this.verifyParticipationChannel(leave);
+
+            const subbedChannels = (await this.db.getChannelsWithAccountName(leave.username)).rows.map((row: any) => ({id: row.channel_id}));
     
-            await this.db.leaveChannel(username, channel);
+            if (!subbedChannels.some(chan => chan.id === leave.channel))
+                throw new Error(`${leave.username} is not subscribed to ${leave.channel}.`);
+            if (leave.channel === "general")
+                throw new Error(`cannot leave default channel: ${leave.channel}.`);
+    
+            await this.db.leaveChannel(leave.username, leave.channel);
         } catch(e) {
             result.status = 400
             result.message = e.message;
@@ -175,23 +195,24 @@ export class ChatService {
         return (await this.db.getAllExistingChannels()).rows.map((row: any) => ({id: row.id}));
     }
 
-    public async sendInviteToChannel(inviter: string, invitee: string, channel: string): Promise<IStatus> {
+    public async sendInviteToChannel(invit: IInviteFriend): Promise<IStatus> {
 
         let result = this.buildReturnStatus("Invitation sent successfully");
-        const socketId = this.usernameMapSocketId.get(invitee);
+        const socketId = this.usernameMapSocketId.get(invit.invitee);
 
         try {
+            this.verifyInvittaion(invit);
             if (!socketId) {
-                throw new Error(`cannot find ${invitee}'s socketID`);
+                throw new Error(`cannot find ${invit.invitee}'s socketID`);
             }
-            const joinResult = await this.joinChannel(invitee, channel);
+            const joinResult = await this.joinChannel({username: invit.invitee, channel:invit.channel});
 
             if (joinResult.status === 400) {
                 result = joinResult
             } else {
                 this.socket.to(socketId).emit("invitation", {
-                    message: `${inviter} has invited you to channel ${channel}.`,
-                    channel: channel,
+                    message: `${invit.inviter} has invited you to channel ${invit.channel}.`,
+                    channel: invit.channel,
                 } as IInvitationChannel);
             }
             
@@ -201,6 +222,31 @@ export class ChatService {
         }
 
         return result;
+    }
+
+    private verifyInvittaion(invit: IInviteFriend): void {
+        if (invit.invitee.length < 1 || invit.invitee.length > 20) {
+            throw new Error("invitee name length should be between 1 and 20");
+        }
+        if (invit.inviter.length < 1 || invit.inviter.length > 20) {
+            throw new Error("inviter name length should be between 1 and 20");
+        }
+        if (invit.channel.length < 1 || invit.channel.length > 20) {
+            throw new Error("channel id length should be between 1 and 20");
+        }
+    }
+
+    private verifyParticipationChannel(particip: IChannelParticipation): void {
+        if (particip.username.length < 1 || particip.username.length > 20) {
+            throw new Error("username length should be between 1 and 20");
+        }
+        if (particip.channel.length < 1 || particip.channel.length > 20) {
+            throw new Error("channel id length should be between 1 and 20");
+        }
+    }
+
+    private verifyName(name: string): boolean {
+        return (name.length < 1 || name.length > 20)
     }
 
     private buildReturnStatus(message: string): IStatus {

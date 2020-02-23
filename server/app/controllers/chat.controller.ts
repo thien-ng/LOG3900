@@ -28,15 +28,15 @@ export class ChatController {
         });
 
         this.router.put('/channels/join/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
-            res.json(await this.chatServ.joinChannel(req.params.username, req.params.channel));
+            res.json(await this.chatServ.joinChannel({username: req.params.username, channel: req.params.channel}));
         });
 
         this.router.delete('/channels/leave/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
-            res.json(await this.chatServ.leaveChannel(req.params.username, req.params.channel));
+            res.json(await this.chatServ.leaveChannel({username: req.params.username, channel: req.params.channel}));
         });
 
         this.router.post('/channels/invite', async (req: Request, res: Response, next: NextFunction) => {
-            res.json(await this.chatServ.sendInviteToChannel(req.body.inviter, req.body.invitee, req.body.channel));
+            res.json(await this.chatServ.sendInviteToChannel(req.body));
         });
 
     }
