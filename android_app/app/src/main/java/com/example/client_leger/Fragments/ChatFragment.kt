@@ -64,7 +64,10 @@ class ChatFragment: Fragment() {
         }
 
         Communication.getChatMessageListener().subscribe{receptMes ->
-            receiveMessage(adapter, v.recyclerView_chat_log, username, receptMes)
+            val messages = JSONArray()
+            messages.put(receptMes)
+            receiveMessages(adapter, username, messages)
+            v.recyclerView_chat_log.smoothScrollToPosition(adapter.itemCount)
         }
 
         v.recyclerView_chat_log.adapter = adapter
@@ -83,21 +86,21 @@ class ChatFragment: Fragment() {
         return obj
     }
 
-    private fun receiveMessage(adapter: GroupAdapter<ViewHolder>, recyclerView: RecyclerView, curUser: String,  mes: JSONObject){
+    private fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
+        for (i in 0 until messages.length()){
+            var message = messages.getJSONObject(i)
+            val username = message.getString("username")
+            val content = message.getString("content")
+            val time = message.getString("time")
 
-        val username = mes.getString("username")
-        val content = mes.getString("content")
-        val time = mes.getString("time")
-
-        activity!!.runOnUiThread {
-            if(curUser != username){
-                adapter.add(ChatItemReceived(content, curUser, time))
+            activity!!.runOnUiThread {
+                if(curUser != username){
+                    adapter.add(ChatItemReceived(content, curUser, time))
+                }
+                else {
+                    adapter.add(ChatItemSent(content, time))
+                }
             }
-            else {
-                adapter.add(ChatItemSent(content, time))
-            }
-
-            recyclerView.smoothScrollToPosition(adapter.itemCount)
         }
     }
 
@@ -109,10 +112,8 @@ class ChatFragment: Fragment() {
             Constants.SERVER_URL + "/chat/messages/" + channelId,
             null,
              Response.Listener<JSONArray>{response ->
-                    for (i in 0 until response.length() ){
-                        var mess = response.getJSONObject(i)
-                        receiveMessage(adapter, recyclerView, curUser, mess)
-                    }
+                    receiveMessages(adapter, curUser, response)
+                    recyclerView.scrollToPosition(adapter.itemCount -1)
             },Response.ErrorListener{
                error ->
                     //Do something when error occurred
@@ -123,7 +124,7 @@ class ChatFragment: Fragment() {
                 ).show()
 
             }
-        );
+        )
 
         // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonArrayRequest);
