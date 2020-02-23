@@ -10,11 +10,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.Volley
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_chat.view.*
+import org.json.JSONArray
 import org.json.JSONObject
 
 class ChatFragment: Fragment() {
@@ -30,6 +36,8 @@ class ChatFragment: Fragment() {
         val fArray = arrayOfNulls<InputFilter>(1)
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
         v.chat_message_editText.filters = fArray
+
+        loadChatHistory("general", adapter, v.recyclerView_chat_log, username)
 
         v.chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
@@ -93,5 +101,32 @@ class ChatFragment: Fragment() {
         }
     }
 
+    private fun loadChatHistory( channelId: String, adapter: GroupAdapter<ViewHolder>, recyclerView: RecyclerView, curUser: String){
+        val requestQueue = Volley.newRequestQueue(context)
+
+        var jsonArrayRequest:JsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET,
+            Constants.SERVER_URL + "/chat/messages/" + channelId,
+            null,
+             Response.Listener<JSONArray>{response ->
+                    for (i in 0 until response.length() ){
+                        var mess = response.getJSONObject(i)
+                        receiveMessage(adapter, recyclerView, curUser, mess)
+                    }
+            },Response.ErrorListener{
+               error ->
+                    //Do something when error occurred
+                Toast.makeText(
+                    context,
+                    error.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+            }
+        );
+
+        // Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonArrayRequest);
+    }
 
 }
