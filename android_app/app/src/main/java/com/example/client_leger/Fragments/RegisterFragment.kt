@@ -116,12 +116,12 @@ class RegisterFragment : Fragment() {
                 register_editText_lName.requestFocus()
                 return false
             }
-            register_editText_username.text.isBlank() || register_editText_username.text.length < Constants.MAX_USERNAME_SiZE  -> {
+            register_editText_username.text.isBlank() || register_editText_username.text.length > Constants.MAX_USERNAME_SiZE  -> {
                 register_editText_username.error = "Enter a valid username"
                 register_editText_username.requestFocus()
                 return false
             }
-            register_editText_password.text.isBlank() || register_editText_password.text.length < Constants.MAX_PASSWORD_SiZE -> {
+            register_editText_password.text.isBlank() || register_editText_password.text.length > Constants.MAX_PASSWORD_SiZE -> {
                 register_editText_password.error = "Enter a valid password"
                 register_editText_password.requestFocus()
                 return false
