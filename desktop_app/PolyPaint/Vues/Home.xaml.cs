@@ -39,6 +39,8 @@ namespace PolyPaint.Vues
             _chatView = new Chat();
             _window = new Window();
             _window.Content = _chatView;
+            _window.Height = 450;
+            _window.Width = 600;
             _window.DataContext = _chat;
             _window.Closing += new CancelEventHandler(this.onWindowClosing);
         }
