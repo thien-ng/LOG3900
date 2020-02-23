@@ -43,8 +43,9 @@
 
                 app:layout_constraintHorizontal_bias="0.0"></TextView>
     </FrameLayout>
+
     <EditText
-            android:id="@+id/register_editText_name"
+            android:id="@+id/register_editText_fName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -53,12 +54,39 @@
             android:layout_marginEnd="24dp"
             android:layout_marginRight="24dp"
             android:ems="10"
-            android:hint="Name"
+            android:hint="First Name"
             android:inputType="textPersonName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/register_avatarFrame"
             app:layout_constraintTop_toBottomOf="@+id/register_avatarFrame"
+            />
+
+    <EditText
+            android:id="@+id/register_editText_lName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Last Name"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/register_editText_fName"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/register_editText_fName"
+            app:layout_constraintTop_toBottomOf="@+id/register_editText_fName"
+            />
+
+    <EditText
+            android:id="@+id/register_editText_username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:ems="10"
+            android:hint="Username"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/register_editText_lName"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/register_editText_lName"
+            app:layout_constraintTop_toBottomOf="@+id/register_editText_lName"
              />
 
 
@@ -69,10 +97,10 @@
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword"
-            app:layout_constraintEnd_toEndOf="@+id/register_editText_name"
+            app:layout_constraintEnd_toEndOf="@+id/register_editText_username"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/register_editText_name"
-            app:layout_constraintTop_toBottomOf="@+id/register_editText_name"
+            app:layout_constraintStart_toStartOf="@+id/register_editText_username"
+            app:layout_constraintTop_toBottomOf="@+id/register_editText_username"
             />
 
     <EditText

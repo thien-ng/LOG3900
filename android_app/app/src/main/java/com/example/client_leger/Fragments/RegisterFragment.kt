@@ -41,7 +41,7 @@ class RegisterFragment : Fragment() {
 
                 var body = JSONObject(
                     mapOf(
-                        "username" to v.register_editText_name.text.toString().trim(),
+                        "username" to v.register_editText_username.text.toString().trim(),
                         "password" to v.register_editText_password.text.toString().trim()
                     )
                 )
@@ -106,9 +106,19 @@ class RegisterFragment : Fragment() {
 
     private fun validRegisterFields(): Boolean {
         when {
-            register_editText_name.text.isBlank() || register_editText_name.text.length < Constants.MAX_USERNAME_SiZE  -> {
-                register_editText_name.error = "Enter a valid name"
-                register_editText_name.requestFocus()
+            register_editText_fName.text.isBlank() -> {
+                register_editText_fName.error = "Enter a valid first name"
+                register_editText_fName.requestFocus()
+                return false
+            }
+            register_editText_lName.text.isBlank() -> {
+                register_editText_lName.error = "Enter a valid last name"
+                register_editText_lName.requestFocus()
+                return false
+            }
+            register_editText_username.text.isBlank() || register_editText_username.text.length < Constants.MAX_USERNAME_SiZE  -> {
+                register_editText_username.error = "Enter a valid username"
+                register_editText_username.requestFocus()
                 return false
             }
             register_editText_password.text.isBlank() || register_editText_password.text.length < Constants.MAX_PASSWORD_SiZE -> {
