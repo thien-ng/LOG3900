@@ -1,24 +1,35 @@
 import { injectable } from "inversify";
+import { IUser } from '../interfaces/user-manager';
 
 @injectable()
 export class UserManagerService {
 
-    private users: string[];
+    private users: IUser[];
 
     public constructor() {
         this.users = [];
     }
 
-    public getUsers(): string[] {
+    public getUsers(): IUser[] {
         return this.users;
     }
 
-    public addUser(user: string): void {
+    public addUser(user: IUser): void {
         this.users.push(user);
     }
 
     public deleteUser(username: string): void {
-        this.users = this.users.filter((user: string) => user !== username);
+        this.users = this.users.filter((user: IUser) => user.username !== username);
+    }
+
+    public checkIfUserIsOnline(user: string): boolean {        
+        return this.users.some((el) => {return el.username === user});
+    }
+
+    public getOnlineUsers(): String[] {
+        const users: String[] = []
+        this.users.forEach(u => {users.push(u.username)})
+        return users
     }
 
 }

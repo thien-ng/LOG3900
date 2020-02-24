@@ -1,6 +1,5 @@
 import { injectable, inject } from "inversify";
 import { IRegistration, IStatus, ILogin } from "../interfaces/communication";
-import { UserManagerService } from "./user-manager.service"; 
 import { AccountDbService } from "../database/account-db.service";
 import Types from '../types';
 
@@ -8,8 +7,7 @@ import Types from '../types';
 export class AccountService {
 
     public constructor(
-        @inject(Types.AccountDbService) private database: AccountDbService,
-        @inject(Types.UserManagerService) private userServ: UserManagerService) {}
+        @inject(Types.AccountDbService) private database: AccountDbService) {}
 
     public async register(registration: IRegistration): Promise<IStatus> {
         let result: IStatus = {
@@ -35,11 +33,8 @@ export class AccountService {
         };
 
         try {
+            
             this.verifyLogin(login);
-            if (this.verifyUserIsLogged(login.username)) {
-                throw new Error(`${login.username} is already logged in.`);
-            }
-            this.userServ.addUser(login.username);
             await this.database.loginAccount(login);
 
         } catch(e) {
@@ -48,15 +43,6 @@ export class AccountService {
         }
 
         return result;
-    }
-
-    public getOnlineUsers(): string[] {
-        return this.userServ.getUsers();
-    }
-
-    private verifyUserIsLogged(username: string): boolean {
-        const users = this.userServ.getUsers();        
-        return users.some((user) => user === username);
     }
 
     private verifyRegistration(regis: IRegistration): void {

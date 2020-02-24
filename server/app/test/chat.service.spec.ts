@@ -88,7 +88,7 @@ describe("ChatService", () => {
         chai.spy.on(service, "joinChannel", () => { return {status: 400, message:"error while joining"}});
 
         //when
-        const result = await service.sendInviteToChannel("inviter", "invitee", "channel");
+        const result = await service.sendInviteToChannel({inviter:"inviter", invitee:"invitee", channel:"channel"});
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -98,7 +98,7 @@ describe("ChatService", () => {
     it("Should return error message when socketID not found", async () => {
         //given
         //when
-        const result = await service.sendInviteToChannel("inviter", "invitee", "channel");
+        const result = await service.sendInviteToChannel({inviter:"inviter", invitee:"invitee", channel:"channel"});
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -128,7 +128,7 @@ describe("ChatService, Join/Leave", () => {
         });
 
         //when
-        const result = await service.joinChannel("username", "channel");
+        const result = await service.joinChannel({username:"username", channel:"channel"});
 
         //then
         chai.expect(result.status).to.be.equal(200);
@@ -143,7 +143,7 @@ describe("ChatService, Join/Leave", () => {
         });
 
         //when
-        const result = await service.joinChannel("username", "channel");
+        const result = await service.joinChannel({username:"username", channel:"channel"});
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -158,7 +158,7 @@ describe("ChatService, Join/Leave", () => {
         });
 
         //when
-        const result = await service.leaveChannel("username", "channel");
+        const result = await service.leaveChannel({username:"username", channel:"channel"});
 
         //then
         chai.expect(result.status).to.be.equal(200);
@@ -173,7 +173,7 @@ describe("ChatService, Join/Leave", () => {
         });
 
         //when
-        const result = await service.leaveChannel("username", "channel");
+        const result = await service.leaveChannel({username:"username", channel:"channel"});
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -188,7 +188,7 @@ describe("ChatService, Join/Leave", () => {
         });
 
         //when
-        const result = await service.leaveChannel("username", "general");
+        const result = await service.leaveChannel({username:"username", channel:"general"});
 
         //then
         chai.expect(result.status).to.be.equal(400);
