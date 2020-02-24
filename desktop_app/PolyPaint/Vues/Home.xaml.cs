@@ -54,8 +54,6 @@ namespace PolyPaint.Vues
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            
-            
             if(!_isOpen) { 
                 _window.Show();
                 chatHome.Visibility = Visibility.Collapsed;
