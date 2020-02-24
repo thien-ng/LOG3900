@@ -15,14 +15,17 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
-        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" Width="800" x:Name="chatHome" ></local:Chat>
-        <Button Width="50" Grid.Column="1" VerticalAlignment="Top" Click="Button_Click">
+        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" Width="500" x:Name="chatHome" Grid.Column="0" ></local:Chat>
+        <local:Profile Grid.Column="1"/>
+        <Button Width="50" Grid.Column="1" HorizontalAlignment="left" VerticalAlignment="Top" Click="Button_Click">
             <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Button>
-        <Button Content="Disconnect" Margin="0,7,15,0" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Command="{Binding DisconnectCommand}"/>
+        <Button Grid.Column="3" Margin="0,7,15,0" VerticalAlignment="top" HorizontalAlignment="Right" Command="{Binding DisconnectCommand}">
+            <materialDesign:PackIcon Kind="PowerStandby" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Button>
     </Grid>
 </Page>
