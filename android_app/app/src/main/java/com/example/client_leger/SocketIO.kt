@@ -9,7 +9,8 @@ import org.json.JSONObject
 object SocketIO {
     private var socket = IO.socket(Constants.SERVER_URL)
 
-    init {
+    fun init() {
+        socket.connect()
         socket.on(Socket.EVENT_CONNECT) {
             Log.w("socket","Connected to ${Constants.SERVER_URL}")
         }
@@ -17,10 +18,13 @@ object SocketIO {
         socket.on("chat") {
             Communication.updateChatMessage(it[0] as JSONObject)
         }
+
+        socket.on("logging") {
+            Communication.updateConnection(it[0] as JSONObject)
+        }
     }
 
     fun connect(username: String) {
-        socket.connect()
         socket.emit("login", username)
     }
 

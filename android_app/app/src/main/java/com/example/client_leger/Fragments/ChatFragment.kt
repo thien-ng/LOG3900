@@ -31,8 +31,6 @@ class ChatFragment: Fragment() {
         val adapter = GroupAdapter<ViewHolder>()
         val username = activity!!.intent.getStringExtra("username")
 
-        SocketIO.connect(username)
-
         val fArray = arrayOfNulls<InputFilter>(1)
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
         v.chat_message_editText.filters = fArray

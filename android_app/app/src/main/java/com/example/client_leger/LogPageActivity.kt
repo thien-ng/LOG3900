@@ -11,6 +11,8 @@ class LogPageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_logpage)
 
+        SocketIO.init()
+
         supportFragmentManager.beginTransaction().replace(R.id.container_view, LoginFragment()).commit()
     }
 }
