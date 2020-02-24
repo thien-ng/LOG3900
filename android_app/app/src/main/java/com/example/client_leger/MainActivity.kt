@@ -14,8 +14,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        SocketIO.connect(this!!.intent.getStringExtra("username"))
-
         bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationListener)
         bottomNavigationView.selectedItemId = R.id.action_chat
     }

@@ -24,13 +24,9 @@ class ConnexionController {
             Constants.SERVER_URL + Constants.LOGIN_ENPOINT,
             null,
             Response.Listener { response ->
-                Toast.makeText(
-                    applicationContext,
-                    response["message"].toString(),
-                    Toast.LENGTH_SHORT
-                ).show()
-                if(response["status"].toString().toInt() == 200)
-                    activity.connect(body.get("username").toString())
+                if(response["status"].toString().toInt() == 200) {
+                    SocketIO.connect(body.get("username").toString())
+                }
                 else
                     activity.login_button.isEnabled = true
             },
@@ -68,7 +64,7 @@ class ConnexionController {
                     Toast.LENGTH_SHORT
                 ).show()
                 if(response["status"].toString().toInt() == 200)
-                    activity.connect(body.get("username").toString())
+                    SocketIO.connect(body.get("username").toString())
                 else
                     activity.register_button.isEnabled = true
             },

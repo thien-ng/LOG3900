@@ -12,6 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import com.example.client_leger.Communication.Communication
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Constants
 import com.example.client_leger.MainActivity
@@ -24,6 +26,9 @@ import java.io.FileNotFoundException
 class RegisterFragment : Fragment() {
 
     private var controller = ConnexionController()
+
+    lateinit var username: String
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_registration, container, false)
 
@@ -46,11 +51,28 @@ class RegisterFragment : Fragment() {
                     )
                 )
 
+                username = v.register_editText_username.text.toString().trim()
+
                 controller.registerUser(this, activity!!.applicationContext, body)
             }
         }
 
+        Communication.getConnectionListener().subscribe{ mes ->
+            handleConnection(mes)
+        }
+
         return v
+    }
+
+    private fun handleConnection(mes: JSONObject) {
+        activity!!.runOnUiThread{
+            if (::username.isInitialized) {
+                Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()
+                if (mes.getString("status").toInt() == 200) {
+                    connect(username)
+                }
+            }
+        }
     }
 
     fun connect(username: String) {

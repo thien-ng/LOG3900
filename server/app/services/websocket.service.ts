@@ -32,8 +32,9 @@ export class WebsocketService {
             // test event to check if socket is on
             socket.on('login', (name: string) => {    
                 if (this.userServ.checkIfUserIsOnline(name)) {
-                    socket.emit("connect", {message: `${name} is already connected`});
+                    socket.emit("logging", {status: 400, message: `${name} is already connected`});
                 } else {
+                    socket.emit("logging", {status: 200, message: "logged in successfully"});
                     console.log(name + " logged in");
                     username = name;
                     this.login(username, socket);

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.example.client_leger.Communication.Communication
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.MainActivity
@@ -19,6 +20,8 @@ import org.json.JSONObject
 class LoginFragment : Fragment(), FragmentChangeListener {
 
     private var controller = ConnexionController()
+
+    lateinit var username: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_login, container, false)
@@ -33,6 +36,8 @@ class LoginFragment : Fragment(), FragmentChangeListener {
                     "username" to v.login_editText_name.text.toString().trim(),
                     "password" to v.login_editText_password.text.toString().trim()
                 ))
+
+                username = v.login_editText_name.text.toString().trim()
 
                 controller.loginUser(this, activity!!.applicationContext, body)
 
@@ -49,7 +54,22 @@ class LoginFragment : Fragment(), FragmentChangeListener {
             replaceFragment(RegisterFragment())
         }
 
+        Communication.getConnectionListener().subscribe{mes ->
+            handleConnection(mes)
+        }
+
         return v
+    }
+
+    private fun handleConnection(mes: JSONObject) {
+        activity!!.runOnUiThread{
+            if (::username.isInitialized) {
+                Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()
+                if (mes.getString("status").toInt() == 200) {
+                    connect(username)
+                }
+            }
+        }
     }
 
     private fun closeKeyboard(){
