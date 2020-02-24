@@ -88,6 +88,8 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.username = _username;
                                 ServerService.instance.socket.On(Constants.LOGGING_EVENT, data => ReceiveMessage((JObject)data));
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
+
+                                Mediator.Notify("GoToHomeScreen", "");
                             }
                             else
                             {
