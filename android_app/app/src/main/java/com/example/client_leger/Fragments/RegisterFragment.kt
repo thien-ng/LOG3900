@@ -8,16 +8,14 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
-import com.example.client_leger.ConnexionController
-import com.example.client_leger.Constants
-import com.example.client_leger.MainActivity
-import com.example.client_leger.R
 import kotlinx.android.synthetic.main.fragment_registration.*
 import kotlinx.android.synthetic.main.fragment_registration.view.*
 import org.json.JSONObject
@@ -54,6 +52,8 @@ class RegisterFragment : Fragment() {
                 username = v.register_editText_username.text.toString().trim()
 
                 controller.registerUser(this, activity!!.applicationContext, body)
+
+                LogState.isLoginState = false
             }
         }
 
@@ -65,6 +65,8 @@ class RegisterFragment : Fragment() {
     }
 
     private fun handleConnection(mes: JSONObject) {
+        if (LogState.isLoginState) return
+
         activity!!.runOnUiThread{
             if (::username.isInitialized) {
                 Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()

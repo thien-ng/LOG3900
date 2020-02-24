@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Interface.FragmentChangeListener
+import com.example.client_leger.LogState
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
 import kotlinx.android.synthetic.main.fragment_login.view.*
@@ -41,6 +42,8 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
                 controller.loginUser(this, activity!!.applicationContext, body)
 
+                LogState.isLoginState = true
+
             } else {
                 Toast.makeText(
                     activity,
@@ -62,6 +65,8 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     }
 
     private fun handleConnection(mes: JSONObject) {
+        if (!LogState.isLoginState) return
+
         activity!!.runOnUiThread{
             if (::username.isInitialized) {
                 Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()
