@@ -22,6 +22,7 @@ namespace PolyPaint.Utilitaires
         public const string LOGIN_EVENT    = "login";
         public const string MESSAGE_EVENT  = "chat";
         public const string LOGOUT_EVENT   = "logout";
+        public const string LOGGING_EVENT  = "logging";
 
 
         public static class Vues

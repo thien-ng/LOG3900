@@ -31,10 +31,14 @@ export class WebsocketService {
             
             // test event to check if socket is on
             socket.on('login', (name: string) => {    
-                console.log(name + " logged in");
-                            
-                username = name;
-                this.login(username, socket);
+                if (this.userServ.checkIfUserIsOnline(name)) {
+                    socket.emit("logging", {status: 400, message: `${name} is already connected`});
+                } else {
+                    socket.emit("logging", {status: 200, message: "logged in successfully"});
+                    console.log(name + " logged in");
+                    username = name;
+                    this.login(username, socket);
+                }
             });
 
             socket.on('chat', (mes: IReceptMes) => {
@@ -60,6 +64,7 @@ export class WebsocketService {
 
     private login(username: string, socket: io.Socket): void {       
         const user: IUser = {username: username, socketId: socket.id};
+        this.userServ.addUser(user);
         this.chatServ.addUserToChannelMap(user);
     }
 
