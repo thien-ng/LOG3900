@@ -163,7 +163,7 @@ class ChatFragment: Fragment() {
         val requestQueue = Volley.newRequestQueue(context)
         val jsonArrayRequest = JsonArrayRequest(
             Request.Method.GET,
-            Constants.SERVER_URL + "/chat/channels/all" ,
+            Constants.SERVER_URL + "/chat/channels/" + username ,
             null,
             Response.Listener<JSONArray>{response ->
                 for (i in 0 until response.length()) {
