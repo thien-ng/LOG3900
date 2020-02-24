@@ -52,6 +52,21 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private void ReceiveMessage(JObject jsonMessage)
+        {
+            var status = jsonMessage["status"].ToObject<int>();
+            var message = jsonMessage["message"].ToObject<string>();
+            if (status == 200)
+            {
+                Mediator.Notify("GoToChatScreen", "");
+                MessageBox.Show(message);
+            }
+            else
+            {
+                MessageBox.Show(message);
+            }
+        }
+
         public ICommand Login
         {
             get
@@ -70,11 +85,9 @@ namespace PolyPaint.VueModeles
                         {
                             if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
                             {
-
                                 ServerService.instance.username = _username;
+                                ServerService.instance.socket.On(Constants.LOGGING_EVENT, data => ReceiveMessage((JObject)data));
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
-
-                                Mediator.Notify("GoToChatScreen", "");
                             }
                             else
                             {
