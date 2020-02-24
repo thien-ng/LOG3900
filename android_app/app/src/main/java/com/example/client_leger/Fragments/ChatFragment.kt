@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -92,7 +91,6 @@ class ChatFragment: Fragment() {
     }
 
     private fun setChannel(newChannelId: String) {
-        Log.w("socket", "switching channel to: $newChannelId")
         messageAdapter.clear()
         channelId = newChannelId
         textViewChannelName.text = channelId
