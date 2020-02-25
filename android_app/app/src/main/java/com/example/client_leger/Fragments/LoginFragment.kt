@@ -83,7 +83,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     }
 
 
-    fun connect(username: String) {
+    private fun connect(username: String) {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
