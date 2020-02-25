@@ -33,6 +33,7 @@ class ChatFragment: Fragment() {
     private lateinit var recyclerViewChannels: RecyclerView
     private lateinit var recyclerViewChatLog: RecyclerView
     private lateinit var messageAdapter: GroupAdapter<ViewHolder>
+    private lateinit var channelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,6 +44,13 @@ class ChatFragment: Fragment() {
         textViewChannelName = v.textView_channelName
         messageAdapter = GroupAdapter()
         username = activity!!.intent.getStringExtra("username")
+
+        recyclerViewChannels.setHasFixedSize(true)
+        channelAdapter = GroupAdapter()
+        val manager = LinearLayoutManager(this.context)
+        recyclerViewChannels.layoutManager = manager
+        recyclerViewChannels.adapter = channelAdapter
+        loadChannels(channelAdapter)
 
         val fArray = arrayOfNulls<InputFilter>(1)
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
@@ -91,13 +99,6 @@ class ChatFragment: Fragment() {
     private fun setChannel(newChannelId: String) {
         messageAdapter.clear()
         channelId = newChannelId
-        textViewChannelName.text = channelId
-        val adapterChannels = GroupAdapter<ViewHolder>()
-        val manager = LinearLayoutManager(this.context)
-        recyclerViewChannels.layoutManager = manager
-        recyclerViewChannels.setHasFixedSize(true)
-        recyclerViewChannels.adapter = adapterChannels
-        loadChannels(adapterChannels)
         loadChatHistory(channelId, messageAdapter, recyclerViewChatLog, username)
         textViewChannelName.text = channelId
     }
