@@ -26,8 +26,8 @@
             <DataTemplate DataType="{x:Type localViewModel:RegisterViewModel}">
                 <localView:Register/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type chat:MessageListViewModel}">
-                <localView:Chat/>
+            <DataTemplate DataType="{x:Type localViewModel:HomeViewModel}">
+                <localView:Home/>
             </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
