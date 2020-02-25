@@ -138,12 +138,16 @@
     <Compile Include="VueModeles\BaseViewModel.cs" />
     <Compile Include="VueModeles\MessageListViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
+    <Compile Include="VueModeles\HomeViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />
     <Compile Include="VueModeles\LoginViewModel.cs" />
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="VueModeles\VueModele.cs" />
     <Compile Include="Vues\Chat.xaml.cs">
       <DependentUpon>Chat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Home.xaml.cs">
+      <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
@@ -178,6 +182,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Vues\Home.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Vues\Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

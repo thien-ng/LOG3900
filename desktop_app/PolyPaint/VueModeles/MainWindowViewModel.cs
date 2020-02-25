@@ -59,9 +59,9 @@ namespace PolyPaint.VueModeles
             ChangeViewModel(nameof(DessinViewModel), typeof(DessinViewModel));
         }
 
-        private void OnGoToChatScreen(object obj)
+        private void OnGoToHomeScreen(object obj)
         {
-            ChangeViewModel(nameof(MessageListViewModel), typeof(MessageListViewModel));
+            ChangeViewModel(nameof(HomeViewModel), typeof(HomeViewModel));
         }
 
         public MainWindowViewModel()
@@ -74,7 +74,7 @@ namespace PolyPaint.VueModeles
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
             Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);
             Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
-            Mediator.Subscribe("GoToChatScreen", OnGoToChatScreen);
+            Mediator.Subscribe("GoToHomeScreen", OnGoToHomeScreen);
 
             Socket socket = IO.Socket(Constants.SERVER_PATH);
             socket.On(Socket.EVENT_CONNECT, () =>

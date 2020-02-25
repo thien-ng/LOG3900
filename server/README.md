@@ -14,6 +14,7 @@
 | Get channels subcribed by user    |GET   | /chat/channels/:username               |   
 | Join a channel                    |PUT   | /chat/channels/join/:username/:channel |
 | Leave a channel                   |DELETE| /chat/channels/leave/:username/:channel|
+| Invite player to channel          |POST  | /chat/channels/invite                  |
 
 
 # Socket
