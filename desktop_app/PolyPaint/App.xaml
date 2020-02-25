@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:PolyPaint"
              xmlns:localView="clr-namespace:PolyPaint.Vues"
              xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles"
-             xmlns:chat="clr-namespace:PolyPaint.VueModeles.Chat">
+             xmlns:chat="clr-namespace:PolyPaint.VueModeles">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

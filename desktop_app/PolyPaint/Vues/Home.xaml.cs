@@ -1,4 +1,4 @@
-﻿using PolyPaint.VueModeles.Chat;
+﻿using PolyPaint.VueModeles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +26,7 @@ namespace PolyPaint.Vues
         bool _isOpen;
         Chat _chatView;
         Window _window;
+
         public Home()
         {
             InitializeComponent();
@@ -41,6 +42,12 @@ namespace PolyPaint.Vues
             _window.Width = 600;
             _window.Closing += new CancelEventHandler(this.onWindowClosing);
         }
+
+        public void PageLoaded(Object sender, RoutedEventArgs e) 
+        { 
+            _window.DataContext = this.DataContext;
+        }
+
         private void onWindowClosing(Object sender, CancelEventArgs e)
         {
             e.Cancel =true;
@@ -51,8 +58,6 @@ namespace PolyPaint.Vues
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            
-            
             if(!_isOpen) { 
                 _window.Show();
                 chatHome.Visibility = Visibility.Collapsed;

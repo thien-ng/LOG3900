@@ -1,62 +1,29 @@
-﻿using Newtonsoft.Json.Linq;
-using PolyPaint.Services;
+﻿
 using PolyPaint.Utilitaires;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace PolyPaint.Modeles
 {
-    class MessageChannel: INotifyPropertyChanged
+    public class MessageChannel
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public int ID { get; set; }
-        private ObservableCollection<MessageChat> _items;
+        public string id { get; set; }
 
-        public MessageChannel(int id)
+        public MessageChannel(string id)
         {
-            ID = id;
-            Setup();
+            this.id = id;
         }
 
-        private void Setup()
+        private ICommand _selectChannelCommand;
+        public ICommand SelectChannelCommand
         {
-            _items = new ObservableCollection<MessageChat>();
-            ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
-        }
-
-        public ObservableCollection<MessageChat> Items
-        {
-            get { return _items; }
-            set { _items = value; ProprieteModifiee(); }
-        }
-
-        public void SendMessage(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, "general");
-
-            var messageJson = JObject.FromObject(messageToSend);
-            ServerService.instance.socket.Emit("chat", messageJson);
-        }
-
-        private void ReceiveMessage(JObject jsonMessage)
-        {
-            MessageReception message = jsonMessage.ToObject<MessageReception>();
-            bool isSentByMe = message.username == ServerService.instance.username;
-            App.Current.Dispatcher.Invoke(delegate
+            get
             {
-                Items.Add(new MessageChat(message.username, message.content, isSentByMe, message.time));
-            });
-        }
-
-        protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+                return _selectChannelCommand ?? (_selectChannelCommand = new RelayCommand(x =>
+                {
+                    Mediator.Notify("ChangeChannel", id);
+                }));
+            }
         }
     }
 }

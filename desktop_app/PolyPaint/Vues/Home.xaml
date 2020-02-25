@@ -5,9 +5,9 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:local="clr-namespace:PolyPaint.Vues"
-      xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles.Chat"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="1000"
+      Loaded="PageLoaded"
       Title="Home">
     <Page.Resources>
         <ResourceDictionary>
@@ -19,13 +19,15 @@
     </Page.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.5*" />
             <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
-        <local:Chat Width="500" x:Name="chatHome" Grid.Column="0"/>
-        <local:Profile Grid.Column="1"/>
+        <local:Channels/>
+        <local:Chat x:Name="chatHome" Grid.Column="1"/>
+        <local:Profile Grid.Column="2"/>
         <Button Width="50" Grid.Column="2" HorizontalAlignment="left" VerticalAlignment="Top" Click="Button_Click">
             <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Button>
@@ -40,6 +42,5 @@
                 </Button>
             </StackPanel>
         </materialDesign:PopupBox>
-        
     </Grid>
 </Page>
