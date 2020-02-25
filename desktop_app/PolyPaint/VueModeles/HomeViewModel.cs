@@ -2,6 +2,7 @@
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System.Collections.ObjectModel;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -9,12 +10,22 @@ namespace PolyPaint.VueModeles
     class HomeViewModel : BaseViewModel, IPageViewModel
     {
         private string _pendingMessage;
+        public string _switchViewButton;
+        private int _switchView;
+        private string _switchViewButtonTooltip;
+        private bool _frontEnabled;
+        private bool _backEnabled;
         private ChatRoom _selectedChannel;
 
         public HomeViewModel()
         {
             _selectedChannel = new ChatRoom("general");
             Mediator.Subscribe("ChangeChannel", ChangeChannel);
+            SwitchView = 0;
+            SwitchViewButton = "Profile";
+            SwitchViewButtonTooltip = "Access to profile";
+            FrontEnabled = false;
+            BackEnabled = false;
         }
 
         private ICommand _goToLogin;
@@ -77,7 +88,58 @@ namespace PolyPaint.VueModeles
         }
         public ObservableCollection<MessageChannel> Test
         {
-            get { return new ObservableCollection<MessageChannel> { new MessageChannel("general"), new MessageChannel("pute")}; }
+            get { return new ObservableCollection<MessageChannel> { new MessageChannel("general"), new MessageChannel("pute") }; }
         }
+        //private object _selectedView;
+        //public object SelectedView {
+        //    get { return _selectedView; }
+        //    set { _selectedView = value; ProprieteModifiee("SelectedView"); }
+        //}
+        private ICommand _switchViewCommand;
+        public ICommand SwitchViewCommand
+        {
+            get
+            {
+                return _switchViewCommand ?? (_switchViewCommand = new RelayCommand(x =>
+                {
+                    SwitchView = SwitchView == 0 ? 1 : 0;
+                    SwitchViewButton = SwitchViewButton == "Profile" ? "GameList" : "Profile";
+                    SwitchViewButtonTooltip = SwitchViewButtonTooltip == "Access to profile" ? "Access to gameList" : "Access to profile";
+                    if(!FrontEnabled && !BackEnabled)
+                    {
+                        FrontEnabled = true;
+                    }
+                    FrontEnabled = BackEnabled;
+                    BackEnabled = !BackEnabled;
+                }));
+            }
+        }
+
+        public int SwitchView
+        {
+            get { return _switchView; }
+            set { _switchView = value; ProprieteModifiee(); }
+        }
+        public string SwitchViewButton
+        {
+            get { return _switchViewButton; }
+            set { _switchViewButton = value; ProprieteModifiee(); }
+        }
+        public string SwitchViewButtonTooltip
+        {
+            get { return _switchViewButtonTooltip; }
+            set { _switchViewButtonTooltip = value; ProprieteModifiee(); }
+        }
+        public bool FrontEnabled
+        {
+            get { return _frontEnabled; }
+            set { _frontEnabled = value; ProprieteModifiee(); }
+        }
+        public bool BackEnabled
+        {
+            get { return _backEnabled; }
+            set { _backEnabled = value; ProprieteModifiee(); }
+        }
+
     }
 }
