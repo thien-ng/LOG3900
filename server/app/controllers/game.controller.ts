@@ -19,7 +19,11 @@ export class GameController {
         });
 
         this.router.post('/lobby/leave', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.lobbyServ.join(req.body));
+            res.json(this.lobbyServ.leave(req.body));
+        });
+
+        this.router.get('/lobby/active', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.lobbyServ.getActiveLobbies());
         });
     }
 }

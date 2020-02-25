@@ -4,6 +4,7 @@ export interface IActiveLobby {
     users:      IUser[],
     private:    boolean,
     password?:  string,
+    lobbyName?: string,
 }
 
 export interface IJoinLobby {

@@ -19,6 +19,14 @@ export class LobbyManagerService {
         this.socket = socket;        
     }
 
+    public getActiveLobbies(): IActiveLobby[] {
+        const list: IActiveLobby[] = [];
+        this.lobbies.forEach((val) => {
+            list.push(val);
+        })
+        return list;
+    }
+
     public join(req: IJoinLobby): string {
 
         this.verifyRequest(req);
@@ -41,7 +49,8 @@ export class LobbyManagerService {
                 users: [user],
                 private: req.private,
                 password: req.password,
-            });
+                lobbyName: req.lobbyName,
+            } as IActiveLobby);
         }
 
         return `Successfully joined lobby ${req.lobbyName}`;

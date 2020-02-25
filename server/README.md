@@ -21,6 +21,7 @@
 | ---------------------             |:----:|-----------------------                 |
 | Join/Create lobby                 |POST  | /game/lobby/join                       |
 | Leave/Delete lobby                |POST  | /game/lobby/leave                      |
+| Get active lobbies                |GET   | /game/lobby/active                     |
 
 # Socket
 |Event  | Description                       |
