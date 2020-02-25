@@ -29,8 +29,8 @@ container.bind(Types.GameController).to(GameController);
 container.bind(Types.DateService).to(DateService);
 container.bind(Types.AccountService).to(AccountService);
 container.bind(Types.WebsocketService).to(WebsocketService);
-container.bind(Types.LobbyManagerService).to(LobbyManagerService);
 
+container.bind(Types.LobbyManagerService).to(LobbyManagerService).inSingletonScope();
 container.bind(Types.ChatDbService).to(ChatDbService).inSingletonScope();
 container.bind(Types.AccountDbService).to(AccountDbService).inSingletonScope();
 container.bind(Types.ChatService).to(ChatService).inSingletonScope();

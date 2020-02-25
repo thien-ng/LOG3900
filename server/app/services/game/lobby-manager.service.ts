@@ -1,5 +1,6 @@
 import { injectable, inject } from "inversify";
 import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes } from "../../interfaces/game";
+import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
 
 import * as io from 'socket.io';
@@ -16,7 +17,7 @@ export class LobbyManagerService {
     }
 
     public initSocketServer(socketServer: io.Server): void {
-        this.socketServer = socketServer;        
+        this.socketServer = socketServer;     
     }
 
     public sendMessages(mes: IReceptMes): void {
@@ -38,7 +39,6 @@ export class LobbyManagerService {
     }
 
     public join(req: IJoinLobby): string {
-
         this.verifyRequest(req);
 
         const user = this.userServ.getUsersByName(req.username);
@@ -48,18 +48,24 @@ export class LobbyManagerService {
         const lobby = this.lobbyDoesExists(req.lobbyName);
 
         if (lobby) {
-            if (lobby.private && this.isPwdMatching(req.password as string, lobby.password as string))
+            if (lobby.private && this.isPwdMatching(req.password as string, lobby.password as string)) {
+                if (this.isUserInLobbyAlready(lobby.users, user.username))
+                    throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
+                if ((lobby.users.length + 1) > lobby.size)
+                    throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
                 lobby.users.push(user);
+            }
             else if (lobby.private == false)
                 lobby.users.push(user);
             else
                 throw new Error(`Wrong password for lobby ${req.lobbyName}`);
         } else {
             this.lobbies.set(req.lobbyName, {
-                users: [user],
-                private: req.private,
-                password: req.password,
-                lobbyName: req.lobbyName,
+                users:      [user],
+                private:    req.private,
+                size:       req.size,
+                password:   req.password,
+                lobbyName:  req.lobbyName,
             } as IActiveLobby);
         }
 
@@ -89,6 +95,10 @@ export class LobbyManagerService {
         return `Left ${req.lobbyName} successfully`;
     }
 
+    private isUserInLobbyAlready(users: IUser[], name: string): boolean {
+        return users.some(u => {return u.username === name});
+    }
+
     private isPwdMatching(pw: string, lobbyPw: string): boolean {
         return pw === lobbyPw;
     }
@@ -104,10 +114,12 @@ export class LobbyManagerService {
             throw new Error("Username lenght must be between 1 and 20");
         if (req.lobbyName.length < 1 || req.lobbyName.length > 20)
             throw new Error("Lobby name must be between 1 and 20");
-
+        
         if (!this.isJoinLobby(req))
-            return;
-
+        return;
+        if (req.size) 
+            if (req.size < 2 || req.size > 10)
+                throw new Error("Lobby size should be between 2 and 10");
         if (typeof req.private !== "boolean")
             throw new Error("Private attribute must be boolean");
         if (req.private)

@@ -4,13 +4,15 @@ export interface IActiveLobby {
     users:      IUser[],
     private:    boolean,
     password?:  string,
-    lobbyName: string,
+    lobbyName:  string,
+    size:      number,
 }
 
 export interface IJoinLobby {
     username:  string,
     private:   boolean,
     lobbyName: string,
+    size?:      number,
     password?: string,
 }
 
