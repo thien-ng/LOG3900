@@ -26,7 +26,7 @@ CREATE OR REPLACE FUNCTION LOG3900.getMessagesWithChannelId(in_id VARCHAR(20))
 RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8)) AS $$
     BEGIN
         RETURN QUERY
-        WITH RECURSIVE messageOrder(parent_id, id, content, level, ts, account_id)
+        WITH RECURSIVE messageOrder(parent_id, id, content, level, ts, messageOrder.account_id)
         AS (
             SELECT parent_id, id, content, 0, ts, account_id
             FROM LOG3900.MESSAGES as messages
