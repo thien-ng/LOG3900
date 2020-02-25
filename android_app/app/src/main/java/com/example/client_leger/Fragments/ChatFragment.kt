@@ -6,11 +6,13 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.Request
@@ -59,6 +61,18 @@ class ChatFragment: Fragment() {
         loadChatHistory(channelId, messageAdapter, v.recyclerView_chat_log, username)
 
         setChannel(channelId)
+
+        v.searchView_channelSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                Log.w("search", "new search: $newText")
+                //TODO: http request and update recycle view.
+                return false
+            }
+        })
 
         v.chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
