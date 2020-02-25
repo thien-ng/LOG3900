@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 using System.Windows.Input;
-using PolyPaint.VueModeles.Chat;
+using PolyPaint.VueModeles;
 
 namespace PolyPaint.Vues
 {
@@ -12,7 +12,6 @@ namespace PolyPaint.Vues
     {
         public Chat()
         {
-            this.DataContext = new MessageListViewModel();
             InitializeComponent();
             Keyboard.Focus(chatBox);
         }
