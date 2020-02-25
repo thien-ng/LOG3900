@@ -136,7 +136,6 @@
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
     <Compile Include="VueModeles\BaseViewModel.cs" />
-    <Compile Include="VueModeles\MessageListViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\HomeViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />

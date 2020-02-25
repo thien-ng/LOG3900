@@ -8,10 +8,7 @@
       xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="1000"
-      Title="Home">
-    <Page.Resources>
-        <localViewModel:MessageListViewModel x:Key="MessageListViewModel"/>
-    </Page.Resources>
+      Title="Home" Loaded="PageLoaded">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
@@ -19,7 +16,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
-        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" Width="800" x:Name="chatHome" ></local:Chat>
+        <local:Chat Width="800" x:Name="chatHome" ></local:Chat>
         <Button Width="50" Grid.Column="1" VerticalAlignment="Top" Click="Button_Click">
             <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Button>
