@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes } from "../../interfaces/game";
 import { UserManagerService } from "../user-manager.service";
 
 import * as io from 'socket.io';
@@ -9,14 +9,24 @@ import Types from '../../types';
 export class LobbyManagerService {
 
     private lobbies: Map<string , IActiveLobby>
-    private socket:  io.Server;
+    private socketServer:  io.Server;
 
     public constructor(@inject(Types.UserManagerService) private userServ: UserManagerService) {
         this.lobbies = new Map<string, IActiveLobby>();
     }
 
-    public initSocketServer(socket: io.Server): void {
-        this.socket = socket;        
+    public initSocketServer(socketServer: io.Server): void {
+        this.socketServer = socketServer;        
+    }
+
+    public sendMessages(mes: IReceptMes): void {
+        const lobby = this.lobbyDoesExists(mes.lobbyName);
+
+        if (lobby) {
+            lobby.users.forEach(u => {
+                this.socketServer.to(u.socketId).emit(mes.message);
+            });
+        }
     }
 
     public getActiveLobbies(): IActiveLobby[] {
@@ -66,8 +76,7 @@ export class LobbyManagerService {
         const lobby = this.lobbyDoesExists(req.lobbyName);
         
         if (lobby) {
-
-            lobby.users = lobby.users.filter(u => {u.username !== req.username});
+            lobby.users = lobby.users.filter(u => {return u.username !== req.username});
 
             if (lobby.users.length === 0)
                 this.lobbies.delete(req.lobbyName);
@@ -77,7 +86,6 @@ export class LobbyManagerService {
         } else {
             throw new Error(`${req.lobbyName} not found`);
         }
-
         return `Left ${req.lobbyName} successfully`;
     }
 
@@ -104,7 +112,7 @@ export class LobbyManagerService {
             throw new Error("Private attribute must be boolean");
         if (req.private)
             if (!req.password)
-                throw new Error("Private match must have password");
+                throw new Error("Private lobby must have password");
             else if (req.password.length < 1 || req.password.length > 20)
                 throw new Error("Password lenght must be between 1 and 20");
     }
@@ -114,7 +122,7 @@ export class LobbyManagerService {
     }
 
     private verifySocketConnection(): void {
-        if (!this.socket)
+        if (!this.socketServer)
             throw new Error("Socket is not connected");
     }
 
