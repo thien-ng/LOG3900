@@ -16,6 +16,11 @@
 | Leave a channel                   |DELETE| /chat/channels/leave/:username/:channel|
 | Invite player to channel          |POST  | /chat/channels/invite                  |
 
+## Game
+| Description                       | type | path                                   |
+| ---------------------             |:----:|-----------------------                 |
+| Join/Create lobby                 |POST  | /game/lobby/join                       |
+| Leave/Delete lobby                |POST  | /game/lobby/leave                      |
 
 # Socket
 |Event  | Description                       |

@@ -17,5 +17,9 @@ export class GameController {
         this.router.post('/lobby/join', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.lobbyServ.join(req.body));
         });
+
+        this.router.post('/lobby/leave', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.lobbyServ.join(req.body));
+        });
     }
 }
