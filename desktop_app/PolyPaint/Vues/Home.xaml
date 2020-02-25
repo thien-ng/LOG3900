@@ -11,7 +11,6 @@
       Title="Home">
     <Page.Resources>
         <ResourceDictionary>
-            <localViewModel:MessageListViewModel x:Key="MessageListViewModel"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToolTip.xaml" />
@@ -25,7 +24,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
-        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" Width="500" x:Name="chatHome" Grid.Column="0" ></local:Chat>
+        <local:Chat Width="500" x:Name="chatHome" Grid.Column="0"/>
         <local:Profile Grid.Column="1"/>
         <Button Width="50" Grid.Column="2" HorizontalAlignment="left" VerticalAlignment="Top" Click="Button_Click">
             <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>

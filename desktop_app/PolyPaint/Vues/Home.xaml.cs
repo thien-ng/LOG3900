@@ -26,7 +26,6 @@ namespace PolyPaint.Vues
         bool _isOpen;
         Chat _chatView;
         Window _window;
-        MessageListViewModel _chat;
         public Home()
         {
             InitializeComponent();
@@ -35,13 +34,11 @@ namespace PolyPaint.Vues
                 chatHome.Visibility = Visibility.Visible;
             }
             _isOpen = false;
-            _chat = new MessageListViewModel();
             _chatView = new Chat();
             _window = new Window();
             _window.Content = _chatView;
             _window.Height = 450;
             _window.Width = 600;
-            _window.DataContext = _chat;
             _window.Closing += new CancelEventHandler(this.onWindowClosing);
         }
         private void onWindowClosing(Object sender, CancelEventArgs e)
