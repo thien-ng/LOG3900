@@ -3,6 +3,7 @@ import { Application } from './app';
 import { Server } from './server';
 import { DateController } from './controllers/date.controller';
 import { AccountController } from './controllers/account.controller';
+import { GameController } from './controllers/game.controller';
 import { DateService } from './services/date.service';
 import { AccountService } from './services/account.service';
 import { WebsocketService } from './services/websocket.service';
@@ -23,12 +24,12 @@ container.bind(Types.Application).to(Application);
 container.bind(Types.DateController).to(DateController);
 container.bind(Types.AccountController).to(AccountController);
 container.bind(Types.ChatController).to(ChatController);
+container.bind(Types.GameController).to(GameController);
 
 container.bind(Types.DateService).to(DateService);
 container.bind(Types.AccountService).to(AccountService);
 container.bind(Types.WebsocketService).to(WebsocketService);
 container.bind(Types.LobbyManagerService).to(LobbyManagerService);
-
 
 container.bind(Types.ChatDbService).to(ChatDbService).inSingletonScope();
 container.bind(Types.AccountDbService).to(AccountDbService).inSingletonScope();

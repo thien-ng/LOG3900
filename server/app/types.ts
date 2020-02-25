@@ -5,6 +5,7 @@ export default {
     DateController:     Symbol('DateController'),
     AccountController:  Symbol('AccountController'),
     ChatController:     Symbol('ChatController'),
+    GameController:     Symbol('GameController'),
 
     DateService:        Symbol('DateService'),
     AccountService:     Symbol('AccountService'),

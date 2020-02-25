@@ -8,6 +8,7 @@ import { DateController } from './controllers/date.controller';
 import { AccountController } from './controllers/account.controller';
 import { ChatController } from './controllers/chat.controller';
 import Types from './types';
+import { GameController } from './controllers/game.controller';
 
 @injectable()
 export class Application {
@@ -18,6 +19,7 @@ export class Application {
         @inject(Types.DateController) private dateController: DateController,
         @inject(Types.AccountController) private accountController: AccountController,
         @inject(Types.ChatController) private chatController: ChatController,
+        @inject(Types.GameController) private gameController: GameController,
     ) {
         this.app = express();
 
@@ -40,6 +42,7 @@ export class Application {
         this.app.use('/date', this.dateController.router);
         this.app.use('/account', this.accountController.router);
         this.app.use('/chat', this.chatController.router);
+        this.app.use('/game', this.gameController.router);
         this.errorHandling();
     }
 
