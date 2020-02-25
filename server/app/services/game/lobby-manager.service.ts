@@ -25,7 +25,7 @@ export class LobbyManagerService {
 
         if (lobby) {
             lobby.users.forEach(u => {
-                this.socketServer.to(u.socketId).emit(mes.message);
+                this.socketServer.to(u.socketId).emit("lobby", mes.message);
             });
         }
     }
