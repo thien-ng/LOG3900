@@ -5,7 +5,7 @@ export interface IActiveLobby {
     private:    boolean,
     password?:  string,
     lobbyName:  string,
-    size:      number,
+    size:       number,
 }
 
 export interface IJoinLobby {

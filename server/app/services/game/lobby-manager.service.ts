@@ -60,6 +60,8 @@ export class LobbyManagerService {
             else
                 throw new Error(`Wrong password for lobby ${req.lobbyName}`);
         } else {
+            if (!req.size)
+                throw new Error("Lobby size must be specified when lobby does not exist")
             this.lobbies.set(req.lobbyName, {
                 users:      [user],
                 private:    req.private,
