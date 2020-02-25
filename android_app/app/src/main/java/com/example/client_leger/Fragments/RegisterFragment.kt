@@ -38,7 +38,7 @@ class RegisterFragment : Fragment() {
 
         v.register_button.setOnClickListener {
 
-            if (validRegisterFields()) {
+            if (validRegisterFields(v)) {
                 closeKeyboard()
                 v.register_button.isEnabled = false
 
@@ -128,36 +128,36 @@ class RegisterFragment : Fragment() {
         startActivityForResult(intent, Constants.GALLERY_REQUEST_CODE)
     }
 
-    private fun validRegisterFields(): Boolean {
+    private fun validRegisterFields(v: View): Boolean {
         when {
-            register_editText_fName.text.isBlank() -> {
-                register_editText_fName.error = "Enter a valid first name"
-                register_editText_fName.requestFocus()
+            v.register_editText_fName.text.isBlank() -> {
+                v.register_editText_fName.error = "Enter a valid first name"
+                v.register_editText_fName.requestFocus()
                 return false
             }
-            register_editText_lName.text.isBlank() -> {
-                register_editText_lName.error = "Enter a valid last name"
-                register_editText_lName.requestFocus()
+            v.register_editText_lName.text.isBlank() -> {
+                v.register_editText_lName.error = "Enter a valid last name"
+                v.register_editText_lName.requestFocus()
                 return false
             }
-            register_editText_username.text.isBlank() || register_editText_username.text.length > Constants.MAX_USERNAME_SiZE  -> {
-                register_editText_username.error = "Enter a valid username"
-                register_editText_username.requestFocus()
+            v.register_editText_username.text.isBlank() || v.register_editText_username.text.length > Constants.MAX_USERNAME_SiZE  -> {
+                v.register_editText_username.error = "Enter a valid username"
+                v.register_editText_username.requestFocus()
                 return false
             }
-            register_editText_password.text.isBlank() || register_editText_password.text.length > Constants.MAX_PASSWORD_SiZE -> {
-                register_editText_password.error = "Enter a valid password"
-                register_editText_password.requestFocus()
+            v.register_editText_password.text.isBlank() || v.register_editText_password.text.length > Constants.MAX_PASSWORD_SiZE -> {
+                v.register_editText_password.error = "Enter a valid password"
+                v.register_editText_password.requestFocus()
                 return false
             }
-            register_editText_confirmPassword.text.isBlank() -> {
-                register_editText_confirmPassword.error = "You need to confirm the password"
-                register_editText_confirmPassword.requestFocus()
+            v.register_editText_confirmPassword.text.isBlank() -> {
+                v.register_editText_confirmPassword.error = "You need to confirm the password"
+                v.register_editText_confirmPassword.requestFocus()
                 return false
             }
-            register_editText_confirmPassword.text.toString() != register_editText_password.text.toString() -> {
-                register_editText_confirmPassword.error = "Password doesn't match"
-                register_editText_confirmPassword.requestFocus()
+            v.register_editText_confirmPassword.text.toString() != v.register_editText_password.text.toString() -> {
+                v.register_editText_confirmPassword.error = "Password doesn't match"
+                v.register_editText_confirmPassword.requestFocus()
                 return false
             }
             else -> return true
