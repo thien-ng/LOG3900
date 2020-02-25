@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent" android:layout_height="match_parent">
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchColumns="1">
 
-    <TextView
-            android:id="@+id/textView"
-            android:layout_width="262dp"
-            android:layout_height="108dp"
-            android:text="Profil here"
-            android:textSize="100px"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-</android.support.constraint.ConstraintLayout>
+    <TableRow
+            android:layout_height="0dp"
+            android:layout_weight="10">
+
+        <TextView
+                android:padding="3dip"
+                android:text="My Profile" />
+
+        <TextView
+                android:gravity="right"
+                android:padding="3dip"
+                android:text="User1" />
+    </TableRow>
+
+    <TableRow
+            android:layout_height="0dp"
+            android:layout_weight="32">
+
+        <TextView
+                android:padding="3dip"
+                android:text="Match History" />
+
+    </TableRow>
+
+    <TableRow
+            android:layout_height="0dp"
+            android:layout_weight="60">
+
+        <TextView android:text="User Statistics" />
+    </TableRow>
+</TableLayout>
+
