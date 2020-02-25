@@ -63,7 +63,6 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
         activity!!.runOnUiThread{
             if (::username.isInitialized) {
-                Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()
                 if (mes.getString("status").toInt() == 200) {
                     connect(username)
                 }
