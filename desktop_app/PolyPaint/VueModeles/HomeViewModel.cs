@@ -1,4 +1,5 @@
-﻿using PolyPaint.Modeles;
+﻿using Newtonsoft.Json.Linq;
+using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System.Collections.ObjectModel;
@@ -15,17 +16,33 @@ namespace PolyPaint.VueModeles
         private string _switchViewButtonTooltip;
         private bool _frontEnabled;
         private bool _backEnabled;
+        private ObservableCollection<MessageChannel> _channels;
         private ChatRoom _selectedChannel;
+        
 
         public HomeViewModel()
         {
-            _selectedChannel = new ChatRoom("general");
+            _channels = new ObservableCollection<MessageChannel>();
+            FetchChannels();
             Mediator.Subscribe("ChangeChannel", ChangeChannel);
             SwitchView = 0;
             SwitchViewButton = "Profile";
             SwitchViewButtonTooltip = "Access to profile";
             FrontEnabled = false;
             BackEnabled = false;
+            _selectedChannel = new ChatRoom("pute");
+        }
+
+        private async void FetchChannels()
+        {
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_CHANNELS_PATH + "/" + ServerService.instance.username);
+            JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+
+            foreach (var item in responseJson)
+            {
+                if (((JObject)item).ContainsKey("id"))
+                    _channels.Add(new MessageChannel(((JObject)item).GetValue("id").ToString()));
+            }
         }
 
         private ICommand _goToLogin;
@@ -57,6 +74,12 @@ namespace PolyPaint.VueModeles
             //TODO Channel ID 1 temp
         }
 
+        public ObservableCollection<MessageChannel> Channels 
+        {
+            get { return _channels; }
+            set { _channels = value; ProprieteModifiee(); }
+        }
+
         public ObservableCollection<MessageChat> Messages
         {
             get { return _selectedChannel.Messages; }
@@ -83,18 +106,15 @@ namespace PolyPaint.VueModeles
 
         private void ChangeChannel(object id)
         {
-            _selectedChannel = new ChatRoom((string)id);
-            ProprieteModifiee("Messages");
+            string channelId = (string)id;
+            
+            if (channelId != _selectedChannel.ID)
+            {
+                _selectedChannel = new ChatRoom((string)id);
+                ProprieteModifiee("Messages");
+            }
         }
-        public ObservableCollection<MessageChannel> Test
-        {
-            get { return new ObservableCollection<MessageChannel> { new MessageChannel("general"), new MessageChannel("pute") }; }
-        }
-        //private object _selectedView;
-        //public object SelectedView {
-        //    get { return _selectedView; }
-        //    set { _selectedView = value; ProprieteModifiee("SelectedView"); }
-        //}
+
         private ICommand _switchViewCommand;
         public ICommand SwitchViewCommand
         {
@@ -120,21 +140,25 @@ namespace PolyPaint.VueModeles
             get { return _switchView; }
             set { _switchView = value; ProprieteModifiee(); }
         }
+
         public string SwitchViewButton
         {
             get { return _switchViewButton; }
             set { _switchViewButton = value; ProprieteModifiee(); }
         }
+
         public string SwitchViewButtonTooltip
         {
             get { return _switchViewButtonTooltip; }
             set { _switchViewButtonTooltip = value; ProprieteModifiee(); }
         }
+
         public bool FrontEnabled
         {
             get { return _frontEnabled; }
             set { _frontEnabled = value; ProprieteModifiee(); }
         }
+        
         public bool BackEnabled
         {
             get { return _backEnabled; }

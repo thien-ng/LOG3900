@@ -145,9 +145,6 @@
     <Compile Include="VueModeles\LoginViewModel.cs" />
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="VueModeles\VueModele.cs" />
-    <Compile Include="Vues\Channels.xaml.cs">
-      <DependentUpon>Channels.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Vues\Chat.xaml.cs">
       <DependentUpon>Chat.xaml</DependentUpon>
     </Compile>
@@ -182,10 +179,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\FenetreDessin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Vues\Channels.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

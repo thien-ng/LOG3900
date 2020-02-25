@@ -1,19 +1,5 @@
-﻿using PolyPaint.VueModeles;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using PolyPaint;
 using System.ComponentModel;
 
 namespace PolyPaint.Vues
@@ -23,9 +9,9 @@ namespace PolyPaint.Vues
     /// </summary>
     public partial class Home : Page
     {
-        bool _isOpen;
-        Chat _chatView;
-        Window _window;
+        private bool _isOpen;
+        private Chat _chatView;
+        private Window _window;
 
         public Home()
         {
@@ -43,15 +29,16 @@ namespace PolyPaint.Vues
             _window.Closing += new CancelEventHandler(this.onWindowClosing);
         }
 
-        public void PageLoaded(Object sender, RoutedEventArgs e) 
+        public void PageLoaded(object sender, RoutedEventArgs e) 
         { 
-            _window.DataContext = this.DataContext;
+            _window.DataContext = DataContext;
         }
 
-        private void onWindowClosing(Object sender, CancelEventArgs e)
+        private void onWindowClosing(object sender, CancelEventArgs e)
         {
-            e.Cancel =true;
+            e.Cancel = true;
             _window.Hide();
+            chatColumn.Width = new GridLength(2.5, GridUnitType.Star);
             chatHome.Visibility = Visibility.Visible;
             _isOpen = false;
         }
@@ -60,12 +47,14 @@ namespace PolyPaint.Vues
         {
             if(!_isOpen) { 
                 _window.Show();
+                chatColumn.Width = GridLength.Auto;
                 chatHome.Visibility = Visibility.Collapsed;
                 _isOpen = true;
             }
             else
             {
                 _window.Hide();
+                chatColumn.Width = new GridLength(2.5, GridUnitType.Star);
                 chatHome.Visibility = Visibility.Visible;
                 _isOpen = false;
             }

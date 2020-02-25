@@ -15,6 +15,7 @@ namespace PolyPaint.Utilitaires
         public const string LOGIN_PATH     = ACCOUNT_PATH + "/login";
         public const string REGISTER_PATH  = ACCOUNT_PATH + "/register";
         public const string CHAT_MESSAGES_PATH = "/chat/messages";
+        public const string USER_CHANNELS_PATH = "/chat/channels";
         public const int    SUCCESS_CODE   = 200;
         public const int    PWD_MIN_LENGTH = 1; //TODO
         public const int    USR_MIN_LENGTH = 1; //TODO

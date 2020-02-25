@@ -26,16 +26,14 @@
         </ResourceDictionary>
         
     </Page.Resources>
-    <Grid>
+    <Grid x:Name="displayGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.5*" />
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="5*" />
+            <ColumnDefinition Name="chatColumn" Width="2.5*"/>
+            <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
-        <local:Channels/>
-        <local:Chat x:Name="chatHome" Grid.Column="1"/>
+        <local:Chat x:Name="chatHome" Grid.Column="0"/>
         <ContentControl Content="{Binding }" Grid.Column="2">
             <ContentControl.Style>
                 <Style TargetType="{x:Type ContentControl}">

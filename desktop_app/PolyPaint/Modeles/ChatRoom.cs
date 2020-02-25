@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -16,13 +15,13 @@ namespace PolyPaint.Modeles
 
         public ChatRoom(string id)
         {
+            _messages = new ObservableCollection<MessageChat>();
             ID = id;
             Setup();
         }
 
         private void Setup()
         {
-            _messages = new ObservableCollection<MessageChat>();
             LoadMessages();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
         }
@@ -30,7 +29,7 @@ namespace PolyPaint.Modeles
         public ObservableCollection<MessageChat> Messages
         {
             get { return _messages; }
-            set { _messages = value; ProprieteModifiee(); }
+            set { _messages = value; ProprieteModifiee(nameof(Messages)); }
         }
 
         public void SendMessage(string message)
@@ -61,6 +60,7 @@ namespace PolyPaint.Modeles
 
             foreach (var item in responseJson)
                 ReceiveMessage(item);
+
         }
 
         protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
