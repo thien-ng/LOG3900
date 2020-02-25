@@ -24,6 +24,11 @@ class ConnexionController {
             Constants.SERVER_URL + Constants.LOGIN_ENPOINT,
             null,
             Response.Listener { response ->
+                Toast.makeText(
+                    applicationContext,
+                    response["message"].toString(),
+                    Toast.LENGTH_SHORT
+                ).show()
                 if(response["status"].toString().toInt() == 200) {
                     SocketIO.connect(body.get("username").toString())
                 }

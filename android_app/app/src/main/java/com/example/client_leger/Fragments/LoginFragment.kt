@@ -63,7 +63,6 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
         activity!!.runOnUiThread{
             if (::username.isInitialized) {
-                Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()
                 if (mes.getString("status").toInt() == 200) {
                     connect(username)
                 }
@@ -84,7 +83,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     }
 
 
-    fun connect(username: String) {
+    private fun connect(username: String) {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
