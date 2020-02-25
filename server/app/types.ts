@@ -11,6 +11,7 @@ export default {
     WebsocketService:   Symbol('WebsocketService'),
     ChatService:        Symbol('ChatService'),
     UserManagerService: Symbol('UserManagerService',),
+    LobbyManagerService:Symbol('LobbyManagerService'),
 
     AccountDbService:   Symbol('AccountDbService'),
     ChatDbService:      Symbol('ChatDbService'),
