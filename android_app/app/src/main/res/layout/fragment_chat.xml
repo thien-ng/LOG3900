@@ -72,11 +72,12 @@
                     android:layout_height="wrap_content"
                     android:text="Disconnect" />
 
-            <TextView
-                    android:id="@+id/textView_channel"
+            <SearchView
+                    android:id="@+id/searchView_channelSearch"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Channels" />
+                    android:layout_height="match_parent"
+                    android:iconifiedByDefault="false"
+                    android:queryHint="Channels" />
 
             <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView_channels"
