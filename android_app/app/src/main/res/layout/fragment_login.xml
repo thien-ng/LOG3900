@@ -7,14 +7,13 @@
         android:layout_marginLeft="50px"
         android:layout_marginRight="50px"
         android:layout_gravity="center"
-        android:minHeight="200dp">
+        android:minHeight="200dp"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
 
     <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:descendantFocusability="beforeDescendants"
-            android:focusableInTouchMode="true"
-            >
+            android:layout_height="match_parent">
 
         <Button
                 android:id="@+id/login_button"
