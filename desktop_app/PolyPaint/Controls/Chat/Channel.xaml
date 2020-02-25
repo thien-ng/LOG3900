@@ -2,21 +2,37 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PolyPaint.Controls.Chat"
-             mc:Ignorable="d" 
-             d:DesignHeight="60" d:DesignWidth="300">
-    <Grid Background="White">
-        <Grid.ColumnDefinitions>
-            <!--active channel visual-->
-            <ColumnDefinition Width="auto"/>
-            <!-- Channel name-->
-            <ColumnDefinition Width="auto"/>
-            <!-- channel last content -->
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Border Background="red" Width="10" Grid.Column="0" />
-        <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Canal général : "/>
-        <TextBlock Grid.Column="2" Padding="5,10,0,10" FontSize="15" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" Text="User 1 : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent scelerisque scelerisque ligula ac sollicitudin. In felis elit, lacinia molestie lacus ut, pharetra faucibus est. Praesent varius, tellus viverra pharetra eleifend, purus ligula ornare dui"/>
-    </Grid>
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" d:DesignWidth="300">
+
+    <Border>
+        <Border.InputBindings>
+            <MouseBinding MouseAction="LeftClick" Command="{Binding SelectChannelCommand}"/>
+        </Border.InputBindings>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <!-- Channel name-->
+                <ColumnDefinition Width="1*"/>
+                <!-- channel last content -->
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Ellipse Width="60"
+                     Height="60"
+                     Fill="Gray"
+                     Margin="5"/>
+            <TextBlock Text="XX" 
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       Foreground="DarkRed"
+                       FontSize="22"
+                       FontWeight="Bold"/>
+            <TextBlock Grid.Column="1" 
+                       VerticalAlignment="Center"
+                       Padding="5,10,0,10" 
+                       FontSize="15" 
+                       TextWrapping="Wrap" 
+                       TextTrimming="CharacterEllipsis" 
+                       Text="{Binding id}"/>
+        </Grid>
+    </Border>
 </UserControl>

@@ -122,10 +122,11 @@
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Modeles\MessageChannel.cs" />
     <Compile Include="Modeles\MessageChat.cs" />
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
-    <Compile Include="Modeles\MessageChannel.cs" />
+    <Compile Include="Modeles\ChatRoom.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Utilitaires\Constants.cs" />
@@ -142,6 +143,9 @@
     <Compile Include="VueModeles\LoginViewModel.cs" />
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="VueModeles\VueModele.cs" />
+    <Compile Include="Vues\Channels.xaml.cs">
+      <DependentUpon>Channels.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Chat.xaml.cs">
       <DependentUpon>Chat.xaml</DependentUpon>
     </Compile>
@@ -170,6 +174,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\FenetreDessin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\Channels.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

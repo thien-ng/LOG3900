@@ -1,12 +1,7 @@
 ﻿using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -14,11 +9,12 @@ namespace PolyPaint.VueModeles
     class HomeViewModel : BaseViewModel, IPageViewModel
     {
         private string _pendingMessage;
-        private MessageChannel _channel;
+        private ChatRoom _selectedChannel;
 
         public HomeViewModel()
         {
-            _channel = new MessageChannel(1);
+            _selectedChannel = new ChatRoom("general");
+            Mediator.Subscribe("ChangeChannel", ChangeChannel);
         }
 
         private ICommand _goToLogin;
@@ -50,9 +46,9 @@ namespace PolyPaint.VueModeles
             //TODO Channel ID 1 temp
         }
 
-        public ObservableCollection<MessageChat> Items
+        public ObservableCollection<MessageChat> Messages
         {
-            get { return _channel.Items; }
+            get { return _selectedChannel.Messages; }
         }
 
         public string PendingMessage
@@ -68,10 +64,20 @@ namespace PolyPaint.VueModeles
             {
                 return _sendCommand ?? (_sendCommand = new RelayCommand<string>(x =>
                 {
-                    _channel.SendMessage(PendingMessage);
+                    _selectedChannel.SendMessage(PendingMessage);
                     PendingMessage = "";
                 }));
             }
+        }
+
+        private void ChangeChannel(object id)
+        {
+            _selectedChannel = new ChatRoom((string)id);
+            ProprieteModifiee("Messages");
+        }
+        public ObservableCollection<MessageChannel> Test
+        {
+            get { return new ObservableCollection<MessageChannel> { new MessageChannel("general"), new MessageChannel("pute")}; }
         }
     }
 }
