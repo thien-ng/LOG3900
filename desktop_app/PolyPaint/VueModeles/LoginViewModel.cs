@@ -59,7 +59,6 @@ namespace PolyPaint.VueModeles
             if (status == 200)
             {
                 Mediator.Notify("GoToChatScreen", "");
-                MessageBox.Show(message);
             }
             else
             {
