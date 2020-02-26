@@ -5,24 +5,69 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:local="clr-namespace:PolyPaint.Vues"
-      xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles.Chat"
+      xmlns:model="clr-namespace:PolyPaint.VueModeles"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="1000"
+      Loaded="PageLoaded"
       Title="Home">
     <Page.Resources>
-        <localViewModel:MessageListViewModel x:Key="MessageListViewModel"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToolTip.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="GameList" DataType="{x:Type model:GamelistViewModel}">
+                <local:GameList />
+            </DataTemplate>
+
+            <DataTemplate x:Key="Profile" DataType="{x:Type model:ProfileViewModel}">
+                <local:Profile />
+            </DataTemplate>
+        </ResourceDictionary>
+        
     </Page.Resources>
-    <Grid>
+    <Grid x:Name="displayGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Name="chatColumn" Width="2.5*"/>
+            <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
         </Grid.RowDefinitions>
-        <local:Chat DataContext="{Binding Source={StaticResource MessageListViewModel}}" Width="800" x:Name="chatHome" ></local:Chat>
-        <Button Width="50" Grid.Column="1" VerticalAlignment="Top" Click="Button_Click">
-            <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        </Button>
-        <Button Content="Disconnect" Margin="0,7,15,0" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Command="{Binding DisconnectCommand}"/>
+        <local:Chat x:Name="chatHome" Grid.Column="0"/>
+        <ContentControl Content="{Binding }" Grid.Column="2">
+            <ContentControl.Style>
+                <Style TargetType="{x:Type ContentControl}">
+                    <Setter Property="ContentTemplate" Value="{StaticResource GameList}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SwitchView}" Value="1">
+                            <Setter Property="ContentTemplate" Value="{StaticResource Profile}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+        <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left">
+            
+            <Button Width="50" Grid.Column="2" Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="left" VerticalAlignment="Top" Click="Button_Click">
+                <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center"/>
+            </Button>
+            <Button Width="50" IsEnabled="{Binding BackEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                <materialDesign:PackIcon Foreground="White" Kind="ArrowBack" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+            <Button Width="50" IsEnabled="{Binding FrontEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                <materialDesign:PackIcon Foreground="White" Kind="ArrowForward" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+        </StackPanel>
+        <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
+            <materialDesign:PopupBox.ToggleContent>
+                <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5,5,5,5" Foreground="White" />
+            </materialDesign:PopupBox.ToggleContent>
+            <StackPanel>
+                <Button ToolTip="{Binding SwitchViewButtonTooltip}" Command="{Binding SwitchViewCommand}" Content="{Binding SwitchViewButton}" ></Button>
+                <Button VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="disconnect" Command="{Binding DisconnectCommand}">
+                    <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" Height="30" Kind="PowerStandby" Foreground="Red"/>
+                </Button>
+            </StackPanel>
+        </materialDesign:PopupBox>
     </Grid>
 </Page>

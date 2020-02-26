@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows.Ink;
 using System.Windows.Media;
 using PolyPaint.Modeles;
 using PolyPaint.Utilitaires;
-using System.Net.Http;
 
 namespace PolyPaint.VueModeles
 {
