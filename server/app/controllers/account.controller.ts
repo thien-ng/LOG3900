@@ -27,6 +27,7 @@ export class AccountController {
          *          description: A successful response
          */
         this.router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+            console.log(req.body);
             res.json(await this.accountService.register(req.body));
         });
 

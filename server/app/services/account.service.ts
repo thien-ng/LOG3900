@@ -1,10 +1,5 @@
 import { injectable, inject } from "inversify";
-<<<<<<< HEAD
-import { IRegistration, IStatus, ILogin } from "../interfaces/communication";
-=======
 import { IRegistration, IStatus, ILogin, IinfoUser } from "../interfaces/communication";
-import { UserManagerService } from "./user-manager.service";
->>>>>>> D:ajout des info users, get info user et utils folder
 import { AccountDbService } from "../database/account-db.service";
 import * as pg from "pg";
 import Types from '../types';
@@ -42,7 +37,6 @@ export class AccountService {
 
             this.verifyLogin(login);
             await this.database.loginAccount(login);
-            this.userServ.addUser(login.username);
 
         } catch (e) {
             result.status = 400
