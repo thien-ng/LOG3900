@@ -18,13 +18,17 @@ export class ChatController {
         this.router.get('/messages/:id', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.chatServ.getMessagesWithChannelId(req.params.id));
         });
-        
-        this.router.get('/channels/all', async (req: Request, res: Response, next: NextFunction) => {
-            res.json(await this.chatServ.getAllExistingChannels());
+
+        this.router.get('/channels/notsub/:username', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.getChannelsNotSubWithAccountName(req.params.username));
         });
 
-        this.router.get('/channels/:username', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.get('/channels/sub/:username', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.chatServ.getChannelsWithAccountName(req.params.username));
+        });
+
+        this.router.get('/channels/search/:word', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.getChannelsBySearch(req.params.word));
         });
 
         this.router.put('/channels/join/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
