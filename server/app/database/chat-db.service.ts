@@ -31,14 +31,14 @@ export class ChatDbService extends DatabaseService {
     }
 
     public async getChannelsWithAccountName(username: string): Promise<pg.QueryResult> {
-        return this.pool.query(`SELECT DISTINCT a.channel_id
+        return this.pool.query(`SELECT a.channel_id
                                 FROM log3900.account as acc, log3900.accountchannel as a
                                 WHERE acc.id = a.account_id
                                 AND acc.username = '${username}';`);
     }
 
     public async getChannelsNotSubWithAccountName(username: string): Promise<pg.QueryResult> {
-        return this.pool.query(`SELECT DISTINCT id
+        return this.pool.query(`SELECT id
                                 FROM log3900.channel
                                 WHERE id NOT IN (
                                     SELECT channel_id

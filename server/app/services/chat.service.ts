@@ -157,7 +157,7 @@ export class ChatService {
             this.verifyParticipationChannel(join);
             const subbedChannels = (await this.db.getChannelsWithAccountName(join.username)).rows.map((row: any) => ({id: row.channel_id}));
             
-            if (subbedChannels.some(chan => chan.id === join.channel))
+            if (subbedChannels.some(chan => {return chan.id === join.channel}))
                 throw new Error(`${join.username} is already subscribed to ${join.channel}.`);
 
             await this.db.joinChannel(join.username, join.channel);
