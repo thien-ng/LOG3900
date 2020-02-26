@@ -89,6 +89,7 @@ describe("LobbyManagerService", () => {
     it("Should fail when joining when user is already in lobby", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
+        chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
         const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
         service.join(req)
@@ -117,6 +118,7 @@ describe("LobbyManagerService", () => {
     it("Should create a new loby when joining empty lobby", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
+        chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
 
         const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
@@ -133,6 +135,7 @@ describe("LobbyManagerService", () => {
     it("Should join active public lobby successfully", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
+        chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
         const spy = chai.spy.on(service, "isPwdMatching");
         
@@ -154,6 +157,7 @@ describe("LobbyManagerService", () => {
     it("Should join active private lobby successfully", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
+        chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
         const spy = chai.spy.on(service, "isPwdMatching");
         
@@ -196,6 +200,7 @@ describe("LobbyManagerService", () => {
     it("Should leave lobby successfully when lobby has one user", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
+        chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
         
         const user = {username:"username", socketId: "testId"};
@@ -215,6 +220,7 @@ describe("LobbyManagerService", () => {
     it("Should leave lobby successfully when lobby has two user", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
+        chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
         
         const user1 = {username:"username", socketId: "testId"};

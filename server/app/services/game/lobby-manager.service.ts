@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
 
@@ -20,20 +20,12 @@ export class LobbyManagerService {
         this.socketServer = socketServer;     
     }
 
-    public sendMessages(mes: IReceptMes): void {
-        const lobby = this.lobbyDoesExists(mes.lobbyName);
-
-        if (lobby) {
-            lobby.users.forEach(u => {
-                this.socketServer.to(u.socketId).emit("lobby", mes.message);
-            });
-        }
-    }
-
     public getActiveLobbies(): IActiveLobby[] {
         const list: IActiveLobby[] = [];
         this.lobbies.forEach((val) => {
-            list.push(val);
+            const lob = val;
+            lob.password = undefined;
+            list.push(lob);
         })
         return list;
     }
@@ -48,18 +40,26 @@ export class LobbyManagerService {
         const lobby = this.lobbyDoesExists(req.lobbyName);
 
         if (lobby) {
+            
+            // Join lobby
             if (lobby.private && this.isPwdMatching(req.password as string, lobby.password as string)) {
                 if (this.isUserInLobbyAlready(lobby.users, user.username))
                     throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
                 if ((lobby.users.length + 1) > lobby.size)
                     throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
                 lobby.users.push(user);
+                
+                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user});
             }
-            else if (lobby.private == false)
+            else if (lobby.private == false){
                 lobby.users.push(user);
+                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user});
+            }
             else
                 throw new Error(`Wrong password for lobby ${req.lobbyName}`);
         } else {
+
+            // Create Lobby
             if (!req.size)
                 throw new Error("Lobby size must be specified when lobby does not exist")
             this.lobbies.set(req.lobbyName, {
@@ -69,6 +69,13 @@ export class LobbyManagerService {
                 password:   req.password,
                 lobbyName:  req.lobbyName,
             } as IActiveLobby);
+            this.sendMessages({
+                lobbyName:  req.lobbyName,
+                type:       LobbyNotif.create,
+                users:      [user],
+                private:    req.private,
+                size:       req.size,
+            } as INotifyLobbyUpdate);
         }
 
         return `Successfully joined lobby ${req.lobbyName}`;
@@ -85,16 +92,37 @@ export class LobbyManagerService {
         
         if (lobby) {
             lobby.users = lobby.users.filter(u => {return u.username !== req.username});
-
-            if (lobby.users.length === 0)
+            if (lobby.users.length === 0) {
+                // Delete lobby
                 this.lobbies.delete(req.lobbyName);
-            else
+                this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.delete});
+            } else {
+                // Leave lobby
                 this.lobbies.set(req.lobbyName, lobby);
+                this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.leave});
+            }
 
         } else {
             throw new Error(`${req.lobbyName} not found`);
         }
         return `Left ${req.lobbyName} successfully`;
+    }
+
+    public sendMessages(mes: IReceptMes | INotifyUpdateUser | INotifyLobbyUpdate): void {
+        const lobby = this.lobbyDoesExists(mes.lobbyName);
+
+        if (lobby) {
+            lobby.users.forEach(u => {
+                if (this.isNotification(mes))
+                    this.socketServer.to(u.socketId).emit("lobby-notif", mes);
+                else 
+                    this.socketServer.to(u.socketId).emit("lobby-chat", mes.message);
+            });
+        }
+    }
+
+    private isNotification(object: any): object is INotify {
+        return "type" in object;
     }
 
     private isUserInLobbyAlready(users: IUser[], name: string): boolean {

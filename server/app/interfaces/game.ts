@@ -12,7 +12,7 @@ export interface IJoinLobby {
     username:  string,
     private:   boolean,
     lobbyName: string,
-    size?:      number,
+    size?:     number,
     password?: string,
 }
 
@@ -23,6 +23,28 @@ export interface ILeaveLobby {
 
 export interface IReceptMes {
     lobbyName: string,
-    username: string,
-    message: string,
+    username:  string,
+    message:   string,
+}
+
+export interface INotify {
+    lobbyName: string,
+    type:      LobbyNotif,
+}
+
+export interface INotifyUpdateUser extends INotify{
+    user:      IUser;
+}
+
+export interface INotifyLobbyUpdate extends INotify {
+    users?:     IUser[],
+    private?:   boolean,
+    size?:      number,
+}
+
+export enum LobbyNotif {
+    join,
+    leave,
+    create,
+    delete,
 }
