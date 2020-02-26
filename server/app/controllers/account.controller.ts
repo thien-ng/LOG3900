@@ -55,5 +55,9 @@ export class AccountController {
         this.router.get('/users/online', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.userService.getOnlineUsers());
         });
+
+        this.router.get('/user/info', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.accountService.getUserInfo(req.body.username));
+        });
     }
 }

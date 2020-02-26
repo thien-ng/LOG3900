@@ -5,9 +5,9 @@ import { IChannelIds, IReceptMes, IEmitMes, IChannelMessageReq, ISearchChannel }
 import { IUserId } from '../interfaces/user-manager';
 import { ChatDbService } from "../database/chat-db.service";
 import { IStatus, IInvitationChannel, IInviteFriend, IChannelParticipation } from '../interfaces/communication';
-
 import * as pg from "pg";
 import * as io from 'socket.io';
+import { Time } from '../utils/date';
 
 @injectable()
 export class ChatService {
@@ -35,21 +35,21 @@ export class ChatService {
     public async addUserToChannelMap(user: IUser): Promise<void> {
         const name: string = user.username;
 
-        const channelList: IChannelIds[] = (await this.db.getChannelsWithAccountName(name)).rows.map((row: any) => ({id: row.channel_id}));
+        const channelList: IChannelIds[] = (await this.db.getChannelsWithAccountName(name)).rows.map((row: any) => ({ id: row.channel_id }));
         channelList.forEach((chan: IChannelIds) => {
             let list: IUser[] | undefined = this.channelMapUsersList.get(chan.id);
-            
+
             if (list) {
                 list.push(user);
             } else {
                 list = [];
                 list.push(user);
             }
-            
-            this.channelMapUsersList.set(chan.id, list);              
+
+            this.channelMapUsersList.set(chan.id, list);
         });
-    
-        this.getUserId(name).then((id: number) => {this.usernameMapUserId.set(name, id)});
+
+        this.getUserId(name).then((id: number) => { this.usernameMapUserId.set(name, id) });
         this.usernameMapSocketId.set(user.username, user.socketId);
     }
 
@@ -69,22 +69,22 @@ export class ChatService {
 
     private getUserId(username: string): Promise<number> {
         return this.db.getAccountIdByUsername(username).then((result: pg.QueryResult) => {
-            const res: IUserId[] = result.rows.map((row: any) => ({id: row.id}));
+            const res: IUserId[] = result.rows.map((row: any) => ({ id: row.id }));
             return res[0].id;
         });
     }
 
     public sendMessages(mes: IReceptMes): void {
 
-        const currTime = this.convertDateTemplate();
-        
+        const currTime = Time.now();
+
         const mesToSend: IEmitMes = {
             username: mes.username,
             channel_id: mes.channel_id,
             content: mes.content,
             time: currTime,
         }
-        
+
         // send to everyone in channel
         const list: IUser[] | undefined = this.channelMapUsersList.get(mes.channel_id);
 
@@ -100,22 +100,9 @@ export class ChatService {
         this.db.insertChannelMessage({
             channel_id: mes.channel_id,
             account_id: this.usernameMapUserId.get(mes.username) as number,
-            content:    mes.content,
-            time:       currTime,
+            content: mes.content,
+            time: currTime,
         });
-    }
-
-    private convertDateTemplate(): string {
-        const today = new Date();
-        const hour: string = this.formatTime(today.getHours());
-        const minute: string = this.formatTime(today.getMinutes());
-        const second: string = this.formatTime(today.getSeconds());
-
-        return hour + ":" + minute + ":" + second;
-    }
-
-    private formatTime(time: number): string {
-        return time > 9 ? time.toString() : `0${time}`;
     }
 
     public async getMessagesWithChannelId(id: string): Promise<IStatus | IChannelMessageReq[]> {
@@ -125,13 +112,13 @@ export class ChatService {
                 message: "channel id length should be between 1 and 20",
             }
         }
-    
+
         const result: pg.QueryResult = await this.db.getMessagesWithChannelId(id);
         const messages: IChannelMessageReq[] = result.rows.map((row: any) => (
             {
                 username: row.out_username,
-                content:  row.out_content,
-                time:     row.out_times,
+                content: row.out_content,
+                time: row.out_times,
             }
         ));
         return messages;
@@ -146,23 +133,23 @@ export class ChatService {
         }
 
         const result: pg.QueryResult = await this.db.getChannelsWithAccountName(username);
-        const channels: IChannelIds[] = result.rows.map((row: any) => ({id: row.channel_id}));
+        const channels: IChannelIds[] = result.rows.map((row: any) => ({ id: row.channel_id }));
         return channels;
     }
 
     public async joinChannel(join: IChannelParticipation): Promise<IStatus> {
         let result = this.buildReturnStatus(`Successfully joined ${join.channel}`);
-        
+
         try {
             this.verifyParticipationChannel(join);
-            const subbedChannels = (await this.db.getChannelsWithAccountName(join.username)).rows.map((row: any) => ({id: row.channel_id}));
-            
-            if (subbedChannels.some(chan => {return chan.id === join.channel}))
+            const subbedChannels = (await this.db.getChannelsWithAccountName(join.username)).rows.map((row: any) => ({ id: row.channel_id }));
+
+            if (subbedChannels.some(chan => { return chan.id === join.channel }))
                 throw new Error(`${join.username} is already subscribed to ${join.channel}.`);
 
             await this.db.joinChannel(join.username, join.channel);
             this.updateUserToChannels(join.username, join.channel, true);
-        } catch(e) {
+        } catch (e) {
             result.status = 400
             result.message = e.message;
         }
@@ -176,16 +163,16 @@ export class ChatService {
         try {
             this.verifyParticipationChannel(leave);
 
-            const subbedChannels = (await this.db.getChannelsWithAccountName(leave.username)).rows.map((row: any) => ({id: row.channel_id}));
-    
+            const subbedChannels = (await this.db.getChannelsWithAccountName(leave.username)).rows.map((row: any) => ({ id: row.channel_id }));
+
             if (!subbedChannels.some(chan => chan.id === leave.channel))
                 throw new Error(`${leave.username} is not subscribed to ${leave.channel}.`);
             if (leave.channel === "general")
                 throw new Error(`cannot leave default channel: ${leave.channel}.`);
-    
+
             await this.db.leaveChannel(leave.username, leave.channel);
             this.updateUserToChannels(leave.username, leave.channel, false);
-        } catch(e) {
+        } catch (e) {
             result.status = 400
             result.message = e.message;
         }
@@ -195,13 +182,13 @@ export class ChatService {
 
     private updateUserToChannels(username: string, channel: string, isJoin: boolean) {
         const socketId = this.usernameMapSocketId.get(username);
-        if (!socketId) {throw new Error(`${username} not found in connected list`)}
+        if (!socketId) { throw new Error(`${username} not found in connected list`) }
 
-        if (isJoin) 
-            this.joinChannelMap(channel, {username: username, socketId: socketId});
+        if (isJoin)
+            this.joinChannelMap(channel, { username: username, socketId: socketId });
         else
             this.leaveChannelMap(channel, username);
-    
+
         this.socket.emit("channel-update");
     }
 
@@ -211,13 +198,13 @@ export class ChatService {
         if (userList) {
             userList.push(user);
             this.channelMapUsersList.set(channel, userList);
-        } else 
+        } else
             this.channelMapUsersList.set(channel, [user]);
     }
 
     private leaveChannelMap(channel: string, username: string): void {
         const userList = this.channelMapUsersList.get(channel);
-        
+
         if (userList) {
             const newList = userList.filter(u => u.username !== username);
             this.channelMapUsersList.set(channel, newList);
@@ -225,7 +212,7 @@ export class ChatService {
     }
 
     public async getChannelsNotSubWithAccountName(username: string): Promise<IChannelIds[]> {
-        return (await this.db.getChannelsNotSubWithAccountName(username)).rows.map((row: any) => ({id: row.id}));
+        return (await this.db.getChannelsNotSubWithAccountName(username)).rows.map((row: any) => ({ id: row.id }));
     }
 
     public async getSearChannelsByName(username: string, word: string = ""): Promise<ISearchChannel[]> {
@@ -250,7 +237,7 @@ export class ChatService {
             if (!socketId) {
                 throw new Error(`cannot find ${invit.invitee}'s socketID`);
             }
-            const joinResult = await this.joinChannel({username: invit.invitee, channel:invit.channel});
+            const joinResult = await this.joinChannel({ username: invit.invitee, channel: invit.channel });
 
             if (joinResult.status === 400) {
                 result = joinResult
@@ -260,8 +247,8 @@ export class ChatService {
                     channel: invit.channel,
                 } as IInvitationChannel);
             }
-            
-        } catch(e) {
+
+        } catch (e) {
             result.status = 400;
             result.message = e.message;
         }
@@ -295,7 +282,7 @@ export class ChatService {
     }
 
     private buildReturnStatus(message: string): IStatus {
-        return {status: 200, message: message}
+        return { status: 200, message: message }
     }
 
 }

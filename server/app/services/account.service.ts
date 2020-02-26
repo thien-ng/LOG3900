@@ -1,6 +1,12 @@
 import { injectable, inject } from "inversify";
+<<<<<<< HEAD
 import { IRegistration, IStatus, ILogin } from "../interfaces/communication";
+=======
+import { IRegistration, IStatus, ILogin, IinfoUser } from "../interfaces/communication";
+import { UserManagerService } from "./user-manager.service";
+>>>>>>> D:ajout des info users, get info user et utils folder
 import { AccountDbService } from "../database/account-db.service";
+import * as pg from "pg";
 import Types from '../types';
 
 @injectable()
@@ -55,6 +61,7 @@ export class AccountService {
         }
     }
 
+
     private verifyLogin(login: ILogin): void {
         if (login.username.length < 1 || login.username.length > 20) {
             throw new Error("username length should be between 1 and 20");
@@ -62,6 +69,13 @@ export class AccountService {
         if (login.password.length < 1 || login.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
         }
+    }
+
+    public async getUserInfo(username: string): Promise<IinfoUser> {
+        return this.database.getUserInfo(username).then((result: pg.QueryResult) => {
+            const res: IinfoUser[] = result.rows.map((row: any) => ({ username: row.username, last_name: row.last_name, first_name: row.first_name }));
+            return res[0];
+        });
     }
 
 }

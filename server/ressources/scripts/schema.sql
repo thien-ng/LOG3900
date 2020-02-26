@@ -8,23 +8,24 @@ CREATE TABLE IF NOT EXISTS LOG3900.Account (
     hashPwd     VARCHAR(100) NOT NULL,
     FirstName   VARCHAR(100) NOT NULL,
     LastName    VARCHAR(100) NOT NULL,
-    avatar      VARCHAR(10000) DEFAULT NULL
+    avatar      BYTEA DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS LOG3900.Game (
-    id          SERIAL PRIMARY KEY NOT NULL,
-    times       TIMESTAMP DEFAULT now(),
+    game_id     SERIAL PRIMARY KEY NOT NULL,
+    times        varchar(30),
     gamemode    VARCHAR(20) NOT NULL DEFAULT "Mélée générale"
 )
 
 CREATE TABLE IF NOT EXISTS LOG3900.Connection (
     account_id  INT REFERENCES LOG3900.Account ON DELETE CASCADE,
-    times       TIMESTAMP DEFAULT now()
+    is_login    boolean,
+    times       VARCHAR(30)
 )
 
 CREATE TABLE IF NOT EXISTS LOG3900.AccountGame (
     account_id  INT REFERENCES LOG3900.Account ON DELETE CASCADE,
-    channel_id  INT REFERENCES LOG3900.Game ON DELETE CASCADE,
+    game_id  INT REFERENCES LOG3900.Game ON DELETE CASCADE,
     score      INT
 )
 

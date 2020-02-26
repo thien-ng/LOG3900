@@ -1,3 +1,10 @@
+CREATE OR REPLACE FUNCTION LOG3900.getAccountInfo(in_username VARCHAR(20))
+    RETURNS TABLE ( (out_username VARCHAR(20)), out_firstName VARCHAR(20), out_lastName VARCHAR(20)) AS $$
+    BEGIN
+        SELECT log3900.account.username, log3900.account.firstname, log3900.account.lastname,
+        FROM LOG3900.Account
+        WHERE log3900.account.username = in_username;
+    END;
 
 
 CREATE OR REPLACE FUNCTION LOG3900.registerAccount(in_username VARCHAR(20), in_password VARCHAR(100), in_firstName VARCHAR(100), in_lastName VARCHAR(100)) RETURNS void AS $$
@@ -21,9 +28,13 @@ CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_pass
         IF NOT EXISTS( SELECT A.hashPwd FROM LOG3900.Account as A WHERE A.hashPwd = in_password) THEN
             RAISE EXCEPTION 'Password is incorrect.';
         END IF;
-        INSERT INTO LOG3900.Connection Values(SELECT id FROM LOG3900.Account , DEFAULT);
     END;
 $$LANGUAGE plpgsql;
+
+FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_login:boolean) RETURNS void AS $$
+    BEGIN
+        INSERT INTO LOG3900.Connection Values(SELECT id FROM LOG3900.Account WHERE LOG3900.Account.username = in_username, is_login, DEFAULT);
+    END;
 
 CREATE OR REPLACE FUNCTION LOG3900.getMessagesWithChannelId(in_id VARCHAR(20))
 RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8)) AS $$
