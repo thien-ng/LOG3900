@@ -195,6 +195,10 @@ export class ChatService {
         return (await this.db.getChannelsNotSubWithAccountName(username)).rows.map((row: any) => ({id: row.id}));
     }
 
+    public async getChannelsBySearch(word: string): Promise<IChannelIds[]> {
+        return (await this.db.getChannelsBySearch(word)).rows.map((row: any) => ({id: row.id}));
+    }
+
     public async sendInviteToChannel(invit: IInviteFriend): Promise<IStatus> {
 
         let result = this.buildReturnStatus("Invitation sent successfully");

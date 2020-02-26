@@ -27,6 +27,10 @@ export class ChatController {
             res.json(await this.chatServ.getChannelsWithAccountName(req.params.username));
         });
 
+        this.router.get('/channels/search/:word', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.chatServ.getChannelsBySearch(req.params.word));
+        });
+
         this.router.put('/channels/join/:username/:channel', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.chatServ.joinChannel({username: req.params.username, channel: req.params.channel}));
         });
