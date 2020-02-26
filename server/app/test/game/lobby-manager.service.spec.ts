@@ -67,13 +67,13 @@ describe("LobbyManagerService", () => {
     it("Should fail when lobby size is not in correct range", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
-        const req1: IJoinLobby = {username:"aaa", private: true, lobbyName: "name", password: "LongerThan20Character", size: 1};
+        const req1: IJoinLobby = {username:"aaa", private: true, lobbyName: "name", password: "LongerThan20Character", size: 0};
         const req2: IJoinLobby = {username:"aaa", private: true, lobbyName: "name", password: "LongerThan20Character", size: 11};
         
         //when
         //then
-        try {service.join(req1)} catch(e) {chai.expect(e.message).to.equal("Lobby size should be between 2 and 10")};
-        try {service.join(req2)} catch(e) {chai.expect(e.message).to.equal("Lobby size should be between 2 and 10")};
+        try {service.join(req1)} catch(e) {chai.expect(e.message).to.equal("Lobby size should be between 1 and 10")};
+        try {service.join(req2)} catch(e) {chai.expect(e.message).to.equal("Lobby size should be between 1 and 10")};
     });
 
     it("Should fail when joining when user is not found in online users", async () => {

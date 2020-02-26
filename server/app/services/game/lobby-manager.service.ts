@@ -147,9 +147,9 @@ export class LobbyManagerService {
         
         if (!this.isJoinLobby(req))
         return;
-        if (req.size) 
+        if (req.size || req.size === 0) 
             if (req.size < 2 || req.size > 10)
-                throw new Error("Lobby size should be between 2 and 10");
+                throw new Error("Lobby size should be between 1 and 10");
         if (typeof req.private !== "boolean")
             throw new Error("Private attribute must be boolean");
         if (req.private)
