@@ -191,8 +191,8 @@ export class ChatService {
         return result;
     }
 
-    public async getAllExistingChannels(): Promise<IChannelIds[]> {
-        return (await this.db.getAllExistingChannels()).rows.map((row: any) => ({id: row.id}));
+    public async getChannelsNotSubWithAccountName(username: string): Promise<IChannelIds[]> {
+        return (await this.db.getChannelsNotSubWithAccountName(username)).rows.map((row: any) => ({id: row.id}));
     }
 
     public async sendInviteToChannel(invit: IInviteFriend): Promise<IStatus> {
