@@ -9,11 +9,13 @@ namespace PolyPaint.Utilitaires
     class Constants
     {
         //SERVER
-        public const string SERVER_PATH    = "https://log3000-app.herokuapp.com";
+        //public const string SERVER_PATH    = "http://localhost:3000";
+        public const string SERVER_PATH = "https://log3000-app.herokuapp.com";
         public const string ACCOUNT_PATH   = "/account";
         public const string LOGIN_PATH     = ACCOUNT_PATH + "/login";
         public const string REGISTER_PATH  = ACCOUNT_PATH + "/register";
         public const string CHAT_MESSAGES_PATH = "/chat/messages";
+        public const string USER_CHANNELS_PATH = "/chat/channels";
         public const int    SUCCESS_CODE   = 200;
         public const int    PWD_MIN_LENGTH = 1; //TODO
         public const int    USR_MIN_LENGTH = 1; //TODO
@@ -23,14 +25,5 @@ namespace PolyPaint.Utilitaires
         public const string MESSAGE_EVENT  = "chat";
         public const string LOGOUT_EVENT   = "logout";
         public const string LOGGING_EVENT  = "logging";
-
-
-        public static class Vues
-        {
-            public const int Login = 0;
-            public const int Register = 1;
-            public const int Draw = 2;
-            public const int Chat = 3;
-        }
     }
 }

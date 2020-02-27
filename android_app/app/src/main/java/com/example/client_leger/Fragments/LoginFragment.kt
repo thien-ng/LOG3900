@@ -29,7 +29,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
         v.login_button.isEnabled = true
         v.login_button.setOnClickListener {
-            if (v.login_editText_name.text.isNotBlank() && v.login_editText_password.text.isNotBlank()) {
+            if (validateLoginFields(v)) {
                 closeKeyboard()
                 v.login_button.isEnabled = false
 
@@ -44,12 +44,6 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
                 LogState.isLoginState = true
 
-            } else {
-                Toast.makeText(
-                    activity,
-                    "Veuillez remplir tout les champs",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         }
 
@@ -69,7 +63,6 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
         activity!!.runOnUiThread{
             if (::username.isInitialized) {
-                Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()
                 if (mes.getString("status").toInt() == 200) {
                     connect(username)
                 }
@@ -90,10 +83,26 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     }
 
 
-    fun connect(username: String) {
+    private fun connect(username: String) {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
     }
 
+    private fun validateLoginFields(v: View):Boolean{
+        return when{
+            v.login_editText_name.text.isBlank() -> {
+                v.login_editText_name.error = "Enter a username"
+                v.login_editText_name.requestFocus()
+                false
+            }
+            v.login_editText_password.text.isBlank() -> {
+                v.login_editText_password.error = "Enter a password"
+                v.login_editText_password.requestFocus()
+                false
+            }
+            else -> true
+        }
+
+    }
 }

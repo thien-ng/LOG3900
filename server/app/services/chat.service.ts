@@ -157,7 +157,7 @@ export class ChatService {
             this.verifyParticipationChannel(join);
             const subbedChannels = (await this.db.getChannelsWithAccountName(join.username)).rows.map((row: any) => ({id: row.channel_id}));
             
-            if (subbedChannels.some(chan => chan.id === join.channel))
+            if (subbedChannels.some(chan => {return chan.id === join.channel}))
                 throw new Error(`${join.username} is already subscribed to ${join.channel}.`);
 
             await this.db.joinChannel(join.username, join.channel);
@@ -191,8 +191,12 @@ export class ChatService {
         return result;
     }
 
-    public async getAllExistingChannels(): Promise<IChannelIds[]> {
-        return (await this.db.getAllExistingChannels()).rows.map((row: any) => ({id: row.id}));
+    public async getChannelsNotSubWithAccountName(username: string): Promise<IChannelIds[]> {
+        return (await this.db.getChannelsNotSubWithAccountName(username)).rows.map((row: any) => ({id: row.id}));
+    }
+
+    public async getChannelsBySearch(word: string): Promise<IChannelIds[]> {
+        return (await this.db.getChannelsBySearch(word)).rows.map((row: any) => ({id: row.id}));
     }
 
     public async sendInviteToChannel(invit: IInviteFriend): Promise<IStatus> {

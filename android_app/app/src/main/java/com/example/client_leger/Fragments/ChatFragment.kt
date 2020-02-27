@@ -137,7 +137,7 @@ class ChatFragment: Fragment() {
 
             activity!!.runOnUiThread {
                 if(curUser != username){
-                    adapter.add(ChatItemReceived(content, curUser, time))
+                    adapter.add(ChatItemReceived(content, username, time))
                 }
                 else {
                     adapter.add(ChatItemSent(content, time))
