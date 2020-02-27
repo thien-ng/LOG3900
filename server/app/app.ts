@@ -8,6 +8,23 @@ import { DateController } from './controllers/date.controller';
 import { AccountController } from './controllers/account.controller';
 import { ChatController } from './controllers/chat.controller';
 import Types from './types';
+import * as swaggerDoc from 'swagger-jsdoc';
+import * as swaggerUI from 'swagger-ui-express';
+
+const swaggerOptions = {
+    swaggerDefinition: {
+      info: {
+        title: "Projet de Pinture",
+        description: "Server Express",
+        version: "1.0.0",
+      }
+    },
+    apis: [
+        process.cwd() + "/app/controllers/*.ts"
+    ],
+};
+
+const swagDoc = swaggerDoc(swaggerOptions);
 
 @injectable()
 export class Application {
@@ -20,7 +37,7 @@ export class Application {
         @inject(Types.ChatController) private chatController: ChatController,
     ) {
         this.app = express();
-
+    
         this.config();
 
         this.bindRoutes();
@@ -33,6 +50,7 @@ export class Application {
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(cookieParser());
         this.app.use(cors());
+        this.app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swagDoc));
     }
 
     bindRoutes(): void {
