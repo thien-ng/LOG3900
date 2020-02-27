@@ -5,12 +5,14 @@ export default {
     DateController:     Symbol('DateController'),
     AccountController:  Symbol('AccountController'),
     ChatController:     Symbol('ChatController'),
+    GameController:     Symbol('GameController'),
 
     DateService:        Symbol('DateService'),
     AccountService:     Symbol('AccountService'),
     WebsocketService:   Symbol('WebsocketService'),
     ChatService:        Symbol('ChatService'),
     UserManagerService: Symbol('UserManagerService',),
+    LobbyManagerService:Symbol('LobbyManagerService'),
 
     AccountDbService:   Symbol('AccountDbService'),
     ChatDbService:      Symbol('ChatDbService'),
