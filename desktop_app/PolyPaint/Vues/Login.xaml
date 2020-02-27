@@ -42,7 +42,7 @@
                       PasswordChanged="PasswordChanged"
                       Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
         <StackPanel Grid.Column="3" Grid.Row="5" Orientation="Vertical" VerticalAlignment="Center">
-            <Button IsDefault="True" Style="{StaticResource MaterialDesignRaisedDarkButton}" Width="100" Command="{Binding Login}" IsEnabled="{Binding IsButtonEnabled}" >
+            <Button IsDefault="True" Style="{StaticResource MaterialDesignRaisedDarkButton}" BorderBrush="{StaticResource PrimaryHueLightBrush}" Background="{StaticResource PrimaryHueLightBrush}" Width="100" Command="{Binding Login}" IsEnabled="{Binding IsButtonEnabled}" >
             _LOGIN
             </Button>
             <TextBlock Padding="0,5,0,0" HorizontalAlignment="Center"><Hyperlink Foreground="Black" TextDecorations="underline" Cursor="Hand" Command="{Binding GoToRegister}" >Register</Hyperlink></TextBlock>

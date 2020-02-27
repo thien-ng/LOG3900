@@ -35,7 +35,7 @@ namespace PolyPaint.VueModeles
 
         private async void FetchChannels()
         {
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_CHANNELS_PATH + "/" + ServerService.instance.username);
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_CHANNELS_PATH + "/sub/" + ServerService.instance.username);
             JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
 
             foreach (var item in responseJson)
