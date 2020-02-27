@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import com.example.client_leger.LogState
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONObject
 
 class LoginFragment : Fragment(), FragmentChangeListener {
@@ -60,8 +62,8 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
     private fun handleConnection(mes: JSONObject) {
         if (!LogState.isLoginState) return
-
         activity!!.runOnUiThread{
+            Toast.makeText(this.context, mes["message"].toString(), Toast.LENGTH_SHORT).show()
             if (::username.isInitialized) {
                 if (mes.getString("status").toInt() == 200) {
                     connect(username)
