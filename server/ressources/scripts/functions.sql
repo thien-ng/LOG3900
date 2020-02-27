@@ -98,3 +98,26 @@ CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id VARCHAR(20
         END IF;
     END;
 $$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getSearChannelsByName(in_username VARCHAR(20), in_word TEXT)
+RETURNS TABLE (out_channel VARCHAR(20), sub TEXT) AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT a.channel_id, 'true' sub
+        FROM log3900.account as acc, log3900.accountchannel as a
+        WHERE acc.id = a.account_id
+        AND acc.username = in_username
+        AND a.channel_id LIKE in_word
+
+        UNION ALL
+
+        SELECT id, 'false' sub
+        FROM log3900.channel
+        WHERE id NOT IN (
+            SELECT channel_id
+            FROM log3900.account as acc, log3900.accountchannel as a
+            WHERE acc.id = a.account_id
+            AND acc.username = in_username)
+        AND id LIKE in_word;
+    END
+$$LANGUAGE plpgsql;
