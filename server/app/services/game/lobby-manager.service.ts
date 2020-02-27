@@ -109,14 +109,16 @@ export class LobbyManagerService {
     }
 
     public sendMessages(mes: IReceptMes | INotifyUpdateUser | INotifyLobbyUpdate): void {
+        if (this.isNotification(mes)) {
+            this.socketServer.emit("lobby-notif", mes);
+            return;
+        }
+        
         const lobby = this.lobbyDoesExists(mes.lobbyName);
 
         if (lobby) {
             lobby.users.forEach(u => {
-                if (this.isNotification(mes))
-                    this.socketServer.emit("lobby-notif", mes);
-                else 
-                    this.socketServer.to(u.socketId).emit("lobby-chat", mes.message);
+                this.socketServer.to(u.socketId).emit("lobby-chat", mes.message);
             });
         }
     }
