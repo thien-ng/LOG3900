@@ -146,7 +146,7 @@ export class LobbyManagerService {
             throw new Error("Lobby name must be between 1 and 20");
         
         if (!this.isJoinLobby(req))
-        return;
+            return;
         if (req.size || req.size === 0) 
             if (req.size < 2 || req.size > 10)
                 throw new Error("Lobby size should be between 1 and 10");
