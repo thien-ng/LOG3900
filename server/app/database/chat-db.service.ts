@@ -47,8 +47,10 @@ export class ChatDbService extends DatabaseService {
                                     AND acc.username = '${username}');`);
     }
 
-    public async getChannelsBySearch(word: string): Promise<pg.QueryResult> {
-        return this.pool.query(`SELECT id FROM log3900.channel WHERE id LIKE '${word}%';`);
+    public async getSearChannelsByName(username: string, word: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getSearChannelsByName(
+                                    CAST('${username}' AS VARCHAR),
+                                    CAST('${word}%' AS TEXT))).*;`);
     }
 
     public async joinChannel(account_id: string, channel: string): Promise<pg.QueryResult> {
