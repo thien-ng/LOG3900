@@ -114,7 +114,7 @@ export class LobbyManagerService {
         if (lobby) {
             lobby.users.forEach(u => {
                 if (this.isNotification(mes))
-                    this.socketServer.to(u.socketId).emit("lobby-notif", mes);
+                    this.socketServer.emit("lobby-notif", mes);
                 else 
                     this.socketServer.to(u.socketId).emit("lobby-chat", mes.message);
             });

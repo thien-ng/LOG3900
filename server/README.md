@@ -25,9 +25,10 @@
 | Get active lobbies                |GET   | /game/lobby/active                     |
 
 # Socket
-|Event  | Description                        |
-|-----  | -----------                        |
-|login  | emit when logged in                |
-|logout | emit when logging out              |
-|chat   | emit when sending chat messages    |
-|lobby  | emit when sending messages in lobby|
+|Event      | Description                                       |
+|-----      | -----------                                       |
+|login      | emit when logged in                               |
+|logout     | emit when logging out                             |
+|chat       | emit when sending chat messages                   |
+|lobby-chat | emit when sending messages in lobby               |
+|lobby-notif| emit when sending notification about lobby update |
