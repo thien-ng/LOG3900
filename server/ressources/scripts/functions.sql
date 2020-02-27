@@ -51,12 +51,7 @@ CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_un VARCHAR(20), in_cha
         channel_id VARCHAR(20);
         account_id INTEGER;
     BEGIN
-        SELECT DISTINCT acc.channel_id
-        FROM log3900.accountChannel as acc
-        WHERE acc.channel_id in (SELECT DISTINCT id FROM log3900.Channel)
-        AND acc.channel_id = in_channel_id
-        INTO channel_id;
-
+        SELECT id FROM log3900.Channel WHERE id = in_channel_id INTO channel_id;
         SELECT id FROM log3900.account WHERE username = in_account_un INTO account_id;
 
         IF channel_id IS NOT NULL THEN

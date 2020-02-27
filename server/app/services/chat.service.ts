@@ -161,6 +161,7 @@ export class ChatService {
                 throw new Error(`${join.username} is already subscribed to ${join.channel}.`);
 
             await this.db.joinChannel(join.username, join.channel);
+            this.updateUserToChannels(join.username, true);
         } catch(e) {
             result.status = 400
             result.message = e.message;
@@ -183,12 +184,24 @@ export class ChatService {
                 throw new Error(`cannot leave default channel: ${leave.channel}.`);
     
             await this.db.leaveChannel(leave.username, leave.channel);
+            this.updateUserToChannels(leave.username, false);
         } catch(e) {
             result.status = 400
             result.message = e.message;
         }
 
         return result;
+    }
+
+    private updateUserToChannels(username: string, isJoin: boolean) {
+        const socketId = this.usernameMapSocketId.get(username);
+        if (!socketId) {throw new Error(`${username} not found in connected list`)}
+
+        if (isJoin) 
+            this.addUserToChannelMap({username: username, socketId: socketId});
+        else 
+            this.removeUserFromChannelMap(username);
+
     }
 
     public async getChannelsNotSubWithAccountName(username: string): Promise<IChannelIds[]> {
