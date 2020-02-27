@@ -3,7 +3,9 @@ using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
+using System.Linq;
+using System.Net.Http;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -16,32 +18,51 @@ namespace PolyPaint.VueModeles
         private string _switchViewButtonTooltip;
         private bool _frontEnabled;
         private bool _backEnabled;
-        private ObservableCollection<MessageChannel> _channels;
+        private ObservableCollection<MessageChannel> _subChannels;
+        private ObservableCollection<MessageChannel> _notSubChannels;
         private ChatRoom _selectedChannel;
         
 
         public HomeViewModel()
         {
-            _channels = new ObservableCollection<MessageChannel>();
+            _subChannels = new ObservableCollection<MessageChannel>();
+            _notSubChannels = new ObservableCollection<MessageChannel>();
             FetchChannels();
             Mediator.Subscribe("ChangeChannel", ChangeChannel);
+            Mediator.Subscribe("SubToChannel", SubToChannel);
+            Mediator.Subscribe("UnsubChannel", UnsubChannel);
             SwitchView = 0;
             SwitchViewButton = "Profile";
             SwitchViewButtonTooltip = "Access to profile";
             FrontEnabled = false;
             BackEnabled = false;
-            _selectedChannel = new ChatRoom("pute");
+            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
         }
 
         private async void FetchChannels()
         {
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_CHANNELS_PATH + "/" + ServerService.instance.username);
-            JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
-
-            foreach (var item in responseJson)
+            var subChannelReq    = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+            var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+            if (subChannelReq.IsSuccessStatusCode)
             {
-                if (((JObject)item).ContainsKey("id"))
-                    _channels.Add(new MessageChannel(((JObject)item).GetValue("id").ToString()));
+                JArray responseJson = JArray.Parse(await subChannelReq.Content.ReadAsStringAsync());
+                foreach (JObject item in responseJson)
+                {
+                    if (item.ContainsKey("id"))
+                        _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
+                }
+            }
+
+            _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+
+            if (notSubChannelReq.IsSuccessStatusCode)
+            {
+                JArray responseJson = JArray.Parse(await notSubChannelReq.Content.ReadAsStringAsync());
+                foreach (JObject item in responseJson)
+                {
+                    if (item.ContainsKey("id"))
+                        _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
+                }
             }
         }
 
@@ -74,10 +95,16 @@ namespace PolyPaint.VueModeles
             //TODO Channel ID 1 temp
         }
 
-        public ObservableCollection<MessageChannel> Channels 
+        public ObservableCollection<MessageChannel> SubChannels 
         {
-            get { return _channels; }
-            set { _channels = value; ProprieteModifiee(); }
+            get { return _subChannels; }
+            set { _subChannels = value; ProprieteModifiee(); }
+        }
+
+        public ObservableCollection<MessageChannel> NotSubChannels
+        {
+            get { return _notSubChannels; }
+            set { _notSubChannels = value; ProprieteModifiee(); }
         }
 
         public ObservableCollection<MessageChat> Messages
@@ -107,12 +134,81 @@ namespace PolyPaint.VueModeles
         private void ChangeChannel(object id)
         {
             string channelId = (string)id;
-            
+
+            _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = false;
+
             if (channelId != _selectedChannel.ID)
             {
                 _selectedChannel = new ChatRoom((string)id);
+                _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
+                
                 ProprieteModifiee("Messages");
             }
+        }
+
+        private async void SubToChannel(object id)
+        {
+            string channelId = (string)id;
+            string requestPath = Constants.SERVER_PATH + Constants.JOIN_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + channelId;
+            var response = await ServerService.instance.client.PutAsync(requestPath, new StringContent("")) ;
+
+            if (!response.IsSuccessStatusCode)
+            { 
+                MessageBox.Show("Error while joining channel");
+                return;
+            }
+
+            JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
+            {
+                MessageBox.Show("Error parsing server response");
+                return;
+            }
+
+            if (responseJson.GetValue("status").ToString() == "200")
+            {
+                MessageChannel joinedChannel = new MessageChannel(channelId, true);
+                _notSubChannels.Remove(_notSubChannels.SingleOrDefault( i => i.id == channelId ));
+                _subChannels.Add(joinedChannel);
+            } else
+                MessageBox.Show(responseJson.GetValue("message").ToString());
+
+
+
+        }
+
+        private async void UnsubChannel(object id)
+        {
+            string channelId = (string)id;
+            string requestPath = Constants.SERVER_PATH + Constants.LEAVE_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + channelId;
+            var response = await ServerService.instance.client.DeleteAsync(requestPath);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Error while leaving channel");
+                return;
+            }
+
+            JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
+            {
+                MessageBox.Show("Error parsing server response");
+                return;
+            }
+
+            if (responseJson.GetValue("status").ToString() == "200")
+            {
+                if (_selectedChannel.ID == channelId)
+                    ChangeChannel(Constants.DEFAULT_CHANNEL);
+
+                MessageChannel leftChannel = new MessageChannel(channelId, false);
+                _subChannels.Remove(_subChannels.SingleOrDefault(i => i.id == channelId));
+                _notSubChannels.Add(leftChannel);
+            }
+            else
+                MessageBox.Show(responseJson.GetValue("message").ToString());
         }
 
         private ICommand _switchViewCommand;
