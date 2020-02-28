@@ -2,6 +2,7 @@
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
@@ -41,7 +42,7 @@ namespace PolyPaint.VueModeles
 
         private async void FetchChannels()
         {
-            var subChannelReq    = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+            var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             if (subChannelReq.IsSuccessStatusCode)
             {
@@ -49,7 +50,12 @@ namespace PolyPaint.VueModeles
                 foreach (JObject item in responseJson)
                 {
                     if (item.ContainsKey("id"))
-                        _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
+                        });
+                    }
                 }
             }
 
@@ -61,7 +67,12 @@ namespace PolyPaint.VueModeles
                 foreach (JObject item in responseJson)
                 {
                     if (item.ContainsKey("id"))
-                        _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
+                        });
+                    }
                 }
             }
         }
