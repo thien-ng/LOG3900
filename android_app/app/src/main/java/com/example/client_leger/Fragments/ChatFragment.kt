@@ -181,8 +181,8 @@ class ChatFragment: Fragment() {
             Constants.SERVER_URL + "/chat/channels/join/" + username + "/" + channelId ,
             null,
             Response.Listener<JSONObject>{
-                setChannel(channelId)
                 loadChannels(channelAdapter, notSubChannelAdapter)
+                setChannel(channelId)
             },Response.ErrorListener{ error ->
                 Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
             }
