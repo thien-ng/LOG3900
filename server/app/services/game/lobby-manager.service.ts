@@ -2,22 +2,18 @@ import { injectable, inject } from "inversify";
 import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
+import { GameConnection } from "./game-connection.service";
 
-import * as io from 'socket.io';
 import Types from '../../types';
 
 @injectable()
-export class LobbyManagerService {
+export class LobbyManagerService extends GameConnection{
 
     private lobbies: Map<string , IActiveLobby>
-    private socketServer:  io.Server;
 
     public constructor(@inject(Types.UserManagerService) private userServ: UserManagerService) {
+        super();
         this.lobbies = new Map<string, IActiveLobby>();
-    }
-
-    public initSocketServer(socketServer: io.Server): void {
-        this.socketServer = socketServer;     
     }
 
     public getActiveLobbies(): IActiveLobby[] {

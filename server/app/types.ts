@@ -13,6 +13,7 @@ export default {
     ChatService:        Symbol('ChatService'),
     UserManagerService: Symbol('UserManagerService',),
     LobbyManagerService:Symbol('LobbyManagerService'),
+    GameConnection:     Symbol('GameConnection'),
 
     AccountDbService:   Symbol('AccountDbService'),
     ChatDbService:      Symbol('ChatDbService'),
