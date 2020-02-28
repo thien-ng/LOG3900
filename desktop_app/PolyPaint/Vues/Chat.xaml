@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:chat="clr-namespace:PolyPaint.Controls.Chat"
+             xmlns:converter="clr-namespace:PolyPaint.Convertisseurs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              Background="White"
              MinWidth="300"
@@ -43,7 +45,33 @@
                 </Viewbox>
             </Border>
 
-            <!--<Separator Background="White" />-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Margin="8,5,5,5"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           Text="Search ..."
+                           Visibility="{Binding search, Converter={converter:SearchBarVisibilityConverter}}"/>
+                <TextBox Margin="5"
+                         Foreground="White"
+                         BorderBrush="White"
+                         materialDesign:TextFieldAssist.UnderlineBrush="White"/>
+
+                <Button Grid.Column="1" 
+                                        Command="{Binding UnsubCommand}"
+                                        Visibility="{Binding isSubbed, Converter={converter:IsSubbedToVisibilityConverter}}"
+                                        HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center" 
+                                        Style="{DynamicResource MaterialDesignToolButton}">
+                    
+                    <materialDesign:PackIcon Kind="Search"
+                                             Foreground="White"/>
+                </Button>
+                
+            </Grid>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
                 <ItemsControl ItemsSource="{Binding SubChannels}">

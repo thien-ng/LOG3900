@@ -118,6 +118,7 @@
     <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
     <Compile Include="Convertisseurs\IsSelectedToOpacityConverter.cs" />
+    <Compile Include="Convertisseurs\SearchBarVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSubbedToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToVisibleConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
