@@ -8,43 +8,46 @@
              mc:Ignorable="d" d:DesignWidth="300">
 
     <UserControl.Resources>
-        <Style x:Key="ContentStyle" TargetType="{x:Type ContentControl}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ContentControl">
-                        <Border x:Name="background">
-                            <Border.Background>
-                                <SolidColorBrush Color="Black" Opacity="{Binding isSelected, Converter={converter:IsSelectedToOpacityConverter}}"/>
-                            </Border.Background>
+        <ResourceDictionary>
+            <Color x:Key="hoverColor">#25000000</Color>
 
-                            <Border.InputBindings>
-                                <MouseBinding MouseAction="LeftClick" Command="{Binding SelectChannelCommand}"/>
-                            </Border.InputBindings>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
+            <Style x:Key="ContentStyle" TargetType="{x:Type ContentControl}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ContentControl">
+                            <Border>
+                                <Border.Background>
+                                    <SolidColorBrush Color="Black" Opacity="{Binding isSelected, Converter={converter:IsSelectedToOpacityConverter}}"/>
+                                </Border.Background>
 
-                                <Viewbox>
-                                    <Ellipse Width="50"
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick" Command="{Binding SelectChannelCommand}"/>
+                                </Border.InputBindings>
+                                <Grid x:Name="container" Background="Transparent">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Viewbox>
+                                        <Ellipse Width="50"
                                              Height="50"
                                              Fill="Gray"
                                              Margin="10"/>
-                                </Viewbox>
+                                    </Viewbox>
 
-                                <Viewbox StretchDirection="DownOnly">
-                                    <TextBlock  Text="XX" 
+                                    <Viewbox StretchDirection="DownOnly">
+                                        <TextBlock  Text="XX" 
                                                 VerticalAlignment="Center" 
                                                 HorizontalAlignment="Center"
                                                 Foreground="DarkRed"
                                                 FontSize="22"
                            
                                                 FontWeight="Bold"/>
-                                </Viewbox>
+                                    </Viewbox>
 
-                                <TextBlock Grid.Column="1" 
+                                    <TextBlock Grid.Column="1" 
                                            VerticalAlignment="Center"
                                            Padding="5,10,0,10" 
                                            FontSize="15" 
@@ -52,21 +55,40 @@
                                            TextTrimming="CharacterEllipsis" 
                                            Text="{Binding id}"/>
 
-                                <Button Grid.Column="2" 
+                                    <Button Grid.Column="2" 
                                         Command="{Binding UnsubCommand}"
                                         Visibility="{Binding isSubbed, Converter={converter:IsSubbedToVisibilityConverter}}"
                                         HorizontalAlignment="Center" 
                                         VerticalAlignment="Center" 
                                         Style="{DynamicResource MaterialDesignToolButton}">
-                                    <materialDesign:PackIcon Kind="Close" Foreground="Black" />
-                                </Button>
-                            </Grid>
-                        </Border>
+                                        <materialDesign:PackIcon Kind="Close" Foreground="Black" />
+                                    </Button>
+                                </Grid>
+                            </Border>
 
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                            <ControlTemplate.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation To="{StaticResource hoverColor}" Duration="0:0:0" Storyboard.TargetName="container" Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation To="Transparent" Duration="0:0:0" Storyboard.TargetName="container" Storyboard.TargetProperty="Background.Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </ControlTemplate.Triggers>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <ContentControl Style="{StaticResource ContentStyle}" />

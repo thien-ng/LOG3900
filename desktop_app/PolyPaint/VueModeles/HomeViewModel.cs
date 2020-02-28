@@ -135,10 +135,11 @@ namespace PolyPaint.VueModeles
         {
             string channelId = (string)id;
 
-            _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = false;
 
             if (channelId != _selectedChannel.ID)
             {
+                _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = false;
+                
                 _selectedChannel = new ChatRoom((string)id);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
                 
