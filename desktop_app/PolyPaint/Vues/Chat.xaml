@@ -89,6 +89,8 @@
                      Margin="20,0,0,0"
                      VerticalAlignment="center" />
             <Button Grid.Column="1" Width="100"
+                    Background="{StaticResource PrimaryHueLightBrush}"
+                    BorderBrush="{StaticResource PrimaryHueLightBrush}"
                     Click="Button_Click"
                     IsDefault="True"
                     Margin="20,0,15,0"
