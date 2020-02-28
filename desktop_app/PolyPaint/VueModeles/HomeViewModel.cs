@@ -185,9 +185,6 @@ namespace PolyPaint.VueModeles
                 _subChannels.Add(joinedChannel);
             } else
                 MessageBox.Show(responseJson.GetValue("message").ToString());
-
-
-
         }
 
         private async void UnsubChannel(object id)
