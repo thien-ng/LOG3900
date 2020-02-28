@@ -33,11 +33,17 @@
 
         <StackPanel Grid.Row="0" Grid.RowSpan="2">
 
-            <TextBlock Text="My Channels"
-                   Foreground="Black"
-                   Margin="0,20,0,10"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Center"/>
+            <Border BorderThickness="0 0 0 1" BorderBrush="White">
+                <Viewbox StretchDirection="DownOnly" Margin="10">
+                    <TextBlock Text="My Channels"
+                           Foreground="White"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+                </Viewbox>
+            </Border>
+
+            <!--<Separator Background="White" />-->
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
                 <ItemsControl ItemsSource="{Binding SubChannels}">
@@ -49,11 +55,15 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <TextBlock Text="Public Channels"
-                   Foreground="Black"
-                   Margin="0,10,0,10"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Center"/>
+            <Border BorderThickness="0 0 0 1" BorderBrush="White">
+                <Viewbox StretchDirection="DownOnly" Margin="10">
+                    <TextBlock Text="Public Channels"
+                        Foreground="White"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Center"/>
+                </Viewbox>
+            </Border>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
                 <ItemsControl ItemsSource="{Binding NotSubChannels}">

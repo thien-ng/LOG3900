@@ -43,7 +43,7 @@
                     <Binding Path="Username"
              UpdateSourceTrigger="PropertyChanged" >
                         <Binding.ValidationRules>
-                            <util:UsernameRule />
+                            <util:UsernameRule ValidatesOnTargetUpdated="True" />
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox.Text>

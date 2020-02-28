@@ -23,6 +23,11 @@ namespace PolyPaint.VueModeles
         public PasswordBox Password { private get; set; }
         public PasswordBox PasswordConfirm { private get; set; }
 
+        public RegisterViewModel()
+        {
+            _username = "";
+        }
+
         public ICommand GoToLogin
         {
             get
