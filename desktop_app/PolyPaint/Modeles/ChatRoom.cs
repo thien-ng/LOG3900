@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
