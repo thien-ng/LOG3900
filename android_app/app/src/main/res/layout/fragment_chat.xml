@@ -79,10 +79,27 @@
                     android:iconifiedByDefault="false"
                     android:queryHint="Channels" />
 
+            <TextView
+                    android:id="@+id/textView_subbedChannels"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Your channels" />
+
             <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView_channels"
                     android:layout_width="match_parent"
-                    android:layout_height="300dp" />
+                    android:layout_height="221dp" />
+
+            <TextView
+                    android:id="@+id/textView_notSubbedChannels"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Other channels" />
+
+            <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView_notSubChannels"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
         </LinearLayout>
     </ScrollView>
 
