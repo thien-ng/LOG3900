@@ -28,7 +28,8 @@
         <Grid.Background>
             <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
         </Grid.Background>
-        <Rectangle Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" Fill="White"/>
+        <Rectangle Grid.Column="1"  Grid.Row="1" Grid.RowSpan="4" Fill="White" StrokeThickness="0" Stroke="{StaticResource SecondaryAccentBrush}">
+        </Rectangle>
 
         <Image Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Width="350" Source="pack://application:,,,/Polypaint;component/Resources/logo.png"/>
         <Grid Grid.Row="2" Grid.Column="1">

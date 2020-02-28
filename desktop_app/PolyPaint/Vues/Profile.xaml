@@ -6,7 +6,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:PolyPaint.Vues"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
+             d:DesignHeight="800" d:DesignWidth="1200"
              Background="AliceBlue">
     <Grid>
         <Grid.Background>
@@ -15,7 +15,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -28,5 +28,73 @@
         <materialDesign:PackIcon VerticalAlignment="Center" Kind="User" Foreground="White" Width="50" Height="50"/>
         <TextBlock Text="Profile" FontSize="30" VerticalAlignment="Center" Foreground="White"/>
         </StackPanel>
+        <Border Grid.Row="1" BorderBrush="White" BorderThickness="0,0,0,1" Grid.ColumnSpan="3"/>
+        <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0">
+            <materialDesign:PackIcon VerticalAlignment="Center" Foreground="White" Width="30" Height="30" Kind="Lock" />
+            <TextBlock Margin="20,0,10,0" Text="FirstName" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
+            <TextBlock Margin="10,0,10,0" Text="Name" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right">
+            <TextBlock Text="{Binding Username}" FontSize="25" Foreground="White" VerticalAlignment="Bottom" />
+            <materialDesign:PackIcon Kind="EditOutline" VerticalAlignment="Bottom" Height="30" Width="30" Foreground="White" />
+        </StackPanel>
+        <StackPanel Margin="15" Orientation="Vertical" Grid.Row="3" Grid.ColumnSpan="3">
+            <Grid Margin="0,15,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Free for all on 12/02/2020 - 13h54" FontSize="15" Foreground="White"/>
+                <TextBlock Text="1st place" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White"/>
+                <TextBlock Grid.Row="1" Text="Player1, Player2, Player3" FontSize="10" Foreground="{StaticResource SecondaryAccentBrush}"/>
+            </Grid>
+            <Grid Margin="0,15,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Free for all on 12/02/2020 - 13h54" FontSize="15" Foreground="White"/>
+                <TextBlock Text="1st place" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White"/>
+                <TextBlock Grid.Row="1" Text="Player1, Player2, Player3" FontSize="10" Foreground="{StaticResource SecondaryAccentBrush}"/>
+            </Grid>
+
+
+            <Grid Margin="0,15,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Free for all on 12/02/2020 - 13h54" FontSize="15" Foreground="White"/>
+                <TextBlock Text="1st place" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White"/>
+                <TextBlock Grid.Row="1" Text="Player1, Player2, Player3" FontSize="10" Foreground="{StaticResource SecondaryAccentBrush}"/>
+            </Grid>
+        </StackPanel>
+        <Border Grid.Row="3" Grid.ColumnSpan="3" BorderThickness="0,0,0,2" BorderBrush="White"/>
+        <Grid Margin="0,15,0,0" Grid.Row="4" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="User statistics" Foreground="White" FontSize="25"/>
+            <Border BorderBrush="White" BorderThickness="1" Grid.Column="1"/>
+            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1">
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ClockFast"  Width="30" Height="30" Foreground="White"/>
+                    <TextBlock Text="Average game length: 10min 30sec" Foreground="White" FontSize="20"/>
+                </StackPanel>
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Games"  Width="30" Height="30" Foreground="White"/>
+                    <TextBlock Text="Total game played: 20" Foreground="White" FontSize="20"/>
+                </StackPanel>
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Infinity"  Width="30" Height="30" Foreground="White"/>
+                    <TextBlock Text="Total time played: 3h50min" Foreground="White" FontSize="20"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
