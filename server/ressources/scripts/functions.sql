@@ -51,12 +51,7 @@ CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_un VARCHAR(20), in_cha
         channel_id VARCHAR(20);
         account_id INTEGER;
     BEGIN
-        SELECT DISTINCT acc.channel_id
-        FROM log3900.accountChannel as acc
-        WHERE acc.channel_id in (SELECT DISTINCT id FROM log3900.Channel)
-        AND acc.channel_id = in_channel_id
-        INTO channel_id;
-
+        SELECT id FROM log3900.Channel WHERE id = in_channel_id INTO channel_id;
         SELECT id FROM log3900.account WHERE username = in_account_un INTO account_id;
 
         IF channel_id IS NOT NULL THEN
@@ -97,4 +92,27 @@ CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id VARCHAR(20
             INSERT INTO LOG3900.messages VALUES(DEFAULT, last_id, in_ts, in_content, in_channel_id, in_account_id);
         END IF;
     END;
+$$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getSearChannelsByName(in_username VARCHAR(20), in_word TEXT)
+RETURNS TABLE (out_channel VARCHAR(20), sub TEXT) AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT a.channel_id, 'true' sub
+        FROM log3900.account as acc, log3900.accountchannel as a
+        WHERE acc.id = a.account_id
+        AND acc.username = in_username
+        AND a.channel_id LIKE in_word
+
+        UNION ALL
+
+        SELECT id, 'false' sub
+        FROM log3900.channel
+        WHERE id NOT IN (
+            SELECT channel_id
+            FROM log3900.account as acc, log3900.accountchannel as a
+            WHERE acc.id = a.account_id
+            AND acc.username = in_username)
+        AND id LIKE in_word;
+    END
 $$LANGUAGE plpgsql;

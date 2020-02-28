@@ -77,7 +77,7 @@ namespace PolyPaint.VueModeles
             var message = jsonMessage["message"].ToObject<string>();
             if (status == 200)
             {
-                Mediator.Notify("GoToChatScreen", "");
+                Mediator.Notify("GoToHomeScreen", "");
                 MessageBox.Show(message);
             }
             else
@@ -114,6 +114,7 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.username = _username;
                                 ServerService.instance.socket.On(Constants.LOGGING_EVENT, data => ReceiveMessage((JObject)data));
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
+               
                             }
                             else
                                 MessageBox.Show(res.GetValue("message").ToString());

@@ -126,6 +126,7 @@ describe("ChatService, Join/Leave", () => {
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
             return {rows:[{channel_id: "notEqualChannel"}]}
         });
+        const spy = chai.spy.on(service, "updateUserToChannels", () => {});
 
         //when
         const result = await service.joinChannel({username:"username", channel:"channel"});
@@ -133,6 +134,7 @@ describe("ChatService, Join/Leave", () => {
         //then
         chai.expect(result.status).to.be.equal(200);
         chai.expect(result.message).to.be.equal("Successfully joined channel");
+        chai.expect(spy).to.have.been.called.with("username", true);
     });
 
     it("Should return already subscribe message when joining with existing channel", async () => {
@@ -156,6 +158,7 @@ describe("ChatService, Join/Leave", () => {
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
             return {rows:[{channel_id: "channel"}]}
         });
+        const spy = chai.spy.on(service, "updateUserToChannels", () => {});
 
         //when
         const result = await service.leaveChannel({username:"username", channel:"channel"});
@@ -163,6 +166,7 @@ describe("ChatService, Join/Leave", () => {
         //then
         chai.expect(result.status).to.be.equal(200);
         chai.expect(result.message).to.be.equal("Successfully left channel");
+        chai.expect(spy).to.have.been.called.with("username", false);
     });
 
     it("Should return is not subscribed to channel when user is not sub to channel", async () => {

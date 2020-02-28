@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import Types from '../types';
 import { IUser } from "../interfaces/user-manager";
-import { IChannelIds, IReceptMes, IEmitMes, IChannelMessageReq } from "../interfaces/chat";
+import { IChannelIds, IReceptMes, IEmitMes, IChannelMessageReq, ISearchChannel } from "../interfaces/chat";
 import { IUserId } from '../interfaces/user-manager';
 import { ChatDbService } from "../database/chat-db.service";
 import { IStatus, IInvitationChannel, IInviteFriend, IChannelParticipation } from '../interfaces/communication';
@@ -161,6 +161,7 @@ export class ChatService {
                 throw new Error(`${join.username} is already subscribed to ${join.channel}.`);
 
             await this.db.joinChannel(join.username, join.channel);
+            this.updateUserToChannels(join.username, join.channel, true);
         } catch(e) {
             result.status = 400
             result.message = e.message;
@@ -183,6 +184,7 @@ export class ChatService {
                 throw new Error(`cannot leave default channel: ${leave.channel}.`);
     
             await this.db.leaveChannel(leave.username, leave.channel);
+            this.updateUserToChannels(leave.username, leave.channel, false);
         } catch(e) {
             result.status = 400
             result.message = e.message;
@@ -191,12 +193,49 @@ export class ChatService {
         return result;
     }
 
+    private updateUserToChannels(username: string, channel: string, isJoin: boolean) {
+        const socketId = this.usernameMapSocketId.get(username);
+        if (!socketId) {throw new Error(`${username} not found in connected list`)}
+
+        if (isJoin) 
+            this.joinChannelMap(channel, {username: username, socketId: socketId});
+        else
+            this.leaveChannelMap(channel, username); 
+    }
+
+    private joinChannelMap(channel: string, user: IUser): void {
+        const userList = this.channelMapUsersList.get(channel);
+
+        if (userList) {
+            userList.push(user);
+            this.channelMapUsersList.set(channel, userList);
+        } else 
+            this.channelMapUsersList.set(channel, [user]);
+    }
+
+    private leaveChannelMap(channel: string, username: string): void {
+        const userList = this.channelMapUsersList.get(channel);
+        
+        if (userList) {
+            const newList = userList.filter(u => u.username !== username);
+            this.channelMapUsersList.set(channel, newList);
+        }
+    }
+
     public async getChannelsNotSubWithAccountName(username: string): Promise<IChannelIds[]> {
         return (await this.db.getChannelsNotSubWithAccountName(username)).rows.map((row: any) => ({id: row.id}));
     }
 
-    public async getChannelsBySearch(word: string): Promise<IChannelIds[]> {
-        return (await this.db.getChannelsBySearch(word)).rows.map((row: any) => ({id: row.id}));
+    public async getSearChannelsByName(username: string, word: string = ""): Promise<ISearchChannel[]> {
+        return (await this.db.getSearChannelsByName(username, word)).rows.map((row: any) => (
+            {
+                id: row.out_channel,
+                sub: this.convertBoolToString(row.sub)
+            }));
+    }
+
+    private convertBoolToString(bool: string): boolean {
+        return bool === 'true'
     }
 
     public async sendInviteToChannel(invit: IInviteFriend): Promise<IStatus> {

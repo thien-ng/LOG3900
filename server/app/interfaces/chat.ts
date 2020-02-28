@@ -25,3 +25,7 @@ export interface IEmitMes extends IReceptMes {
 export interface IChannelIds {
     id: string
 }
+
+export interface ISearchChannel extends IChannelIds {
+    sub: boolean
+}

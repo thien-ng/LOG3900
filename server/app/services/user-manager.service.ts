@@ -14,6 +14,10 @@ export class UserManagerService {
         return this.users;
     }
 
+    public getUsersByName(name: string): IUser | undefined {
+        return this.users.find(u => u.username === name);
+    }
+
     public addUser(user: IUser): void {
         this.users.push(user);
     }
