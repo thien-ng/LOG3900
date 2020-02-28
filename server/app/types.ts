@@ -14,6 +14,7 @@ export default {
     UserManagerService: Symbol('UserManagerService',),
     LobbyManagerService:Symbol('LobbyManagerService'),
     GameConnection:     Symbol('GameConnection'),
+    GameManagerService: Symbol('GameManagerService'),
 
     AccountDbService:   Symbol('AccountDbService'),
     ChatDbService:      Symbol('ChatDbService'),

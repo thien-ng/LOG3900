@@ -15,6 +15,7 @@ import { ChatDbService } from './database/chat-db.service';
 import { DatabaseService } from './database/database';
 import { LobbyManagerService } from './services/game/lobby-manager.service';
 import { GameConnection } from './services/game/game-connection.service';
+import { GameManagerService } from './services/game/game-manager.service';
 import Types from './types';
 
 const container: Container = new Container();
@@ -31,7 +32,8 @@ container.bind(Types.DateService).to(DateService);
 container.bind(Types.AccountService).to(AccountService);
 container.bind(Types.WebsocketService).to(WebsocketService);
 
-container.bind(Types.GameConnection).to(GameConnection);
+container.bind(Types.GameConnection).to(GameConnection).inSingletonScope();
+container.bind(Types.GameManagerService).to(GameManagerService).inSingletonScope();
 container.bind(Types.LobbyManagerService).to(LobbyManagerService).inSingletonScope();
 container.bind(Types.ChatDbService).to(ChatDbService).inSingletonScope();
 container.bind(Types.AccountDbService).to(AccountDbService).inSingletonScope();

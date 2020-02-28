@@ -9,7 +9,7 @@ import Types from '../../types';
 @injectable()
 export class LobbyManagerService extends GameConnection{
 
-    private lobbies: Map<string , IActiveLobby>
+    public lobbies: Map<string , IActiveLobby>
 
     public constructor(@inject(Types.UserManagerService) private userServ: UserManagerService) {
         super();
