@@ -67,8 +67,11 @@ export class AccountService {
 
     public async getUserInfo(username: string): Promise<IinfoUser> {
         return this.database.getUserInfo(username).then((result: pg.QueryResult) => {
-            const res: IinfoUser[] = result.rows.map((row: any) => ({ username: row.username, last_name: row.last_name, first_name: row.first_name }));
+            const res: IinfoUser[] = result.rows.map((row: any) => ({ username: row.out_username, last_name: row.out_lastname, first_name: row.out_firstname }));
+            console.log(res);
             return res[0];
+        }).catch((e) => {
+            return e;
         });
     }
 

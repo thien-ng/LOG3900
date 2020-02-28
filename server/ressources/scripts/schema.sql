@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS LOG3900.Account (
 CREATE TABLE IF NOT EXISTS LOG3900.Game (
     game_id     SERIAL PRIMARY KEY NOT NULL,
     times        varchar(30),
-    gamemode    VARCHAR(20) NOT NULL DEFAULT "Mélée générale"
+    gamemode    VARCHAR(20)
 )
 
 CREATE TABLE IF NOT EXISTS LOG3900.Connection (

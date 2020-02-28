@@ -32,7 +32,7 @@ export class AccountDbService extends DatabaseService {
 
     public async getUserInfo(username: string): Promise<pg.QueryResult> {
         return this.pool.query(`
-            SELECT LOG3900.getAccountInfo(
-            CAST('${username}' AS VARCHAR));`);
+            SELECT (LOG3900.getAccountInfo(
+            CAST('${username}' AS VARCHAR))).*;`);
     }
 }
