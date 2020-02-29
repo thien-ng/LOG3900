@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json.Linq;
+using PolyPaint.Controls;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
@@ -6,7 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,26 +16,10 @@ namespace PolyPaint.VueModeles
 {
     class HomeViewModel : BaseViewModel, IPageViewModel
     {
-        private CancellationTokenSource _cts;
 
         public HomeViewModel()
         {
-            Mediator.Subscribe("ChangeChannel", ChangeChannel);
-            Mediator.Subscribe("SubToChannel", SubToChannel);
-            Mediator.Subscribe("UnsubChannel", UnsubChannel);
-            
-            FetchChannels();
-            
-            _subChannels = new ObservableCollection<MessageChannel>();
-            _notSubChannels = new ObservableCollection<MessageChannel>();
-            _switchView = 0;
-            _switchViewButton = "Profile";
-            _switchViewButtonTooltip = "Access to profile";
-            _frontEnabled = false;
-            _backEnabled = false;
-            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
-            _cts = new CancellationTokenSource();
-            _searchString = "";
+            Setup();
         }
 
         #region Public Attributes
@@ -112,20 +98,78 @@ namespace PolyPaint.VueModeles
             set { _backEnabled = value; ProprieteModifiee(); }
         }
 
+        private bool _isCreateChannelDialogOpen;
+        public bool IsCreateChannelDialogOpen
+        {
+            get { return _isCreateChannelDialogOpen; }
+            set
+            {
+                if (_isCreateChannelDialogOpen == value) return;
+                _isCreateChannelDialogOpen = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private object _dialogContent;
+        public object DialogContent
+        {
+            get { return _dialogContent; }
+            set
+            {
+                if (_dialogContent == value) return;
+                _dialogContent = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private string _newChannelString;
+        public string NewChannelString
+        {
+            get { return _newChannelString; }
+            set
+            {
+                if (_newChannelString == value) return;
+                _newChannelString = value;
+                ProprieteModifiee();
+            }
+        }
+
         #endregion
 
         #region Methods
 
-        private async void FetchChannels()
+        private void Setup()
         {
+            Mediator.Subscribe("ChangeChannel", ChangeChannel);
+            Mediator.Subscribe("SubToChannel", SubToChannel);
+            Mediator.Subscribe("UnsubChannel", UnsubChannel);
+
+            _subChannels = new ObservableCollection<MessageChannel>();
+            _notSubChannels = new ObservableCollection<MessageChannel>();
+
+            FetchChannels(true);
+            
+            _switchView = 0;
+            _switchViewButton = "Profile";
+            _switchViewButtonTooltip = "Access to profile";
+            _frontEnabled = false;
+            _backEnabled = false;
+            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
+            _searchString = "";
+        }
+
+        private async void FetchChannels(bool isFirstCall)
+        {
+            _subChannels.Clear();
+            _notSubChannels.Clear();
             var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             
             ProcessChannelRequest(subChannelReq, _subChannels, true);
-
-            _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
-
             ProcessChannelRequest(notSubChannelReq, _notSubChannels, false);
+            
+            if (isFirstCall)
+                _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
         }
 
         private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
@@ -184,9 +228,12 @@ namespace PolyPaint.VueModeles
 
             if (responseJson.GetValue("status").ToString() == "200")
             {
-                MessageChannel joinedChannel = new MessageChannel(channelId, true);
-                _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
-                _subChannels.Add(joinedChannel);
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    MessageChannel joinedChannel = new MessageChannel(channelId, true);
+                    _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
+                    _subChannels.Add(joinedChannel);
+                });
             }
             else
                 MessageBox.Show(responseJson.GetValue("message").ToString());
@@ -234,11 +281,8 @@ namespace PolyPaint.VueModeles
 
         private void FilterChannels()
         {
-            _cts.Cancel();
-            _cts = new CancellationTokenSource();
-
             string path = Constants.SERVER_PATH + Constants.SEARCH_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + _searchString;
-            ServerService.instance.client.GetAsync(path, _cts.Token).ContinueWith(responseTask => 
+            ServerService.instance.client.GetAsync(path).ContinueWith(responseTask => 
             {
                 var response = responseTask.Result;
                 response.Content.ReadAsStringAsync().ContinueWith(jsonTask =>
@@ -259,7 +303,6 @@ namespace PolyPaint.VueModeles
                                 _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
                             else
                                 _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
-                            ;
                         }
                     });
                 });
@@ -311,6 +354,47 @@ namespace PolyPaint.VueModeles
                 }));
             }
         }
+
+        private ICommand _addChannelCommand;
+        public ICommand AddChannelCommand
+        {
+            get
+            {
+                return _addChannelCommand ?? (_addChannelCommand = new RelayCommand(x =>
+                {
+                    DialogContent = new CreateChannelControl();
+                    IsCreateChannelDialogOpen = true;
+                }));
+            }
+        }
+
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
+                {
+                    NewChannelString = "";
+                    IsCreateChannelDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _acceptCommand;
+        public ICommand AcceptCommand
+        {
+            get
+            {
+                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
+                {
+                    await Task.Run(() => SubToChannel(NewChannelString));
+                    NewChannelString = "";
+                    IsCreateChannelDialogOpen = false;
+                }));
+            }
+        }
+
 
         #endregion
 
