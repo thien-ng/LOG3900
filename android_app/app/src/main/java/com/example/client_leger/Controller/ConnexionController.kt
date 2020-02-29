@@ -136,7 +136,7 @@ class ConnexionController {
         if (search.isNullOrBlank()){
             val subRequest = JsonArrayRequest(
                 Request.Method.GET,
-                Constants.SERVER_URL + "/chat/channels/" + "sub/" + activity.username ,
+                Constants.SERVER_URL + "/chat/channels/sub/" + activity.username ,
                 null,
                 Response.Listener<JSONArray>{response ->
                     activity.channelAdapter.clear()
@@ -148,7 +148,6 @@ class ConnexionController {
                         }
                     }
                 },Response.ErrorListener{ error ->
-                    Log.w("socket", "loadsub")
                     Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
                 }
             )
@@ -157,7 +156,7 @@ class ConnexionController {
             val requestQueueNotSub = Volley.newRequestQueue(activity.context)
             val notSubRequest = JsonArrayRequest(
                 Request.Method.GET,
-                Constants.SERVER_URL + "/chat/channels/" + "notsub/" + activity.username ,
+                Constants.SERVER_URL + "/chat/channels/notsub/" + activity.username ,
                 null,
                 Response.Listener<JSONArray>{response ->
                     activity.notSubChannelAdapter.clear()
