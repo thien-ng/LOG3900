@@ -36,7 +36,7 @@ namespace PolyPaint.Utilitaires
             if ((username.Length <= Constants.USR_MIN_LENGTH) || (username.Length >= 20))
             { 
                 return new ValidationResult(false,
-                  $"Username must have between 4 and 20 characters");
+                  $"Username must have between 1 and 20 characters");
             }
                 return ValidationResult.ValidResult;
         }
