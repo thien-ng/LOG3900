@@ -11,12 +11,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.SearchView
 import android.widget.TextView
-import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
-import com.android.volley.toolbox.Volley
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
@@ -28,29 +24,59 @@ import org.json.JSONObject
 
 class ChatFragment: Fragment() {
 
-    private var channelId: String = DEFAULT_CHANNEL_ID
-    private lateinit var username: String
+    var channelId: String = DEFAULT_CHANNEL_ID
+    lateinit var username: String
     private lateinit var recyclerViewChannels: RecyclerView
-    private lateinit var recyclerViewChatLog: RecyclerView
-    private lateinit var messageAdapter: GroupAdapter<ViewHolder>
+    private lateinit var recyclerViewNotSubChannels: RecyclerView
+    lateinit var recyclerViewChatLog: RecyclerView
+    lateinit var messageAdapter: GroupAdapter<ViewHolder>
+    lateinit var channelAdapter: GroupAdapter<ViewHolder>
+    lateinit var notSubChannelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
+    private var controller = ConnexionController()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_chat, container, false)
 
         recyclerViewChannels = v.recyclerView_channels
+        recyclerViewNotSubChannels = v.recyclerView_notSubChannels
         recyclerViewChatLog = v.recyclerView_chat_log
         textViewChannelName = v.textView_channelName
         messageAdapter = GroupAdapter()
         username = activity!!.intent.getStringExtra("username")
 
+        recyclerViewChannels.setHasFixedSize(true)
+        channelAdapter = GroupAdapter()
+        val manager = LinearLayoutManager(this.context)
+        recyclerViewChannels.layoutManager = manager
+        recyclerViewChannels.adapter = channelAdapter
+
+        recyclerViewNotSubChannels.setHasFixedSize(true)
+        notSubChannelAdapter = GroupAdapter()
+        val managerNotSub = LinearLayoutManager(this.context)
+        recyclerViewNotSubChannels.layoutManager = managerNotSub
+        recyclerViewNotSubChannels.adapter = notSubChannelAdapter
+
+        loadChannels()
+
         val fArray = arrayOfNulls<InputFilter>(1)
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
         v.chat_message_editText.filters = fArray
 
-        loadChatHistory(channelId, messageAdapter, v.recyclerView_chat_log, username)
+        controller.loadChatHistory(this)
 
         setChannel(channelId)
+
+        v.searchView_channelSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                loadChannels(newText)
+                return false
+            }
+        })
 
         v.chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
@@ -88,17 +114,15 @@ class ChatFragment: Fragment() {
         return v
     }
 
-    private fun setChannel(newChannelId: String) {
+    private fun loadChannels(search: String? = null){
+        controller.loadChannels(this, search)
+    }
+
+    fun setChannel(newChannelId: String) {
+        loadChannels()
         messageAdapter.clear()
         channelId = newChannelId
-        textViewChannelName.text = channelId
-        val adapterChannels = GroupAdapter<ViewHolder>()
-        val manager = LinearLayoutManager(this.context)
-        recyclerViewChannels.layoutManager = manager
-        recyclerViewChannels.setHasFixedSize(true)
-        recyclerViewChannels.adapter = adapterChannels
-        loadChannels(adapterChannels)
-        loadChatHistory(channelId, messageAdapter, recyclerViewChatLog, username)
+        controller.loadChatHistory(this)
         textViewChannelName.text = channelId
     }
 
@@ -113,7 +137,7 @@ class ChatFragment: Fragment() {
         return obj
     }
 
-    private fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
+    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
             val username = message.getString("username")
@@ -129,57 +153,5 @@ class ChatFragment: Fragment() {
                 }
             }
         }
-    }
-
-    private fun loadChatHistory( channelId: String, adapter: GroupAdapter<ViewHolder>, recyclerView: RecyclerView, curUser: String){
-        val requestQueue = Volley.newRequestQueue(context)
-
-        val jsonArrayRequest = JsonArrayRequest(
-            Request.Method.GET,
-            Constants.SERVER_URL + "/chat/messages/" + channelId,
-            null,
-             Response.Listener<JSONArray>{response ->
-                    receiveMessages(adapter, curUser, response)
-                    recyclerView.scrollToPosition(adapter.itemCount -1)
-            },Response.ErrorListener{
-               error ->
-                Toast.makeText(
-                    context,
-                    error.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-        )
-
-        requestQueue.add(jsonArrayRequest)
-    }
-
-    private fun loadChannels(adapter: GroupAdapter<ViewHolder>) {
-        val requestQueue = Volley.newRequestQueue(context)
-        val jsonArrayRequest = JsonArrayRequest(
-            Request.Method.GET,
-            Constants.SERVER_URL + "/chat/channels/" + username ,
-            null,
-            Response.Listener<JSONArray>{response ->
-                for (i in 0 until response.length()) {
-                    val channelId = response.getJSONObject(i)
-                    adapter.add(ChannelItem(channelId.getString("id")))
-                    adapter.setOnItemClickListener { item, _ ->
-                        setChannel(item.toString())
-                    }
-                }
-            },Response.ErrorListener{
-                    error ->
-                Toast.makeText(
-                    context,
-                    error.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            }
-        )
-
-        requestQueue.add(jsonArrayRequest)
     }
 }
