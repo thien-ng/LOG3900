@@ -16,6 +16,8 @@ namespace PolyPaint.VueModeles
         private ICommand _goToLogin;
         private ICommand _register;
         private string   _username;
+        private string   _firstName;
+        private string   _name;
         private bool     _registerIsRunning;
 
         public PasswordBox Password { private get; set; }
@@ -41,6 +43,30 @@ namespace PolyPaint.VueModeles
                 {
                     _username = value;
                     ProprieteModifiee("Username");
+                }
+            }
+        }
+        public string FirstName
+        {
+            get { return _firstName; }
+            set
+            {
+                if (value != _firstName)
+                {
+                    _firstName = value;
+                    ProprieteModifiee("FirstName");
+                }
+            }
+        }
+        public string Name
+        {
+            get { return _username; }
+            set
+            {
+                if (value != _name)
+                {
+                    _name = value;
+                    ProprieteModifiee("Name");
                 }
             }
         }

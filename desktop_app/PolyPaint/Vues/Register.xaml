@@ -6,61 +6,113 @@
       xmlns:local="clr-namespace:PolyPaint.Vues"
       xmlns:util="clr-namespace:PolyPaint.Utilitaires"
       mc:Ignorable="d"
-      Background="White"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Register">
     <Grid>
+
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="20" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="20" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
             <RowDefinition Height="2*" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="3*" />
-            <RowDefinition Height="3*" />
-            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
+        <Grid.Background>
+            <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
+        </Grid.Background>
+        <Rectangle Grid.Column="1" Grid.Row="1" Grid.RowSpan="7" Fill="White"/>
+        <Image Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Source="/Resources/logo.png" Width="350"/>
 
-        <TextBlock Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2" Text="Register" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30"/>
-        <Image Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Height="2000" VerticalAlignment="Bottom" Source="/Resources/logo.png" Width="300"/>
-
-        <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right" Text="User:" VerticalAlignment="Center" FontSize="20" Padding="5,0,5,0"/>
-        <TextBox x:Name="userNameText" Grid.Row="3" Grid.Column="3"  VerticalAlignment="Center">
-            <TextBox.Text>
-                <Binding Path="Username"
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="15,0,0,0" Grid.Column="0"  Text="User:" VerticalAlignment="Bottom" Foreground="{StaticResource SecondaryAccentBrush}" FontSize="15" Padding="5,0,5,0"/>
+            <TextBox  Margin="0,5,15,0"  x:Name="userNameText" Grid.Column="1"  VerticalAlignment="Center">
+                <TextBox.Text>
+                    <Binding Path="Username"
              UpdateSourceTrigger="PropertyChanged" >
-                   <Binding.ValidationRules>
-                        <util:UsernameRule />
-                    </Binding.ValidationRules>
-                </Binding>
-            </TextBox.Text>
-        </TextBox>
-
-        <TextBlock Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Text="Password:" VerticalAlignment="Bottom" FontSize="20" Padding="5,0,5,0"/>
-        <PasswordBox  Grid.Row="4" Grid.Column="3"  x:Name="FloatingPasswordBox"
+                        <Binding.ValidationRules>
+                            <util:UsernameRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+        </Grid>
+        <Grid Grid.Row="3" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="15,0,0,0" Grid.Column="0"  Text="First name:" VerticalAlignment="Bottom" Foreground="{StaticResource SecondaryAccentBrush}" FontSize="15" Padding="5,0,5,0"/>
+            <TextBox Margin="0,5,15,0"  x:Name="firstNameText" Grid.Column="1"  VerticalAlignment="Center">
+                <TextBox.Text>
+                    <Binding Path="FirstName"
+             UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <util:UsernameRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+        </Grid>
+        <Grid Grid.Row="4" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="15,0,0,0" Grid.Column="0"  Text="Name:" VerticalAlignment="Bottom" Foreground="{StaticResource SecondaryAccentBrush}" FontSize="15" Padding="5,0,5,0"/>
+            <TextBox Margin="0,5,15,0"  x:Name="nameText" Grid.Column="1"  VerticalAlignment="Center">
+                <TextBox.Text>
+                    <Binding Path="Name"
+             UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <util:UsernameRule />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+        </Grid>
+        <Grid Grid.Row="5" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="15,0,0,0" Foreground="{StaticResource SecondaryAccentBrush}" Grid.Column="0"  Text="Password:" VerticalAlignment="Bottom" FontSize="15" Padding="5,0,5,0"/>
+            <PasswordBox Margin="0,0,15,0" Grid.Row="4" Grid.Column="1"  x:Name="FloatingPasswordBox"
                       PasswordChanged="PasswordChanged"
-                      Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
-                      
+                      Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"  
                       />
-        <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" Text="Confirm password:" VerticalAlignment="Bottom" FontSize="20" Padding="5,0,5,0"/>
-        <PasswordBox  Grid.Row="5" Grid.Column="3"  x:Name="FloatingPasswordBox2"
-                      PasswordChanged="PasswordConfirmationChanged"
+        </Grid>
+        
+        
+        <Grid Grid.Row="6" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="15,0,0,0" Foreground="{StaticResource SecondaryAccentBrush}" Grid.Column="0"  HorizontalAlignment="Left" Text="Confirm password:" VerticalAlignment="Bottom" FontSize="15" Padding="5,0,5,0"/>
+            <PasswordBox Margin="0,0,15,0" Grid.Column="1"  x:Name="FloatingPasswordBox2"
+                      PasswordChanged="PasswordConfirmationChanged" HorizontalAlignment="Stretch"
             Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" />
-        <StackPanel Grid.Column="3" Grid.Row="6" Orientation="Vertical" VerticalAlignment="Center">
-            <Button  Width="150" Command="{Binding Register}" >
+        </Grid>
+
+
+        <StackPanel Grid.Column="1" Grid.Row="7" Orientation="Vertical" VerticalAlignment="Center">
+            <Button Margin="0,20,0,10" BorderBrush="{StaticResource SecondaryAccentBrush}" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Width="150" Command="{Binding Register}" >
                 _Create my account
                 <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}" >
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=userNameText, Path=(Validation.HasError)}" Value="True">
                                 <Setter Property="IsEnabled" Value="False" />
@@ -69,7 +121,8 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <TextBlock Padding="0,5,0,0" HorizontalAlignment="Center"><Hyperlink Foreground="Black" TextDecorations="underline" Cursor="Hand" Command="{Binding GoToLogin}" >Back to login</Hyperlink></TextBlock>
+            <TextBlock  Padding="0,5,0,15" HorizontalAlignment="Center"><Hyperlink Foreground="{StaticResource SecondaryAccentBrush}" TextDecorations="underline" Cursor="Hand" Command="{Binding GoToLogin}" >Back to login</Hyperlink></TextBlock>
         </StackPanel>
+        
     </Grid>
 </Page>
