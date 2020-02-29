@@ -147,7 +147,7 @@ namespace PolyPaint.VueModeles
             _subChannels = new ObservableCollection<MessageChannel>();
             _notSubChannels = new ObservableCollection<MessageChannel>();
 
-            FetchChannels(true);
+            FetchChannels();
             
             _switchView = 0;
             _switchViewButton = "Profile";
@@ -158,7 +158,7 @@ namespace PolyPaint.VueModeles
             _searchString = "";
         }
 
-        private async void FetchChannels(bool isFirstCall)
+        private async void FetchChannels()
         {
             _subChannels.Clear();
             _notSubChannels.Clear();
@@ -167,9 +167,8 @@ namespace PolyPaint.VueModeles
             
             ProcessChannelRequest(subChannelReq, _subChannels, true);
             ProcessChannelRequest(notSubChannelReq, _notSubChannels, false);
-            
-            if (isFirstCall)
-                _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+
+            _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
         }
 
         private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
