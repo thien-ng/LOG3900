@@ -2,6 +2,7 @@
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
@@ -13,7 +14,7 @@ namespace PolyPaint.VueModeles
 {
     class HomeViewModel : BaseViewModel, IPageViewModel
     {
-        private CancellationTokenSource _token;
+        private CancellationTokenSource _cts;
 
         public HomeViewModel()
         {
@@ -31,7 +32,7 @@ namespace PolyPaint.VueModeles
             _frontEnabled = false;
             _backEnabled = false;
             _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
-            _token = new CancellationTokenSource();
+            _cts = new CancellationTokenSource();
             _searchString = "";
         }
 
@@ -233,7 +234,36 @@ namespace PolyPaint.VueModeles
 
         private void FilterChannels()
         {
+            _cts.Cancel();
+            _cts = new CancellationTokenSource();
 
+            string path = Constants.SERVER_PATH + Constants.SEARCH_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + _searchString;
+            ServerService.instance.client.GetAsync(path, _cts.Token).ContinueWith(responseTask => 
+            {
+                var response = responseTask.Result;
+                response.Content.ReadAsStringAsync().ContinueWith(jsonTask =>
+                {
+                    var jArray = JArray.Parse(jsonTask.Result);
+
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        _subChannels.Clear();
+                        _notSubChannels.Clear();
+
+                        foreach (JObject item in jArray)
+                        {
+                            if (!(item.ContainsKey("id") && item.ContainsKey("sub")))
+                                continue;
+
+                            if (item.GetValue("sub").Value<bool>() == true)
+                                _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
+                            else
+                                _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
+                            ;
+                        }
+                    });
+                });
+            });
         }
 
         #endregion
