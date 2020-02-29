@@ -54,20 +54,21 @@
                            Foreground="White"
                            VerticalAlignment="Center"
                            Text="Search ..."
-                           Visibility="{Binding search, Converter={converter:SearchBarVisibilityConverter}}"/>
+                           Visibility="{Binding SearchString, Converter={converter:SearchBarVisibilityConverter}}"/>
                 <TextBox Margin="5"
+                         Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}"
                          Foreground="White"
                          BorderBrush="White"
                          materialDesign:TextFieldAssist.UnderlineBrush="White"/>
 
                 <Button Grid.Column="1" 
-                                        Command="{Binding UnsubCommand}"
-                                        Visibility="{Binding isSubbed, Converter={converter:IsSubbedToVisibilityConverter}}"
-                                        HorizontalAlignment="Center" 
-                                        VerticalAlignment="Center" 
-                                        Style="{DynamicResource MaterialDesignToolButton}">
+                        ToolTip="Create channel"
+                        Command="{Binding AddChannelCommand}"
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Style="{DynamicResource MaterialDesignToolButton}">
                     
-                    <materialDesign:PackIcon Kind="Search"
+                    <materialDesign:PackIcon Kind="CreateOutline"
                                              Foreground="White"/>
                 </Button>
                 
