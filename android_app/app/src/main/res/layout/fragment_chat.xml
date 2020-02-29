@@ -30,7 +30,7 @@
             app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/scrollView"
+            app:layout_constraintStart_toEndOf="@+id/channelView"
             app:layout_constraintTop_toBottomOf="@+id/textView_channelName" />
 
     <EditText
@@ -53,8 +53,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-    <ScrollView
-            android:id="@+id/scrollView"
+    <LinearLayout
+            android:id="@+id/channelView"
             android:layout_width="200dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
@@ -101,6 +101,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
