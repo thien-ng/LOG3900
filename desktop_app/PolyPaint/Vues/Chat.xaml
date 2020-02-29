@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:chat="clr-namespace:PolyPaint.Controls.Chat"
+             xmlns:converter="clr-namespace:PolyPaint.Convertisseurs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              Background="White"
              MinWidth="300"
-             d:DesignHeight="450" d:DesignWidth="400"
-             >
-
-
+             d:DesignHeight="450" d:DesignWidth="400">
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3.5*"/>
@@ -31,15 +31,63 @@
             </Rectangle.Fill>
         </Rectangle>
 
-        <StackPanel Grid.Row="0" Grid.RowSpan="2">
+        <Grid Grid.Row="0" Grid.RowSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
 
-            <TextBlock Text="My Channels"
-                   Foreground="Black"
-                   Margin="0,20,0,10"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Center"/>
+            <Border DockPanel.Dock="Top" 
+                    Padding="0,10,0,10"
+                    BorderThickness="0 0 0 1" 
+                    BorderBrush="White">
+                <Viewbox StretchDirection="DownOnly" Margin="10">
+                    <TextBlock Text="My Channels"
+                           Foreground="White"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+                </Viewbox>
+            </Border>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+            <Grid Grid.Row="1"
+                  DockPanel.Dock="Top"
+                  Margin="0,10,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Margin="8,5,5,5"
+                           Foreground="White"
+                           VerticalAlignment="Center"
+                           Text="Search ..."
+                           Visibility="{Binding SearchString, Converter={converter:SearchBarVisibilityConverter}}"/>
+                <TextBox Margin="5"
+                         Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}"
+                         Foreground="White"
+                         BorderBrush="White"
+                         materialDesign:TextFieldAssist.UnderlineBrush="White"/>
+
+                <Button Grid.Column="1" 
+                        ToolTip="Create channel"
+                        Command="{Binding AddChannelCommand}"
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center" 
+                        Style="{DynamicResource MaterialDesignToolButton}">
+                    
+                    <materialDesign:PackIcon Kind="CreateOutline"
+                                             Foreground="White"/>
+                </Button>
+                
+            </Grid>
+
+            <ScrollViewer Grid.Row="2"
+                          DockPanel.Dock="Top"
+                          VerticalScrollBarVisibility="Auto" 
+                          VerticalAlignment="Top">
                 <ItemsControl ItemsSource="{Binding SubChannels}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -49,13 +97,24 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <TextBlock Text="Public Channels"
-                   Foreground="Black"
-                   Margin="0,10,0,10"
-                   FontWeight="SemiBold"
-                   HorizontalAlignment="Center"/>
+            <Border Grid.Row="3"
+                    DockPanel.Dock="Top" 
+                    Padding="0,10,0,10"
+                    BorderThickness="0 1 0 1" 
+                    BorderBrush="White">
+                <Viewbox StretchDirection="DownOnly" Margin="10">
+                    <TextBlock Text="Public Channels"
+                        Foreground="White"
+                        FontSize="28"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Center"/>
+                </Viewbox>
+            </Border>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Top">
+            <ScrollViewer Grid.Row="4" 
+                          DockPanel.Dock="Bottom"
+                          VerticalScrollBarVisibility="Auto" 
+                          VerticalAlignment="Top">
                 <ItemsControl ItemsSource="{Binding NotSubChannels}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -65,7 +124,7 @@
                 </ItemsControl>
             </ScrollViewer>
 
-        </StackPanel>
+        </Grid>
 
         <Grid Grid.Column="1" Grid.Row="1">
             <chat:MessageList/>

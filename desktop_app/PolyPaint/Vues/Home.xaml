@@ -26,48 +26,53 @@
         </ResourceDictionary>
         
     </Page.Resources>
-    <Grid x:Name="displayGrid">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Name="chatColumn" Width="2.5*"/>
-            <ColumnDefinition Width="3*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-        </Grid.RowDefinitions>
-        <local:Chat x:Name="chatHome" Grid.Column="0"/>
-        <ContentControl Content="{Binding }" Grid.Column="2">
-            <ContentControl.Style>
-                <Style TargetType="{x:Type ContentControl}">
-                    <Setter Property="ContentTemplate" Value="{StaticResource GameList}" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding SwitchView}" Value="1">
-                            <Setter Property="ContentTemplate" Value="{StaticResource Profile}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ContentControl.Style>
-        </ContentControl>
-        <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left">
+    <materialDesign:DialogHost IsOpen="{Binding IsCreateChannelDialogOpen}"
+                               DialogContent="{Binding DialogContent}"
+                               CloseOnClickAway="True">
+        
+        <Grid x:Name="displayGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Name="chatColumn" Width="2.5*"/>
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+            </Grid.RowDefinitions>
+            <local:Chat x:Name="chatHome" Grid.Column="0"/>
+            <ContentControl Content="{Binding }" Grid.Column="2">
+                <ContentControl.Style>
+                    <Style TargetType="{x:Type ContentControl}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource GameList}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SwitchView}" Value="1">
+                                <Setter Property="ContentTemplate" Value="{StaticResource Profile}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+            <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left">
             
-            <Button Width="50" Grid.Column="2" Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="left" VerticalAlignment="Top" Click="Button_Click">
-                <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center"/>
-            </Button>
-            <Button Width="50" IsEnabled="{Binding BackEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
-                <materialDesign:PackIcon Foreground="White" Kind="ArrowBack" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Button>
-            <Button Width="50" IsEnabled="{Binding FrontEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
-                <materialDesign:PackIcon Foreground="White" Kind="ArrowForward" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Button>
-        </StackPanel>
-        <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
-            <materialDesign:PopupBox.ToggleContent>
-                <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5,5,5,5" Foreground="White" />
-            </materialDesign:PopupBox.ToggleContent>
-            <StackPanel>
-                <Button ToolTip="{Binding SwitchViewButtonTooltip}" Command="{Binding SwitchViewCommand}" Content="{Binding SwitchViewButton}" ></Button>
-                <Button VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="disconnect" Command="{Binding DisconnectCommand}">
-                    <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" Height="30" Kind="PowerStandby" Foreground="Red"/>
+                <Button Width="50" Grid.Column="2" Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="left" VerticalAlignment="Top" Click="Button_Click">
+                    <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Width="50" IsEnabled="{Binding BackEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Foreground="White" Kind="ArrowBack" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Button>
+                <Button Width="50" IsEnabled="{Binding FrontEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Foreground="White" Kind="ArrowForward" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Button>
             </StackPanel>
-        </materialDesign:PopupBox>
-    </Grid>
+            <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
+                <materialDesign:PopupBox.ToggleContent>
+                    <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5,5,5,5" Foreground="White" />
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel>
+                    <Button ToolTip="{Binding SwitchViewButtonTooltip}" Command="{Binding SwitchViewCommand}" Content="{Binding SwitchViewButton}" ></Button>
+                    <Button VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="disconnect" Command="{Binding DisconnectCommand}">
+                        <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" Height="30" Kind="PowerStandby" Foreground="Red"/>
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+        </Grid>
+    </materialDesign:DialogHost>
 </Page>
