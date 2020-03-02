@@ -15,25 +15,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationListener)
-        bottomNavigationView.selectedItemId = R.id.action_chat
+        supportFragmentManager.beginTransaction().replace(R.id.container_view_left, ChatFragment()).commit()
+        bottomNavigationView.selectedItemId = R.id.action_game
     }
 
     override fun onBackPressed() {
-        // To ignore back button pressed.
+        super.onBackPressed()
+        SocketIO.disconnect()
     }
 
     private val onNavigationListener = BottomNavigationView.OnNavigationItemSelectedListener  {menuItem ->
         when (menuItem.itemId) {
-            R.id.action_chat -> {
-                supportFragmentManager.beginTransaction().replace(R.id.container_view, ChatFragment()).commit()
-                return@OnNavigationItemSelectedListener true
-            }
             R.id.action_profil -> {
-                supportFragmentManager.beginTransaction().replace(R.id.container_view, ProfilFragment()).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, ProfilFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_game -> {
-                supportFragmentManager.beginTransaction().replace(R.id.container_view, DrawFragment()).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, DrawFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
         }
