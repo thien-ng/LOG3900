@@ -16,10 +16,17 @@ namespace PolyPaint.VueModeles
         private ICommand _goToLogin;
         private ICommand _register;
         private string   _username;
+        private string   _firstName;
+        private string   _name;
         private bool     _registerIsRunning;
 
         public PasswordBox Password { private get; set; }
         public PasswordBox PasswordConfirm { private get; set; }
+
+        public RegisterViewModel()
+        {
+            _username = "";
+        }
 
         public ICommand GoToLogin
         {
@@ -44,6 +51,30 @@ namespace PolyPaint.VueModeles
                 }
             }
         }
+        public string FirstName
+        {
+            get { return _firstName; }
+            set
+            {
+                if (value != _firstName)
+                {
+                    _firstName = value;
+                    ProprieteModifiee("FirstName");
+                }
+            }
+        }
+        public string Name
+        {
+            get { return _username; }
+            set
+            {
+                if (value != _name)
+                {
+                    _name = value;
+                    ProprieteModifiee("Name");
+                }
+            }
+        }
 
         private void ReceiveMessage(JObject jsonMessage)
         {
@@ -51,8 +82,8 @@ namespace PolyPaint.VueModeles
             var message = jsonMessage["message"].ToObject<string>();
             if (status == 200)
             {
+                ServerService.instance.username = _username;
                 Mediator.Notify("GoToHomeScreen", "");
-                MessageBox.Show(message);
             }
             else
             {
@@ -85,7 +116,6 @@ namespace PolyPaint.VueModeles
                         {
                             if (res.GetValue("status").ToObject<int>() == Constants.SUCCESS_CODE)
                             {
-                                ServerService.instance.username = _username;
                                 ServerService.instance.socket.On(Constants.LOGGING_EVENT, data => ReceiveMessage((JObject)data));
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                
@@ -93,6 +123,10 @@ namespace PolyPaint.VueModeles
                             else
                                 MessageBox.Show(res.GetValue("message").ToString());
                         }
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error while logging into server");
                     }
                     finally
                     {

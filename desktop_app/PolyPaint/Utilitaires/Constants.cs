@@ -9,7 +9,6 @@ namespace PolyPaint.Utilitaires
     class Constants
     {
         //SERVER
-        //public const string SERVER_PATH = "http://localhost:3000";
         public const string SERVER_PATH             = "https://log3000-app.herokuapp.com";
         public const string ACCOUNT_PATH            = "/account";
         public const string LOGIN_PATH              = ACCOUNT_PATH + "/login";
@@ -20,6 +19,8 @@ namespace PolyPaint.Utilitaires
         public const string NOT_SUB_CHANNELS_PATH   = CHANNELS_PATH + "/notsub";
         public const string JOIN_CHANNEL_PATH       = CHANNELS_PATH + "/join";
         public const string LEAVE_CHANNEL_PATH      = CHANNELS_PATH + "/leave";
+        public const string SEARCH_CHANNEL_PATH     = CHANNELS_PATH + "/search";
+        public const string CREATE_CHANNEL_PATH     = CHANNELS_PATH + "/search";
         public const int    SUCCESS_CODE            = 200;
         public const int    PWD_MIN_LENGTH          = 1; //TODO
         public const int    USR_MIN_LENGTH          = 1; //TODO

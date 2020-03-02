@@ -33,24 +33,23 @@
                                     <Viewbox>
                                         <Ellipse Width="50"
                                              Height="50"
-                                             Fill="Gray"
+                                             Fill="White"
                                              Margin="10"/>
                                     </Viewbox>
 
                                     <Viewbox StretchDirection="DownOnly">
-                                        <TextBlock  Text="XX" 
+                                        <TextBlock  Text="{Binding initials}" 
                                                 VerticalAlignment="Center" 
                                                 HorizontalAlignment="Center"
-                                                Foreground="DarkRed"
-                                                FontSize="22"
-                           
-                                                FontWeight="Bold"/>
+                                                Foreground="Gray"
+                                                FontSize="22"/>
                                     </Viewbox>
 
                                     <TextBlock Grid.Column="1" 
+                                           Foreground="White"
                                            VerticalAlignment="Center"
                                            Padding="5,10,0,10" 
-                                           FontSize="15" 
+                                           FontSize="16" 
                                            TextWrapping="Wrap" 
                                            TextTrimming="CharacterEllipsis" 
                                            Text="{Binding id}"/>
@@ -61,7 +60,7 @@
                                         HorizontalAlignment="Center" 
                                         VerticalAlignment="Center" 
                                         Style="{DynamicResource MaterialDesignToolButton}">
-                                        <materialDesign:PackIcon Kind="Close" Foreground="Black" />
+                                        <materialDesign:PackIcon Kind="Close" Foreground="White" />
                                     </Button>
                                 </Grid>
                             </Border>
