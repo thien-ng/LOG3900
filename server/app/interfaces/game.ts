@@ -48,3 +48,8 @@ export enum LobbyNotif {
     create,
     delete,
 }
+
+export interface IGameStartData {
+    lobbyName: string,
+    //Add data we want to start game with
+}
