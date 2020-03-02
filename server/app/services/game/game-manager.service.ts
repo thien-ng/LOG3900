@@ -21,6 +21,9 @@ export class GameManagerService extends GameConnection {
         if (!lobby)
             throw new Error(`lobby ${data.lobbyName} does not exists`);
 
+        // Keep here to compile
+        console.log(this.arenas);
+        
     }
     
 }
