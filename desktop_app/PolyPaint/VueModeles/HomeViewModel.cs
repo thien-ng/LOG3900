@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json.Linq;
+using PolyPaint.Controls;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
@@ -6,6 +8,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -13,132 +16,176 @@ namespace PolyPaint.VueModeles
 {
     class HomeViewModel : BaseViewModel, IPageViewModel
     {
-        private string _pendingMessage;
-        public string _switchViewButton;
-        private int _switchView;
-        private string _switchViewButtonTooltip;
-        private bool _frontEnabled;
-        private bool _backEnabled;
-        private ObservableCollection<MessageChannel> _subChannels;
-        private ObservableCollection<MessageChannel> _notSubChannels;
-        private ChatRoom _selectedChannel;
-        
 
         public HomeViewModel()
         {
-            _subChannels = new ObservableCollection<MessageChannel>();
-            _notSubChannels = new ObservableCollection<MessageChannel>();
-            FetchChannels();
-            Mediator.Subscribe("ChangeChannel", ChangeChannel);
-            Mediator.Subscribe("SubToChannel", SubToChannel);
-            Mediator.Subscribe("UnsubChannel", UnsubChannel);
-            SwitchView = 0;
-            SwitchViewButton = "Profile";
-            SwitchViewButtonTooltip = "Access to profile";
-            FrontEnabled = false;
-            BackEnabled = false;
-            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
+            Setup();
         }
 
-        private async void FetchChannels()
-        {
-            var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-            var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-            if (subChannelReq.IsSuccessStatusCode)
-            {
-                JArray responseJson = JArray.Parse(await subChannelReq.Content.ReadAsStringAsync());
-                foreach (JObject item in responseJson)
-                {
-                    if (item.ContainsKey("id"))
-                    {
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
-                        });
-                    }
-                }
-            }
+        #region Public Attributes
 
-            _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
-
-            if (notSubChannelReq.IsSuccessStatusCode)
-            {
-                JArray responseJson = JArray.Parse(await notSubChannelReq.Content.ReadAsStringAsync());
-                foreach (JObject item in responseJson)
-                {
-                    if (item.ContainsKey("id"))
-                    {
-                        Application.Current.Dispatcher.Invoke(delegate
-                        {
-                            _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
-                        });
-                    }
-                }
-            }
-        }
-
-        private ICommand _goToLogin;
-        public ICommand GoToLogin
-        {
-            get
-            {
-                return _goToLogin ?? (_goToLogin = new RelayCommand(x =>
-                {
-                    Mediator.Notify("GoToLoginScreen", "");
-                }));
-            }
-        }
-
-        private ICommand _disconnectCommand;
-        public ICommand DisconnectCommand
-        {
-            get
-            {
-                return _disconnectCommand ?? (_disconnectCommand = new RelayCommand(x => Disconnect()));
-            }
-        }
-
-        private void Disconnect()
-        {
-            ServerService.instance.socket.Emit("logout");
-            ServerService.instance.username = "";
-            Mediator.Notify("GoToLoginScreen", "");
-            //TODO Channel ID 1 temp
-        }
-
-        public ObservableCollection<MessageChannel> SubChannels 
+        private ObservableCollection<MessageChannel> _subChannels;
+        public ObservableCollection<MessageChannel> SubChannels
         {
             get { return _subChannels; }
             set { _subChannels = value; ProprieteModifiee(); }
         }
 
+        private ObservableCollection<MessageChannel> _notSubChannels;
         public ObservableCollection<MessageChannel> NotSubChannels
         {
             get { return _notSubChannels; }
             set { _notSubChannels = value; ProprieteModifiee(); }
         }
 
+        private ChatRoom _selectedChannel;
         public ObservableCollection<MessageChat> Messages
         {
             get { return _selectedChannel.Messages; }
         }
 
+        private string _pendingMessage;
         public string PendingMessage
         {
             get { return _pendingMessage; }
             set { _pendingMessage = value; ProprieteModifiee(); }
         }
 
-        private ICommand _sendCommand;
-        public ICommand SendCommand
+        private string _searchString;
+        public string SearchString
         {
-            get
+            get { return _searchString; }
+            set
             {
-                return _sendCommand ?? (_sendCommand = new RelayCommand<string>(x =>
+                _searchString = value;
+                FilterChannels();
+                ProprieteModifiee();
+            }
+        }
+
+        private int _switchView;
+        public int SwitchView
+        {
+            get { return _switchView; }
+            set { _switchView = value; ProprieteModifiee(); }
+        }
+
+        private string _switchViewButton;
+        public string SwitchViewButton
+        {
+            get { return _switchViewButton; }
+            set { _switchViewButton = value; ProprieteModifiee(); }
+        }
+
+        private string _switchViewButtonTooltip;
+        public string SwitchViewButtonTooltip
+        {
+            get { return _switchViewButtonTooltip; }
+            set { _switchViewButtonTooltip = value; ProprieteModifiee(); }
+        }
+
+        private bool _frontEnabled;
+        public bool FrontEnabled
+        {
+            get { return _frontEnabled; }
+            set { _frontEnabled = value; ProprieteModifiee(); }
+        }
+
+        private bool _backEnabled;
+        public bool BackEnabled
+        {
+            get { return _backEnabled; }
+            set { _backEnabled = value; ProprieteModifiee(); }
+        }
+
+        private bool _isCreateChannelDialogOpen;
+        public bool IsCreateChannelDialogOpen
+        {
+            get { return _isCreateChannelDialogOpen; }
+            set
+            {
+                if (_isCreateChannelDialogOpen == value) return;
+                _isCreateChannelDialogOpen = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private object _dialogContent;
+        public object DialogContent
+        {
+            get { return _dialogContent; }
+            set
+            {
+                if (_dialogContent == value) return;
+                _dialogContent = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private string _newChannelString;
+        public string NewChannelString
+        {
+            get { return _newChannelString; }
+            set
+            {
+                if (_newChannelString == value) return;
+                _newChannelString = value;
+                ProprieteModifiee();
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void Setup()
+        {
+            Mediator.Subscribe("ChangeChannel", ChangeChannel);
+            Mediator.Subscribe("SubToChannel", SubToChannel);
+            Mediator.Subscribe("UnsubChannel", UnsubChannel);
+
+            _subChannels = new ObservableCollection<MessageChannel>();
+            _notSubChannels = new ObservableCollection<MessageChannel>();
+
+            FetchChannels();
+            
+            _switchView = 0;
+            _switchViewButton = "Profile";
+            _switchViewButtonTooltip = "Access to profile";
+            _frontEnabled = false;
+            _backEnabled = false;
+            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
+            _searchString = "";
+        }
+
+        private async void FetchChannels()
+        {
+            _subChannels.Clear();
+            _notSubChannels.Clear();
+            var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+            var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+            
+            ProcessChannelRequest(subChannelReq, _subChannels, true);
+            ProcessChannelRequest(notSubChannelReq, _notSubChannels, false);
+
+            _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+        }
+
+        private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+                foreach (JObject item in responseJson)
                 {
-                    _selectedChannel.SendMessage(PendingMessage);
-                    PendingMessage = "";
-                }));
+                    if (item.ContainsKey("id"))
+                    {
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            list.Add(new MessageChannel(item.GetValue("id").ToString(), isSubbed));
+                        });
+                    }
+                }
             }
         }
 
@@ -150,10 +197,10 @@ namespace PolyPaint.VueModeles
             if (channelId != _selectedChannel.ID)
             {
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = false;
-                
+
                 _selectedChannel = new ChatRoom((string)id);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
-                
+
                 ProprieteModifiee("Messages");
             }
         }
@@ -162,10 +209,10 @@ namespace PolyPaint.VueModeles
         {
             string channelId = (string)id;
             string requestPath = Constants.SERVER_PATH + Constants.JOIN_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + channelId;
-            var response = await ServerService.instance.client.PutAsync(requestPath, new StringContent("")) ;
+            var response = await ServerService.instance.client.PutAsync(requestPath, new StringContent(""));
 
             if (!response.IsSuccessStatusCode)
-            { 
+            {
                 MessageBox.Show("Error while joining channel");
                 return;
             }
@@ -180,10 +227,14 @@ namespace PolyPaint.VueModeles
 
             if (responseJson.GetValue("status").ToString() == "200")
             {
-                MessageChannel joinedChannel = new MessageChannel(channelId, true);
-                _notSubChannels.Remove(_notSubChannels.SingleOrDefault( i => i.id == channelId ));
-                _subChannels.Add(joinedChannel);
-            } else
+                Application.Current.Dispatcher.Invoke(delegate
+                {
+                    MessageChannel joinedChannel = new MessageChannel(channelId, true);
+                    _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
+                    _subChannels.Add(joinedChannel);
+                });
+            }
+            else
                 MessageBox.Show(responseJson.GetValue("message").ToString());
         }
 
@@ -220,6 +271,69 @@ namespace PolyPaint.VueModeles
                 MessageBox.Show(responseJson.GetValue("message").ToString());
         }
 
+        private void Disconnect()
+        {
+            ServerService.instance.socket.Emit("logout");
+            ServerService.instance.username = "";
+            Mediator.Notify("GoToLoginScreen", "");
+        }
+
+        private void FilterChannels()
+        {
+            string path = Constants.SERVER_PATH + Constants.SEARCH_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + _searchString;
+            ServerService.instance.client.GetAsync(path).ContinueWith(responseTask => 
+            {
+                var response = responseTask.Result;
+                response.Content.ReadAsStringAsync().ContinueWith(jsonTask =>
+                {
+                    var jArray = JArray.Parse(jsonTask.Result);
+
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        _subChannels.Clear();
+                        _notSubChannels.Clear();
+
+                        foreach (JObject item in jArray)
+                        {
+                            if (!(item.ContainsKey("id") && item.ContainsKey("sub")))
+                                continue;
+
+                            if (item.GetValue("sub").Value<bool>() == true)
+                                _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
+                            else
+                                _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
+                        }
+                    });
+                });
+            });
+        }
+
+        #endregion
+
+        #region Commands
+
+        private ICommand _disconnectCommand;
+        public ICommand DisconnectCommand
+        {
+            get
+            {
+                return _disconnectCommand ?? (_disconnectCommand = new RelayCommand(x => Disconnect()));
+            }
+        }
+
+        private ICommand _sendCommand;
+        public ICommand SendCommand
+        {
+            get
+            {
+                return _sendCommand ?? (_sendCommand = new RelayCommand<string>(x =>
+                {
+                    _selectedChannel.SendMessage(PendingMessage);
+                    PendingMessage = "";
+                }));
+            }
+        }
+
         private ICommand _switchViewCommand;
         public ICommand SwitchViewCommand
         {
@@ -230,7 +344,7 @@ namespace PolyPaint.VueModeles
                     SwitchView = SwitchView == 0 ? 1 : 0;
                     SwitchViewButton = SwitchViewButton == "Profile" ? "GameList" : "Profile";
                     SwitchViewButtonTooltip = SwitchViewButtonTooltip == "Access to profile" ? "Access to gameList" : "Access to profile";
-                    if(!FrontEnabled && !BackEnabled)
+                    if (!FrontEnabled && !BackEnabled)
                     {
                         FrontEnabled = true;
                     }
@@ -240,35 +354,48 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        public int SwitchView
+        private ICommand _addChannelCommand;
+        public ICommand AddChannelCommand
         {
-            get { return _switchView; }
-            set { _switchView = value; ProprieteModifiee(); }
+            get
+            {
+                return _addChannelCommand ?? (_addChannelCommand = new RelayCommand(x =>
+                {
+                    DialogContent = new CreateChannelControl();
+                    IsCreateChannelDialogOpen = true;
+                }));
+            }
         }
 
-        public string SwitchViewButton
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
         {
-            get { return _switchViewButton; }
-            set { _switchViewButton = value; ProprieteModifiee(); }
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
+                {
+                    NewChannelString = "";
+                    IsCreateChannelDialogOpen = false;
+                }));
+            }
         }
 
-        public string SwitchViewButtonTooltip
+        private ICommand _acceptCommand;
+        public ICommand AcceptCommand
         {
-            get { return _switchViewButtonTooltip; }
-            set { _switchViewButtonTooltip = value; ProprieteModifiee(); }
+            get
+            {
+                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
+                {
+                    await Task.Run(() => SubToChannel(NewChannelString));
+                    NewChannelString = "";
+                    IsCreateChannelDialogOpen = false;
+                }));
+            }
         }
 
-        public bool FrontEnabled
-        {
-            get { return _frontEnabled; }
-            set { _frontEnabled = value; ProprieteModifiee(); }
-        }
-        
-        public bool BackEnabled
-        {
-            get { return _backEnabled; }
-            set { _backEnabled = value; ProprieteModifiee(); }
-        }
+
+        #endregion
 
     }
 }

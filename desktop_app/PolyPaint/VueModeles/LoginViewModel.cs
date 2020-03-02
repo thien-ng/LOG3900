@@ -49,7 +49,7 @@ namespace PolyPaint.VueModeles
             set
             {
                 _isButtonEnabled = value;
-                ProprieteModifiee(nameof(IsButtonEnabled));
+                ProprieteModifiee();
             }
         }
 
@@ -79,6 +79,7 @@ namespace PolyPaint.VueModeles
                     try
                     {
                         _loginIsRunning = true;
+                        IsButtonEnabled = false;
 
                         JObject res = await LoginRequestAsync(_username, Password.Password);
 
@@ -88,17 +89,18 @@ namespace PolyPaint.VueModeles
                             {
                                 ServerService.instance.socket.On(Constants.LOGGING_EVENT, data => ReceiveMessage((JObject)data));
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
-                                
                             }
                             else
-                            {
                                 MessageBox.Show(res.GetValue("message").ToString());
-                            }
                         } 
+                    } catch
+                    {
+                        MessageBox.Show("Error while logging into server");
                     }
                     finally
                     {
                         _loginIsRunning = false;
+                        IsButtonEnabled = true;
                     }
                 }));
             }

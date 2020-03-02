@@ -9,6 +9,23 @@ namespace PolyPaint.Modeles
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string id { get; set; }
+        public string initials { 
+            get
+            {
+                if (id.Length == 1)
+                    return id.ToUpper();
+                else
+                    return id[0].ToString().ToUpper() + id[1].ToString();
+            } 
+        }
+
+        public MessageChannel(string id, bool isSubbed)
+        {
+            this.id = id;
+            this.isSubbed = isSubbed;
+            isSelected = false;
+        }
+
 
         private bool _isSelected;
         public bool isSelected 
@@ -24,12 +41,6 @@ namespace PolyPaint.Modeles
             set { _isSubbed = value; }
         }
 
-        public MessageChannel(string id, bool isSubbed)
-        {
-            this.id = id;
-            this.isSubbed = isSubbed;
-            isSelected = false;
-        }
 
         private ICommand _selectChannelCommand;
         public ICommand SelectChannelCommand

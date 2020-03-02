@@ -102,9 +102,6 @@
                         Foreground="Gray"                        
                         TickFrequency="10" TickPlacement="BottomRight" IsSnapToTickEnabled="False">
                 </Slider>
-                <Button  Width="40" Height="40" Margin="5"
-                        Command="{Binding GoToLogin}" Content="Gotoview1">
-                </Button>
             </StackPanel>
 
         </Border>

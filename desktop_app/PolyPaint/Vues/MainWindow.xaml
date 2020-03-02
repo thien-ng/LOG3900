@@ -16,5 +16,5 @@
         MinHeight="800" MinWidth="900"
         Title="MainWindow" Height="auto" Width="auto">
 
-    <Frame NavigationUIVisibility="Hidden" Content="{Binding CurrentPageViewModel}" />
+        <Frame NavigationUIVisibility="Hidden" Content="{Binding CurrentPageViewModel}" />
 </Window>
