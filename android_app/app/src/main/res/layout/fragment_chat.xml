@@ -55,7 +55,7 @@
 
     <LinearLayout
             android:id="@+id/channelView"
-            android:layout_width="200dp"
+            android:layout_width="150dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
             app:layout_constraintStart_toStartOf="parent"

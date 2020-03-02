@@ -2,18 +2,35 @@
 <android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <FrameLayout
-            android:id="@+id/container_view"
+    <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="56dp"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:baselineAligned="false">
 
-    </FrameLayout>
+        <FrameLayout
+                android:id="@+id/container_view_left"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.6">
+        </FrameLayout>
+
+        <FrameLayout
+                android:id="@+id/container_view_right"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+        </FrameLayout>
+    </LinearLayout>
 
     <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -23,6 +40,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:menu="@menu/menu_main"/>
+            app:menu="@menu/menu_main">
+
+    </android.support.design.widget.BottomNavigationView>
 
 </android.support.constraint.ConstraintLayout>
