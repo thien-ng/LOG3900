@@ -49,6 +49,12 @@ export enum LobbyNotif {
     delete,
 }
 
+export interface IGameCard {
+    gameName:   string,
+    uuid:       string,
+    mode:       GameMode,
+}
+
 export interface ICreateGame {
     gameName:   string,
     solution:   string,
@@ -63,7 +69,3 @@ export enum GameMode {
     SprintCollab,
 }
 
-export interface IGameStartData {
-    lobbyName: string,
-    //Add data we want to start game with
-}

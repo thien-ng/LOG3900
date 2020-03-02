@@ -20,6 +20,9 @@ export class GameController {
     private configureRouter() {
         this.router = Router();
 
+        // TODO added if to make it compile
+        if (this.gameMan) {}
+
         this.router.post('/lobby/join', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.lobbyServ.join(req.body));
         });

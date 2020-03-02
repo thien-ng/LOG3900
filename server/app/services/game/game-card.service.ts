@@ -1,13 +1,13 @@
 import { injectable } from "inversify";
-import { ICreateGame } from "../../interfaces/game";
+import { IGameCard } from "../../interfaces/game";
 
 @injectable()
 export class GameCardService {
     
     // TODO: this array should be in mongoDB
-    public games: ICreateGame[];
+    public games: IGameCard[];
 
-    public getGameCards(): ICreateGame[] {
+    public getGameCards(): IGameCard[] {
         return this.games;
     }
 

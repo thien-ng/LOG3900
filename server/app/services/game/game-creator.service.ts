@@ -1,6 +1,7 @@
 import { injectable, inject } from "inversify";
-import { ICreateGame } from "../../interfaces/game";
+import { ICreateGame, IGameCard, GameMode } from "../../interfaces/game";
 import { GameCardService } from "./game-card.service";
+import { uuid } from "uuidv4";
 
 import Types from '../../types';
 
@@ -15,7 +16,12 @@ export class GameCreatorService {
     }
 
     public createGame(configs: ICreateGame): void {
-        this.cardServ.games.push(configs);
+        const card: IGameCard = {
+            gameName: configs.gameName,
+            uuid: uuid(),
+            mode: GameMode.FFA,
+        }
+        this.cardServ.games.push(card);
     }
 
 }
