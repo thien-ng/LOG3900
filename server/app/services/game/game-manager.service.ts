@@ -13,7 +13,7 @@ export class GameManagerService extends GameConnection {
     public constructor(@inject(Types.LobbyManagerService) private lobServ: LobbyManagerService) {
         super()
 
-        // if statement to make server compile
+        // TODO if statement to make server compile
         if (this.arenas) {}
         if (this.lobServ) {}
     }
