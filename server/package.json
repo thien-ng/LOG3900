@@ -68,6 +68,7 @@
         "nyc": "^14.1.1",
         "pg": "^7.17.1",
         "prettier": "^1.19.1",
+        "quickdraw.js": "^1.0.6",
         "reflect-metadata": "^0.1.10",
         "rimraf": "3.0.0",
         "serve-favicon": "~2.5.0",
