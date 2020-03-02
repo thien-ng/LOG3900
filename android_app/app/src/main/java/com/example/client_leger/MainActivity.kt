@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        // To ignore back button pressed.
-        // TODO (FX): actually call super.onBackPressed(), but disconnect the user before.
+        super.onBackPressed()
+        SocketIO.disconnect()
     }
 
     private val onNavigationListener = BottomNavigationView.OnNavigationItemSelectedListener  {menuItem ->
