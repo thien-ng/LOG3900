@@ -59,5 +59,10 @@ namespace PolyPaint.Vues
                 _isOpen = false;
             }
         }
+
+        private void chatHome_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
