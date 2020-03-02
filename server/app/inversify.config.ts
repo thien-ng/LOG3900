@@ -18,6 +18,7 @@ import { GameConnection } from './services/game/game-connection.service';
 import { GameManagerService } from './services/game/game-manager.service';
 import { GameCreatorService } from './services/game/game-creator.service';
 import { GameCreatorController } from './controllers/game-creator.controller';
+import { GameCardService } from './services/game/game-card.service';
 import Types from './types';
 
 const container: Container = new Container();
@@ -36,6 +37,7 @@ container.bind(Types.AccountService).to(AccountService);
 container.bind(Types.WebsocketService).to(WebsocketService);
 container.bind(Types.GameCreatorService).to(GameCreatorService);
 
+container.bind(Types.GameCardService).to(GameCardService).inSingletonScope();
 container.bind(Types.GameConnection).to(GameConnection).inSingletonScope();
 container.bind(Types.GameManagerService).to(GameManagerService).inSingletonScope();
 container.bind(Types.LobbyManagerService).to(LobbyManagerService).inSingletonScope();

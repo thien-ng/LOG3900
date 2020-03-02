@@ -49,6 +49,20 @@ export enum LobbyNotif {
     delete,
 }
 
+export interface ICreateGame {
+    gameName:   string,
+    solution:   string,
+    clues:      string[],
+    mode:       GameMode
+    // add other informations
+}
+
+export enum GameMode {
+    FFA,
+    SprintSolo,
+    SprintCollab,
+}
+
 export interface IGameStartData {
     lobbyName: string,
     //Add data we want to start game with

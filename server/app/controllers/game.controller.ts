@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
-import Types from '../types';
 import { LobbyManagerService } from '../services/game/lobby-manager.service';
 import { GameManagerService } from '../services/game/game-manager.service';
+import { GameCardService } from '../services/game/game-card.service';
+
+import Types from '../types';
 
 @injectable()
 export class GameController {
@@ -10,7 +12,8 @@ export class GameController {
 
     public constructor(
         @inject(Types.LobbyManagerService) private lobbyServ: LobbyManagerService,
-        @inject(Types.GameManagerService)  private gameMan:   GameManagerService) {
+        @inject(Types.GameManagerService)  private gameMan:   GameManagerService,
+        @inject(Types.GameCardService)     private cardServ: GameCardService) {
         this.configureRouter();
     }
 
@@ -29,8 +32,8 @@ export class GameController {
             res.json(this.lobbyServ.getActiveLobbies());
         });
 
-        this.router.post('/game/start', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.gameMan.startGame(req.body));
+        this.router.get('/game/created', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.cardServ.getGameCards());
         });
     }
 }

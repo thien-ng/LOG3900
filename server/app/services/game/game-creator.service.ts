@@ -1,15 +1,21 @@
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
+import { ICreateGame } from "../../interfaces/game";
+import { GameCardService } from "./game-card.service";
 
-const quickDraw = require("quickdraw.js");
+import Types from '../../types';
 
 @injectable()
 export class GameCreatorService {
 
+    public constructor(
+        @inject(Types.GameCardService) private cardServ: GameCardService) {}
+
     public async getSuggestion() {
-        await quickDraw.import('broccoli', 1);
-        // console.log("value :", quickDraw.set(1 ,["broccoli"]));
-        
-        return quickDraw.set(1 ,["broccoli"]).set[0].input;
+        // TODO: getSuggestion for assiste 2
+    }
+
+    public createGame(configs: ICreateGame): void {
+        this.cardServ.games.push(configs);
     }
 
 }
