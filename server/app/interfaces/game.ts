@@ -6,6 +6,7 @@ export interface IActiveLobby {
     password?:  string,
     lobbyName:  string,
     size:       number,
+    uuid:       string,
 }
 
 export interface IJoinLobby {
@@ -13,6 +14,7 @@ export interface IJoinLobby {
     private:   boolean,
     lobbyName: string,
     size?:     number,
+    uuid?:     string,
     password?: string,
 }
 
