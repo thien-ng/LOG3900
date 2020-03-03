@@ -14,7 +14,6 @@ import { AccountDbService } from './database/account-db.service';
 import { ChatDbService } from './database/chat-db.service';
 import { DatabaseService } from './database/database';
 import { LobbyManagerService } from './services/game/lobby-manager.service';
-import { GameConnection } from './services/game/game-connection.service';
 import { GameManagerService } from './services/game/game-manager.service';
 import { GameCreatorService } from './services/game/game-creator.service';
 import { GameCreatorController } from './controllers/game-creator.controller';
@@ -38,7 +37,6 @@ container.bind(Types.WebsocketService).to(WebsocketService);
 container.bind(Types.GameCreatorService).to(GameCreatorService);
 
 container.bind(Types.GameCardService).to(GameCardService).inSingletonScope();
-container.bind(Types.GameConnection).to(GameConnection).inSingletonScope();
 container.bind(Types.GameManagerService).to(GameManagerService).inSingletonScope();
 container.bind(Types.LobbyManagerService).to(LobbyManagerService).inSingletonScope();
 container.bind(Types.ChatDbService).to(ChatDbService).inSingletonScope();

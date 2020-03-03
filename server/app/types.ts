@@ -14,7 +14,6 @@ export default {
     ChatService:            Symbol('ChatService'),
     UserManagerService:     Symbol('UserManagerService',),
     LobbyManagerService:    Symbol('LobbyManagerService'),
-    GameConnection:         Symbol('GameConnection'),
     GameManagerService:     Symbol('GameManagerService'),
     GameCreatorService:     Symbol('GameCreatorService'),
     GameCardService:        Symbol('GameCardService'),
