@@ -35,7 +35,7 @@ export class GameController {
             res.json(this.lobbyServ.getActiveLobbies());
         });
 
-        this.router.get('/game/created', (req: Request, res: Response, next: NextFunction) => {
+        this.router.get('/cards', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.cardServ.getGameCards());
         });
     }
