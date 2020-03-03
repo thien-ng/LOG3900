@@ -7,7 +7,7 @@ import Types from '../types';
 import { ChatService } from './chat.service';
 import { IUser } from '../interfaces/user-manager';
 import { IReceptMes } from '../interfaces/chat';
-import { GameConnection } from '../services/game/game-connection.service';
+import { LobbyManagerService } from '../services/game/lobby-manager.service';
 
 @injectable()
 export class WebsocketService {
@@ -16,7 +16,7 @@ export class WebsocketService {
 
     public constructor(
         @inject(Types.UserManagerService) private userServ: UserManagerService,
-        @inject(Types.GameConnection) private gameConnectServ: GameConnection,
+        @inject(Types.LobbyManagerService) private lobServ: LobbyManagerService,
         @inject(Types.ChatService) private chatServ: ChatService,
         ) {}
 
@@ -62,7 +62,7 @@ export class WebsocketService {
 
     private initSocket(): void {
         this.chatServ.setSocket(this.io);
-        this.gameConnectServ.initSocketServer(this.io);
+        this.lobServ.initSocketServer(this.io);
     }
 
     private login(username: string, socket: io.Socket): void {       
