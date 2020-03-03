@@ -70,4 +70,3 @@ export enum GameMode {
     SprintSolo,
     SprintCollab,
 }
-

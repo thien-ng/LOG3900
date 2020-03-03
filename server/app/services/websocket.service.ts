@@ -69,7 +69,7 @@ export class WebsocketService {
     }
 
     private login(username: string, socket: io.Socket): void {       
-        const user: IUser = {username: username, socketId: socket.id};
+        const user: IUser = {username: username, socketId: socket.id, socket: socket};
         this.userServ.addUser(user);
         this.chatServ.addUserToChannelMap(user);
     }
