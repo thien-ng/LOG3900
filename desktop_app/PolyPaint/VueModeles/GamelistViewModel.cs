@@ -20,7 +20,17 @@ namespace PolyPaint.VueModeles
         public GamelistViewModel()
         {
             _visibilityPrivate = "Hidden";
+            //Mediator.Subscribe("addGame", addGame);
             Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            _gameCards = new ObservableCollection<GameCard>();
+
+        }
+
+        private ObservableCollection<GameCard> _gameCards;
+        public ObservableCollection<GameCard> GameCards
+        {
+            get { return _gameCards; }
+            set { _gameCards = value; ProprieteModifiee(); }
         }
 
         public ObservableCollection<int> Numbers { get; }
@@ -31,7 +41,20 @@ namespace PolyPaint.VueModeles
             {
                 return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
                 {
-                    DialogContent = new CreateGameControl();
+                    GameCard card = new GameCard();
+                    _gameCards.Add(card);
+                }));
+            }
+        }
+
+        private ICommand _addLobbyCommand;
+        public ICommand AddLobbyCommand
+        {
+            get
+            {
+                return _addLobbyCommand ?? (_addLobbyCommand = new RelayCommand(x =>
+                {
+                    DialogContent = new CreateLobbyControl();
                     IsCreateGameDialogOpen = true;
                 }));
             }
@@ -71,6 +94,11 @@ namespace PolyPaint.VueModeles
                 _newGameString = value;
                 ProprieteModifiee();
             }
+        }
+
+        private void addGame()
+        {
+            throw new NotImplementedException();
         }
 
         private string _password;
@@ -137,6 +165,11 @@ namespace PolyPaint.VueModeles
                     IsCreateGameDialogOpen = false;
                 }));
             }
+        }
+
+        private void createGame()
+        {
+            throw new NotImplementedException();
         }
         private async void createLobby()
         {

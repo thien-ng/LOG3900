@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace PolyPaint.Controls
 {
     /// <summary>
-    /// Interaction logic for CreateGameControl.xaml
+    /// Logique d'interaction pour GameCard.xaml
     /// </summary>
-    public partial class CreateGameControl : UserControl
+    public partial class GameCard : UserControl
     {
-        public CreateGameControl()
+        public GameCard()
         {
             InitializeComponent();
         }

@@ -116,11 +116,14 @@
     <Compile Include="Controls\CreateChannelControl.xaml.cs">
       <DependentUpon>CreateChannelControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\CreateGameControl.xaml.cs">
-      <DependentUpon>CreateGameControl.xaml</DependentUpon>
+    <Compile Include="Controls\CreateLobbyControl.xaml.cs">
+      <DependentUpon>CreateLobbyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\FenetreDessin.xaml.cs">
       <DependentUpon>FenetreDessin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GameCard.xaml.cs">
+      <DependentUpon>GameCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
@@ -132,6 +135,7 @@
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Modeles\GameCard.cs" />
     <Compile Include="Modeles\MessageChannel.cs" />
     <Compile Include="Modeles\MessageChat.cs" />
     <Compile Include="Modeles\MessageReception.cs" />
@@ -192,11 +196,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\CreateGameControl.xaml">
+    <Page Include="Controls\CreateLobbyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\FenetreDessin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\GameCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

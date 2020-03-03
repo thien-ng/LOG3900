@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="PolyPaint.Controls.GameCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PolyPaint.Controls"
+             mc:Ignorable="d"
+                Background="White"
+             d:DesignHeight="1000" d:DesignWidth="1000">
+    <Grid>
+        <materialDesign:Flipper>
+            <materialDesign:Flipper.FrontContent>
+                <Grid Height="250" Width="200">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="160" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+            <materialDesign:ColorZone
+                Mode="PrimaryLight"
+                VerticalAlignment="Stretch">
+            <materialDesign:PackIcon
+                Kind="AccountCircle"
+                Height="128"
+                Width="128"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center" />
+            </materialDesign:ColorZone>
+        <StackPanel
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding GameName}" />
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                                Margin="0 4 0 0">
+                            View lobbies
+                        </Button>
+        </StackPanel>
+    </Grid>
+        </materialDesign:Flipper.FrontContent>
+        <materialDesign:Flipper.BackContent>
+            <Grid Height="250" Width="200">
+                <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+            <materialDesign:ColorZone>
+                <StackPanel Orientation="Horizontal">
+                        <Button
+                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                            HorizontalAlignment="Left">
+                                <materialDesign:PackIcon
+                                    Kind="ArrowLeft"
+                                    HorizontalAlignment="Right" />
+                        </Button>
+                            <TextBlock
+            Margin="8 0 0 0"
+            VerticalAlignment="Center">
+          LOBBIES
+                            </TextBlock>
+                        </StackPanel>
+                    </materialDesign:ColorZone>
+                    <Grid
+                Grid.Row="1"
+                Margin="0 6 0 0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Width="172">
+                        <StackPanel
+          Grid.Row="2"
+          Orientation="Vertical"
+          Margin="0 12 0 0"
+          HorizontalAlignment="Right">
+                            <TextBlock Text="Salut"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </materialDesign:Flipper.BackContent>
+        </materialDesign:Flipper>
+    </Grid>
+</UserControl>
