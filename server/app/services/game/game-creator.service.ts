@@ -5,16 +5,15 @@ import { uuid } from "uuidv4";
 import { CardsDbService } from "../../database/cards-db.service";
 
 import Types from '../../types';
+import { CreationAssist2 } from "./utils/creation-assists";
 
 @injectable()
 export class GameCreatorService {
 
-    public constructor(@inject(Types.CardsDbService) private db: CardsDbService) {
-        if(this.db){}
-    }
+    public constructor(@inject(Types.CardsDbService) private db: CardsDbService) {}
 
     public async getSuggestion() {
-        // TODO: getSuggestion for assiste 2
+        return CreationAssist2.fetchSuggestion();
     }
 
     public createGame(configs: ICreateGame): void {
