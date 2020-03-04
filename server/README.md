@@ -23,9 +23,14 @@
 | Join/Create lobby                 |POST  | /game/lobby/join                       |
 | Leave/Delete lobby                |POST  | /game/lobby/leave                      |
 | Get active lobbies                |GET   | /game/lobby/active                     |
-| Get game cards                    |GET   | /game/cards                            |
 | Get game suggestion (assiste 2)   |GET   | /creator/game/suggestion               |
 | Create new game                   |POST  | /creator/game/new                      |
+
+# Card
+| Description                       | type | path                                   |
+| ---------------------             |:----:|-----------------------                 |
+| Get all game cards                |GET   | /card                                  |
+| Delete card                       |DELETE| /card/delete/:gameID                   |
 
 # Socket
 |Event          | Description                                       |

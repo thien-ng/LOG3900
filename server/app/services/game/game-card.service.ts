@@ -1,14 +1,22 @@
-import { injectable } from "inversify";
-import { IGameCard } from "../../interfaces/game";
+import { injectable, inject } from "inversify";
+import { IGameCard } from "../../interfaces/card";
+import { CardsDbService } from "../../database/cards-db.service";
+
+import Types from '../../types';
 
 @injectable()
 export class GameCardService {
     
-    // TODO: this array should be in mongoDB
-    public games: IGameCard[];
+    public constructor(@inject(Types.CardsDbService) private db: CardsDbService) {
+        if(this.db){}
+    }
 
-    public getGameCards(): IGameCard[] {
-        return this.games;
+    public async getGameCards(): Promise<IGameCard[]> {
+        return await this.db.getCards();
+    }
+
+    public async deleteCard(gameID: string): Promise<void> {
+        return await this.db.deleteCard(gameID);
     }
 
 }
