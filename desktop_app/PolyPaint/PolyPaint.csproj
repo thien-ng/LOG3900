@@ -116,6 +116,9 @@
     <Compile Include="Controls\CreateChannelControl.xaml.cs">
       <DependentUpon>CreateChannelControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CreateGameControl.xaml.cs">
+      <DependentUpon>CreateGameControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CreateLobbyControl.xaml.cs">
       <DependentUpon>CreateLobbyControl.xaml</DependentUpon>
     </Compile>
@@ -194,6 +197,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CreateChannelControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CreateGameControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
