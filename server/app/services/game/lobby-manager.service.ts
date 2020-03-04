@@ -19,7 +19,6 @@ export class LobbyManagerService {
         this.lobbies = new Map<string, IActiveLobby>();
     }
 
-
     public initSocketServer(socketServer: io.Server): void {
         this.socketServer = socketServer;     
     }
