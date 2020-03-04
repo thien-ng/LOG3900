@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { ICreateGame, GameMode } from "../../interfaces/game";
+import { ISuggestion, ICreateGame } from "../../interfaces/creator";
 import { IGameCard } from "../../interfaces/card";
 import { uuid } from "uuidv4";
 import { CardsDbService } from "../../database/cards-db.service";
@@ -12,7 +12,7 @@ export class GameCreatorService {
 
     public constructor(@inject(Types.CardsDbService) private db: CardsDbService) {}
 
-    public async getSuggestion() {
+    public async getSuggestion(): Promise<ISuggestion> {
         return CreationAssist2.fetchSuggestion();
     }
 
@@ -20,7 +20,7 @@ export class GameCreatorService {
         const card: IGameCard = {
             gameName: configs.gameName,
             gameID: uuid(),
-            mode: GameMode.FFA,
+            mode: configs.mode,
         }
         this.db.addCard(card);
     }
