@@ -17,12 +17,11 @@ namespace PolyPaint.Modeles
     public class GameCard: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public GameCard(string gameName,string mode, int gameID)
+        public GameCard(string gameName,string mode)
         {
             _visibilityPrivate = "Hidden";
             _gameName = gameName;
             _mode = mode;
-            _gameID = gameID;
             Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             _gameLobbies = new ObservableCollection<Lobby>();
 
@@ -31,8 +30,10 @@ namespace PolyPaint.Modeles
         public ObservableCollection<int> Numbers { get; }
 
         private int _gameID;
+        public string GameID { get; set; }
 
-        public string _mode;
+        private string _mode;
+        public string Mode { get { return _mode; } }
         private string _gameName;
         public string GameName
         {

@@ -13,28 +13,41 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.IO;
 
 namespace PolyPaint.VueModeles
 {
-    class GamelistViewModel: BaseViewModel
+    class GamelistViewModel : BaseViewModel
     {
         public GamelistViewModel()
         {
-            
+
             //Mediator.Subscribe("addGame", addGame);
             _gameCards = new ObservableCollection<GameCard>();
             getGameCards();
 
         }
-        
+
+        public ObservableCollection<string> Mode;
+
         private async void getGameCards()
         {
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
-            Console.WriteLine(response);
-            //JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
 
-            //foreach (var item in responseJson)
-            //    GameCards.Add(item.ToObject<GameCard>());
+            Console.WriteLine(response.Content);
+            StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+            String responseData = streamReader.ReadToEnd();
+            Console.WriteLine(responseData);
+            var myData = JsonConvert.DeserializeObject<List<GameCard>>(responseData);
+
+            foreach (var item in myData)
+            {
+                GameCards.Add(item);
+            }
+            JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+
+            foreach (var item in responseJson)
+                GameCards.Add(item.ToObject<GameCard>());
         }
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
@@ -43,7 +56,7 @@ namespace PolyPaint.VueModeles
             set { _gameCards = value; ProprieteModifiee(); }
         }
 
-        
+
         private ICommand _addGameCommand;
         public ICommand AddGameCommand
         {
@@ -51,12 +64,27 @@ namespace PolyPaint.VueModeles
             {
                 return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
                 {
-                    GameCard card = new GameCard("the game","the mode",1);
+                    GameCard card = new GameCard("the game", "the mode");
+                    postCardRequest(card);
                     _gameCards.Add(card);
                 }));
             }
         }
 
+        private async void postCardRequest(GameCard card)
+        {
+            dynamic values = new JObject();
+            values.gameName = card.GameName;
+            values.solution = "";
+            values.clues = "";
+            values.mode = card.Mode;
+            Console.WriteLine(values);
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + "/" + Constants.CARDSCREATOR_PATH, byteContent);
+        }
        
 
         private string _newGameString;

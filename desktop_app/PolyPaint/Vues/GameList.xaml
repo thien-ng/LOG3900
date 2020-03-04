@@ -26,8 +26,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
         <StackPanel Grid.Row="1" Orientation="Horizontal">
@@ -36,13 +35,12 @@
         </StackPanel>
         <Button Grid.Column="2" Grid.Row="2" Content="ADD" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
             <ScrollViewer Grid.Row="3" Grid.Column="2"
-                          DockPanel.Dock="Top"
-                          VerticalScrollBarVisibility="Auto" 
-                          VerticalAlignment="Top">
+                      VerticalScrollBarVisibility="Auto"
+                      >
                 <ItemsControl ItemsSource="{Binding GameCards}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <control:Card />
+                            <control:Card Margin="15" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
