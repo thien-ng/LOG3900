@@ -37,7 +37,8 @@ export class GameController {
         });
 
         this.router.get('/start/:lobbyName', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.gameMan.startGame(req.params.lobbyName));
+            this.gameMan.startGame(req.params.lobbyName);
+            res.status(200).send();
         });
     }
 }

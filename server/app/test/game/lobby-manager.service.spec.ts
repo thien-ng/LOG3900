@@ -106,7 +106,7 @@ describe("LobbyManagerService", () => {
         chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
 
-        const req1: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2, uuid: uuid()};
+        const req1: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2, gameID: uuid()};
         const req2: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
         service.join(req1);
 
@@ -122,7 +122,7 @@ describe("LobbyManagerService", () => {
 
         const user1 = {username:"username1", socketId: "testId"};
         const user2 = {username:"username2", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, uuid: uuid()})
+        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
 
         const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password"};
 
@@ -137,7 +137,7 @@ describe("LobbyManagerService", () => {
         chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
 
-        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2, uuid: uuid()};
+        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2, gameID: uuid()};
 
         //when
         const result = service.join(req);
@@ -156,7 +156,7 @@ describe("LobbyManagerService", () => {
         const spy = chai.spy.on(service, "isPwdMatching");
         
         const user = {username:"test", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: false, lobbyName:"name", size: 2, uuid: uuid()})
+        service["lobbies"].set("name", {users: [user], private: false, lobbyName:"name", size: 2, gameID: uuid()})
 
         const req: IJoinLobby = {username:"username", private: false, lobbyName: "name", size: 2};
 
@@ -178,7 +178,7 @@ describe("LobbyManagerService", () => {
         const spy = chai.spy.on(service, "isPwdMatching");
         
         const user = {username:"test", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, uuid: uuid()})
+        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
 
         const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
 
@@ -199,7 +199,7 @@ describe("LobbyManagerService", () => {
         const spy = chai.spy.on(service, "isPwdMatching");
         
         const user = {username:"test", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, uuid: uuid()})
+        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
 
         const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "incorrectPW", size: 2};
 
@@ -220,7 +220,7 @@ describe("LobbyManagerService", () => {
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
         
         const user = {username:"username", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, uuid: uuid()})
+        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
 
         const req: ILeaveLobby = {username:"username", lobbyName: "name"};
 
@@ -241,7 +241,7 @@ describe("LobbyManagerService", () => {
         
         const user1 = {username:"username", socketId: "testId"};
         const user2 = {username:"username2", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, uuid: uuid()})
+        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
 
         const req: ILeaveLobby = {username:"username", lobbyName: "name"};
 

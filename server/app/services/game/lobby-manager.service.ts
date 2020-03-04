@@ -67,10 +67,10 @@ export class LobbyManagerService {
             // Create Lobby
             if (!req.size)
                 throw new Error("Lobby size must be specified when lobby does not exist")
-            if (!req.uuid || (req.uuid && !isUuid(req.uuid)))
+            if (!req.gameID || (req.gameID && !isUuid(req.gameID)))
                 throw new Error("UUID attribute must be an UUID");
 
-            this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, uuid: req.uuid} as IActiveLobby);
+            this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, gameID: req.gameID} as IActiveLobby);
             this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);
         }
 
