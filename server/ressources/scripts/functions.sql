@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION LOG3900.getAccountInfo(in_username VARCHAR(20))
+CREATE OR REPLACE FUNCTION LOG3900.getAccountInfoByName(in_username VARCHAR(20))
     RETURNS TABLE  (out_username VARCHAR(20), out_firstName VARCHAR(20), out_lastName VARCHAR(20)) AS $$
     BEGIN
         RETURN QUERY

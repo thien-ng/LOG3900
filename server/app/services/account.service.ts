@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IRegistration, IStatus, ILogin, IinfoUser } from "../interfaces/communication";
+import { IRegistration, IStatus, ILogin, IInfoUser } from "../interfaces/communication";
 import { AccountDbService } from "../database/account-db.service";
 import * as pg from "pg";
 import Types from '../types';
@@ -65,10 +65,9 @@ export class AccountService {
         }
     }
 
-    public async getUserInfo(username: string): Promise<IinfoUser> {
-        return this.database.getUserInfo(username).then((result: pg.QueryResult) => {
-            const res: IinfoUser[] = result.rows.map((row: any) => ({ username: row.out_username, last_name: row.out_lastname, first_name: row.out_firstname }));
-            console.log(res);
+    public async getUserInfo(username: string): Promise<IInfoUser> {
+        return this.database.getAccountInfoByName(username).then((result: pg.QueryResult) => {
+            const res: IInfoUser[] = result.rows.map((row: any) => ({ username: row.out_username, lastName: row.out_lastname, firstName: row.out_firstname }));
             return res[0];
         }).catch((e) => {
             return e;

@@ -13,20 +13,20 @@ CREATE TABLE IF NOT EXISTS LOG3900.Account (
 
 CREATE TABLE IF NOT EXISTS LOG3900.Game (
     game_id     SERIAL PRIMARY KEY NOT NULL,
-    times        varchar(30),
+    times       VARCHAR(30),
     gamemode    VARCHAR(20)
 )
 
 CREATE TABLE IF NOT EXISTS LOG3900.Connection (
     account_id  INT REFERENCES LOG3900.Account ON DELETE CASCADE,
-    is_login    boolean,
+    is_login    BOOLEAN,
     times       VARCHAR(30)
 )
 
 CREATE TABLE IF NOT EXISTS LOG3900.AccountGame (
     account_id  INT REFERENCES LOG3900.Account ON DELETE CASCADE,
-    game_id  INT REFERENCES LOG3900.Game ON DELETE CASCADE,
-    score      INT
+    game_id     INT REFERENCES LOG3900.Game ON DELETE CASCADE,
+    score       INT
 )
 
 CREATE TABLE IF NOT EXISTS LOG3900.Channel (

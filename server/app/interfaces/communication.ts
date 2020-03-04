@@ -16,10 +16,10 @@ export interface IStatus {
     message: string,
 }
 
-export interface IinfoUser {
+export interface IInfoUser {
     username: string,
-    first_name: string,
-    last_name: string,
+    firstName: string,
+    lastName: string,
     //avatar: Uint8Array,
     //connections: Iconnection[],
     //games: Igame[],
@@ -29,11 +29,6 @@ export interface IinfoUser {
 export interface Igame {
     time: string,
     players: { username: string, score: number }[],
-}
-
-export interface Iconnection {
-    date: string,
-    is_login: boolean,
 }
 
 export interface IInvitationChannel {

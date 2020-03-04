@@ -16,23 +16,21 @@ export class AccountDbService extends DatabaseService {
     }
 
     public async loginAccount(login: ILogin): Promise<pg.QueryResult> {
-        this.logConnection(login.username, true);
         return this.pool.query(`SELECT LOG3900.loginAccount(
                                     CAST('${login.username}' AS VARCHAR),
                                     CAST('${login.password}' AS VARCHAR));`);
     }
 
-    private logConnection(username: string, is_login: boolean) {
-        let time: string = Time.today();
+    public logConnection(username: string, is_login: boolean) {
+        const time: string = Time.today();
         return this.pool.query(`SELECT LOG3900.logConnection(
                                     CAST('${username}' AS VARCHAR),
                                     CAST('${is_login}' AS BOOLEAN),
                                     CAST('${time}' AS VARCHAR));`);
     }
 
-    public async getUserInfo(username: string): Promise<pg.QueryResult> {
-        return this.pool.query(`
-            SELECT (LOG3900.getAccountInfo(
+    public async getAccountInfoByName(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getAccountInfoByName(
             CAST('${username}' AS VARCHAR))).*;`);
     }
 }

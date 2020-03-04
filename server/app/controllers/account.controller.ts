@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { AccountService } from '../services/account.service';
 import Types from '../types';
 import { UserManagerService } from '../services/user-manager.service';
-import { IinfoUser } from '../interfaces/communication';
+import { IInfoUser } from '../interfaces/communication';
 
 @injectable()
 export class AccountController {
@@ -58,7 +58,7 @@ export class AccountController {
         });
 
         this.router.get('/user/info', async (req: Request, res: Response, next: NextFunction) => {
-            this.accountService.getUserInfo(req.query.username).then((user: IinfoUser) => {
+            this.accountService.getUserInfo(req.query.username).then((user: IInfoUser) => {
                 res.json(user);
             })
         });
