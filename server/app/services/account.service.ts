@@ -53,8 +53,13 @@ export class AccountService {
         if (regis.password.length < 1 || regis.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
         }
+        if (regis.firstName.length < 1 || regis.firstName.length > 100) {
+            throw new Error("first name length should be between 1 and 100");
+        }
+        if (regis.lastName.length < 1 || regis.lastName.length > 100) {
+            throw new Error("last name length should be between 1 and 100");
+        }
     }
-
 
     private verifyLogin(login: ILogin): void {
         if (login.username.length < 1 || login.username.length > 20) {

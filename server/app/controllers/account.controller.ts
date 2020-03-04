@@ -57,8 +57,8 @@ export class AccountController {
             res.json(this.userService.getOnlineUsers());
         });
 
-        this.router.get('/user/info', async (req: Request, res: Response, next: NextFunction) => {
-            this.accountService.getUserInfo(req.query.username).then((user: IInfoUser) => {
+        this.router.get('/user/info/:username', async (req: Request, res: Response, next: NextFunction) => {
+            this.accountService.getUserInfo(req.params.username).then((user: IInfoUser) => {
                 res.json(user);
             })
         });
