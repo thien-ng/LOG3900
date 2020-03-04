@@ -1,15 +1,17 @@
 import { injectable, inject } from "inversify";
-import { ICreateGame, IGameCard, GameMode } from "../../interfaces/game";
-import { GameCardService } from "./game-card.service";
+import { ICreateGame, GameMode } from "../../interfaces/game";
+import { IGameCard } from "../../interfaces/card";
 import { uuid } from "uuidv4";
+import { CardsDbService } from "../../database/cards-db.service";
 
 import Types from '../../types';
 
 @injectable()
 export class GameCreatorService {
 
-    public constructor(
-        @inject(Types.GameCardService) private cardServ: GameCardService) {}
+    public constructor(@inject(Types.CardsDbService) private db: CardsDbService) {
+        if(this.db){}
+    }
 
     public async getSuggestion() {
         // TODO: getSuggestion for assiste 2
@@ -18,10 +20,10 @@ export class GameCreatorService {
     public createGame(configs: ICreateGame): void {
         const card: IGameCard = {
             gameName: configs.gameName,
-            uuid: uuid(),
+            gameID: uuid(),
             mode: GameMode.FFA,
         }
-        this.cardServ.games.push(card);
+        this.db.addCard(card);
     }
 
 }
