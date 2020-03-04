@@ -8,6 +8,7 @@ import { ChatService } from './chat.service';
 import { IUser } from '../interfaces/user-manager';
 import { IReceptMes } from '../interfaces/chat';
 import { LobbyManagerService } from '../services/game/lobby-manager.service';
+import { GameManagerService } from '../services/game/game-manager.service';
 
 @injectable()
 export class WebsocketService {
@@ -17,6 +18,7 @@ export class WebsocketService {
     public constructor(
         @inject(Types.UserManagerService) private userServ: UserManagerService,
         @inject(Types.LobbyManagerService) private lobServ: LobbyManagerService,
+        @inject(Types.GameManagerService) private gameServ: GameManagerService,
         @inject(Types.ChatService) private chatServ: ChatService,
         ) {}
 
@@ -63,10 +65,11 @@ export class WebsocketService {
     private initSocket(): void {
         this.chatServ.setSocket(this.io);
         this.lobServ.initSocketServer(this.io);
+        this.gameServ.initSocketServer(this.io);
     }
 
     private login(username: string, socket: io.Socket): void {       
-        const user: IUser = {username: username, socketId: socket.id};
+        const user: IUser = {username: username, socketId: socket.id, socket: socket};
         this.userServ.addUser(user);
         this.chatServ.addUserToChannelMap(user);
     }

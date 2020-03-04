@@ -2,6 +2,7 @@ import { injectable, inject } from "inversify";
 import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
+import { isUuid } from 'uuidv4';
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -17,7 +18,6 @@ export class LobbyManagerService {
     public constructor(@inject(Types.UserManagerService) private userServ: UserManagerService) {
         this.lobbies = new Map<string, IActiveLobby>();
     }
-
 
     public initSocketServer(socketServer: io.Server): void {
         this.socketServer = socketServer;     
@@ -44,14 +44,15 @@ export class LobbyManagerService {
 
         if (lobby) {
             
-            // Join lobby
+            // Join lobby            
+            if (this.isUserInLobbyAlready(lobby.users, user.username))
+                throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
+
             if (lobby.private && this.isPwdMatching(req.password as string, lobby.password as string)) {
-                if (this.isUserInLobbyAlready(lobby.users, user.username))
-                    throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
                 if ((lobby.users.length + 1) > lobby.size)
                     throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
+
                 lobby.users.push(user);
-                
                 this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user});
             }
             else if (lobby.private == false){
@@ -65,20 +66,11 @@ export class LobbyManagerService {
             // Create Lobby
             if (!req.size)
                 throw new Error("Lobby size must be specified when lobby does not exist")
-            this.lobbies.set(req.lobbyName, {
-                users:      [user],
-                private:    req.private,
-                size:       req.size,
-                password:   req.password,
-                lobbyName:  req.lobbyName,
-            } as IActiveLobby);
-            this.sendMessages({
-                lobbyName:  req.lobbyName,
-                type:       LobbyNotif.create,
-                users:      [user],
-                private:    req.private,
-                size:       req.size,
-            } as INotifyLobbyUpdate);
+            if (!req.gameID || (req.gameID && !isUuid(req.gameID)))
+                throw new Error("UUID attribute must be an UUID");
+
+            this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, gameID: req.gameID} as IActiveLobby);
+            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);
         }
 
         return `Successfully joined lobby ${req.lobbyName}`;
