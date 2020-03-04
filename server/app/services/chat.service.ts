@@ -200,7 +200,9 @@ export class ChatService {
         if (isJoin) 
             this.joinChannelMap(channel, {username: username, socketId: socketId});
         else
-            this.leaveChannelMap(channel, username); 
+            this.leaveChannelMap(channel, username);
+    
+        this.socket.emit("channel-update");
     }
 
     private joinChannelMap(channel: string, user: IUser): void {

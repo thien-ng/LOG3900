@@ -6,6 +6,7 @@ export interface IActiveLobby {
     password?:  string,
     lobbyName:  string,
     size:       number,
+    gameID:     string,
 }
 
 export interface IJoinLobby {
@@ -13,6 +14,7 @@ export interface IJoinLobby {
     private:   boolean,
     lobbyName: string,
     size?:     number,
+    gameID?:   string,
     password?: string,
 }
 
@@ -47,4 +49,18 @@ export enum LobbyNotif {
     leave,
     create,
     delete,
+}
+
+export interface ICreateGame {
+    gameName:   string,
+    solution:   string,
+    clues:      string[],
+    mode:       GameMode
+    // add other informations
+}
+
+export enum GameMode {
+    FFA,
+    SprintSolo,
+    SprintCollab,
 }

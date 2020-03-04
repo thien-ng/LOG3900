@@ -23,12 +23,21 @@
 | Join/Create lobby                 |POST  | /game/lobby/join                       |
 | Leave/Delete lobby                |POST  | /game/lobby/leave                      |
 | Get active lobbies                |GET   | /game/lobby/active                     |
+| Get game suggestion (assiste 2)   |GET   | /creator/game/suggestion               |
+| Create new game                   |POST  | /creator/game/new                      |
+
+# Card
+| Description                       | type | path                                   |
+| ---------------------             |:----:|-----------------------                 |
+| Get all game cards                |GET   | /card                                  |
+| Delete card                       |DELETE| /card/delete/:gameID                   |
 
 # Socket
-|Event      | Description                                       |
-|-----      | -----------                                       |
-|login      | emit when logged in                               |
-|logout     | emit when logging out                             |
-|chat       | emit when sending chat messages                   |
-|lobby-chat | emit when sending messages in lobby               |
-|lobby-notif| emit when sending notification about lobby update |
+|Event          | Description                                       |
+|-----          | -----------                                       |
+|login          | emit when logged in                               |
+|logout         | emit when logging out                             |
+|chat           | emit when sending chat messages                   |
+|channel-update | emit when a channel is created or deleted         |
+|lobby-chat     | emit when sending messages in lobby               |
+|lobby-notif    | emit when sending notification about lobby update |
