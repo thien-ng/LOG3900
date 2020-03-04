@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PolyPaint.Modeles;
 using PolyPaint.Controls;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
@@ -41,7 +42,7 @@ namespace PolyPaint.VueModeles
             {
                 return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
                 {
-                    GameCard card = new GameCard();
+                    GameCard card = new GameCard("the game","the mode");
                     _gameCards.Add(card);
                 }));
             }

@@ -122,8 +122,8 @@
     <Compile Include="Controls\FenetreDessin.xaml.cs">
       <DependentUpon>FenetreDessin.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\GameCard.xaml.cs">
-      <DependentUpon>GameCard.xaml</DependentUpon>
+    <Compile Include="Controls\Card.xaml.cs">
+      <DependentUpon>Card.xaml</DependentUpon>
     </Compile>
     <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
@@ -204,7 +204,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\GameCard.xaml">
+    <Page Include="Controls\Card.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

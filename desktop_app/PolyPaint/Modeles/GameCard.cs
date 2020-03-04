@@ -1,23 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PolyPaint.Utilitaires;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace PolyPaint.Modeles
 {
-    class GameCard
+    public class GameCard: INotifyPropertyChanged
     {
-        public string _gameName;
-        public GameCard()
+        public event PropertyChangedEventHandler PropertyChanged;
+        public GameCard(string gameName,string mode)
         {
-            _gameName = "The card";
+            _gameName = gameName;
+            this.mode = mode;
         }
 
+        public string mode { get; set; }
+        private string _gameName;
         public string GameName
         {
             get { return _gameName; }
             set { _gameName = value; }
         }
+
+        private ObservableCollection<Lobby> _gameLobbies;
+        public ObservableCollection<Lobby> GameLobbies
+        {
+            get { return _gameLobbies; }
+            set { _gameLobbies = value; ProprieteModifiee(nameof(GameLobbies)); }
+        }
+        protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
+
 }

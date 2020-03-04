@@ -42,7 +42,7 @@
                 <ItemsControl ItemsSource="{Binding GameCards}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <control:GameCard />
+                            <control:Card />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

@@ -18,9 +18,9 @@ namespace PolyPaint.Controls
     /// <summary>
     /// Logique d'interaction pour GameCard.xaml
     /// </summary>
-    public partial class GameCard : UserControl
+    public partial class Card : UserControl
     {
-        public GameCard()
+        public Card()
         {
             InitializeComponent();
         }
