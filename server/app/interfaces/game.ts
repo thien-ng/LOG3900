@@ -51,14 +51,6 @@ export enum LobbyNotif {
     delete,
 }
 
-export interface ICreateGame {
-    gameName:   string,
-    solution:   string,
-    clues:      string[],
-    mode:       GameMode
-    // add other informations
-}
-
 export enum GameMode {
     FFA,
     SprintSolo,
