@@ -32,6 +32,10 @@ export class CardsDbService {
         return await this.collection.find({}).toArray();
     }
 
+    public async getCardByGameId(gameID: string): Promise<IGameCard | null> {
+        return await this.collection.findOne({gameID: gameID});
+    }
+
     public async deleteCard(gameID: string): Promise<void> {
         this.collection.deleteOne({gameID: gameID})
             .then()
