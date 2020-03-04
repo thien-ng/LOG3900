@@ -56,6 +56,8 @@ export class GameManagerService {
         this.arenas.push(arena);
         
         this.socketServer.in(room).emit("start-game");
+
+        this.lobServ.lobbies.delete(lobby.lobbyName);
     }
     
 }
