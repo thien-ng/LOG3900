@@ -4,6 +4,7 @@ import Types from '../types';
 import { container } from "../inversify.config";
 import { ChatService } from "../services/chat.service";
 import { IUser } from "../interfaces/user-manager";
+import { Time } from "../utils/date";
 
 chai.use(spies);
 
@@ -23,12 +24,12 @@ describe("ChatService", () => {
     it("Should add user to channelMap correctly when channel has not been added once", async () => {
         //given
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
-            return {rows:[{channel_id: "general"}]}
+            return { rows: [{ channel_id: "general" }] }
         });
 
         //when
-        await service.addUserToChannelMap({username: "username", socketId: "socketId"});
-        
+        await service.addUserToChannelMap({ username: "username", socketId: "socketId" });
+
         //then
         const list = service["channelMapUsersList"].get("general") as IUser[];
         chai.expect(list.length).to.be.equal(1);
@@ -37,13 +38,13 @@ describe("ChatService", () => {
     it("Should add user to channelMap correctly when channel has been added once", async () => {
         //given
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
-            return {rows:[{channel_id: "general"}]}
+            return { rows: [{ channel_id: "general" }] }
         });
 
         //when
-        await service.addUserToChannelMap({username: "username", socketId: "socketId"});
-        await service.addUserToChannelMap({username: "username1", socketId: "socketId1"});
-        
+        await service.addUserToChannelMap({ username: "username", socketId: "socketId" });
+        await service.addUserToChannelMap({ username: "username1", socketId: "socketId1" });
+
         //then
         const list = service["channelMapUsersList"].get("general") as IUser[];
         chai.expect(list.length).to.be.equal(2);
@@ -51,33 +52,34 @@ describe("ChatService", () => {
 
     it("Should remove user correctly from channel map", async () => {
         //given
-        service["channelMapUsersList"].set("general", [{username: "name", socketId: "yomama"}]);
+        service["channelMapUsersList"].set("general", [{ username: "name", socketId: "yomama" }]);
 
         //when
         service.removeUserFromChannelMap("name");
-                
+
         //then
         chai.expect(service["channelMapUsersList"].get("general")).to.be.equal(undefined);
     });
 
     it("Should not remove all user from channel map", async () => {
         //given
-        service["channelMapUsersList"].set("general", [{username: "name1", socketId: "yomama"}]);
-        service["channelMapUsersList"].set("general", [{username: "name2", socketId: "yomama"}]);
+        service["channelMapUsersList"].set("general", [{ username: "name1", socketId: "yomama" }]);
+        service["channelMapUsersList"].set("general", [{ username: "name2", socketId: "yomama" }]);
 
         //when
         service.removeUserFromChannelMap("name1");
-                
+
         //then
         const list = service["channelMapUsersList"].get("general");
-        chai.expect(list).to.be.deep.equal([{username: "name2", socketId: "yomama"}]);
+        chai.expect(list).to.be.deep.equal([{ username: "name2", socketId: "yomama" }]);
     });
 
     it("Should format time correctly", async () => {
         //given
+
         //when
-        const time = service["convertDateTemplate"]();
-                
+        const time = Time.now();
+
         //then
         chai.expect(time.length).to.be.equal(8);
     });
@@ -85,10 +87,10 @@ describe("ChatService", () => {
     it("Should return error message when joining message fails", async () => {
         //given
         service["usernameMapSocketId"].set("invitee", "socketId")
-        chai.spy.on(service, "joinChannel", () => { return {status: 400, message:"error while joining"}});
+        chai.spy.on(service, "joinChannel", () => { return { status: 400, message: "error while joining" } });
 
         //when
-        const result = await service.sendInviteToChannel({inviter:"inviter", invitee:"invitee", channel:"channel"});
+        const result = await service.sendInviteToChannel({ inviter: "inviter", invitee: "invitee", channel: "channel" });
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -98,7 +100,7 @@ describe("ChatService", () => {
     it("Should return error message when socketID not found", async () => {
         //given
         //when
-        const result = await service.sendInviteToChannel({inviter:"inviter", invitee:"invitee", channel:"channel"});
+        const result = await service.sendInviteToChannel({ inviter: "inviter", invitee: "invitee", channel: "channel" });
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -122,14 +124,14 @@ describe("ChatService, Join/Leave", () => {
 
     it("Should join channel succesfully", async () => {
         //given
-        chai.spy.on(service["db"], "joinChannel", () => {});
+        chai.spy.on(service["db"], "joinChannel", () => { });
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
-            return {rows:[{channel_id: "notEqualChannel"}]}
+            return { rows: [{ channel_id: "notEqualChannel" }] }
         });
-        const spy = chai.spy.on(service, "updateUserToChannels", () => {});
+        const spy = chai.spy.on(service, "updateUserToChannels", () => { });
 
         //when
-        const result = await service.joinChannel({username:"username", channel:"channel"});
+        const result = await service.joinChannel({ username: "username", channel: "channel" });
 
         //then
         chai.expect(result.status).to.be.equal(200);
@@ -139,13 +141,13 @@ describe("ChatService, Join/Leave", () => {
 
     it("Should return already subscribe message when joining with existing channel", async () => {
         //given
-        chai.spy.on(service["db"], "joinChannel", () => {});
+        chai.spy.on(service["db"], "joinChannel", () => { });
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
-            return {rows:[{channel_id: "channel"}]}
+            return { rows: [{ channel_id: "channel" }] }
         });
 
         //when
-        const result = await service.joinChannel({username:"username", channel:"channel"});
+        const result = await service.joinChannel({ username: "username", channel: "channel" });
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -154,14 +156,14 @@ describe("ChatService, Join/Leave", () => {
 
     it("Should leave channel successfully", async () => {
         //given
-        chai.spy.on(service["db"], "leaveChannel", () => {});
+        chai.spy.on(service["db"], "leaveChannel", () => { });
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
-            return {rows:[{channel_id: "channel"}]}
+            return { rows: [{ channel_id: "channel" }] }
         });
-        const spy = chai.spy.on(service, "updateUserToChannels", () => {});
+        const spy = chai.spy.on(service, "updateUserToChannels", () => { });
 
         //when
-        const result = await service.leaveChannel({username:"username", channel:"channel"});
+        const result = await service.leaveChannel({ username: "username", channel: "channel" });
 
         //then
         chai.expect(result.status).to.be.equal(200);
@@ -171,13 +173,13 @@ describe("ChatService, Join/Leave", () => {
 
     it("Should return is not subscribed to channel when user is not sub to channel", async () => {
         //given
-        chai.spy.on(service["db"], "leaveChannel", () => {});
+        chai.spy.on(service["db"], "leaveChannel", () => { });
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
-            return {rows:[{channel_id: "notChannel"}]}
+            return { rows: [{ channel_id: "notChannel" }] }
         });
 
         //when
-        const result = await service.leaveChannel({username:"username", channel:"channel"});
+        const result = await service.leaveChannel({ username: "username", channel: "channel" });
 
         //then
         chai.expect(result.status).to.be.equal(400);
@@ -186,13 +188,13 @@ describe("ChatService, Join/Leave", () => {
 
     it("Should return cannot leave default channel when leaving general", async () => {
         //given
-        chai.spy.on(service["db"], "leaveChannel", () => {});
+        chai.spy.on(service["db"], "leaveChannel", () => { });
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
-            return {rows:[{channel_id: "general"}]}
+            return { rows: [{ channel_id: "general" }] }
         });
 
         //when
-        const result = await service.leaveChannel({username:"username", channel:"general"});
+        const result = await service.leaveChannel({ username: "username", channel: "general" });
 
         //then
         chai.expect(result.status).to.be.equal(400);
