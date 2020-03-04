@@ -54,6 +54,7 @@ export class CardsDbService {
 
     private validateCard(card: IGameCard): boolean {
         // TODO add vallidation of card before adding to db
+        // add validation when we know what is needed for a card
         return true
     }
 
