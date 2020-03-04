@@ -68,6 +68,7 @@
         "nyc": "^14.1.1",
         "pg": "^7.17.1",
         "prettier": "^1.19.1",
+        "quickdraw.js": "^1.0.6",
         "reflect-metadata": "^0.1.10",
         "rimraf": "3.0.0",
         "serve-favicon": "~2.5.0",
@@ -81,6 +82,8 @@
         "tslint-eslint-rules": "5.4.0",
         "tslint-microsoft-contrib": "6.2.0",
         "typescript": "^3.5.3",
+        "uuid": "^7.0.1",
+        "uuidv4": "^6.0.5",
         "ws": "^7.2.1"
     },
     "devDependencies": {
