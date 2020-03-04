@@ -136,6 +136,7 @@
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Editeur.cs" />
     <Compile Include="Modeles\GameCard.cs" />
+    <Compile Include="Modeles\Lobby.cs" />
     <Compile Include="Modeles\MessageChannel.cs" />
     <Compile Include="Modeles\MessageChat.cs" />
     <Compile Include="Modeles\MessageReception.cs" />

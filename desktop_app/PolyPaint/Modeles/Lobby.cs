@@ -2,11 +2,11 @@
 {
     public class Lobby
     {
-        string lobbyName { get; set; }
-        string username { get; set; }
-        bool isPrivate { get; set; }
-        int size { get; set; }
-        string password { get; set; }
+        public string lobbyName { get; set; }
+        public string username { get; set; }
+        public bool isPrivate { get; set; }
+        public int size { get; set; }
+        public string password { get; set; }
 
         public Lobby(string lobbyName, string username, bool isPrivate, int size, string password)
         {

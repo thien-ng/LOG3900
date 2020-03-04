@@ -15,8 +15,8 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <TextBox wpf:HintAssist.Hint="Name" Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
-                 Text="{Binding NewGameString}"
+        <TextBox wpf:HintAssist.Hint="Lobby Name" Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                 Text="{Binding LobbyName}"
                  Margin="0 6 0 0"
                  FontSize="18" Grid.Row="0"/>
         <StackPanel Orientation="Horizontal" Grid.Row="1">

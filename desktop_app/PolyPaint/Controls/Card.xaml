@@ -8,7 +8,10 @@
              mc:Ignorable="d"
                 Background="White"
              d:DesignHeight="1000" d:DesignWidth="1000">
-    <Grid>
+    <materialDesign:DialogHost IsOpen="{Binding IsCreateGameDialogOpen}"
+                               DialogContent="{Binding DialogContent}"
+                               CloseOnClickAway="True">
+        <Grid>
         <materialDesign:Flipper>
             <materialDesign:Flipper.FrontContent>
                 <Grid Height="250" Width="200">
@@ -45,7 +48,7 @@
                         <RowDefinition Height="auto" />
                         <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-            <materialDesign:ColorZone>
+            <materialDesign:ColorZone Mode="PrimaryLight">
                 <StackPanel Orientation="Horizontal">
                         <Button
                             Style="{StaticResource MaterialDesignToolForegroundButton}"
@@ -62,22 +65,34 @@
                             </TextBlock>
                         </StackPanel>
                     </materialDesign:ColorZone>
-                    <Grid
-                Grid.Row="1"
-                Margin="0 6 0 0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Width="172">
-                        <StackPanel
-          Grid.Row="2"
-          Orientation="Vertical"
-          Margin="0 12 0 0"
-          HorizontalAlignment="Right">
-                            <TextBlock Text="Salut"/>
-                        </StackPanel>
-                    </Grid>
+                        <Grid
+                            Grid.Row="1"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Width="172">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                        
+                            <Button Command="{Binding AddLobbyCommand}" Content="add Lobby"/>
+                            <ScrollViewer Margin="10" Grid.Row="1" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
+                                <ItemsControl ItemsSource="{Binding GameLobbies}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding size}" FontSize="15"/>
+                                                <TextBlock Text="{Binding username}" FontSize="15"/>
+                                                <TextBlock Text="{Binding lobbyName}" FontSize="15"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
                 </Grid>
             </materialDesign:Flipper.BackContent>
         </materialDesign:Flipper>
     </Grid>
+    </materialDesign:DialogHost>
 </UserControl>
