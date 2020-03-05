@@ -110,6 +110,14 @@ namespace PolyPaint.VueModeles
         {
             throw new NotImplementedException();
         }
-        
+
+        private ICommand test;
+        public ICommand TEST
+        {
+            get
+            {
+                return test ?? (test = new RelayCommand(x => { Mediator.Notify("GoToDrawScreen", ""); }));
+            }
+        }
     }
 }

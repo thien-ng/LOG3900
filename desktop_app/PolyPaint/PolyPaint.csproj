@@ -145,7 +145,6 @@
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
-    <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Utilitaires\Constants.cs" />
     <Compile Include="Utilitaires\EventRaiser.cs" />

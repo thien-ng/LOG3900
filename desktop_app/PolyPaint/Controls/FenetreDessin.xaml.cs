@@ -34,6 +34,17 @@ namespace PolyPaint
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Console.WriteLine("test"); 
+            }
         }
+
+        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            ((DessinViewModel)DataContext).SendNewStroke(sender, e);
+        }
+
     }
 }

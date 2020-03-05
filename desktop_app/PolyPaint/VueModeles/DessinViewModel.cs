@@ -1,4 +1,5 @@
 ﻿using PolyPaint.Utilitaires;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -16,6 +17,11 @@ namespace PolyPaint.VueModeles
                     Mediator.Notify("GoToLoginScreen", "");
                 }));
             }
+        }
+
+        public void SendNewStroke(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            //e.Stroke.DrawingAttributes;
         }
 
     }
