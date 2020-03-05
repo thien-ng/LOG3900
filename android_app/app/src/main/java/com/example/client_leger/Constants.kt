@@ -8,9 +8,10 @@ class Constants {
         const val DEFAULT_CHANNEL_ID = "general"
 
         //ENDPOINTS
-        const val LOGIN_ENPOINT = "/account/login"
+        const val LOGIN_ENDPOINT = "/account/login"
         const val REGISTER_ENDPOINT = "/account/register"
         const val CARD_ENDPOINT = "/card"
+        const val LOBBY_JOIN_ENDPOINT = "/game/lobby/join"
 
         //char limits
         const val MAX_USERNAME_SiZE = 20
