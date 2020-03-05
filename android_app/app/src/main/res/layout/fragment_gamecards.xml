@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@drawable/gradient"
+        android:orientation="vertical"
+        android:weightSum="10">
+
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="5dp">
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/appCompatImageView"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:background="@drawable/ic_games_white_24dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+                android:id="@+id/textGrid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="11dp"
+                android:layout_marginLeft="11dp"
+                android:text="Game list"
+                android:textColor="@android:color/white"
+                android:textSize="45sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+                app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@android:color/white" />
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_gameCards"
+            android:layout_weight="9"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="20dp"/>
+
+</LinearLayout>
