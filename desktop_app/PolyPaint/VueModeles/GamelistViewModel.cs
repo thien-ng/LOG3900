@@ -32,6 +32,7 @@ namespace PolyPaint.VueModeles
 
         private async void getGameCards()
         {
+            ObservableCollection<GameCard> gamecards = new ObservableCollection<GameCard>();
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
 
             Console.WriteLine(response.Content);
@@ -42,12 +43,20 @@ namespace PolyPaint.VueModeles
 
             foreach (var item in myData)
             {
-                GameCards.Add(item);
-            }
-            JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+                App.Current.Dispatcher.Invoke(delegate
+                {
 
-            foreach (var item in responseJson)
-                GameCards.Add(item.ToObject<GameCard>());
+                    gamecards.Add(item);
+                });
+            }
+            GameCards = gamecards;
+            //JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+
+            //foreach (var item in responseJson)
+                //App.Current.Dispatcher.Invoke(delegate
+               // {
+              //  GameCards.Add(item.ToObject<GameCard>());
+             //   });
         }
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
@@ -64,10 +73,21 @@ namespace PolyPaint.VueModeles
             {
                 return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
                 {
-                    GameCard card = new GameCard("the game", "the mode");
-                    postCardRequest(card);
-                    _gameCards.Add(card);
+                    DialogContent = new CreateGameControl();
+                    IsCreateGameDialogOpen = true;
                 }));
+            }
+        }
+
+        private object _dialogContent;
+        public object DialogContent
+        {
+            get { return _dialogContent; }
+            set
+            {
+                if (_dialogContent == value) return;
+                _dialogContent = value;
+                ProprieteModifiee();
             }
         }
 
@@ -84,6 +104,7 @@ namespace PolyPaint.VueModeles
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + "/" + Constants.CARDSCREATOR_PATH, byteContent);
+            Console.WriteLine(response.StatusCode);
         }
        
 
@@ -99,17 +120,65 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private void addGame()
-        {
-            throw new NotImplementedException();
-        }
-
         
 
         private void createGame()
         {
-            throw new NotImplementedException();
+            GameCard card = new GameCard("the game", "the mode");
+            postCardRequest(card);
+            getGameCards();
+
         }
-        
+
+        private ICommand _acceptCommand;
+        public ICommand AcceptCommand
+        {
+            get
+            {
+                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
+                {
+                    await Task.Run(() => createGame());
+                    IsCreateGameDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
+                {
+                    GameName = "";
+                    IsCreateGameDialogOpen = false;
+                }));
+            }
+        }
+
+        private string _gameName;
+        public string GameName
+        {
+            get { return _gameName; }
+            set
+            {
+                if (_gameName == value) return;
+                _gameName = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isCreateGameDialogOpen;
+        public bool IsCreateGameDialogOpen
+        {
+            get { return _isCreateGameDialogOpen; }
+            set
+            {
+                if (_isCreateGameDialogOpen == value) return;
+                _isCreateGameDialogOpen = value;
+                ProprieteModifiee();
+            }
+        }
+
     }
 }
