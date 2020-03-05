@@ -53,7 +53,7 @@ export class WebsocketService {
             });
 
             socket.on('gameplay', (mes: IGameplayChat | IGameplayDraw) => {
-                
+                this.gameServ.sendMessageToArena(mes);
             });
 
             socket.on('logout', () => {
