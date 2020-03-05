@@ -28,8 +28,6 @@ export class LobbyManagerService {
         this.lobbies.forEach((lob) => {
             list.push(this.mapLobby(lob));
         })
-        console.log(list);
-        
         return list;
     }
 
