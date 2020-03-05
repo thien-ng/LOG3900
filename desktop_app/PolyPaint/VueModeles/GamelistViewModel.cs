@@ -41,7 +41,7 @@ namespace PolyPaint.VueModeles
             String responseData = streamReader.ReadToEnd();
             Console.WriteLine(responseData);
             var myData = JsonConvert.DeserializeObject<List<GameCard>>(responseData);
-
+            Console.WriteLine(myData);
             foreach (var item in myData)
             {
                 App.Current.Dispatcher.Invoke(delegate
@@ -92,13 +92,13 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private async void postCardRequest(GameCard card)
+        private async void postCardRequest(string gamename, string selectedmode)
         {
             dynamic values = new JObject();
-            values.gameName = card.GameName;
+            values.gameName = gamename;
             values.solution = "solution";
             values.clues = "clues";
-            values.mode = card.Mode;
+            values.mode = selectedmode;
             Console.WriteLine(values);
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
@@ -122,8 +122,7 @@ namespace PolyPaint.VueModeles
 
         private void createGame()
         {
-            GameCard card = new GameCard(GameName, SelectedMode);
-            postCardRequest(card);
+            postCardRequest(GameName, SelectedMode);
             
 
         }

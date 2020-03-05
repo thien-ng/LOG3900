@@ -34,13 +34,13 @@
             <TextBlock Text="Gamelist" FontSize="30" VerticalAlignment="Center" Foreground="White"/>
         </StackPanel>
         <Button Grid.Column="2" Grid.Row="2" Content="ADD" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
-            <ScrollViewer Grid.Row="3" Grid.Column="2"
+            <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
                       VerticalScrollBarVisibility="Auto"
                       >
                 <ItemsControl ItemsSource="{Binding GameCards}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <control:Card Margin="15" />
+                            <control:Card Margin="25" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

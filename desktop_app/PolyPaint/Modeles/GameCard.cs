@@ -4,8 +4,10 @@ using PolyPaint.Controls;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
@@ -17,20 +19,22 @@ namespace PolyPaint.Modeles
     public class GameCard: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public GameCard(string gameName,string mode)
+        public GameCard(string gameName, string gameID, string mode)
         {
             _visibilityPrivate = "Hidden";
             _gameName = gameName;
             _mode = mode;
+            _gameID = gameID;
             Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             _gameLobbies = new ObservableCollection<Lobby>();
+            getLobbies();
 
         }
 
         public ObservableCollection<int> Numbers { get; }
 
-        private int _gameID;
-        public string GameID { get; set; }
+        private string _gameID;
+        public string GameID { get { return _gameID; } }
 
         private string _mode;
         public string Mode { get { return _mode; } }
@@ -61,6 +65,7 @@ namespace PolyPaint.Modeles
             values.lobbyName = _lobbyName;
             values.size = _selectedSize;
             values.password = _password;
+            values.gameID = _gameID;
             Console.WriteLine(values);
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
@@ -68,9 +73,9 @@ namespace PolyPaint.Modeles
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             Console.WriteLine(response);
-            if((int)response.StatusCode == Constants.SUCCESS_CODE)
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                Lobby lobby = new Lobby(_lobbyName, ServerService.instance.username, _isPrivate, int.Parse(_selectedSize), _password);
+                Lobby lobby = new Lobby(_lobbyName, new string[] {ServerService.instance.username}, _isPrivate, int.Parse(_selectedSize), _password, _gameID);
                 App.Current.Dispatcher.Invoke(delegate
                 {
                     GameLobbies.Add(lobby);
@@ -143,6 +148,28 @@ namespace PolyPaint.Modeles
         {
             get { return _selectedSize; }
             set { _selectedSize = value; ProprieteModifiee(); Console.WriteLine(_selectedSize); }
+        }
+
+        private async void getLobbies()
+        {
+            ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
+
+            Console.WriteLine(response.Content);
+            StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+            String responseData = streamReader.ReadToEnd();
+            Console.WriteLine(responseData);
+            var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
+            Console.WriteLine(myData);
+            foreach (var item in myData)
+            {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+
+                    lobbies.Add(item);
+                });
+            }
+            GameLobbies = lobbies;
         }
 
         private ICommand _acceptCommand;
