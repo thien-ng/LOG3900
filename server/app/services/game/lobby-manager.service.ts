@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
 import { isUuid } from 'uuidv4';
@@ -23,14 +23,26 @@ export class LobbyManagerService {
         this.socketServer = socketServer;     
     }
 
-    public getActiveLobbies(): IActiveLobby[] {
-        const list: IActiveLobby[] = [];
-        this.lobbies.forEach((val) => {
-            const lob = val;
-            lob.password = undefined;
-            list.push(lob);
+    public getActiveLobbies(): IGetLobby[] {
+        const list: IGetLobby[] = [];
+        this.lobbies.forEach((lob) => {
+            list.push(this.mapLobby(lob));
         })
         return list;
+    }
+
+    private mapLobby(lobbyAct: IActiveLobby): IGetLobby {
+        const usernames: string[] = [];
+        lobbyAct.users.forEach(u => {
+            usernames.push(u.username);
+        });
+        return {
+            usernames: usernames,
+            private: lobbyAct.private,
+            size: lobbyAct.size,
+            lobbyName: lobbyAct.lobbyName,
+            gameID: lobbyAct.gameID,
+        }; 
     }
 
     public join(req: IJoinLobby): string {

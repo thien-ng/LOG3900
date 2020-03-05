@@ -3,6 +3,14 @@ import { IUser } from "./user-manager";
 /**
  * LOBBY
  */
+export interface IGetLobby {
+    usernames:  string[]
+    private:    boolean,
+    lobbyName:  string,
+    size:       number,
+    gameID:     string,
+}
+
 export interface IActiveLobby {
     users:      IUser[],
     private:    boolean,
