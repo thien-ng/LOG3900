@@ -25,10 +25,11 @@ namespace PolyPaint.VueModeles
             //Mediator.Subscribe("addGame", addGame);
             _gameCards = new ObservableCollection<GameCard>();
             getGameCards();
+            Mode = new ObservableCollection<string> { "Free for all", "Sprint coop", "Sprint solo" };
 
         }
 
-        public ObservableCollection<string> Mode;
+        public ObservableCollection<string> Mode { get; }
 
         private async void getGameCards()
         {
@@ -95,38 +96,35 @@ namespace PolyPaint.VueModeles
         {
             dynamic values = new JObject();
             values.gameName = card.GameName;
-            values.solution = "";
-            values.clues = "";
+            values.solution = "solution";
+            values.clues = "clues";
             values.mode = card.Mode;
             Console.WriteLine(values);
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + "/" + Constants.CARDSCREATOR_PATH, byteContent);
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
             Console.WriteLine(response.StatusCode);
-        }
-       
+            getGameCards();
 
-        private string _newGameString;
-        public string NewGameString
+        }
+
+
+        private string _selectedMode;
+        public string SelectedMode
         {
-            get { return _newGameString; }
-            set
-            {
-                if (_newGameString == value) return;
-                _newGameString = value;
-                ProprieteModifiee();
-            }
+            get { return _selectedMode; }
+            set { _selectedMode = value; ProprieteModifiee(); }
         }
 
-        
+
 
         private void createGame()
         {
-            GameCard card = new GameCard("the game", "the mode");
+            GameCard card = new GameCard(GameName, SelectedMode);
             postCardRequest(card);
-            getGameCards();
+            
 
         }
 
@@ -137,6 +135,7 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
+                    Console.WriteLine("hel");
                     await Task.Run(() => createGame());
                     IsCreateGameDialogOpen = false;
                 }));

@@ -193,6 +193,20 @@ namespace PolyPaint.Modeles
                 ProprieteModifiee();
             }
         }
+
+        private ICommand _deleteCommand;
+        public ICommand DeleteCommand
+        {
+            get
+            {
+                return _deleteCommand ?? (_deleteCommand = new RelayCommand(x =>
+                {
+                    LobbyName = "";
+                    IsCreateGameDialogOpen = false;
+                }));
+            }
+        }
+
     }
 
 }
