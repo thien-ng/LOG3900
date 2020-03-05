@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import com.example.client_leger.Fragments.ChatFragment
-import com.example.client_leger.Fragments.DrawFragment
+import com.example.client_leger.Fragments.GameCardsFragment
 import com.example.client_leger.Fragments.ProfilFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_game -> {
-                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, DrawFragment()).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, GameCardsFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
         }
