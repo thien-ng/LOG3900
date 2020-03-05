@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
 import { isUuid } from 'uuidv4';
@@ -103,7 +103,7 @@ export class LobbyManagerService {
         return `Left ${req.lobbyName} successfully`;
     }
 
-    public sendMessages(mes: IReceptMes | INotifyUpdateUser | INotifyLobbyUpdate): void {
+    public sendMessages(mes: IReceptMesLob | INotifyUpdateUser | INotifyLobbyUpdate): void {
         const lobby = this.lobbyDoesExists(mes.lobbyName);
 
         if (!lobby) return;

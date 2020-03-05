@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { Arena } from "./arena";
-import { IActiveLobby } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw } from "../../interfaces/game";
 import { GameCreatorService } from "../game/game-creator.service";
 
 import Types from '../../types';
@@ -10,7 +10,7 @@ import * as io from 'socket.io';
 @injectable()
 export class GameManagerService {
 
-    private arenas: Arena[];
+    private arenas: Map<number, Arena>;
     private arenaId: number;
 
     private socketServer: io.Server;
@@ -22,7 +22,7 @@ export class GameManagerService {
         // If statement to make server compile`
         if (this.creatorServ) {}
         
-        this.arenas = [];
+        this.arenas = new Map<number, Arena>();
         this.arenaId = 0;
     }
     
@@ -39,8 +39,15 @@ export class GameManagerService {
         this.setupArena(lobby);
     }
 
+    public sendMessageToArena(mes: IGameplayChat | IGameplayDraw): void {
+        const arena = this.arenas.get(mes.arenaID);
+
+        if (arena)
+            arena.receiveInfo(mes);
+    }
+
     private setupArena(lobby: IActiveLobby): void {
-        const room = `arena${this.arenaId++}`;
+        const room = `arena${this.arenaId}`;
 
         // add users to socket room
         lobby.users.forEach(u => {
@@ -53,11 +60,14 @@ export class GameManagerService {
         // TODO get arena rules
         const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
 
-        this.arenas.push(arena);
+        this.arenas.set(this.arenaId, arena);
+        this.arenaId++;
         
-        this.socketServer.in(room).emit("start-game");
+        this.socketServer.in(room).emit("game-start");
 
         this.lobServ.lobbies.delete(lobby.lobbyName);
+
+        arena.start();
     }
     
 }
