@@ -19,6 +19,7 @@ namespace PolyPaint.Utilitaires
         public const string GAMECARDS_PATH          = "/card";
         public const string CARDSCREATOR_PATH       = "/creator/game/new";
         public const string GAME_JOIN_PATH          = "/game/lobby/join";
+        public const string GET_ACTIVE_LOBBY_PATH   = "/game/lobby/active";
         public const string SUB_CHANNELS_PATH       = CHANNELS_PATH + "/sub";
         public const string NOT_SUB_CHANNELS_PATH   = CHANNELS_PATH + "/notsub";
         public const string JOIN_CHANNEL_PATH       = CHANNELS_PATH + "/join";

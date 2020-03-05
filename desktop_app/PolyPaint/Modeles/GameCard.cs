@@ -78,7 +78,7 @@ namespace PolyPaint.Modeles
                 Lobby lobby = new Lobby(_lobbyName, new string[] {ServerService.instance.username}, _isPrivate, int.Parse(_selectedSize), _password, _gameID);
                 App.Current.Dispatcher.Invoke(delegate
                 {
-                    GameLobbies.Add(lobby);
+                    getLobbies();
                 });
                 LobbyName = "";
             }
@@ -153,7 +153,7 @@ namespace PolyPaint.Modeles
         private async void getLobbies()
         {
             ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _gameID);
 
             Console.WriteLine(response.Content);
             StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
