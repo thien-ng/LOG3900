@@ -2,7 +2,7 @@ import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { Arena } from "./arena";
 import { IActiveLobby, IGameplayChat, IGameplayDraw } from "../../interfaces/game";
-import { GameCreatorService } from "../game/game-creator.service";
+import { CardsDbService } from "../../database/cards-db.service";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -17,11 +17,8 @@ export class GameManagerService {
     
     public constructor(
         @inject(Types.LobbyManagerService) private lobServ: LobbyManagerService,
-        @inject(Types.GameCreatorService) private creatorServ: GameCreatorService) {
+        @inject(Types.CardsDbService) private db: CardsDbService) {
 
-        // If statement to make server compile`
-        if (this.creatorServ) {}
-        
         this.arenas = new Map<number, Arena>();
         this.arenaId = 0;
     }
@@ -58,6 +55,7 @@ export class GameManagerService {
         });
 
         // TODO get arena rules
+        this.db.getRulesByGameID(lobby.gameID);
         const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
 
         this.arenas.set(this.arenaId, arena);
