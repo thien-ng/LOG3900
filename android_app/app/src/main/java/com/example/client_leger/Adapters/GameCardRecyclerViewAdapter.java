@@ -10,15 +10,18 @@ import android.widget.TextView;
 
 import com.example.client_leger.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRecyclerViewAdapter.ViewHolder> {
 
-    private String[] mData;
+    private JSONArray mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    public GameCardRecyclerViewAdapter(Context context, String[] data) {
+    public GameCardRecyclerViewAdapter(Context context, JSONArray data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -34,13 +37,17 @@ public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRe
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.myTextView.setText(mData[position]);
+        try {
+            holder.myTextView.setText(mData.getJSONObject(position).getString("gameName"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     // total number of cells
     @Override
     public int getItemCount() {
-        return mData.length;
+        return mData.length();
     }
 
 
@@ -61,8 +68,16 @@ public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRe
     }
 
     // convenience method for getting data at click position
-    public String getItem(int id) {
-        return mData[id];
+    public JSONObject getItem(int id) throws JSONException {
+        return mData.getJSONObject(id);
+    }
+
+    public void addItems(JSONArray items) throws JSONException {
+        for (int i = 0; i < items.length(); i++) {
+            mData.put(items.getJSONObject(i));
+            notifyItemChanged(i);
+        }
+
     }
 
     // allows clicks events to be caught

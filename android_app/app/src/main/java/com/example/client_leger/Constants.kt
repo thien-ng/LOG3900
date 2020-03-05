@@ -6,9 +6,11 @@ class Constants {
         const val MESSAGE_MAX_LENGTH = 144
         const val GALLERY_REQUEST_CODE = 1
         const val DEFAULT_CHANNEL_ID = "general"
+
         //ENDPOINTS
         const val LOGIN_ENPOINT = "/account/login"
         const val REGISTER_ENDPOINT = "/account/register"
+        const val CARD_ENDPOINT = "/card"
 
         //char limits
         const val MAX_USERNAME_SiZE = 20
