@@ -23,10 +23,11 @@ export class LobbyManagerService {
         this.socketServer = socketServer;     
     }
 
-    public getActiveLobbies(): IGetLobby[] {
+    public getActiveLobbies(gameID: string): IGetLobby[] {
         const list: IGetLobby[] = [];
         this.lobbies.forEach((lob) => {
-            list.push(this.mapLobby(lob));
+            if (lob.gameID === gameID)
+                list.push(this.mapLobby(lob));
         })
         return list;
     }
