@@ -41,7 +41,7 @@ export class Arena {
 
     public receiveInfo(mes: IGameplayChat | IGameplayDraw): void {
         if (this.isDraw(mes)) {
-            
+            // TODO emit to everyone else the drawings
         }
     }
 
