@@ -26,7 +26,6 @@ class GameCardsFragment : Fragment(), GameCardRecyclerViewAdapter.ItemClickListe
         savedInstanceState: Bundle?
     ): View? {
         val v = inflater.inflate(R.layout.fragment_gamecards, container, false)
-//        val data = arrayOf("My Game", "TOTO", "apple apple", "impossible", "level 100", "testing", "game 3", "88888", "9", "final")
         controller = GameCardsController()
         gameCards = JSONArray()
         controller.getGameCards(this)

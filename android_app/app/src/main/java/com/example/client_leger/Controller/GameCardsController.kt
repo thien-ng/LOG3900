@@ -19,10 +19,8 @@ class GameCardsController {
             Constants.SERVER_URL + Constants.CARD_ENDPOINT,
             null,
             Response.Listener<JSONArray> { response ->
-                Log.d("response", response.toString())
                 if (response.length() > 0) activity.loadGameCards(activity.adapter, response)
             }, Response.ErrorListener { error ->
-                Log.w("socket", "join")
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }
         )
