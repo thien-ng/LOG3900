@@ -51,20 +51,6 @@ export enum LobbyNotif {
     delete,
 }
 
-export interface IGameCard {
-    gameName:   string,
-    uuid:       string,
-    mode:       GameMode,
-}
-
-export interface ICreateGame {
-    gameName:   string,
-    solution:   string,
-    clues:      string[],
-    mode:       GameMode
-    // add other informations
-}
-
 export enum GameMode {
     FFA,
     SprintSolo,

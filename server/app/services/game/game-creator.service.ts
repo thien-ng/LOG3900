@@ -1,27 +1,28 @@
 import { injectable, inject } from "inversify";
-import { ICreateGame, IGameCard, GameMode } from "../../interfaces/game";
-import { GameCardService } from "./game-card.service";
+import { ISuggestion, ICreateGame } from "../../interfaces/creator";
+import { IGameCard } from "../../interfaces/card";
 import { uuid } from "uuidv4";
+import { CardsDbService } from "../../database/cards-db.service";
 
 import Types from '../../types';
+import { CreationAssist2 } from "./utils/creation-assists";
 
 @injectable()
 export class GameCreatorService {
 
-    public constructor(
-        @inject(Types.GameCardService) private cardServ: GameCardService) {}
+    public constructor(@inject(Types.CardsDbService) private db: CardsDbService) {}
 
-    public async getSuggestion() {
-        // TODO: getSuggestion for assiste 2
+    public async getSuggestion(): Promise<ISuggestion> {
+        return CreationAssist2.fetchSuggestion();
     }
 
     public createGame(configs: ICreateGame): void {
         const card: IGameCard = {
             gameName: configs.gameName,
-            uuid: uuid(),
-            mode: GameMode.FFA,
+            gameID: uuid(),
+            mode: configs.mode,
         }
-        this.cardServ.games.push(card);
+        this.db.addCard(card);
     }
 
 }

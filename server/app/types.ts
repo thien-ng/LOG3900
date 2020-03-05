@@ -7,6 +7,7 @@ export default {
     ChatController:         Symbol('ChatController'),
     GameController:         Symbol('GameController'),
     GameCreatorController:  Symbol('GameCreatorController'),
+    CardController:         Symbol('CardController'),
 
     DateService:            Symbol('DateService'),
     AccountService:         Symbol('AccountService'),
@@ -21,4 +22,5 @@ export default {
     AccountDbService:       Symbol('AccountDbService'),
     ChatDbService:          Symbol('ChatDbService'),
     DatabaseService:        Symbol('DatabaseService'),
+    CardsDbService:         Symbol('CardsDbService'),
 };
