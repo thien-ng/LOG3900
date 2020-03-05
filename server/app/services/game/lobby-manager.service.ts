@@ -68,10 +68,10 @@ export class LobbyManagerService {
                 throw new Error("Lobby size must be specified when lobby does not exist")
             if (!req.gameID || (req.gameID && !isUuid(req.gameID)))
                 throw new Error("UUID attribute must be an UUID");
-
+           
             this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, gameID: req.gameID} as IActiveLobby);
-            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);
-        }
+            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);          
+        }        
 
         return `Successfully joined lobby ${req.lobbyName}`;
     }
@@ -104,18 +104,14 @@ export class LobbyManagerService {
     }
 
     public sendMessages(mes: IReceptMes | INotifyUpdateUser | INotifyLobbyUpdate): void {
-        if (this.isNotification(mes)) {
-            this.socketServer.emit("lobby-notif", mes);
-            return;
-        }
-        
         const lobby = this.lobbyDoesExists(mes.lobbyName);
 
-        if (lobby) {
-            lobby.users.forEach(u => {
-                this.socketServer.to(u.socketId).emit("lobby-chat", mes.message);
-            });
-        }
+        if (!lobby) return;
+
+        if (this.isNotification(mes))
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif") });
+        else 
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", mes.message) });
     }
 
     private isNotification(object: any): object is INotify {
@@ -145,7 +141,7 @@ export class LobbyManagerService {
         if (!this.isJoinLobby(req))
             return;
         if (req.size || req.size === 0) 
-            if (req.size < 2 || req.size > 10)
+            if (req.size < 1 || req.size > 10)
                 throw new Error("Lobby size should be between 1 and 10");
         if (typeof req.private !== "boolean")
             throw new Error("Private attribute must be boolean");
