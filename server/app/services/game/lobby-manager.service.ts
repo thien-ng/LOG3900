@@ -103,6 +103,19 @@ export class LobbyManagerService {
         return `Left ${req.lobbyName} successfully`;
     }
 
+    public handleDisconnect(username: string): void {
+        let lobbyName: string | undefined;
+    
+        this.lobbies.forEach(lob => {
+            lob.users.forEach(user => {
+                if (user.username === username)
+                    lobbyName = lob.lobbyName;
+            });
+        });
+
+        this.leave({username: username, lobbyName: lobbyName as string});
+    }
+
     public sendMessages(mes: IReceptMesLob | INotifyUpdateUser | INotifyLobbyUpdate): void {
         const lobby = this.lobbyDoesExists(mes.lobbyName);
 

@@ -55,19 +55,15 @@ export class GameManagerService {
         const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
 
         this.arenas.set(this.arenaId, arena);
-        this.arenaId++;
+        // TODO uncomment later to increment arena id
+        // this.arenaId++;
     
         this.socketServer.in(room).emit("game-start");
 
         arena.start();
     }
 
-    private addUsersInRoom(lobby: IActiveLobby, room: string): void {
-        lobby.users.forEach(u => {
-            if (!u.socket)
-            throw new Error("Missing socket to instanciate arena");
-        });
-        
+    private addUsersInRoom(lobby: IActiveLobby, room: string): void {        
         // add users to socket room
         lobby.users.forEach(u => {
             if (u.socket)

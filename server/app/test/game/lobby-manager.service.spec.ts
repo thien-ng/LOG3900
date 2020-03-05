@@ -254,17 +254,22 @@ describe("LobbyManagerService", () => {
         chai.expect(result).to.equal("Left name successfully");
     });
 
-    it("Should leave lobby successfully when lobby has two user", async () => {
+    it("Should disconnect user from lobby", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
-        
-        const req: ILeaveLobby = {username:"username", lobbyName: "name"};
+        chai.spy.on(service, "sendMessages", () => {});
+
+        const user1 = {username:"username", socketId: "testId"};
+        const user2 = {username:"username2", socketId: "testId"};
+        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
 
         //when
+        service.handleDisconnect(user1.username);
+
         //then
-        try {service.leave(req)}
-        catch(e) {chai.expect(e.message).to.equal("name not found")};
+        const lobby = service["lobbies"].get("name") as IActiveLobby;
+        chai.expect(lobby.users.length).to.equal(1);
     });
 
 });

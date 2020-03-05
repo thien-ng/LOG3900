@@ -81,7 +81,8 @@ export class WebsocketService {
     }
 
     private logout(username: string): void {
-        this.userServ.deleteUser(username);
+        this.lobServ.handleDisconnect(username);
         this.chatServ.removeUserFromChannelMap(username);
+        this.userServ.deleteUser(username);
     }
 }
