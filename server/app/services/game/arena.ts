@@ -32,8 +32,7 @@ export class Arena {
     }
 
     private end(): void {
-        console.log("End routine");
-        
+        console.log("[Debug] End routine");
         this.users.forEach(u => {
             this.socketServer.to(u.socketId).emit("game-over");
         });
@@ -41,7 +40,10 @@ export class Arena {
 
     public receiveInfo(mes: IGameplayChat | IGameplayDraw): void {
         if (this.isDraw(mes)) {
-            // TODO emit to everyone else the drawings
+            this.users.forEach(u => {
+                if (u.username != mes.username)
+                    this.socketServer.to(u.socketId).emit("draw", {x: mes.pos_x, y: mes.pos_y});
+            });
         }
     }
 
