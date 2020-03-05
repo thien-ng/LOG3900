@@ -14,27 +14,22 @@
         <Grid>
         <materialDesign:Flipper>
             <materialDesign:Flipper.FrontContent>
-                <Grid Height="250" Width="200">
+                <Grid Height="200" Width="200">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="160" />
+                        <RowDefinition Height="120" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
             <materialDesign:ColorZone
                 Mode="PrimaryLight"
                 VerticalAlignment="Stretch">
-            <materialDesign:PackIcon
-                Kind="AccountCircle"
-                Height="128"
-                Width="128"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center" />
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding GameName}" FontSize="25" Foreground="White" />
             </materialDesign:ColorZone>
         <StackPanel
             Grid.Row="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
-                        <TextBlock Text="{Binding GameName}" />
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            <TextBlock Text="{Binding Mode}" />
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
                                 Command="{x:Static materialDesign:Flipper.FlipCommand}"
                                 Margin="0 4 0 0">
                             View lobbies

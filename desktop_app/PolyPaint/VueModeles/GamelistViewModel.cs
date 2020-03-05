@@ -25,13 +25,15 @@ namespace PolyPaint.VueModeles
             //Mediator.Subscribe("addGame", addGame);
             _gameCards = new ObservableCollection<GameCard>();
             getGameCards();
+            Mode = new ObservableCollection<string> { "Free for all", "Sprint coop", "Sprint solo" };
 
         }
 
-        public ObservableCollection<string> Mode;
+        public ObservableCollection<string> Mode { get; }
 
         private async void getGameCards()
         {
+            ObservableCollection<GameCard> gamecards = new ObservableCollection<GameCard>();
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
 
             Console.WriteLine(response.Content);
@@ -39,15 +41,23 @@ namespace PolyPaint.VueModeles
             String responseData = streamReader.ReadToEnd();
             Console.WriteLine(responseData);
             var myData = JsonConvert.DeserializeObject<List<GameCard>>(responseData);
-
+            Console.WriteLine(myData);
             foreach (var item in myData)
             {
-                GameCards.Add(item);
-            }
-            JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+                App.Current.Dispatcher.Invoke(delegate
+                {
 
-            foreach (var item in responseJson)
-                GameCards.Add(item.ToObject<GameCard>());
+                    gamecards.Add(item);
+                });
+            }
+            GameCards = gamecards;
+            //JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+
+            //foreach (var item in responseJson)
+                //App.Current.Dispatcher.Invoke(delegate
+               // {
+              //  GameCards.Add(item.ToObject<GameCard>());
+             //   });
         }
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
@@ -64,51 +74,108 @@ namespace PolyPaint.VueModeles
             {
                 return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
                 {
-                    GameCard card = new GameCard("the game", "the mode");
-                    postCardRequest(card);
-                    _gameCards.Add(card);
+                    DialogContent = new CreateGameControl();
+                    IsCreateGameDialogOpen = true;
                 }));
             }
         }
 
-        private async void postCardRequest(GameCard card)
+        private object _dialogContent;
+        public object DialogContent
+        {
+            get { return _dialogContent; }
+            set
+            {
+                if (_dialogContent == value) return;
+                _dialogContent = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private async void postCardRequest(string gamename, string selectedmode)
         {
             dynamic values = new JObject();
-            values.gameName = card.GameName;
-            values.solution = "";
-            values.clues = "";
-            values.mode = card.Mode;
+            values.gameName = gamename;
+            values.solution = "solution";
+            values.clues = "clues";
+            values.mode = selectedmode;
             Console.WriteLine(values);
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + "/" + Constants.CARDSCREATOR_PATH, byteContent);
-        }
-       
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
+            Console.WriteLine(response.StatusCode);
+            getGameCards();
 
-        private string _newGameString;
-        public string NewGameString
+        }
+
+
+        private string _selectedMode;
+        public string SelectedMode
         {
-            get { return _newGameString; }
+            get { return _selectedMode; }
+            set { _selectedMode = value; ProprieteModifiee(); }
+        }
+
+
+
+        private void createGame()
+        {
+            postCardRequest(GameName, SelectedMode);
+            
+
+        }
+
+        private ICommand _acceptCommand;
+        public ICommand AcceptCommand
+        {
+            get
+            {
+                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
+                {
+                    Console.WriteLine("hel");
+                    await Task.Run(() => createGame());
+                    IsCreateGameDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
+                {
+                    GameName = "";
+                    IsCreateGameDialogOpen = false;
+                }));
+            }
+        }
+
+        private string _gameName;
+        public string GameName
+        {
+            get { return _gameName; }
             set
             {
-                if (_newGameString == value) return;
-                _newGameString = value;
+                if (_gameName == value) return;
+                _gameName = value;
                 ProprieteModifiee();
             }
         }
 
-        private void addGame()
+        private bool _isCreateGameDialogOpen;
+        public bool IsCreateGameDialogOpen
         {
-            throw new NotImplementedException();
-        }
-
-        
-
-        private void createGame()
-        {
-            throw new NotImplementedException();
+            get { return _isCreateGameDialogOpen; }
+            set
+            {
+                if (_isCreateGameDialogOpen == value) return;
+                _isCreateGameDialogOpen = value;
+                ProprieteModifiee();
+            }
         }
 
         private ICommand test;

@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMes, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
 import { isUuid } from 'uuidv4';
@@ -23,14 +23,27 @@ export class LobbyManagerService {
         this.socketServer = socketServer;     
     }
 
-    public getActiveLobbies(): IActiveLobby[] {
-        const list: IActiveLobby[] = [];
-        this.lobbies.forEach((val) => {
-            const lob = val;
-            lob.password = undefined;
-            list.push(lob);
+    public getActiveLobbies(gameID: string): IGetLobby[] {
+        const list: IGetLobby[] = [];
+        this.lobbies.forEach((lob) => {
+            if (lob.gameID === gameID)
+                list.push(this.mapLobby(lob));
         })
         return list;
+    }
+
+    private mapLobby(lobbyAct: IActiveLobby): IGetLobby {
+        const usernames: string[] = [];
+        lobbyAct.users.forEach(u => {
+            usernames.push(u.username);
+        });
+        return {
+            usernames: usernames,
+            private: lobbyAct.private,
+            size: lobbyAct.size,
+            lobbyName: lobbyAct.lobbyName,
+            gameID: lobbyAct.gameID,
+        }; 
     }
 
     public join(req: IJoinLobby): string {
@@ -68,10 +81,10 @@ export class LobbyManagerService {
                 throw new Error("Lobby size must be specified when lobby does not exist")
             if (!req.gameID || (req.gameID && !isUuid(req.gameID)))
                 throw new Error("UUID attribute must be an UUID");
-
+           
             this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, gameID: req.gameID} as IActiveLobby);
-            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);
-        }
+            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);          
+        }        
 
         return `Successfully joined lobby ${req.lobbyName}`;
     }
@@ -103,19 +116,28 @@ export class LobbyManagerService {
         return `Left ${req.lobbyName} successfully`;
     }
 
-    public sendMessages(mes: IReceptMes | INotifyUpdateUser | INotifyLobbyUpdate): void {
-        if (this.isNotification(mes)) {
-            this.socketServer.emit("lobby-notif", mes);
-            return;
-        }
-        
+    public handleDisconnect(username: string): void {
+        let lobbyName: string | undefined;
+    
+        this.lobbies.forEach(lob => {
+            lob.users.forEach(user => {
+                if (user.username === username)
+                    lobbyName = lob.lobbyName;
+            });
+        });
+
+        this.leave({username: username, lobbyName: lobbyName as string});
+    }
+
+    public sendMessages(mes: IReceptMesLob | INotifyUpdateUser | INotifyLobbyUpdate): void {
         const lobby = this.lobbyDoesExists(mes.lobbyName);
 
-        if (lobby) {
-            lobby.users.forEach(u => {
-                this.socketServer.to(u.socketId).emit("lobby-chat", mes.message);
-            });
-        }
+        if (!lobby) return;
+
+        if (this.isNotification(mes))
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif") });
+        else 
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", mes.message) });
     }
 
     private isNotification(object: any): object is INotify {
@@ -145,7 +167,7 @@ export class LobbyManagerService {
         if (!this.isJoinLobby(req))
             return;
         if (req.size || req.size === 0) 
-            if (req.size < 2 || req.size > 10)
+            if (req.size < 1 || req.size > 10)
                 throw new Error("Lobby size should be between 1 and 10");
         if (typeof req.private !== "boolean")
             throw new Error("Private attribute must be boolean");

@@ -22,4 +22,5 @@ export class GameCreatorController {
             res.json(this.creatorServ.createGame(req.body));
         });
     }
+
 }

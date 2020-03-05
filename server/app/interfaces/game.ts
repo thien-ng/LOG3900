@@ -1,5 +1,16 @@
 import { IUser } from "./user-manager";
 
+/**
+ * LOBBY
+ */
+export interface IGetLobby {
+    usernames:  string[]
+    private:    boolean,
+    lobbyName:  string,
+    size:       number,
+    gameID:     string,
+}
+
 export interface IActiveLobby {
     users:      IUser[],
     private:    boolean,
@@ -23,12 +34,15 @@ export interface ILeaveLobby {
     lobbyName: string,
 }
 
-export interface IReceptMes {
+export interface IReceptMesLob {
     lobbyName: string,
     username:  string,
     message:   string,
 }
 
+/**
+ * LOBBY NOTIFICATIONS
+ */
 export interface INotify {
     lobbyName: string,
     type:      LobbyNotif,
@@ -51,14 +65,24 @@ export enum LobbyNotif {
     delete,
 }
 
-export interface ICreateGame {
-    gameName:   string,
-    solution:   string,
-    clues:      string[],
-    mode:       GameMode
-    // add other informations
+/**
+ * GAMEPLAY
+ */
+export interface IGameplayChat {
+    username:   string,
+    content:    string,
 }
 
+export interface IGameplayDraw {
+    username:   string,
+    pos_x:      number,
+    pos_y:      number,
+    // TODO add others
+}
+
+/**
+ *  OTHER
+ */
 export enum GameMode {
     FFA,
     SprintSolo,
