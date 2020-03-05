@@ -61,13 +61,11 @@ export enum LobbyNotif {
  * GAMEPLAY
  */
 export interface IGameplayChat {
-    arenaID:    number,
     username:   string,
     content:    string,
 }
 
 export interface IGameplayDraw {
-    arenaID:    number,
     username:   string,
     pos_x:      number,
     pos_y:      number,

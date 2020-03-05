@@ -11,6 +11,7 @@ import * as io from 'socket.io';
 export class GameManagerService {
 
     private arenas: Map<number, Arena>;
+    private userMapArenaId: Map<string, number>;
     private arenaId: number;
 
     private socketServer: io.Server;
@@ -20,6 +21,7 @@ export class GameManagerService {
         @inject(Types.CardsDbService) private db: CardsDbService) {
 
         this.arenas = new Map<number, Arena>();
+        this.userMapArenaId = new Map<string, number>();
         this.arenaId = 0;
     }
     
@@ -37,7 +39,8 @@ export class GameManagerService {
     }
 
     public sendMessageToArena(mes: IGameplayChat | IGameplayDraw): void {
-        const arena = this.arenas.get(mes.arenaID);
+        const arenaId = this.userMapArenaId.get(mes.username) as number;
+        const arena = this.arenas.get(arenaId);
 
         if (arena)
             arena.receiveInfo(mes);
@@ -46,7 +49,7 @@ export class GameManagerService {
     private setupArena(lobby: IActiveLobby): void {
         const room = `arena${this.arenaId}`;
 
-        this.addUsersInRoom(lobby, room);
+        this.addUsersToArena(lobby, room, this.arenaId);
 
         this.lobServ.lobbies.delete(lobby.lobbyName);
 
@@ -57,17 +60,18 @@ export class GameManagerService {
         this.arenas.set(this.arenaId, arena);
         // TODO uncomment later to increment arena id
         // this.arenaId++;
-    
+
         this.socketServer.in(room).emit("game-start");
 
         arena.start();
     }
 
-    private addUsersInRoom(lobby: IActiveLobby, room: string): void {        
+    private addUsersToArena(lobby: IActiveLobby, room: string, arenaID: number): void {        
         // add users to socket room
         lobby.users.forEach(u => {
             if (u.socket)
-                u.socket.join(room);
+            u.socket.join(room);
+            this.userMapArenaId.set(u.username, arenaID);
         });
     }
     
