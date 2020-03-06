@@ -7,6 +7,15 @@ object Communication {
 
     private var connectSource: PublishSubject<JSONObject> = PublishSubject.create()
     private var chatSource: PublishSubject<JSONObject> = PublishSubject.create()
+    private var drawSource: PublishSubject<JSONObject> = PublishSubject.create()
+
+    fun getDrawListener(): PublishSubject<JSONObject>{
+        return drawSource
+    }
+
+    fun updateDraw(obj: JSONObject) {
+        drawSource.onNext(obj)
+    }
 
     fun getChatMessageListener(): PublishSubject<JSONObject>{
         return chatSource
