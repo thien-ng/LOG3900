@@ -42,9 +42,8 @@ export class GameManagerService {
         const arenaId = this.userMapArenaId.get(mes.username) as number;
         const arena = this.arenas.get(arenaId);
 
-        if (arena) {
+        if (arena)
             arena.receiveInfo(mes);
-        }
     }
 
     private setupArena(lobby: IActiveLobby): void {
