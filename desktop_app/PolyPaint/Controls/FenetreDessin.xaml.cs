@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 using PolyPaint.VueModeles;
+using System.Collections.Generic;
 
 namespace PolyPaint
 {
@@ -54,6 +54,7 @@ namespace PolyPaint
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             ((DessinViewModel)DataContext).IsDrawing = false;
+            ((DessinViewModel)DataContext).previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
     }

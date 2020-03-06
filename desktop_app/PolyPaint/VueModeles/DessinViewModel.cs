@@ -78,6 +78,8 @@ namespace PolyPaint.VueModeles
             // Donc, aucune vérification de type Peut"Action" à faire.
             ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
+
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
         /// <summary>
@@ -127,7 +129,7 @@ namespace PolyPaint.VueModeles
             set { _isDrawing = value; ProprieteModifiee(); }
         }
 
-        private Dictionary<string, double?> previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+        public Dictionary<string, double?> previousPos { get; set; }
 
         private ICommand _goToLogin;
         public ICommand GoToLogin
