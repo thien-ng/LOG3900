@@ -76,9 +76,8 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding size}" FontSize="15"/>
-                                                <TextBlock Text="{Binding username}" FontSize="15"/>
-                                                <TextBlock Text="{Binding lobbyName}" FontSize="15"/>
+                                                <Button Content="{Binding lobbyName}" Command="{Binding JoinLobbyCommand}" Margin="5,0,5,0" FontSize="15"/>
+                                                <TextBlock Text="{Binding size}" Margin="5,0,5,0" FontSize="15"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

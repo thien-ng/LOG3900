@@ -36,12 +36,9 @@ namespace PolyPaint.VueModeles
             ObservableCollection<GameCard> gamecards = new ObservableCollection<GameCard>();
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
 
-            Console.WriteLine(response.Content);
             StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
             String responseData = streamReader.ReadToEnd();
-            Console.WriteLine(responseData);
             var myData = JsonConvert.DeserializeObject<List<GameCard>>(responseData);
-            Console.WriteLine(myData);
             foreach (var item in myData)
             {
                 App.Current.Dispatcher.Invoke(delegate
@@ -99,13 +96,11 @@ namespace PolyPaint.VueModeles
             values.solution = "solution";
             values.clues = "clues";
             values.mode = selectedmode;
-            Console.WriteLine(values);
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
-            Console.WriteLine(response.StatusCode);
             getGameCards();
 
         }
@@ -134,7 +129,6 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    Console.WriteLine("hel");
                     await Task.Run(() => createGame());
                     IsCreateGameDialogOpen = false;
                 }));
