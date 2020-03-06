@@ -28,7 +28,6 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Command="{Binding TEST}">Test</Button>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <materialDesign:PackIcon VerticalAlignment="Center" Kind="Gamepad" Foreground="White" Width="50" Height="50"/>
             <TextBlock Text="Gamelist" FontSize="30" VerticalAlignment="Center" Foreground="White"/>
