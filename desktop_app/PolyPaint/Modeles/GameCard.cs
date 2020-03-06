@@ -66,13 +66,11 @@ namespace PolyPaint.Modeles
             values.size = _selectedSize;
             values.password = _password;
             values.gameID = _gameID;
-            Console.WriteLine(values);
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            Console.WriteLine(response);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
                 Lobby lobby = new Lobby(_lobbyName, new string[] {ServerService.instance.username}, _isPrivate, int.Parse(_selectedSize), _password, _gameID);
@@ -81,6 +79,8 @@ namespace PolyPaint.Modeles
                     getLobbies();
                 });
                 LobbyName = "";
+            Mediator.Notify("GoToDrawScreen");
+
             }
         }
 
@@ -147,7 +147,7 @@ namespace PolyPaint.Modeles
         public string SelectedSize
         {
             get { return _selectedSize; }
-            set { _selectedSize = value; ProprieteModifiee(); Console.WriteLine(_selectedSize); }
+            set { _selectedSize = value; ProprieteModifiee(); }
         }
 
         private async void getLobbies()
@@ -155,12 +155,9 @@ namespace PolyPaint.Modeles
             ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _gameID);
 
-            Console.WriteLine(response.Content);
             StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
             String responseData = streamReader.ReadToEnd();
-            Console.WriteLine(responseData);
             var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
-            Console.WriteLine(myData);
             foreach (var item in myData)
             {
                 App.Current.Dispatcher.Invoke(delegate
@@ -235,5 +232,6 @@ namespace PolyPaint.Modeles
         }
 
     }
+
 
 }
