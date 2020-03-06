@@ -39,8 +39,4 @@ object SocketIO {
     fun sendMessage(event: String, obj: JSONObject){
         socket.emit(event, obj)
     }
-
-    fun sendStroke(event: String, obj: JSONObject){
-        socket.emit(event, obj)
-    }
 }
