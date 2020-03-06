@@ -30,20 +30,30 @@ namespace PolyPaint
 
         // Pour la gestion de l'affichage de position du pointeur.
         private void surfaceDessin_MouseLeave(object sender, MouseEventArgs e) => textBlockPosition.Text = "";
+
         private void surfaceDessin_MouseMove(object sender, MouseEventArgs e)
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
 
-            if (e.LeftButton == MouseButtonState.Pressed)
+            bool condition = e.LeftButton == MouseButtonState.Pressed &&
+                             p.X >= 0 && p.X <= surfaceDessin.ActualWidth &&
+                             p.Y >= 0 && p.Y <= surfaceDessin.ActualHeight;
+
+            if (condition)
             {
-                Console.WriteLine("test"); 
+                ((DessinViewModel)DataContext).MouseMove(surfaceDessin, e);
             }
         }
 
-        private void OnStrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-            ((DessinViewModel)DataContext).SendNewStroke(sender, e);
+            ((DessinViewModel)DataContext).IsDrawing = true;
+        }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ((DessinViewModel)DataContext).IsDrawing = false;
         }
 
     }
