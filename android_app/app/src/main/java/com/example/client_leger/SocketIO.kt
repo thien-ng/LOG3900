@@ -22,6 +22,10 @@ object SocketIO {
         socket.on("logging") {
             Communication.updateConnection(it[0] as JSONObject)
         }
+
+        socket.on("draw") {
+            Communication.updateDraw(it[0] as JSONObject)
+        }
     }
 
     fun connect(username: String) {
@@ -36,4 +40,7 @@ object SocketIO {
         socket.emit(event, obj)
     }
 
+    fun sendStroke(event: String, obj: JSONObject){
+        socket.emit(event, obj)
+    }
 }
