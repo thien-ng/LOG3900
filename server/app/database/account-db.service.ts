@@ -31,6 +31,6 @@ export class AccountDbService extends DatabaseService {
 
     public async getAccountInfoByName(username: string): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT (LOG3900.getAccountInfoByName(
-            CAST('${username}' AS VARCHAR))).*;`);
+                                    CAST('${username}' AS VARCHAR))).*;`);
     }
 }
