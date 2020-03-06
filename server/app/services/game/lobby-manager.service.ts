@@ -125,8 +125,9 @@ export class LobbyManagerService {
                     lobbyName = lob.lobbyName;
             });
         });
-
-        this.leave({username: username, lobbyName: lobbyName as string});
+        if (!lobbyName)
+            return
+        this.leave({username: username, lobbyName: lobbyName});
     }
 
     public sendMessages(mes: IReceptMesLob | INotifyUpdateUser | INotifyLobbyUpdate): void {
