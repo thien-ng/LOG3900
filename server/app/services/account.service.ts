@@ -78,13 +78,13 @@ export class AccountService {
             return e;
         });
         const connections: Promise<Iconnection[]> = this.database.getAccountConnectionsByUsername(username).then((result: pg.QueryResult) => {
-            const res: Iconnection[] = result.rows.map((row: any) => ({ username: username, isLogin: row.out_isLogin, times: row.out_times }));
+            console.log(result.rows);
+            const res: Iconnection[] = result.rows.map((row: any) => ({ username: username, isLogin: row.out_islogin, times: row.out_times }));
             return res;
         }).catch((e) => {
             return e;
         });
         return Promise.all([noms, connections]).then((res) => {
-            console.log(res);
             const out: IInfoUser = { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1] };
             return out;
         }).catch((e) => {
