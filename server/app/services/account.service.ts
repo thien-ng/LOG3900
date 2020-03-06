@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IRegistration, IStatus, ILogin, IInfoUser } from "../interfaces/communication";
+import { IRegistration, IStatus, ILogin, IInfoUser, Iconnection } from "../interfaces/communication";
 import { AccountDbService } from "../database/account-db.service";
 import * as pg from "pg";
 import Types from '../types';
@@ -71,9 +71,22 @@ export class AccountService {
     }
 
     public async getUserInfo(username: string): Promise<IInfoUser> {
-        return this.database.getAccountInfoByName(username).then((result: pg.QueryResult) => {
-            const res: IInfoUser[] = result.rows.map((row: any) => ({ username: row.out_username, lastName: row.out_lastname, firstName: row.out_firstname }));
+        const noms: Promise<any> = this.database.getAccountNamesByUsername(username).then((result: pg.QueryResult) => {
+            const res: any[] = result.rows.map((row: any) => ({ username: username, lastName: row.out_lastname, firstName: row.out_firstname }));
             return res[0];
+        }).catch((e) => {
+            return e;
+        });
+        const connections: Promise<Iconnection[]> = this.database.getAccountConnectionsByUsername(username).then((result: pg.QueryResult) => {
+            const res: Iconnection[] = result.rows.map((row: any) => ({ username: username, isLogin: row.out_isLogin, times: row.out_times }));
+            return res;
+        }).catch((e) => {
+            return e;
+        });
+        return Promise.all([noms, connections]).then((res) => {
+            console.log(res);
+            const out: IInfoUser = { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1] };
+            return out;
         }).catch((e) => {
             return e;
         });

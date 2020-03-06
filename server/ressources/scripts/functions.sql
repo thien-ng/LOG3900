@@ -1,9 +1,19 @@
-CREATE OR REPLACE FUNCTION LOG3900.getAccountInfoByName(in_username VARCHAR(20))
-    RETURNS TABLE  (out_username VARCHAR(20), out_firstName VARCHAR(20), out_lastName VARCHAR(20)) AS $$
+CREATE OR REPLACE FUNCTION LOG3900.getAccountNamesByUsername(in_username VARCHAR(20))
+    RETURNS TABLE  (out_firstName VARCHAR(20), out_lastName VARCHAR(20)) AS $$
     BEGIN
         RETURN QUERY
-        SELECT log3900.account.username as out_username, log3900.account.firstname as out_firstname, log3900.account.lastname as out_lastname
+        SELECT log3900.account.firstname as out_firstname, log3900.account.lastname as out_lastname
         FROM LOG3900.Account
+        WHERE log3900.account.username = in_username;
+    END;
+$$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getAccountConnectionsByUsername(in_username VARCHAR(20))
+    RETURNS TABLE  (out_isLogin BOOLEAN, out_times VARCHAR(20)) AS $$
+    BEGIN
+        RETURN QUERY
+        SELECT log3900.connection.is_login as out_isLogin, log3900.connection.times as out_times
+        FROM LOG3900.connection full outer join log3900.account on log3900.account.id = log3900.connection.account_id
         WHERE log3900.account.username = in_username;
     END;
 $$LANGUAGE plpgsql;

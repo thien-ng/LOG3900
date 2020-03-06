@@ -21,16 +21,21 @@ export class AccountDbService extends DatabaseService {
                                     CAST('${login.password}' AS VARCHAR));`);
     }
 
-    public logConnection(username: string, is_login: boolean) {
+    public logConnection(username: string, isLogin: boolean): Promise<pg.QueryResult> {
         const time: string = Time.today();
         return this.pool.query(`SELECT LOG3900.logConnection(
                                     CAST('${username}' AS VARCHAR),
-                                    CAST('${is_login}' AS BOOLEAN),
+                                    CAST('${isLogin}' AS BOOLEAN),
                                     CAST('${time}' AS VARCHAR));`);
     }
 
-    public async getAccountInfoByName(username: string): Promise<pg.QueryResult> {
-        return this.pool.query(`SELECT (LOG3900.getAccountInfoByName(
+    public async getAccountNamesByUsername(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getAccountNamesByUsername(
+                                    CAST('${username}' AS VARCHAR))).*;`);
+    }
+
+    public async getAccountConnectionsByUsername(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getAccountConnectionsByUsername(
                                     CAST('${username}' AS VARCHAR))).*;`);
     }
 }
