@@ -1,4 +1,6 @@
 import { IUser } from "../../interfaces/user-manager";
+import { IGameplayChat, IGameplayDraw, IDrawing } from "../../interfaces/game";
+
 import * as io from 'socket.io';
 
 export class Arena {
@@ -18,4 +20,46 @@ export class Arena {
         if (this.users || this.size || this.room || this.socketServer) {}
     }
     
+    public start(): void {
+        let timer = 0;
+        const test = setInterval(() => {
+            console.log("[Debug] Timer is: ", timer += 1000);
+            if (timer > 60000) {
+                clearInterval(test);
+                this.end();
+            }
+        }, 1000); //1 minute    
+    }
+
+    private end(): void {
+        console.log("[Debug] End routine");
+        this.users.forEach(u => {
+            this.socketServer.to(u.socketId).emit("game-over");
+        });
+    }
+
+    public receiveInfo(mes: IGameplayChat | IGameplayDraw): void {
+        if (this.isDraw(mes)) {
+            this.users.forEach(u => {
+                if (u.username != mes.username)
+                    this.socketServer.to(u.socketId).emit("draw", this.mapToDrawing(mes));
+            });
+        }
+    }
+
+    private mapToDrawing(draw: IGameplayDraw): IDrawing {
+        return {
+            startPosX:  draw.startPosX,
+            startPosY:  draw.startPosY,
+            endPosX:    draw.endPosX,
+            endPosY:    draw.endPosY,
+            color:      draw.color,
+            width:      draw.width,
+        }
+    }
+
+    private isDraw(mes: IGameplayChat | IGameplayDraw): mes is IGameplayDraw {
+        return "startPosX" in mes;
+    }
+
 }

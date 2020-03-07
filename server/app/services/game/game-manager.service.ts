@@ -1,8 +1,8 @@
 import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { Arena } from "./arena";
-import { IActiveLobby } from "../../interfaces/game";
-import { GameCreatorService } from "../game/game-creator.service";
+import { IActiveLobby, IGameplayChat, IGameplayDraw } from "../../interfaces/game";
+import { CardsDbService } from "../../database/cards-db.service";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -10,19 +10,18 @@ import * as io from 'socket.io';
 @injectable()
 export class GameManagerService {
 
-    private arenas: Arena[];
+    private arenas: Map<number, Arena>;
+    private userMapArenaId: Map<string, number>;
     private arenaId: number;
 
     private socketServer: io.Server;
     
     public constructor(
         @inject(Types.LobbyManagerService) private lobServ: LobbyManagerService,
-        @inject(Types.GameCreatorService) private creatorServ: GameCreatorService) {
+        @inject(Types.CardsDbService) private db: CardsDbService) {
 
-        // If statement to make server compile`
-        if (this.creatorServ) {}
-        
-        this.arenas = [];
+        this.arenas = new Map<number, Arena>();
+        this.userMapArenaId = new Map<string, number>();
         this.arenaId = 0;
     }
     
@@ -39,25 +38,41 @@ export class GameManagerService {
         this.setupArena(lobby);
     }
 
-    private setupArena(lobby: IActiveLobby): void {
-        const room = `arena${this.arenaId++}`;
+    public sendMessageToArena(mes: IGameplayChat | IGameplayDraw): void {
+        const arenaId = this.userMapArenaId.get(mes.username) as number;
+        const arena = this.arenas.get(arenaId);
 
+        if (arena)
+            arena.receiveInfo(mes);
+    }
+
+    private setupArena(lobby: IActiveLobby): void {
+        const room = `arena${this.arenaId}`;
+
+        this.addUsersToArena(lobby, room, this.arenaId);
+
+        this.lobServ.lobbies.delete(lobby.lobbyName);
+
+        // TODO get arena rules
+        this.db.getRulesByGameID(lobby.gameID);
+        const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
+
+        this.arenas.set(this.arenaId, arena);
+        // TODO uncomment later to increment arena id
+        // this.arenaId++;
+
+        this.socketServer.in(room).emit("game-start");
+
+        arena.start();
+    }
+
+    private addUsersToArena(lobby: IActiveLobby, room: string, arenaID: number): void {        
         // add users to socket room
         lobby.users.forEach(u => {
             if (u.socket)
-                u.socket.join(room);
-            else
-                throw new Error("Missing socket to instanciate arena");
+            u.socket.join(room);
+            this.userMapArenaId.set(u.username, arenaID);
         });
-
-        // TODO get arena rules
-        const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
-
-        this.arenas.push(arena);
-        
-        this.socketServer.in(room).emit("start-game");
-
-        this.lobServ.lobbies.delete(lobby.lobbyName);
     }
     
 }

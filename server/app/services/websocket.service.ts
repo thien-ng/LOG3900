@@ -9,6 +9,7 @@ import { IUser } from '../interfaces/user-manager';
 import { IReceptMes } from '../interfaces/chat';
 import { LobbyManagerService } from '../services/game/lobby-manager.service';
 import { GameManagerService } from '../services/game/game-manager.service';
+import { IReceptMesLob, IGameplayChat, IGameplayDraw } from '../interfaces/game';
 
 @injectable()
 export class WebsocketService {
@@ -27,13 +28,11 @@ export class WebsocketService {
 
         this.initSocket();
         
-        // event is called when client connects
         this.io.on('connection', (socket: io.Socket) => {
             console.log("connection to socket");
             
             let username: string;
             
-            // test event to check if socket is on
             socket.on('login', (name: string) => {    
                 if (this.userServ.checkIfUserIsOnline(name)) {
                     socket.emit("logging", {status: 400, message: `${name} is already connected`});
@@ -49,12 +48,19 @@ export class WebsocketService {
                 this.chatServ.sendMessages(mes);
             });
 
+            socket.on('lobby-chat', (mes: IReceptMesLob) => {
+                this.lobServ.sendMessages(mes);
+            });
+
+            socket.on('gameplay', (mes: IGameplayChat | IGameplayDraw) => {
+                this.gameServ.sendMessageToArena(mes);
+            });
+
             socket.on('logout', () => {
                 console.log(username + " logged out");
                 this.logout(username);
             });
 
-            // event is called when client disconnects
             socket.on('disconnect', () => {
                 console.log(username + " has disconnected");
                 this.logout(username);
@@ -75,7 +81,8 @@ export class WebsocketService {
     }
 
     private logout(username: string): void {
-        this.userServ.deleteUser(username);
+        this.lobServ.handleDisconnect(username);
         this.chatServ.removeUserFromChannelMap(username);
+        this.userServ.deleteUser(username);
     }
 }
