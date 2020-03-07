@@ -8,10 +8,9 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.client_leger.Fragments.ChatFragment
-import com.example.client_leger.Fragments.LoginFragment
-import com.example.client_leger.Fragments.RegisterFragment
+import com.example.client_leger.Fragments.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONArray
@@ -22,9 +21,9 @@ class ConnexionController {
     fun loginUser(activity: LoginFragment, applicationContext: Context, body: JSONObject){
         val mRequestQueue = Volley.newRequestQueue(applicationContext)
 
-        val mStringRequest = object : JsonObjectRequest(
+        val mJsonObjectRequest = object : JsonObjectRequest(
             Method.POST,
-            Constants.SERVER_URL + Constants.LOGIN_ENPOINT,
+            Constants.SERVER_URL + Constants.LOGIN_ENDPOINT,
             null,
             Response.Listener { response ->
                 if(response["status"].toString().toInt() == 200) {
@@ -51,7 +50,7 @@ class ConnexionController {
                 return body.toString().toByteArray()
             }
         }
-        mRequestQueue!!.add(mStringRequest)
+        mRequestQueue!!.add(mJsonObjectRequest)
     }
 
     fun registerUser(activity: RegisterFragment, applicationContext: Context, body: JSONObject){
@@ -204,5 +203,29 @@ class ConnexionController {
             )
             requestQueue.add(subRequest)
         }
+    }
+
+    fun joinLobby(activity: GameCardsFragment, body: JSONObject){
+        val mRequestQueue = Volley.newRequestQueue(activity.context)
+
+        val mJsonObjectRequest = object : StringRequest(
+            Method.POST,
+            Constants.SERVER_URL + Constants.LOBBY_JOIN_ENDPOINT,
+            Response.Listener {
+                    activity.replaceFragment(DrawFragment())
+            },
+            Response.ErrorListener {error->
+                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+            }) {
+            override fun getBodyContentType(): String {
+                return "application/json"
+            }
+
+            @Throws(AuthFailureError::class)
+            override fun getBody(): ByteArray {
+                return body.toString().toByteArray()
+            }
+        }
+        mRequestQueue!!.add(mJsonObjectRequest)
     }
 }
