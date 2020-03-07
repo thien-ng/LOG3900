@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,7 +48,7 @@ class GameCardsFragment : Fragment(), GameCardRecyclerViewAdapter.ItemClickListe
         lobby.put("private", false)
         lobby.put("lobbyName", "lobby")
         lobby.put("size",2)
-        lobby.put("gameID", "ea212611-422d-48d0-9e5b-3baddc16e63a")
+        lobby.put("gameID", adapter.getItem(position).getString("gameID"))
         connexionController.joinLobby(this, lobby)
     }
 
