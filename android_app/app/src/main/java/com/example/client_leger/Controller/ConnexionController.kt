@@ -215,7 +215,6 @@ class ConnexionController {
                     activity.replaceFragment(DrawFragment())
             },
             Response.ErrorListener {error->
-                Log.d("error", error.message)
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
