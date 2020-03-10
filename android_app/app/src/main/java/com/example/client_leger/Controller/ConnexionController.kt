@@ -122,7 +122,27 @@ class ConnexionController {
             Response.Listener<JSONObject>{
                 activity.setChannel(channelId)
             },Response.ErrorListener{ error ->
-                Log.w("socket", "join")
+                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+            }
+        )
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    fun leaveChannel(activity: ChatFragment, channelId: String) {
+        val requestQueue = Volley.newRequestQueue(activity.context)
+
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.DELETE,
+            Constants.SERVER_URL + "/chat/channels/leave/" + activity.username + "/" + channelId ,
+            null,
+            Response.Listener<JSONObject>{
+                if (activity.channelId == channelId) {
+                    activity.setChannel(Constants.DEFAULT_CHANNEL_ID)
+                }
+                else {
+                    activity.loadChannels()
+                }
+            },Response.ErrorListener{ error ->
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }
         )
@@ -141,8 +161,10 @@ class ConnexionController {
                     activity.channelAdapter.clear()
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)
-                        activity.channelAdapter.add(ChannelItem(channelId.getString("id")))
+                        activity.channelAdapter.add(ChannelItem(channelId.getString("id"), true, this, activity))
+
                         activity.channelAdapter.setOnItemClickListener { item, _ ->
+
                             activity.setChannel(item.toString())
                         }
                     }
@@ -161,7 +183,7 @@ class ConnexionController {
                     activity.notSubChannelAdapter.clear()
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)
-                        activity.notSubChannelAdapter.add(ChannelItem(channelId.getString("id")))
+                        activity.notSubChannelAdapter.add(ChannelItem(channelId.getString("id"), false, this, activity))
                         activity.notSubChannelAdapter.setOnItemClickListener { item, _ ->
                             joinChannel(activity, item.toString())
                         }
@@ -185,13 +207,13 @@ class ConnexionController {
                     for (i in 0 until response.length()) {
                         val channel = response.getJSONObject(i)
                         if (channel.getString("sub") == "true") {
-                            activity.channelAdapter.add(ChannelItem(channel.getString("id")))
+                            activity.channelAdapter.add(ChannelItem(channel.getString("id"), true, this, activity))
                             activity.channelAdapter.setOnItemClickListener { item, _ ->
                                 activity.setChannel(item.toString())
                             }
                         }
                         else {
-                            activity.notSubChannelAdapter.add(ChannelItem(channel.getString("id")))
+                            activity.notSubChannelAdapter.add(ChannelItem(channel.getString("id"), false, this, activity))
                             activity.notSubChannelAdapter.setOnItemClickListener { item, _ ->
                                 joinChannel(activity, item.toString())
                             }
