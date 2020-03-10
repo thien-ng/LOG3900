@@ -6,21 +6,18 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.SearchView
-import android.widget.TextView
+import android.view.*
+import android.widget.*
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_chat.view.*
+import kotlinx.android.synthetic.main.popup_create_channel.view.*
 import org.json.JSONArray
 import org.json.JSONObject
+
 
 class ChatFragment: Fragment() {
 
@@ -96,6 +93,10 @@ class ChatFragment: Fragment() {
             }
         }
 
+        v.imageButton_createChannel.setOnClickListener {
+            onButtonShowPopupWindowClick(inflater, v)
+        }
+
         v.disconnect_button.setOnClickListener {
             SocketIO.disconnect()
             val intent = Intent(activity, LogPageActivity::class.java)
@@ -112,6 +113,26 @@ class ChatFragment: Fragment() {
         v.recyclerView_chat_log.adapter = messageAdapter
 
         return v
+    }
+
+    private fun onButtonShowPopupWindowClick(inflater: LayoutInflater, view: View?) {
+        val popupView = inflater.inflate(R.layout.popup_create_channel, null)
+        val width = LinearLayout.LayoutParams.WRAP_CONTENT
+        val height = LinearLayout.LayoutParams.WRAP_CONTENT
+        val focusable = true
+        val popupWindow = PopupWindow(popupView, width, height, focusable)
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+        popupView.setOnTouchListener { _, _ ->
+            popupWindow.dismiss()
+            true
+        }
+
+        popupView.create_channel_button.setOnClickListener {
+            controller.createChannel(this, popupView.textInput_channelNameToCreate.text.toString().trim())
+            popupWindow.dismiss()
+        }
     }
 
     private fun loadChannels(search: String? = null){
