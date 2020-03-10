@@ -156,7 +156,7 @@ namespace PolyPaint.Modeles
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _gameID);
 
             StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-            String responseData = streamReader.ReadToEnd();
+            string responseData = streamReader.ReadToEnd();
             var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
             foreach (var item in myData)
             {

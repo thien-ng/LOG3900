@@ -21,11 +21,11 @@
         <StackPanel Orientation="Horizontal" Grid.Row="2">
             <TextBlock Text="mode: " FontSize="15" VerticalAlignment="Center" />
             <ComboBox
-    wpf:ComboBoxAssist.ShowSelectedItem="True"
-    Margin="0 8 0 8"
+                wpf:ComboBoxAssist.ShowSelectedItem="True"
+                Margin="0 8 0 8"
                 ItemsSource="{Binding Mode}"
                 SelectedValue="{Binding SelectedMode, Mode=TwoWay}"
-    HorizontalAlignment="Left">
+                HorizontalAlignment="Left">
             </ComboBox>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="3"
