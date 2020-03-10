@@ -13,7 +13,7 @@ CREATE OR REPLACE FUNCTION LOG3900.getAccountConnectionsByUsername(in_username V
     BEGIN
         RETURN QUERY
         SELECT log3900.connection.is_login as out_isLogin, log3900.connection.times as out_times
-        FROM LOG3900.connection full outer join log3900.account on log3900.account.id = log3900.connection.account_id
+        FROM LOG3900.connection full outer JOIN log3900.account ON log3900.account.id = log3900.connection.account_id
         WHERE log3900.account.username = in_username;
     END;
 $$LANGUAGE plpgsql;
@@ -42,12 +42,12 @@ CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_pass
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_login boolean) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_login BOOLEAN) RETURNS void AS $$
     DECLARE
     the_id INT;
     BEGIN
         SELECT a.id
-        FROM LOG3900.account as a
+        FROM LOG3900.account AS a
         WHERE a.username = in_username
         INTO the_id;
 
@@ -66,18 +66,18 @@ RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8))
         WITH RECURSIVE messageOrder(parent_id, id, content, level, ts, account_id)
         AS (
             SELECT parent_id, id, content, 0, ts, account_id
-            FROM LOG3900.MESSAGES as messages
+            FROM LOG3900.MESSAGES AS messages
             WHERE parent_id IS NULL
             AND channel_id = in_id
 
             UNION ALL
 
             SELECT messages.parent_id, messages.id, messages.content, messageOrder.level+1, messages.ts, messages.account_id
-            FROM LOG3900.MESSAGES as messages
+            FROM LOG3900.MESSAGES AS messages
             JOIN messageOrder ON (messages.parent_id = messageOrder.id)
         )
         SELECT a.username, content, ts
-        FROM messageOrder, LOG3900.account as a
+        FROM messageOrder, LOG3900.account AS a
         WHERE account_id = a.id
         ORDER BY level;
     END;

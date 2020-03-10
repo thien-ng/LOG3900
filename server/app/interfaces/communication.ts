@@ -20,12 +20,12 @@ export interface IInfoUser {
     username: string,
     firstName: string,
     lastName: string,
-    connections: Iconnection[],
+    connections: IConnection[],
     //avatar: Uint8Array,
     //games: Igame[],
 }
 
-export interface Iconnection {
+export interface IConnection {
     username: string,
     isLogin: boolean,
     times: string,

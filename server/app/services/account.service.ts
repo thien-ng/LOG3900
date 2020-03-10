@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IRegistration, IStatus, ILogin, IInfoUser, Iconnection } from "../interfaces/communication";
+import { IRegistration, IStatus, ILogin, IInfoUser, IConnection } from "../interfaces/communication";
 import { AccountDbService } from "../database/account-db.service";
 import * as pg from "pg";
 import Types from '../types';
@@ -77,9 +77,9 @@ export class AccountService {
         }).catch((e) => {
             return e;
         });
-        const connections: Promise<Iconnection[]> = this.database.getAccountConnectionsByUsername(username).then((result: pg.QueryResult) => {
+        const connections: Promise<IConnection[]> = this.database.getAccountConnectionsByUsername(username).then((result: pg.QueryResult) => {
             console.log(result.rows);
-            const res: Iconnection[] = result.rows.map((row: any) => ({ username: username, isLogin: row.out_islogin, times: row.out_times }));
+            const res: IConnection[] = result.rows.map((row: any) => ({ username: username, isLogin: row.out_islogin, times: row.out_times }));
             return res;
         }).catch((e) => {
             return e;
