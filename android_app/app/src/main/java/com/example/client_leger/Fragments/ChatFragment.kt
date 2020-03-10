@@ -13,8 +13,10 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.channel_layout.view.*
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import kotlinx.android.synthetic.main.popup_create_channel.view.*
+import kotlinx.android.synthetic.main.fragment_chat.view.textView_channelName
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -135,7 +137,7 @@ class ChatFragment: Fragment() {
         }
     }
 
-    private fun loadChannels(search: String? = null){
+    fun loadChannels(search: String? = null){
         controller.loadChannels(this, search)
     }
 
