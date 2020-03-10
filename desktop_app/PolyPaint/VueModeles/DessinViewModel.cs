@@ -1,4 +1,5 @@
 ﻿using PolyPaint.Utilitaires;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -17,7 +18,6 @@ namespace PolyPaint.VueModeles
                 }));
             }
         }
-
     }
 
 }
