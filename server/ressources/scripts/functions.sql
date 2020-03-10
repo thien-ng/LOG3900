@@ -42,7 +42,7 @@ CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_pass
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_login BOOLEAN) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_login BOOLEAN, in_times VARCHAR(30)) RETURNS void AS $$
     DECLARE
     the_id INT;
     BEGIN
@@ -52,9 +52,9 @@ CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_log
         INTO the_id;
 
         IF the_id IS NULL THEN
-            INSERT INTO LOG3900.connection VALUES(null, is_login, DEFAULT);
+            INSERT INTO LOG3900.connection VALUES(null, is_login, in_times);
         ELSE
-            INSERT INTO LOG3900.connection VALUES(the_id, is_login, DEFAULT);
+            INSERT INTO LOG3900.connection VALUES(the_id, is_login, in_times);
         END IF;
     END;
 $$LANGUAGE plpgsql;
