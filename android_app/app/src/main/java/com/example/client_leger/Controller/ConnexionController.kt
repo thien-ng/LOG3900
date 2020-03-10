@@ -130,7 +130,9 @@ class ConnexionController {
     }
 
     fun createChannel(activity: ChatFragment, channelId: String) {
-        joinChannel(activity, channelId)
+        if (channelId.isNotEmpty()) {
+            joinChannel(activity, channelId)
+        }
     }
 
     fun loadChannels(activity: ChatFragment, search: String? = null) {
