@@ -22,7 +22,7 @@ import org.json.JSONObject
 class DrawFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return DrawCanvas(activity!!.applicationContext, null)
+        return DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username"))
     }
 }
 
@@ -30,6 +30,7 @@ class DrawCanvas: View {
 
     private var paint = Paint()
     private var path = Path()
+    private var username: String
     private var startPointX: Float = 0.0F
     private var startPointY: Float = 0.0F
     private var finishPointX: Float = 0.0F
@@ -39,12 +40,13 @@ class DrawCanvas: View {
     private var newPaint = Paint()
     private var isExternal = false
 
-    constructor(ctx: Context, attr: AttributeSet?): super(ctx, attr) {
+    constructor(ctx: Context, attr: AttributeSet?, username: String): super(ctx, attr) {
         paint.isAntiAlias = true
         paint.color = (Color.BLACK)
         paint.strokeJoin = Paint.Join.ROUND
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 10f
+        this.username = username
 
         Communication.getDrawListener().subscribe{ obj ->
             draw(obj)
@@ -78,7 +80,7 @@ class DrawCanvas: View {
 
     private fun sendStroke() {
         val obj = JSONObject()
-        obj.put("username", "asd")
+        obj.put("username", username)
         obj.put("startPosX", startPointX)
         obj.put("startPosY", startPointY)
         obj.put("endPosX", finishPointX)

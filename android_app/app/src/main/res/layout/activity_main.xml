@@ -21,7 +21,7 @@
                 android:id="@+id/container_view_left"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.6">
+                android:layout_weight="0.7">
         </FrameLayout>
 
         <FrameLayout
