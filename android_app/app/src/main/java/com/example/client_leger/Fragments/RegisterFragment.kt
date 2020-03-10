@@ -45,7 +45,9 @@ class RegisterFragment : Fragment() {
                 var body = JSONObject(
                     mapOf(
                         "username" to v.register_editText_username.text.toString().trim(),
-                        "password" to v.register_editText_password.text.toString().trim()
+                        "password" to v.register_editText_password.text.toString().trim(),
+                        "firstName" to v.register_editText_fName.text.toString().trim(),
+                        "lastName" to v.register_editText_lName.text.toString().trim()
                     )
                 )
 
