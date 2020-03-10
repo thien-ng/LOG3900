@@ -102,31 +102,30 @@
                     <TextBlock Text="LAST CONNECTION:" FontSize="25" Foreground="White"/>
                 </StackPanel>
                     <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
-                      VerticalScrollBarVisibility="Auto"
-                      >
+                      VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding Connections}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                 <StackPanel Margin="0,0,15,0" Orientation="Horizontal">
                                     
-                                        <materialDesign:PackIcon >
+                                        <materialDesign:PackIcon>
                                         <materialDesign:PackIcon.Style>
                                             <Style TargetType="{x:Type materialDesign:PackIcon}">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding isLogin}" Value="True">
-                                                        <Setter Property="Kind" Value="ArrowRight"/>
-                                                        <Setter Property="Foreground" Value="LightGreen"/>
+                                                        <Setter Property="materialDesign:PackIcon.Kind" Value="ArrowRight"/>
+                                                        <Setter Property="materialDesign:PackIcon.Foreground" Value="LightGreen"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding isLogin}" Value="False">
-                                                        <Setter Property="Kind" Value="ArrowLeft"/>
-                                                        <Setter Property="Foreground" Value="DarkRed"/>
+                                                        <Setter Property="materialDesign:PackIcon.Kind" Value="ArrowLeft"/>
+                                                        <Setter Property="materialDesign:PackIcon.Foreground" Value="DarkRed"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
 
                                         </materialDesign:PackIcon.Style>
                                     </materialDesign:PackIcon>
-                                    <TextBlock Foreground="White" FontSize="13" Text="{Binding times}" />
+                                    <TextBlock Foreground="White" FontSize="16" Text="{Binding times}" />
                                 </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

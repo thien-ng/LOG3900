@@ -102,7 +102,6 @@ namespace PolyPaint.VueModeles
                 string responseString = await response.Content.ReadAsStringAsync();
                 var data = JsonConvert.DeserializeObject<User>(responseString);
                 ServerService.instance.user = data;
-                Console.WriteLine(responseString);
             }
         }
 
