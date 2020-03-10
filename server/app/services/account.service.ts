@@ -72,21 +72,17 @@ export class AccountService {
 
     public async getUserInfo(username: string): Promise<IInfoUser> {
         const noms: Promise<any> = this.database.getAccountNamesByUsername(username).then((result: pg.QueryResult) => {
-            const res: any[] = result.rows.map((row: any) => ({ username: username, lastName: row.out_lastname, firstName: row.out_firstname }));
-            return res[0];
+            return result.rows.map((row: any) => ({ username: username, lastName: row.out_lastname, firstName: row.out_firstname }))[0];
         }).catch((e) => {
             return e;
         });
         const connections: Promise<IConnection[]> = this.database.getAccountConnectionsByUsername(username).then((result: pg.QueryResult) => {
-            console.log(result.rows);
-            const res: IConnection[] = result.rows.map((row: any) => ({ username: username, isLogin: row.out_islogin, times: row.out_times }));
-            return res;
+            return result.rows.map((row: any) => ({ username: username, isLogin: row.out_islogin, times: row.out_times }));
         }).catch((e) => {
             return e;
         });
         return Promise.all([noms, connections]).then((res) => {
-            const out: IInfoUser = { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1] };
-            return out;
+            return { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1] };
         }).catch((e) => {
             return e;
         });
