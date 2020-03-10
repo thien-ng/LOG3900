@@ -1,6 +1,9 @@
 export interface IRegistration {
     username: string,
     password: string,
+    firstName: string,
+    lastName: string,
+    //avatar: Uint8Array,
 }
 
 export interface ILogin {
@@ -9,8 +12,28 @@ export interface ILogin {
 }
 
 export interface IStatus {
-    status:  number;
-    message: string;
+    status: number,
+    message: string,
+}
+
+export interface IInfoUser {
+    username: string,
+    firstName: string,
+    lastName: string,
+    connections: IConnection[],
+    //avatar: Uint8Array,
+    //games: Igame[],
+}
+
+export interface IConnection {
+    username: string,
+    isLogin: boolean,
+    times: string,
+}
+
+export interface Igame {
+    time: string,
+    players: { username: string, score: number }[],
 }
 
 export interface IInvitationChannel {
