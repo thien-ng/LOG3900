@@ -30,7 +30,7 @@ class DrawCanvas: View {
 
     private var paint = Paint()
     private var path = Path()
-    private lateinit var username: String
+    private var username: String
     private var startPointX: Float = 0.0F
     private var startPointY: Float = 0.0F
     private var finishPointX: Float = 0.0F
