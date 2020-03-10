@@ -129,6 +129,10 @@ class ConnexionController {
         requestQueue.add(jsonObjectRequest)
     }
 
+    fun createChannel(activity: ChatFragment, channelId: String) {
+        joinChannel(activity, channelId)
+    }
+
     fun loadChannels(activity: ChatFragment, search: String? = null) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
