@@ -163,6 +163,5 @@ namespace PolyPaint.VueModeles
                 ProprieteModifiee();
             }
         }
-
     }
 }

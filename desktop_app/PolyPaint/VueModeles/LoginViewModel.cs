@@ -11,7 +11,6 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    // TODO unit test
     class LoginViewModel : BaseViewModel, IPageViewModel
     {
         private ICommand    _login;
