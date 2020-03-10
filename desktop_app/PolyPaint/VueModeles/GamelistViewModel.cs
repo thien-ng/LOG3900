@@ -171,14 +171,5 @@ namespace PolyPaint.VueModeles
                 ProprieteModifiee();
             }
         }
-
-        private ICommand test;
-        public ICommand TEST
-        {
-            get
-            {
-                return test ?? (test = new RelayCommand(x => { Mediator.Notify("GoToDrawScreen", ""); }));
-            }
-        }
     }
 }
