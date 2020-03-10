@@ -12,8 +12,8 @@ namespace PolyPaint.Modeles
         public string _username;
         public string _firstName;
         public string _lastName;
-        public JArray _connections;
-        public User(string username, string firstname, string lastname, JArray connections)
+        public Connection[] _connections;
+        public User(string username, string firstname, string lastname, Connection[] connections)
         {
             _username = username;
             _firstName = firstname;

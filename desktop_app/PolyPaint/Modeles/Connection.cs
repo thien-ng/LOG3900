@@ -9,8 +9,8 @@ namespace PolyPaint.Modeles
     class Connection
     {
         Connection() { }
-        public string _username { get; set; }
-        public bool _isLogin { get; set; }
+        public string username { get; set; }
+        public bool isLogin { get; set; }
         public string times { get; set; }
     }
 }

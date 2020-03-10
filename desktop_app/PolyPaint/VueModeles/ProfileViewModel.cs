@@ -16,8 +16,7 @@ namespace PolyPaint.VueModeles
             _username = Services.ServerService.instance.username;
             _firstname = Services.ServerService.instance.user._firstName;
             _lastname = Services.ServerService.instance.user._lastName;
-            _connections = ServerService.instance.user._connections.ToObject<Connection[]>();
-            Console.WriteLine(_connections[0]._isLogin);
+            _connections = ServerService.instance.user._connections;
 
         }
 
