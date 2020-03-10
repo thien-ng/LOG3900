@@ -31,8 +31,8 @@
         <Border Grid.Row="1" BorderBrush="White" BorderThickness="0,0,0,1" Grid.ColumnSpan="3"/>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0">
             <materialDesign:PackIcon VerticalAlignment="Center" Foreground="White" Width="30" Height="30" Kind="Lock" />
-            <TextBlock Margin="20,0,10,0" Text="FirstName" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
-            <TextBlock Margin="10,0,10,0" Text="Name" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
+            <TextBlock Margin="20,0,10,0" Text="{Binding Firstname}" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
+            <TextBlock Margin="10,0,10,0"  Text="{Binding Lastname}" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right">
             <TextBlock Text="{Binding Username}" FontSize="25" Foreground="White" VerticalAlignment="Bottom" />

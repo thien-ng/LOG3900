@@ -74,7 +74,7 @@
             <TextBlock Margin="15,0,0,0" Grid.Column="0"  Text="Name:" VerticalAlignment="Bottom" Foreground="{StaticResource SecondaryAccentBrush}" FontSize="15" Padding="5,0,5,0"/>
             <TextBox Margin="0,5,15,0"  x:Name="nameText" Grid.Column="1"  VerticalAlignment="Center">
                 <TextBox.Text>
-                    <Binding Path="Name"
+                    <Binding Path="LastName"
              UpdateSourceTrigger="PropertyChanged" >
                         <Binding.ValidationRules>
                             <util:UsernameRule />

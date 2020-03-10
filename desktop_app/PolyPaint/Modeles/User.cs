@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,11 +10,15 @@ namespace PolyPaint.Modeles
     class User
     {
         public string _username;
-        public string _password;
-        public User(string username, string password)
+        public string _firstName;
+        public string _lastName;
+        public JArray _connections;
+        public User(string username, string firstname, string lastname, JArray connections)
         {
             _username = username;
-            _password = password;
+            _firstName = firstname;
+            _lastName = lastname;
+            _connections = connections;
         }
     }
 }
