@@ -18,12 +18,6 @@ namespace PolyPaint.VueModeles
                 }));
             }
         }
-
-        public void SendNewStroke(object sender, InkCanvasStrokeCollectedEventArgs e)
-        {
-            //e.Stroke.DrawingAttributes;
-        }
-
     }
 
 }

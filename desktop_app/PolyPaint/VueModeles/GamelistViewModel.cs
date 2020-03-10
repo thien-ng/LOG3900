@@ -22,7 +22,6 @@ namespace PolyPaint.VueModeles
         public GamelistViewModel()
         {
 
-            //Mediator.Subscribe("addGame", addGame);
             _gameCards = new ObservableCollection<GameCard>();
             getGameCards();
             Mode = new ObservableCollection<string> { "Free for all", "Sprint coop", "Sprint solo" };
@@ -48,13 +47,6 @@ namespace PolyPaint.VueModeles
                 });
             }
             GameCards = gamecards;
-            //JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
-
-            //foreach (var item in responseJson)
-                //App.Current.Dispatcher.Invoke(delegate
-               // {
-              //  GameCards.Add(item.ToObject<GameCard>());
-             //   });
         }
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
@@ -100,7 +92,7 @@ namespace PolyPaint.VueModeles
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
+            await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
             getGameCards();
 
         }
