@@ -124,13 +124,9 @@
             </Grid.RowDefinitions>
             <Border BorderThickness="5,5,0,0">
                 <InkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" Name="surfaceDessin" 
-<<<<<<< HEAD
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                            PreviewMouseLeftButtonDown="OnMouseDown"
                            PreviewMouseLeftButtonUp="OnMouseUp"
-=======
-                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                           
->>>>>>> 3684f16a050fe21c03b8ab54513284cd071ea248
                            MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"                                              
                            Strokes="{Binding Path=Traits, Mode=OneTime}" EditingMode="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                            DefaultDrawingAttributes="{Binding Path=AttributsDessin, Mode=OneTime}"/>
