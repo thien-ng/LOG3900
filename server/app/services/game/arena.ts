@@ -1,5 +1,5 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing } from "../../interfaces/game";
 
 import * as io from 'socket.io';
 
@@ -42,13 +42,24 @@ export class Arena {
         if (this.isDraw(mes)) {
             this.users.forEach(u => {
                 if (u.username != mes.username)
-                    this.socketServer.to(u.socketId).emit("draw", {x: mes.pos_x, y: mes.pos_y});
+                    this.socketServer.to(u.socketId).emit("draw", this.mapToDrawing(mes));
             });
         }
     }
 
+    private mapToDrawing(draw: IGameplayDraw): IDrawing {
+        return {
+            startPosX:  draw.startPosX,
+            startPosY:  draw.startPosY,
+            endPosX:    draw.endPosX,
+            endPosY:    draw.endPosY,
+            color:      draw.color,
+            width:      draw.width,
+        }
+    }
+
     private isDraw(mes: IGameplayChat | IGameplayDraw): mes is IGameplayDraw {
-        return "pos_x" in mes;
+        return "startPosX" in mes;
     }
 
 }

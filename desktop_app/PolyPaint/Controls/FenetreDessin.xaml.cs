@@ -35,6 +35,7 @@ namespace PolyPaint
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
+<<<<<<< HEAD
 
             bool condition = e.LeftButton == MouseButtonState.Pressed &&
                              p.X >= 0 && p.X <= surfaceDessin.ActualWidth &&
@@ -57,5 +58,8 @@ namespace PolyPaint
             ((DessinViewModel)DataContext).previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
+=======
+        }
+>>>>>>> 3684f16a050fe21c03b8ab54513284cd071ea248
     }
 }

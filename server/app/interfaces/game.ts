@@ -73,10 +73,17 @@ export interface IGameplayChat {
     content:    string,
 }
 
-export interface IGameplayDraw {
-    username:   string,
-    pos_x:      number,
-    pos_y:      number,
+export interface IDrawing {
+    startPosX:      number,
+    startPosY:      number,
+    endPosX:        number,
+    endPosY:        number,
+    color:          number,
+    width:          number,
+}
+
+export interface IGameplayDraw extends IDrawing{
+    username:       string,
     // TODO add others
 }
 
