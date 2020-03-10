@@ -11,7 +11,7 @@ class ChannelItem(private val channelId: String, private val isSub: Boolean, pri
 
     override fun bind(viewHolder: ViewHolder, position: Int){
         viewHolder.itemView.textView_channelName.text = channelId
-        if (isSub && channelId != "general") {
+        if (isSub && channelId != Constants.DEFAULT_CHANNEL_ID) {
             viewHolder.itemView.imageButton_leaveChannel.setOnClickListener {
                 controller.leaveChannel(activity, channelId)
             }
