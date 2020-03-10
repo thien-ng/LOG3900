@@ -23,7 +23,7 @@ namespace PolyPaint
         //private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
         private void GlisserMouvementRecu(object sender, DragDeltaEventArgs e)
         {
-            String nom = (sender as Thumb).Name;
+            string nom = (sender as Thumb).Name;
             if (nom == "horizontal" || nom == "diagonal") colonne.Width = new GridLength(Math.Max(32, colonne.Width.Value + e.HorizontalChange));
             if (nom == "vertical" || nom == "diagonal") ligne.Height = new GridLength(Math.Max(32, ligne.Height.Value + e.VerticalChange));
         }
@@ -36,14 +36,12 @@ namespace PolyPaint
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
 
-            bool condition = e.LeftButton == MouseButtonState.Pressed &&
-                             p.X >= 0 && p.X <= surfaceDessin.ActualWidth &&
-                             p.Y >= 0 && p.Y <= surfaceDessin.ActualHeight;
+            bool isLBPressedInsideCanvas = e.LeftButton == MouseButtonState.Pressed &&
+                                           p.X >= 0 && p.X <= surfaceDessin.ActualWidth &&
+                                           p.Y >= 0 && p.Y <= surfaceDessin.ActualHeight;
 
-            if (condition)
-            {
+            if (isLBPressedInsideCanvas)
                 ((DessinViewModel)DataContext).MouseMove(surfaceDessin, e);
-            }
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)

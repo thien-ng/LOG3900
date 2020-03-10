@@ -91,22 +91,21 @@ namespace PolyPaint.VueModeles
         /// Il indique quelle propriété a été modifiée dans le modèle.</param>
         private void EditeurProprieteModifiee(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "CouleurSelectionnee")
+            switch (e.PropertyName)
             {
-                AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
-            }
-            else if (e.PropertyName == "OutilSelectionne")
-            {
-                OutilSelectionne = editeur.OutilSelectionne;
-            }
-            else if (e.PropertyName == "PointeSelectionnee")
-            {
-                PointeSelectionnee = editeur.PointeSelectionnee;
-                AjusterPointe();
-            }
-            else // e.PropertyName == "TailleTrait"
-            {
-                AjusterPointe();
+                case "CouleurSelectionnee":
+                    AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
+                    break;
+                case "OutilSelectionne":
+                    OutilSelectionne = editeur.OutilSelectionne;
+                    break;
+                case "PointeSelectionnee":
+                    PointeSelectionnee = editeur.PointeSelectionnee;
+                    AjusterPointe();
+                    break;
+                default:
+                    AjusterPointe();
+                    break;
             }
         }
 
@@ -174,8 +173,6 @@ namespace PolyPaint.VueModeles
 
         public void OnDraw(JObject data) 
         {
-            Console.WriteLine(data);
-
             double X1 = (double)data.GetValue("startPosX");
             double X2 = (double)data.GetValue("endPosX");
             double Y1 = (double)data.GetValue("startPosY");
@@ -192,7 +189,5 @@ namespace PolyPaint.VueModeles
                 Traits.Add(str);
             });
         }
-
     }
-
 }
