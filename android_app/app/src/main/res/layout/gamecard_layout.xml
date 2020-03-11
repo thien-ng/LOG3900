@@ -32,7 +32,7 @@
                 android:src="@drawable/default_avatar"
                 app:layout_constraintBottom_toBottomOf="@+id/textView_gameDifficulty"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView_playerNumber"
+                app:layout_constraintStart_toEndOf="@+id/textView_gameDifficulty"
                 app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -53,7 +53,6 @@
                 android:layout_centerInParent="true"
                 android:text="Difficulty :"
                 android:textSize="15sp"
-                app:layout_constraintBottom_toTopOf="@+id/join"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView_gameType" />
 
@@ -64,34 +63,17 @@
                 android:layout_centerInParent="true"
                 android:text="Medium"
                 android:textSize="15sp"
-                app:layout_constraintBottom_toTopOf="@+id/join"
                 app:layout_constraintStart_toEndOf="@+id/textView_Difficulty"
                 app:layout_constraintTop_toBottomOf="@+id/textView_gameType" />
 
-        <Button
-                android:id="@+id/join"
+        <Spinner
+                android:id="@+id/lobbies"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:text="join"
-                android:textColor="@color/colorAccent"
-                app:backgroundTint="#FFFFFF"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView_Difficulty" />
-
-        <TextView
-                android:id="@+id/textView_playerNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:padding="15dp"
-                android:text="1/8 player"
-                android:textColor="#C5A129"
-                android:textSize="25sp"
-                android:textFontWeight="500"
-                app:layout_constraintStart_toEndOf="@+id/join"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView_gameDifficulty" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.card.MaterialCardView>
