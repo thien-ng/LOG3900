@@ -19,8 +19,7 @@ export class GameCardService {
 
     public async deleteCard(gameID: string): Promise<void> {
         const lobbies = this.lobServ.getActiveLobbies(gameID);
-        console.log("lenght " + lobbies.length);
-        
+                
         if (lobbies && lobbies.length === 0) 
             this.db.deleteCard(gameID);
         else
