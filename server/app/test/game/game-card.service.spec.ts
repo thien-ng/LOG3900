@@ -20,28 +20,28 @@ describe("Game Card Service Test", () => {
         container.restore();
     });
 
-    it("Should not delete a card when lobby is not found", async () => {
+    it("Should not delete a card when lobby is found", async () => {
+        //given
+        chai.spy.on(service["lobServ"], "getActiveLobbies", () => {return ["Game"]});
+        const spy = chai.spy.on(service["db"], "deleteCard", () => {});
+
+        //when
+        //then
+        try { await service.deleteCard("gameID") }
+        catch(e) { chai.expect(e.message).to.equal("Some lobbies are still active with this game card")}
+        chai.expect(spy).to.not.have.been.called();
+    });
+
+    it("Should delete a card when no lobby is found", async () => {
         //given
         chai.spy.on(service["lobServ"], "getActiveLobbies", () => {return []});
         const spy = chai.spy.on(service["db"], "deleteCard", () => {});
 
         //when
-        //then
-        try { service.deleteCard("gameID") }
-        catch(e) {chai.expect(e.message).to.equal("Some lobbies are still active with this game card")}
-        chai.expect(spy).to.not.have.been.called;
-    });
-
-    it("Should delete a card when lobby is found", async () => {
-        //given
-        chai.spy.on(service["lobServ"], "getActiveLobbies", () => {return ["aGame"]});
-        const spy = chai.spy.on(service["db"], "deleteCard", () => {});
-
-        //when
-        service.deleteCard("gameID");
+        await service.deleteCard("gameID");
 
         //then
-        chai.expect(spy).to.have.been.called;
+        chai.expect(spy).to.have.been.called();
     });
 
 });
