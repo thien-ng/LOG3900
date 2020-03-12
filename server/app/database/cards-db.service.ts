@@ -36,8 +36,8 @@ export class CardsDbService {
         return await this.collection.findOne({gameID: gameID});
     }
 
-    public async deleteCard(gameID: string): Promise<void> {
-        this.collection.deleteOne({gameID: gameID})
+    public async deleteCard(gameName: string): Promise<void> {
+        this.collection.deleteOne({gameName: gameName})
             .then()
             .catch(e => {throw e});
     } 
