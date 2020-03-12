@@ -6,17 +6,24 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PolyPaint.Controls"
              mc:Ignorable="d"
-                Background="White"
              d:DesignHeight="1000" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    
     <materialDesign:DialogHost IsOpen="{Binding IsCreateGameDialogOpen}"
                                DialogContent="{Binding DialogContent}"
                                CloseOnClickAway="True">
-        <Grid>
-        <materialDesign:Flipper>
+        <materialDesign:Flipper Width="220" Style="{StaticResource MaterialDesignCardFlipper}" Margin="0" Padding="0">
             <materialDesign:Flipper.FrontContent>
-                <Grid Height="200" Width="200">
+                <Grid Height="150" Width="220">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="120" />
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
             <materialDesign:ColorZone
@@ -38,11 +45,14 @@
     </Grid>
         </materialDesign:Flipper.FrontContent>
         <materialDesign:Flipper.BackContent>
-            <Grid Height="250" Width="200">
+            <Grid Height="150" Width="220">
                 <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
             <materialDesign:ColorZone Mode="PrimaryLight">
                 <StackPanel Orientation="Horizontal">
                         <Button
@@ -87,6 +97,5 @@
                 </Grid>
             </materialDesign:Flipper.BackContent>
         </materialDesign:Flipper>
-    </Grid>
     </materialDesign:DialogHost>
 </UserControl>
