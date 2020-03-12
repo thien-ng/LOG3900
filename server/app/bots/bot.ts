@@ -1,7 +1,8 @@
 import { injectable, inject } from "inversify";
-import { IGameplayDraw, IDrawing } from "./interfaces/game";
-import { GameManagerService } from "./services/game/game-manager.service";
-import Types from './types';
+import { IGameplayDraw, IDrawing } from "../interfaces/game";
+import { GameManagerService } from "../services/game/game-manager.service";
+import Types from '../types';
+import { Taunt, Personality } from './taunts';
 
 @injectable()
 export class Bot {
@@ -10,16 +11,19 @@ export class Bot {
     private image: IDrawing[];
     private nextStroke: number;
     private hint: string;
+    private taunts: string[];
 
     constructor(image: IDrawing[],
         username: string = "BOT:bob",
         hint: string = "no hint for you!",
+        style: Personality = Personality.kind,
         @inject(Types.GameManagerService) private gameManager: GameManagerService) {
 
         this.username = username;
         this.image = image;
         this.hint = hint;
         this.findStroke();
+        this.taunts = Taunt.getTaunts(style);
     }
 
     public sendNextStroke(): boolean {
@@ -45,6 +49,10 @@ export class Bot {
 
     public getHint(): string {
         return this.hint;
+    }
+
+    public launtTaunt(): string {
+        return this.taunts[Math.floor(Math.random() * this.taunts.length)]; //ceci ou la fonction qui envoie un message avec Username
     }
 
 }
