@@ -40,6 +40,7 @@ namespace PolyPaint.Vues
             _window.Hide();
             chatColumn.Width = new GridLength(2.5, GridUnitType.Star);
             chatHome.Visibility = Visibility.Visible;
+
             _isOpen = false;
         }
 

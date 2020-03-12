@@ -79,7 +79,7 @@ namespace PolyPaint.Modeles
                     getLobbies();
                 });
                 LobbyName = "";
-            Mediator.Notify("GoToDrawScreen");
+            Mediator.Notify("GoToLobbyScreen", _lobbyName);
 
             }
         }

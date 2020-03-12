@@ -16,7 +16,7 @@ namespace PolyPaint.VueModeles
 {
     class HomeViewModel : BaseViewModel, IPageViewModel
     {
-
+        public Lobby mylobby;
         public HomeViewModel()
         {
             Setup();
@@ -67,7 +67,10 @@ namespace PolyPaint.VueModeles
         public int SwitchView
         {
             get { return _switchView; }
-            set { _switchView = value; ProprieteModifiee(); }
+            set { _switchView = value; ProprieteModifiee();
+                if (_switchView == 2){
+                    IsInLobby = false;
+                } }
         }
 
         private string _switchViewButton;
@@ -96,6 +99,13 @@ namespace PolyPaint.VueModeles
         {
             get { return _backEnabled; }
             set { _backEnabled = value; ProprieteModifiee(); }
+        }
+
+        private bool _isInLobby;
+        public bool IsInLobby
+        {
+            get { return _isInLobby; }
+            set { _isInLobby = value; ProprieteModifiee(); }
         }
 
         private bool _isCreateChannelDialogOpen;
@@ -143,6 +153,7 @@ namespace PolyPaint.VueModeles
             Mediator.Subscribe("ChangeChannel", ChangeChannel);
             Mediator.Subscribe("SubToChannel", SubToChannel);
             Mediator.Subscribe("UnsubChannel", UnsubChannel);
+            Mediator.Subscribe("GoToLobbyScreen", goToLobbyView);
 
             _subChannels = new ObservableCollection<MessageChannel>();
             _notSubChannels = new ObservableCollection<MessageChannel>();
@@ -152,10 +163,16 @@ namespace PolyPaint.VueModeles
             _switchView = 0;
             _switchViewButton = "Profile";
             _switchViewButtonTooltip = "Access to profile";
+            _isInLobby = true;
             _frontEnabled = false;
             _backEnabled = false;
             _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
             _searchString = "";
+        }
+
+        private void goToLobbyView(object lobbyname)
+        {
+            SwitchView = 2;
         }
 
         private async void FetchChannels()
@@ -275,6 +292,7 @@ namespace PolyPaint.VueModeles
         {
             ServerService.instance.socket.Emit("logout");
             ServerService.instance.username = "";
+            ServerService.instance.user = null;
             Mediator.Notify("GoToLoginScreen", "");
         }
 

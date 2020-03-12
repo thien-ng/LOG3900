@@ -183,6 +183,7 @@
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\GamelistViewModel.cs" />
     <Compile Include="VueModeles\HomeViewModel.cs" />
+    <Compile Include="VueModeles\LobbyViewModel.cs" />
     <Compile Include="VueModeles\ProfileViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />
     <Compile Include="VueModeles\LoginViewModel.cs" />
@@ -195,6 +196,9 @@
     </Compile>
     <Compile Include="Vues\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Lobby.xaml.cs">
+      <DependentUpon>Lobby.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
@@ -257,6 +261,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vues\Home.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\Lobby.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

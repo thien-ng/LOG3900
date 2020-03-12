@@ -110,8 +110,6 @@ namespace PolyPaint.VueModeles
         private void createGame()
         {
             postCardRequest(GameName, SelectedMode);
-            
-
         }
 
         private ICommand _acceptCommand;
