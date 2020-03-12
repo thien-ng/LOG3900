@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 using PolyPaint.VueModeles;
+using System.Collections.Generic;
 
 namespace PolyPaint
 {
@@ -23,17 +23,37 @@ namespace PolyPaint
         //private void GlisserTermine(object sender, DragCompletedEventArgs e) => (sender as Thumb).Background = Brushes.White;
         private void GlisserMouvementRecu(object sender, DragDeltaEventArgs e)
         {
-            String nom = (sender as Thumb).Name;
+            string nom = (sender as Thumb).Name;
             if (nom == "horizontal" || nom == "diagonal") colonne.Width = new GridLength(Math.Max(32, colonne.Width.Value + e.HorizontalChange));
             if (nom == "vertical" || nom == "diagonal") ligne.Height = new GridLength(Math.Max(32, ligne.Height.Value + e.VerticalChange));
         }
 
         // Pour la gestion de l'affichage de position du pointeur.
         private void surfaceDessin_MouseLeave(object sender, MouseEventArgs e) => textBlockPosition.Text = "";
+
         private void surfaceDessin_MouseMove(object sender, MouseEventArgs e)
         {
             Point p = e.GetPosition(surfaceDessin);
             textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
+
+            bool isLBPressedInsideCanvas = e.LeftButton == MouseButtonState.Pressed &&
+                                           p.X >= 0 && p.X <= surfaceDessin.ActualWidth &&
+                                           p.Y >= 0 && p.Y <= surfaceDessin.ActualHeight;
+
+            if (isLBPressedInsideCanvas)
+                ((DessinViewModel)DataContext).MouseMove(surfaceDessin, e);
         }
+
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ((DessinViewModel)DataContext).IsDrawing = true;
+        }
+
+        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ((DessinViewModel)DataContext).IsDrawing = false;
+            ((DessinViewModel)DataContext).previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+        }
+
     }
 }
