@@ -6,14 +6,17 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.client_leger.Controller.ProfileController
 import com.example.client_leger.R
 import com.example.client_leger.databinding.FragmentProfilBinding
 import com.example.client_leger.models.User
 
 class ProfilFragment: Fragment() {
+    lateinit var binding: FragmentProfilBinding
+    private var profileController:ProfileController = ProfileController()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        var binding = DataBindingUtil.inflate<FragmentProfilBinding>(inflater,R.layout.fragment_profil, container, false)
-        binding.user = User("user")
+        binding = DataBindingUtil.inflate<FragmentProfilBinding>(inflater,R.layout.fragment_profil, container, false)
+        profileController.getUserProfile(this, activity!!.intent.getStringExtra("username"))
         return binding.root
     }
 }

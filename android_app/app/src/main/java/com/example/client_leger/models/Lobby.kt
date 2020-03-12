@@ -1,7 +1,6 @@
-package com.example.client_leger.Models
+package com.example.client_leger.models
 
 import android.util.Log
-import org.json.JSONArray
 import org.json.JSONObject
 
 

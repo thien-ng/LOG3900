@@ -1,9 +1,7 @@
-package com.example.client_leger.Models
+package com.example.client_leger.models
 
-import android.app.Activity
 import android.content.Context
 import android.widget.ArrayAdapter
-import com.example.client_leger.Fragments.GameCardsFragment
 import org.json.JSONObject
 
 class GameCard constructor(context: Context) {
