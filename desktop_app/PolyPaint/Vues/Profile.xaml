@@ -8,6 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200"
              Background="AliceBlue">
+    
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
@@ -31,8 +32,8 @@
         <Border Grid.Row="1" BorderBrush="White" BorderThickness="0,0,0,1" Grid.ColumnSpan="3"/>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0">
             <materialDesign:PackIcon VerticalAlignment="Center" Foreground="White" Width="30" Height="30" Kind="Lock" />
-            <TextBlock Margin="20,0,10,0" Text="FirstName" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
-            <TextBlock Margin="10,0,10,0" Text="Name" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
+            <TextBlock Margin="20,0,10,0" Text="{Binding Firstname}" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
+            <TextBlock Margin="10,0,10,0"  Text="{Binding Lastname}" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right">
             <TextBlock Text="{Binding Username}" FontSize="25" Foreground="White" VerticalAlignment="Bottom" />
@@ -100,13 +101,36 @@
                     <materialDesign:PackIcon Kind="Rotate3dVariant"  Width="30" Height="30" Foreground="White"/>
                     <TextBlock Text="LAST CONNECTION:" FontSize="25" Foreground="White"/>
                 </StackPanel>
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Margin="10" Text="14/02/2020 - 14h00" Foreground="White" FontSize="20"/>
-                    <TextBlock Margin="10" Text="14/02/2020 - 14h00" Foreground="White" FontSize="20"/>
-                    <TextBlock Margin="10" Text="14/02/2020 - 14h00" Foreground="White" FontSize="20"/>
-                    <TextBlock Margin="10" Text="14/02/2020 - 14h00" Foreground="White" FontSize="20"/>
-                    <TextBlock Margin="10" Text="14/02/2020 - 14h00" Foreground="White" FontSize="20"/>
-                </StackPanel>
+                    <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
+                      VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Connections}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                <StackPanel Margin="0,0,15,0" Orientation="Horizontal">
+                                    
+                                        <materialDesign:PackIcon>
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="{x:Type materialDesign:PackIcon}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding isLogin}" Value="True">
+                                                        <Setter Property="materialDesign:PackIcon.Kind" Value="ArrowRight"/>
+                                                        <Setter Property="materialDesign:PackIcon.Foreground" Value="LightGreen"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding isLogin}" Value="False">
+                                                        <Setter Property="materialDesign:PackIcon.Kind" Value="ArrowLeft"/>
+                                                        <Setter Property="materialDesign:PackIcon.Foreground" Value="DarkRed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
+                                    <TextBlock Foreground="White" FontSize="16" Text="{Binding times}" />
+                                </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
             </StackPanel>
         </Grid>
     </Grid>

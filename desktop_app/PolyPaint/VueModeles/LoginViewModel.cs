@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
@@ -59,11 +61,23 @@ namespace PolyPaint.VueModeles
             if (status == 200)
             {
                 ServerService.instance.username = _username;
+                fetchProfile();
                 Mediator.Notify("GoToHomeScreen", "");
             }
             else
             {
                 MessageBox.Show(message);
+            }
+        }
+
+        private async void fetchProfile()
+        {
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
+            if (response.IsSuccessStatusCode)
+            {
+                string responseString = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<User>(responseString);
+                ServerService.instance.user = data;
             }
         }
 
