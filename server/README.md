@@ -33,10 +33,10 @@
 
 # Card
 
-| Description        |  type  | path                 |
-| ------------------ | :----: | -------------------- |
-| Get all game cards |   GET  | /card                |
-| Delete card        | DELETE | /card/delete/:gameID |
+| Description        |  type  | path                    |
+| ------------------ | :----: | --------------------    |
+| Get all game cards |   GET  | /card                   |
+| Delete card        | DELETE | /card/delete/:gameName  |
 
 # Socket
 
