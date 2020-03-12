@@ -13,8 +13,8 @@ import com.example.client_leger.Adapters.GameCardRecyclerViewAdapter
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.GameCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
-import com.example.client_leger.Models.GameCard
-import com.example.client_leger.Models.Lobby
+import com.example.client_leger.models.GameCard
+import com.example.client_leger.models.Lobby
 import com.example.client_leger.R
 import org.json.JSONArray
 

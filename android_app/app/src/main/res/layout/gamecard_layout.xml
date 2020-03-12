@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         style="@style/Widget.MaterialComponents.CardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,6 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:padding="15dp"
+                android:text="@{gamecard.gameName}"
                 android:textSize="25sp"
                 app:layout_constraintBottom_toTopOf="@+id/textView_gameType"
                 app:layout_constraintStart_toStartOf="parent"

@@ -7,8 +7,7 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.example.client_leger.Constants
 import com.example.client_leger.Fragments.GameCardsFragment
-import com.example.client_leger.Models.GameCard
-import com.example.client_leger.Models.Lobby
+import com.example.client_leger.models.Lobby
 import org.json.JSONArray
 
 class GameCardsController {

@@ -1,83 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:stretchColumns="1"
-        android:background="@drawable/gradient">
+<layout>
 
-    <TableRow
-            android:layout_height="0dp"
-            android:layout_weight="5">
+    <data>
 
-        <android.support.constraint.ConstraintLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1">
+        <variable
+                name="user"
+                type="com.example.client_leger.models.User" />
+    </data>
 
-            <android.support.v7.widget.AppCompatImageView
-                    android:id="@+id/appCompatImageView"
-                    android:layout_width="0dp"
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient"
+            android:stretchColumns="1">
+
+        <TableRow
+                android:layout_height="0dp"
+                android:layout_weight="5">
+
+            <android.support.constraint.ConstraintLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    app:layout_constraintDimensionRatio="1:1"
-                    android:background="@drawable/ic_perm_identity_black_24dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_weight="1">
 
+                <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/appCompatImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="fill_parent"
+                        android:background="@drawable/ic_perm_identity_black_24dp"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginLeft="1dp"
+                        android:autoSizeMaxTextSize="60sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:autoSizeTextType="uniform"
+                        android:padding="3dip"
+                        android:text="My Profile"
+                        android:textColor="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:padding="3dip"
+                        android:text="@{user.name}"
+                        android:textColor="@android:color/white"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+        </TableRow>
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@android:color/white" />
+
+        <TableRow
+                android:layout_height="0dp"
+                android:layout_weight="37">
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginLeft="1dp"
                     android:padding="3dip"
-                    android:text="My Profile"
-                    android:autoSizeTextType="uniform"
-                    android:autoSizeMinTextSize="12sp"
-                    android:autoSizeMaxTextSize="60sp"
-                    android:autoSizeStepGranularity="2sp"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:text="Match History"
+                    android:textColor="@android:color/white" />
+
+        </TableRow>
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="@android:color/white" />
+
+        <TableRow
+                android:layout_height="0dp"
+                android:layout_weight="60">
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:padding="3dip"
-                    android:text="User1"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-        </android.support.constraint.ConstraintLayout>
-    </TableRow>
-
-    <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@android:color/white" />
-    <TableRow
-            android:layout_height="0dp"
-            android:layout_weight="37">
-
-        <TextView
-                android:padding="3dip"
-                android:text="Match History"
-                android:textColor="@android:color/white"/>
-
-    </TableRow>
-
-    <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@android:color/white" />
-    <TableRow
-            android:layout_height="0dp"
-            android:layout_weight="60">
-
-        <TextView android:text="User Statistics"
-                android:textColor="@android:color/white"/>
-    </TableRow>
-</TableLayout>
-
+                    android:text="User Statistics"
+                    android:textColor="@android:color/white" />
+        </TableRow>
+    </TableLayout>
+</layout>
