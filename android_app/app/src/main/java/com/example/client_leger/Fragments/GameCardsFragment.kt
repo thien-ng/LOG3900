@@ -1,9 +1,11 @@
 package com.example.client_leger.Fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,51 +13,69 @@ import com.example.client_leger.Adapters.GameCardRecyclerViewAdapter
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.GameCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
+import com.example.client_leger.Models.GameCard
+import com.example.client_leger.Models.Lobby
 import com.example.client_leger.R
 import org.json.JSONArray
-import org.json.JSONObject
 
 
 class GameCardsFragment : Fragment(), GameCardRecyclerViewAdapter.ItemClickListener, FragmentChangeListener {
     lateinit var username: String
-    lateinit var adapter: GameCardRecyclerViewAdapter
+    lateinit var adapterGameCard: GameCardRecyclerViewAdapter
     private lateinit var recyclerViewGameCards: RecyclerView
     private lateinit var gameCardsController: GameCardsController
     private lateinit var connexionController:ConnexionController
-
-    private lateinit var gameCards: JSONArray
+    private lateinit var gameCards: ArrayList<GameCard>
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gamecards, container, false)
         username = activity!!.intent.getStringExtra("username")
         gameCardsController = GameCardsController()
         connexionController = ConnexionController()
-        gameCards = JSONArray()
+        gameCards = ArrayList()
         gameCardsController.getGameCards(this)
         recyclerViewGameCards = v.findViewById(R.id.recyclerView_gameCards)
         var numberOfColumns = 2
         recyclerViewGameCards.layoutManager = GridLayoutManager(context, numberOfColumns)
-        adapter = GameCardRecyclerViewAdapter(context, gameCards)
-        adapter.setClickListener(this)
-        recyclerViewGameCards.adapter = adapter
+        adapterGameCard = GameCardRecyclerViewAdapter(context, gameCards)
+        adapterGameCard.setClickListener(this)
+        recyclerViewGameCards.adapter = adapterGameCard
+
         return v
     }
 
     override fun onItemClick(view: View?, position: Int) {
-        var lobby = JSONObject()
-        lobby.put("username", username)
-        lobby.put("private", false)
-        lobby.put("lobbyName", "lobby")
-        lobby.put("size",2)
-        lobby.put("gameID", adapter.getItem(position).getString("gameID"))
-        connexionController.joinLobby(this, lobby)
+        Log.d("click card",""+ position)
+        gameCardsController.getLobbies(
+            this,
+            adapterGameCard.getItem(position).gameId
+        )
+//        var lobby = JSONObject()
+////        lobby.put("username", username)
+////        lobby.put("private", false)
+////        lobby.put("lobbyName", "lobby")
+////        lobby.put("size",2)
+////        lobby.put("gameID", adapterGameCard.getItem(position).gameId)
+////        connexionController.joinLobby(this, lobby)
     }
 
     override fun replaceFragment(fragment: Fragment) {
         fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment).addToBackStack(fragment.toString()).commit()
     }
 
-    fun loadGameCards(adapter: GameCardRecyclerViewAdapter, gameCards: JSONArray) {
-        adapter.addItems(gameCards)
+    fun loadGameCards(gameCards: JSONArray) {
+        adapterGameCard.addItems(responseToGameCards(gameCards, this!!.context!!))
+    }
+
+    fun loadLobbies(lobbies:ArrayList<Lobby>, gameID:String){
+        adapterGameCard.addLobbies(lobbies,gameID)
+    }
+
+    private fun responseToGameCards(response: JSONArray, context: Context): ArrayList<GameCard>{
+        var gameCards = arrayListOf<GameCard>()
+        for(i in 0 until response.length()){
+            gameCards.add(GameCard(response.getJSONObject(i), context))
+        }
+        return gameCards
     }
 }
