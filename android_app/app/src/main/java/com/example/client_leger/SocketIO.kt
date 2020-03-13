@@ -26,6 +26,10 @@ object SocketIO {
         socket.on("draw") {
             Communication.updateDraw(it[0] as JSONObject)
         }
+
+        socket.on("channel-update") {
+            Communication.updateChannels()
+        }
     }
 
     fun connect(username: String) {

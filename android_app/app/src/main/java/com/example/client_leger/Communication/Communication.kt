@@ -7,6 +7,7 @@ object Communication {
 
     private var connectSource: PublishSubject<JSONObject> = PublishSubject.create()
     private var chatSource: PublishSubject<JSONObject> = PublishSubject.create()
+    private var channelSource: PublishSubject<String> = PublishSubject.create()
     private var drawSource: PublishSubject<JSONObject> = PublishSubject.create()
 
     fun getDrawListener(): PublishSubject<JSONObject>{
@@ -23,6 +24,14 @@ object Communication {
 
     fun updateChatMessage(obj: JSONObject) {
         chatSource.onNext(obj)
+    }
+
+    fun getChannelUpdateListener(): PublishSubject<String>{
+        return channelSource
+    }
+
+    fun updateChannels() {
+        channelSource.onNext("newChannel")
     }
 
     fun getConnectionListener(): PublishSubject<JSONObject>{
