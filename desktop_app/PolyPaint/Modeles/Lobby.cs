@@ -43,7 +43,8 @@ namespace PolyPaint.Modeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                Mediator.Notify("GoToDrawScreen");
+                Mediator.Notify("joinLobby", lobbyName);
+                Mediator.Notify("GoToLobbyScreen", lobbyName);
             }
         }
 
@@ -55,7 +56,7 @@ namespace PolyPaint.Modeles
                 return _joinLobbyCommand ?? (_joinLobbyCommand = new RelayCommand(x =>
                 {
                     joinLobby();
-                    Mediator.Notify("joinLobby", lobbyName);
+                    
 
                 }));
             }

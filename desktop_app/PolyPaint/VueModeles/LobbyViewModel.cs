@@ -25,11 +25,11 @@ namespace PolyPaint.VueModeles
         {
             Usernames = new ObservableCollection<string>();
             this.LobbyName = lobbyname;
-            Mediator.Subscribe("joinLobby", refreshList);
+            Mediator.Subscribe("joinLobby", refreshUserList);
             fetchUsername();
         }
 
-        public void refreshList(object lobbyName)
+        public void refreshUserList(object lobbyName)
         {
             if((string)lobbyName == this.LobbyName)
             {
@@ -52,7 +52,6 @@ namespace PolyPaint.VueModeles
                 });
             }
             Usernames = usernames;
-            Console.WriteLine(Usernames.First<String>());
         }
     }
 }
