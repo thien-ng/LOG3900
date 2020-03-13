@@ -13,16 +13,33 @@ namespace PolyPaint.VueModeles
 {
     class LobbyViewModel: BaseViewModel, IPageViewModel
     {
-        public ObservableCollection<string> _usernames;
-        public LobbyViewModel()
+        public string LobbyName { get; set; }
+        private ObservableCollection<string> _usernames;
+        public ObservableCollection<string> Usernames
         {
-            //fetchUsername();
+            get { return _usernames; }
+            set { _usernames = value; ProprieteModifiee(); }
         }
 
+        public LobbyViewModel(string lobbyname)
+        {
+            Usernames = new ObservableCollection<string>();
+            this.LobbyName = lobbyname;
+            Mediator.Subscribe("joinLobby", refreshList);
+            fetchUsername();
+        }
+
+        public void refreshList(object lobbyName)
+        {
+            if((string)lobbyName == this.LobbyName)
+            {
+                fetchUsername();
+            }
+        }
         private async void fetchUsername()
         {
             ObservableCollection<string> usernames = new ObservableCollection<string>();
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);//TODO
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);//TODO
 
             StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
             String responseData = streamReader.ReadToEnd();
@@ -31,10 +48,11 @@ namespace PolyPaint.VueModeles
             {
                 App.Current.Dispatcher.Invoke(delegate
                 {
-                    _usernames.Add(item);
+                    usernames.Add(item);
                 });
             }
-            //GameCards = gamecards; TODO
+            Usernames = usernames;
+            Console.WriteLine(Usernames.First<String>());
         }
     }
 }

@@ -55,6 +55,7 @@ namespace PolyPaint.Modeles
                 return _joinLobbyCommand ?? (_joinLobbyCommand = new RelayCommand(x =>
                 {
                     joinLobby();
+                    Mediator.Notify("joinLobby", lobbyName);
 
                 }));
             }

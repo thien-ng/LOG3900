@@ -12,6 +12,25 @@
         <Grid.Background>
             <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
         </Grid.Background>
-        <TextBlock Text="Lobby"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="1" Text="Lobby"/>
+        
+            <ItemsControl Grid.Row="2" ItemsSource="{Binding Usernames}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                            <TextBlock Foreground="White" FontSize="16" Text="{Binding}" />
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
     </Grid>
 </UserControl>

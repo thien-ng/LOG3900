@@ -23,9 +23,9 @@
             <DataTemplate x:Key="Profile" DataType="{x:Type model:ProfileViewModel}">
                 <local:Profile/>
             </DataTemplate>
-            
+
             <DataTemplate x:Key="Lobby" DataType="{x:Type model:LobbyViewModel}">
-                <local:Lobby/>
+                <local:Lobby DataContext="{Binding LobbyViewModel}"/>
             </DataTemplate>
         </ResourceDictionary>
         

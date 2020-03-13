@@ -16,7 +16,8 @@ namespace PolyPaint.VueModeles
 {
     class HomeViewModel : BaseViewModel, IPageViewModel
     {
-        public Lobby mylobby;
+        public LobbyViewModel LobbyViewModel { get; private set; }
+        public string Lobbyname { get; set; }
         public HomeViewModel()
         {
             Setup();
@@ -173,6 +174,8 @@ namespace PolyPaint.VueModeles
         private void goToLobbyView(object lobbyname)
         {
             SwitchView = 2;
+            LobbyViewModel = new LobbyViewModel((string)lobbyname);
+            this.Lobbyname = (string)lobbyname;
         }
 
         private async void FetchChannels()
