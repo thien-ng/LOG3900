@@ -112,6 +112,10 @@ class ChatFragment: Fragment() {
             v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
+        Communication.getChannelUpdateListener().subscribe{
+            loadChannels()
+        }
+
         v.recyclerView_chat_log.adapter = messageAdapter
 
         return v
