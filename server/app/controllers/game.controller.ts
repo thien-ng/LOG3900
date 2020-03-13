@@ -32,6 +32,10 @@ export class GameController {
             res.json(this.lobbyServ.getActiveLobbies(req.params.gameID));
         });
 
+        this.router.get('/lobby/users/:lobbyName', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.lobbyServ.getUsersInLobby(req.params.lobbyName));
+        });
+
         this.router.get('/cards', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.cardServ.getGameCards());
         });

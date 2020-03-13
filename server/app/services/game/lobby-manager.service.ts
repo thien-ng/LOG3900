@@ -23,6 +23,15 @@ export class LobbyManagerService {
         this.socketServer = socketServer;     
     }
 
+    public getUsersInLobby(lobbyName: string): string[] {
+        const lobby = this.lobbies.get(lobbyName) as IActiveLobby;
+
+        const users: string[] = [];
+        lobby.users.forEach(u => { users.push(u.username) });
+
+        return users;
+    }
+
     public getActiveLobbies(gameID: string): IGetLobby[] {
         const list: IGetLobby[] = [];
         this.lobbies.forEach((lob) => {
