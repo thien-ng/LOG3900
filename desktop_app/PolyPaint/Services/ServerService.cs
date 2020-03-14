@@ -1,4 +1,5 @@
-﻿using Quobject.SocketIoClientDotNet.Client;
+﻿using PolyPaint.Modeles;
+using Quobject.SocketIoClientDotNet.Client;
 using System.Net.Http;
 
 namespace PolyPaint.Services
@@ -25,5 +26,10 @@ namespace PolyPaint.Services
         public HttpClient client { get; }
         public Socket socket { get; set; }
         public string username { get; set; }
+        public User user
+        {
+            get;
+            set;
+        }
     }
 }
