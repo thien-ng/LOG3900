@@ -54,11 +54,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="right"
+                        android:autoSizeMaxTextSize="60sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:autoSizeTextType="uniform"
                         android:padding="3dip"
                         android:text="@{user.name}"
                         android:textColor="@android:color/white"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
             </android.support.constraint.ConstraintLayout>
         </TableRow>
 
@@ -70,11 +75,44 @@
         <TableRow
                 android:layout_height="0dp"
                 android:layout_weight="37">
+            <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:padding="10dp">
+                <android.support.v7.widget.AppCompatImageView
+                        android:id="@+id/lockImageView"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
 
-            <TextView
-                    android:padding="3dip"
-                    android:text="Match History"
-                    android:textColor="@android:color/white" />
+
+                        android:background="@drawable/ic_lock_white_24dp" />
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginLeft="1dp"
+                        android:autoSizeMaxTextSize="60sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:autoSizeTextType="uniform"
+                        android:padding="3dip"
+                        android:text="@{user.FName}"
+                        android:textColor="@android:color/white"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginLeft="1dp"
+                        android:autoSizeMaxTextSize="60sp"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:autoSizeTextType="uniform"
+                        android:padding="3dip"
+                        android:text="@{user.LName}"
+                        android:textColor="@android:color/white"/>
+            </LinearLayout>
+
 
         </TableRow>
 
