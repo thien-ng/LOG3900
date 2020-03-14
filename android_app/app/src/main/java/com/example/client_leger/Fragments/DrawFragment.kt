@@ -30,7 +30,6 @@ class DrawFragment: Fragment() {
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
 
         return v
-        //return DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username"))
     }
 
     private fun openColorPicker(v: ViewGroup) {
@@ -129,36 +128,18 @@ class DrawCanvas: View {
     }
 
     private fun draw(obj: JSONObject) {
-        touchStarted(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat(), -1)
-        var path = pathMap[-1]!!
-        var point = previousPointMap[-1]!!
-
-        val deltaX = abs(obj.getInt("endPosX").toFloat() - point.x)
-        val deltaY = abs(obj.getInt("endPosY").toFloat() - point.y)
+        var path = Path()
+        var point = Point()
+        path.moveTo(x, y)
+        point.x = x.toInt()
+        point.y = y.toInt()
         path.quadTo(point.x.toFloat(), point.y.toFloat(), (obj.getInt("endPosX").toFloat() + point.x.toFloat()) / 2, (obj.getInt("endPosY").toFloat() + point.y.toFloat()) / 2)
         point.x = obj.getInt("endPosX").toFloat().toInt()
         point.y = obj.getInt("endPosY").toFloat().toInt()
-
         bitmapCanvas.drawPath(path, paintLine)
         path.reset()
     }
 
-/*
-    private fun draw(obj: JSONObject) {
-        newPath.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
-        newPath.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
-
-        newPaint.isAntiAlias = true
-        newPaint.strokeJoin = Paint.Join.ROUND
-        newPaint.style = Paint.Style.STROKE
-
-        // TODO get the actual color
-        newPaint.color = (Color.BLACK)
-        newPaint.strokeWidth = obj.getInt("width").toFloat()
-        isExternal = true
-        postInvalidate()
-    }
-*/
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
         val obj = JSONObject()
         obj.put("username", username)
@@ -203,70 +184,4 @@ class DrawCanvas: View {
         point.x = x.toInt()
         point.y = y.toInt()
     }
-
-
-    //private var paint = Paint()
-    //private var path = Path()
-    //private var username: String
-    //private var startPointX: Float = 0.0F
-    //private var startPointY: Float = 0.0F
-    //private var finishPointX: Float = 0.0F
-    //private var finishPointY: Float = 0.0F
-
-    //private var newPath = Path()
-    //private var newPaint = Paint()
-    //private var isExternal = false
-
-/*
-    constructor(ctx: Context, attr: AttributeSet?, username: String): super(ctx, attr) {
-        paint.isAntiAlias = true
-        paint.color = (Color.BLACK)
-        paint.strokeJoin = Paint.Join.ROUND
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 10f
-        this.username = username
-
-        Communication.getDrawListener().subscribe{ obj ->
-            draw(obj)
-        }
-    }
-
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-
-        if (isExternal)
-            canvas!!.drawPath(newPath, newPaint)
-        else
-            canvas!!.drawPath(path, paint)
-    }
-
-    override fun onTouchEvent(e: MotionEvent?): Boolean {
-        val x = e!!.x
-        val y = e!!.y
-
-        isExternal = false
-
-        when (e.action) {
-            MotionEvent.ACTION_DOWN -> {
-                path.moveTo(x, y)
-                startPointX = x
-                startPointY = y
-                return true
-            }
-            MotionEvent.ACTION_MOVE -> {
-                path.lineTo(x, y)
-                finishPointX = x
-                finishPointY = y
-                sendStroke()
-                startPointX = finishPointX
-                startPointY = finishPointY
-            }
-            MotionEvent.ACTION_UP -> {}
-            else -> { return false }
-        }
-
-        invalidate()
-        return true
-    }
-*/
 }
