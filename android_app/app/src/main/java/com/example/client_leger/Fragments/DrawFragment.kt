@@ -44,21 +44,17 @@ class DrawFragment: Fragment() {
     }
 }
 
-class DrawCanvas: View {
-    var TOUCH_TOLERANCE: Float = 10.0F
-    var paintLine: Paint
-
+class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) :
+    View(ctx, attr) {
+    var paintLine: Paint = Paint()
+    private val touchTolerance: Float = 10.0F
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
-    private var paintScreen: Paint
+    private var paintScreen: Paint = Paint()
     private var pathMap: HashMap<Int, Path>
     private var previousPointMap: HashMap<Int, Point>
-    private var username: String
 
-    constructor(ctx: Context, attr: AttributeSet?, username: String): super(ctx, attr) {
-        this.username = username
-        paintScreen = Paint()
-        paintLine = Paint()
+    init {
         paintLine.isAntiAlias = true
         paintLine.color = Color.BLACK
         paintLine.style = Paint.Style.STROKE
@@ -66,7 +62,6 @@ class DrawCanvas: View {
         paintLine.strokeCap = Paint.Cap.ROUND
         pathMap = HashMap()
         previousPointMap = HashMap()
-
         Communication.getDrawListener().subscribe{ obj ->
             draw(obj)
         }
@@ -82,13 +77,13 @@ class DrawCanvas: View {
         canvas.drawBitmap(bitmap, 0.0f, 0.0f, paintScreen)
 
         repeat(pathMap.count()) {
-            canvas.drawPath(pathMap[it], paintLine)
+            canvas.drawPath(pathMap[it]!!, paintLine)
         }
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        var action = event.actionMasked
-        var actionIndex = event.actionIndex
+        val action = event.actionMasked
+        val actionIndex = event.actionIndex
 
         if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y, event.getPointerId(actionIndex))
@@ -104,21 +99,21 @@ class DrawCanvas: View {
 
     private fun touchMoved(event: MotionEvent) {
         for(i in 0 until event.pointerCount) {
-            var pointerId = event.getPointerId(i)
+            val pointerId = event.getPointerId(i)
 
             if (pathMap.containsKey(pointerId)) {
                 val newX = event.x
                 val newY = event.y
 
-                var path = pathMap[pointerId]!!
-                var point = previousPointMap[pointerId]!!
+                val path = pathMap[pointerId]!!
+                val point = previousPointMap[pointerId]!!
 
                 val deltaX = abs(newX - point.x)
                 val deltaY = abs(newY - point.y)
 
                 sendStroke(point.x.toFloat(), newX, point.y.toFloat(), newY)
 
-                if (deltaX >= TOUCH_TOLERANCE || deltaY >= TOUCH_TOLERANCE) {
+                if (deltaX >= touchTolerance || deltaY >= touchTolerance) {
                     path.quadTo(point.x.toFloat(), point.y.toFloat(), (newX + point.x.toFloat()) / 2, (newY + point.y.toFloat()) / 2)
                     point.x = newX.toInt()
                     point.y = newY.toInt()
@@ -128,8 +123,8 @@ class DrawCanvas: View {
     }
 
     private fun draw(obj: JSONObject) {
-        var path = Path()
-        var point = Point()
+        val path = Path()
+        val point = Point()
         path.moveTo(x, y)
         point.x = x.toInt()
         point.y = y.toInt()
@@ -161,14 +156,14 @@ class DrawCanvas: View {
     }
 
     private fun touchEnded(pointerId: Int) {
-        var path = pathMap[pointerId]!!
+        val path = pathMap[pointerId]!!
         bitmapCanvas.drawPath(path, paintLine)
         path.reset()
     }
 
     private fun touchStarted(x: Float, y: Float, pointerId: Int) {
-        var path: Path
-        var point: Point
+        val path: Path
+        val point: Point
 
         if (pathMap.containsKey(pointerId)) {
             path = pathMap[pointerId]!!
