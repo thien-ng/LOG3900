@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,18 +44,10 @@ class GameCardsFragment : Fragment(), GameCardRecyclerViewAdapter.ItemClickListe
     }
 
     override fun onItemClick(view: View?, position: Int) {
-        Log.d("click card",""+ position)
         gameCardsController.getLobbies(
             this,
             adapterGameCard.getItem(position).gameId
         )
-//        var lobby = JSONObject()
-////        lobby.put("username", username)
-////        lobby.put("private", false)
-////        lobby.put("lobbyName", "lobby")
-////        lobby.put("size",2)
-////        lobby.put("gameID", adapterGameCard.getItem(position).gameId)
-////        connexionController.joinLobby(this, lobby)
     }
 
     override fun replaceFragment(fragment: Fragment) {
