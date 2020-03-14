@@ -19,8 +19,8 @@ export class CardController {
             res.json(await this.cardServ.getGameCards());
         });
 
-        this.router.delete('/delete/:gameID', async (req: Request, res: Response, next: NextFunction) => {
-            this.cardServ.deleteCard(req.params.gameID).then(() => {
+        this.router.delete('/delete/:gameName', async (req: Request, res: Response, next: NextFunction) => {
+            this.cardServ.deleteCard(req.params.gameName).then(() => {
                 res.status(200).send();
             });
         });
