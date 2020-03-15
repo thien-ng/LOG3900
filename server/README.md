@@ -27,10 +27,15 @@
 | ------------------------------- | :--: | ------------------------     |
 | Join/Create lobby               | POST | /game/lobby/join             |
 | Leave/Delete lobby              | POST | /game/lobby/leave            |
-| Get active lobbies              |  GET | /game/lobby/active           |
+| Get active lobbies by mode      |  GET | /game/lobby/active/:mode     |
+| Get users in a lobby by name    | GET  | /game/lobby/users/:lobbyName |
+| Start game with lobby name      | GET  | /game/start/:lobbyName       |
+
+## Creator
+| Description                     | type | path                         |
+| ------------------------------- | :--: | ------------------------     |
 | Get game suggestion (assiste 2) |  GET | /creator/game/suggestion     |
 | Create new game                 | POST | /creator/game/new            |
-| Get users in a lobby by mode    | GET  | /game/lobby/users/:mode      |
 
 # Socket
 
