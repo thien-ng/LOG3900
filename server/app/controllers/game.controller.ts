@@ -4,6 +4,7 @@ import { LobbyManagerService } from '../services/game/lobby-manager.service';
 import { GameManagerService } from '../services/game/game-manager.service';
 
 import Types from '../types';
+import { GameMode } from '../interfaces/game';
 
 @injectable()
 export class GameController {
@@ -27,7 +28,7 @@ export class GameController {
         });
 
         this.router.get('/lobby/active/:mode', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.lobbyServ.getActiveLobbies(req.params.mode));
+            res.json(this.lobbyServ.getActiveLobbies(req.params.mode as GameMode));
         });
 
         this.router.get('/lobby/users/:lobbyName', (req: Request, res: Response, next: NextFunction) => {

@@ -30,14 +30,7 @@
 | Get active lobbies              |  GET | /game/lobby/active           |
 | Get game suggestion (assiste 2) |  GET | /creator/game/suggestion     |
 | Create new game                 | POST | /creator/game/new            |
-| Get users in a lobby by name    | GET  | /game/lobby/users/:lobbyName |
-
-# Card
-
-| Description        |  type  | path                    |
-| ------------------ | :----: | --------------------    |
-| Get all game cards |   GET  | /card                   |
-| Delete card        | DELETE | /card/delete/:gameName  |
+| Get users in a lobby by mode    | GET  | /game/lobby/users/:mode      |
 
 # Socket
 
