@@ -17,9 +17,7 @@ import { LobbyManagerService } from './services/game/lobby-manager.service';
 import { GameManagerService } from './services/game/game-manager.service';
 import { GameCreatorService } from './services/game/game-creator.service';
 import { GameCreatorController } from './controllers/game-creator.controller';
-import { GameCardService } from './services/game/game-card.service';
 import { CardsDbService } from './database/cards-db.service';
-import { CardController } from './controllers/card.controller';
 import Types from './types';
 
 const container: Container = new Container();
@@ -32,14 +30,12 @@ container.bind(Types.AccountController).to(AccountController);
 container.bind(Types.ChatController).to(ChatController);
 container.bind(Types.GameController).to(GameController);
 container.bind(Types.GameCreatorController).to(GameCreatorController);
-container.bind(Types.CardController).to(CardController);
 
 container.bind(Types.DateService).to(DateService);
 container.bind(Types.AccountService).to(AccountService);
 container.bind(Types.WebsocketService).to(WebsocketService);
 container.bind(Types.GameCreatorService).to(GameCreatorService);
 
-container.bind(Types.GameCardService).to(GameCardService).inSingletonScope();
 container.bind(Types.GameManagerService).to(GameManagerService).inSingletonScope();
 container.bind(Types.LobbyManagerService).to(LobbyManagerService).inSingletonScope();
 container.bind(Types.ChatDbService).to(ChatDbService).inSingletonScope();
