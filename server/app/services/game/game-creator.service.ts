@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { ISuggestion, ICreateGame } from "../../interfaces/creator";
-import { IGameCard } from "../../interfaces/card";
+import { IGameRule } from "../../interfaces/card";
 import { uuid } from "uuidv4";
 import { CardsDbService } from "../../database/cards-db.service";
 
@@ -17,12 +17,13 @@ export class GameCreatorService {
     }
 
     public createGame(configs: ICreateGame): void {
-        const card: IGameCard = {
+        const rule: IGameRule = {
             gameName: configs.gameName,
             gameID: uuid(),
-            mode: configs.mode,
+            solution: configs.solution,
+            clues: configs.clues,
         }
-        this.db.addCard(card);
+        this.db.addRule(rule);
     }
 
 }

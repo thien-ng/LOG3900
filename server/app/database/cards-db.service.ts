@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { Collection, MongoClient, MongoClientOptions } from 'mongodb';
-import { IGameCard } from "../interfaces/card";
+import { IGameRule } from "../interfaces/card";
 
 import 'reflect-metadata';
 
@@ -11,7 +11,7 @@ const DATABASE_COLLECTION = 'cards';
 @injectable()
 export class CardsDbService {
 
-    private collection: Collection<IGameCard>;
+    private collection: Collection<IGameRule>;
 
     private options: MongoClientOptions = {
         useNewUrlParser : true,
@@ -28,11 +28,11 @@ export class CardsDbService {
         });
     }
 
-    public async getCards(): Promise<IGameCard[]> {
+    public async getCards(): Promise<IGameRule[]> {
         return await this.collection.find({}).toArray();
     }
 
-    public async getCardByGameId(gameID: string): Promise<IGameCard | null> {
+    public async getCardByGameId(gameID: string): Promise<IGameRule | null> {
         return await this.collection.findOne({gameID: gameID});
     }
 
@@ -42,9 +42,9 @@ export class CardsDbService {
             .catch(e => {throw e});
     } 
 
-    public async addCard(card: IGameCard): Promise<void> {
-        if (this.validateCard(card)) {
-            this.collection.insertOne(card).catch(e => {
+    public async addRule(rule: IGameRule): Promise<void> {
+        if (this.validateCard(rule)) {
+            this.collection.insertOne(rule).catch(e => {
                 throw e;
             });
         } else {
@@ -58,7 +58,7 @@ export class CardsDbService {
         .catch(e => { throw e });
     }
 
-    private validateCard(card: IGameCard): boolean {
+    private validateCard(card: IGameRule): boolean {
         // TODO add vallidation of card before adding to db
         // add validation when we know what is needed for a card
         return true

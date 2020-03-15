@@ -1,7 +1,7 @@
-import { GameMode } from "./game";
 
-export interface IGameCard {
+export interface IGameRule {
     gameName:   string,
     gameID:     string,
-    mode:       GameMode,
+    solution:   string,
+    clues:      string[],
 }
