@@ -63,7 +63,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         pathMap = HashMap()
         previousPointMap = HashMap()
         Communication.getDrawListener().subscribe{ obj ->
-            draw(obj)
+            drawReceived(obj)
         }
     }
 
@@ -122,7 +122,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun draw(obj: JSONObject) {
+    private fun drawReceived(obj: JSONObject) {
         val path = Path()
         val point = Point()
         path.moveTo(x, y)
@@ -133,6 +133,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         point.y = obj.getInt("endPosY").toFloat().toInt()
         bitmapCanvas.drawPath(path, paintLine)
         path.reset()
+        invalidate()
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
