@@ -12,6 +12,8 @@ class Constants {
         const val REGISTER_ENDPOINT = "/account/register"
         const val CARD_ENDPOINT = "/card"
         const val LOBBY_JOIN_ENDPOINT = "/game/lobby/join"
+        const val ACTIVE_LOBBY_ENDPOINT = "/game/lobby/active"
+        const val USER_INFO_ENDPOINT = "/account/user/info/"
 
         //char limits
         const val MAX_USERNAME_SiZE = 20
