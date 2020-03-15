@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { Collection, MongoClient, MongoClientOptions } from 'mongodb';
-import { IGameRule } from "../interfaces/card";
+import { IGameRule } from "../interfaces/rule";
 
 import 'reflect-metadata';
 
@@ -28,19 +28,9 @@ export class CardsDbService {
         });
     }
 
-    public async getCards(): Promise<IGameRule[]> {
-        return await this.collection.find({}).toArray();
-    }
-
-    public async getCardByGameId(gameID: string): Promise<IGameRule | null> {
-        return await this.collection.findOne({gameID: gameID});
-    }
-
-    public async deleteCard(gameName: string): Promise<void> {
-        this.collection.deleteOne({gameName: gameName})
-            .then()
-            .catch(e => {throw e});
-    } 
+    // public async getRuleByGameId(gameID: string): Promise<IGameRule | null> {
+    //     return await this.collection.findOne({gameID: gameID});
+    // }
 
     public async addRule(rule: IGameRule): Promise<void> {
         if (this.validateCard(rule)) {
@@ -52,13 +42,7 @@ export class CardsDbService {
         }
     }
 
-    public getRulesByGameID(gameID: string): void {
-        this.collection.findOne({gameID: gameID})
-        .then(IGameCard => { return IGameCard })
-        .catch(e => { throw e });
-    }
-
-    private validateCard(card: IGameRule): boolean {
+    private validateCard(rule: IGameRule): boolean {
         // TODO add vallidation of card before adding to db
         // add validation when we know what is needed for a card
         return true

@@ -54,7 +54,6 @@ export class GameManagerService {
         this.lobServ.lobbies.delete(lobby.lobbyName);
 
         // TODO get arena rules
-        this.db.getRulesByGameID(lobby.gameID);
         const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
 
         this.arenas.set(this.arenaId, arena);

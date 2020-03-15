@@ -2,7 +2,6 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { LobbyManagerService } from '../services/game/lobby-manager.service';
 import { GameManagerService } from '../services/game/game-manager.service';
-import { GameCardService } from '../services/game/game-card.service';
 
 import Types from '../types';
 
@@ -12,8 +11,7 @@ export class GameController {
 
     public constructor(
         @inject(Types.LobbyManagerService) private lobbyServ: LobbyManagerService,
-        @inject(Types.GameManagerService)  private gameMan:   GameManagerService,
-        @inject(Types.GameCardService)     private cardServ: GameCardService) {
+        @inject(Types.GameManagerService)  private gameMan:   GameManagerService) {
         this.configureRouter();
     }
 
@@ -28,16 +26,12 @@ export class GameController {
             res.json(this.lobbyServ.leave(req.body));
         });
 
-        this.router.get('/lobby/active/:gameID', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.lobbyServ.getActiveLobbies(req.params.gameID));
+        this.router.get('/lobby/active/:mode', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.lobbyServ.getActiveLobbies(req.params.mode));
         });
 
         this.router.get('/lobby/users/:lobbyName', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.lobbyServ.getUsersInLobby(req.params.lobbyName));
-        });
-
-        this.router.get('/cards', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.cardServ.getGameCards());
         });
 
         this.router.get('/start/:lobbyName', (req: Request, res: Response, next: NextFunction) => {

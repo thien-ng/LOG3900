@@ -1,11 +1,11 @@
 import { injectable, inject } from "inversify";
 import { ISuggestion, ICreateGame } from "../../interfaces/creator";
-import { IGameRule } from "../../interfaces/card";
-import { uuid } from "uuidv4";
+import { IGameRule } from "../../interfaces/rule";
 import { CardsDbService } from "../../database/cards-db.service";
+import { CreationAssist2 } from "./utils/creation-assists";
 
 import Types from '../../types';
-import { CreationAssist2 } from "./utils/creation-assists";
+import { uuid } from "uuidv4";
 
 @injectable()
 export class GameCreatorService {
