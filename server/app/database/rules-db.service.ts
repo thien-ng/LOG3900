@@ -28,10 +28,6 @@ export class RulesDbService {
         });
     }
 
-    // public async getRuleByGameId(gameID: string): Promise<IGameRule | null> {
-    //     return await this.collection.findOne({gameID: gameID});
-    // }
-
     public async addRule(rule: IGameRule): Promise<void> {
         if (this.validateCard(rule)) {
             this.collection.insertOne(rule).catch(e => {

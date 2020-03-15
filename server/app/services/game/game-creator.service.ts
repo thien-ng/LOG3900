@@ -5,7 +5,6 @@ import { RulesDbService } from "../../database/rules-db.service";
 import { CreationAssist2 } from "./utils/creation-assists";
 
 import Types from '../../types';
-import { uuid } from "uuidv4";
 
 @injectable()
 export class GameCreatorService {
@@ -19,7 +18,6 @@ export class GameCreatorService {
     public createGame(configs: ICreateGame): void {
         const rule: IGameRule = {
             gameName: configs.gameName,
-            gameID: uuid(),
             solution: configs.solution,
             clues: configs.clues,
         }
