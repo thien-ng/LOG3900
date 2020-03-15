@@ -15,8 +15,6 @@ import com.example.client_leger.SocketIO
 import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
-import kotlin.math.abs
-
 
 class DrawFragment: Fragment() {
 
@@ -47,7 +45,6 @@ class DrawFragment: Fragment() {
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) :
     View(ctx, attr) {
     var paintLine: Paint = Paint()
-    private val touchTolerance: Float = 10.0F
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
     private var paintScreen: Paint = Paint()
@@ -102,36 +99,37 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val pointerId = event.getPointerId(i)
 
             if (pathMap.containsKey(pointerId)) {
-                val newX = event.x
-                val newY = event.y
-
-                val path = pathMap[pointerId]!!
                 val point = previousPointMap[pointerId]!!
 
-                val deltaX = abs(newX - point.x)
-                val deltaY = abs(newY - point.y)
+                sendStroke(point.x.toFloat(), event.x, point.y.toFloat(), event.y)
 
-                sendStroke(point.x.toFloat(), newX, point.y.toFloat(), newY)
+                pathMap[pointerId]!!.quadTo(
+                    point.x.toFloat(),
+                    point.y.toFloat(),
+                    (event.x + point.x.toFloat()) / 2,
+                    (event.y + point.y.toFloat()) / 2
+                )
 
-                if (deltaX >= touchTolerance || deltaY >= touchTolerance) {
-                    path.quadTo(point.x.toFloat(), point.y.toFloat(), (newX + point.x.toFloat()) / 2, (newY + point.y.toFloat()) / 2)
-                    point.x = newX.toInt()
-                    point.y = newY.toInt()
-                }
+                point.x = event.x.toInt()
+                point.y = event.y.toInt()
             }
         }
     }
 
     private fun drawReceived(obj: JSONObject) {
         val path = Path()
-        val point = Point()
         path.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
-        point.x = obj.getInt("startPosX").toFloat().toInt()
-        point.y = obj.getInt("startPosY").toFloat().toInt()
-        path.quadTo(point.x.toFloat(), point.y.toFloat(), (obj.getInt("endPosX").toFloat() + point.x.toFloat()) / 2, (obj.getInt("endPosY").toFloat() + point.y.toFloat()) / 2)
-        point.x = obj.getInt("endPosX").toFloat().toInt()
-        point.y = obj.getInt("endPosY").toFloat().toInt()
-        bitmapCanvas.drawPath(path, paintLine)
+        path.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
+
+        val paint = Paint()
+        paint.isAntiAlias = true
+        //paint.color = obj.getInt("color") TODO: get received color
+        paint.color = Color.BLACK         //TODO: and remove this line
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = obj.getInt("width").toFloat()
+        paint.strokeCap = Paint.Cap.ROUND
+
+        bitmapCanvas.drawPath(path, paint)
         path.reset()
         invalidate()
     }
@@ -147,13 +145,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("width", paintLine.strokeWidth)
 
         SocketIO.sendMessage("gameplay", obj)
-    }
-
-    fun clear() {
-        pathMap.clear()
-        previousPointMap.clear()
-        bitmap.eraseColor(Color.WHITE)
-        invalidate()
     }
 
     private fun touchEnded(pointerId: Int) {
