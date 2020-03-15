@@ -20,5 +20,5 @@ export default {
     AccountDbService:       Symbol('AccountDbService'),
     ChatDbService:          Symbol('ChatDbService'),
     DatabaseService:        Symbol('DatabaseService'),
-    CardsDbService:         Symbol('CardsDbService'),
+    RulesDbService:         Symbol('RulesDbService'),
 };

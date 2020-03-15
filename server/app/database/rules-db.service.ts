@@ -9,7 +9,7 @@ const DATABASE_NAME = 'database';
 const DATABASE_COLLECTION = 'cards';
 
 @injectable()
-export class CardsDbService {
+export class RulesDbService {
 
     private collection: Collection<IGameRule>;
 
