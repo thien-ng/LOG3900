@@ -125,9 +125,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun drawReceived(obj: JSONObject) {
         val path = Path()
         val point = Point()
-        path.moveTo(x, y)
-        point.x = x.toInt()
-        point.y = y.toInt()
+        path.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
+        point.x = obj.getInt("startPosX").toFloat().toInt()
+        point.y = obj.getInt("startPosY").toFloat().toInt()
         path.quadTo(point.x.toFloat(), point.y.toFloat(), (obj.getInt("endPosX").toFloat() + point.x.toFloat()) / 2, (obj.getInt("endPosY").toFloat() + point.y.toFloat()) / 2)
         point.x = obj.getInt("endPosX").toFloat().toInt()
         point.y = obj.getInt("endPosY").toFloat().toInt()
