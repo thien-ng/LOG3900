@@ -88,6 +88,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
 
         canvas.drawPath(currentPath, paintLine)
+
+        invalidate()
     }
 
     private fun removeStroke(index: Int) {
@@ -169,9 +171,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paint.strokeWidth = obj.getInt("width").toFloat()
         paint.strokeCap = Paint.Cap.ROUND
 
-        bitmapCanvas.drawPath(path, paint)
-        path.reset()
-        invalidate()
+        strokes.add(Stroke(path, paint))
+        draw(bitmapCanvas)
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
