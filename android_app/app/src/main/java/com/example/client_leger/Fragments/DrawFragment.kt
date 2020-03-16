@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
-
 class DrawFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
@@ -72,7 +71,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.strokeWidth = 7.0F
         paintLine.strokeCap = Paint.Cap.ROUND
         Communication.getDrawListener().subscribe{ obj ->
-            drawReceived(obj)
+            strokeReceived(obj)
         }
     }
 
@@ -102,36 +101,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val action = event.actionMasked
 
         if (isEraseMode) {
-            var strokeFound = false
-
-            for (i in 0 until strokes.size) {
-                val pm = PathMeasure(strokes[i].path, false)
-
-                val nbStep: Int = pm.length.toInt() / 20
-                val speed = pm.length / nbStep
-                val coordinates = FloatArray(2)
-
-                var distance = 0f
-                while (distance < pm.length) {
-                    pm.getPosTan(distance, coordinates, null)
-                    val eraserHalfSize = 16
-                    val xOnLine = coordinates[0]
-                    val yOnLine = coordinates[1]
-
-                    if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
-                        if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
-                            removeStroke(i)
-                            strokeFound = true
-                            break
-                        }
-                    }
-
-                    distance += speed
-                }
-
-                if (strokeFound)
-                    break
-            }
+            checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y)
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP){
@@ -142,6 +112,39 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         invalidate()
         return true
+    }
+
+    private fun checkForStrokesToErase(event: MotionEvent) {
+        var strokeFound = false
+
+        for (i in 0 until strokes.size) {
+            val pm = PathMeasure(strokes[i].path, false)
+
+            val nbStep: Int = pm.length.toInt() / 20
+            val speed = pm.length / nbStep
+            val coordinates = FloatArray(2)
+
+            var distance = 0f
+            while (distance < pm.length) {
+                pm.getPosTan(distance, coordinates, null)
+                val eraserHalfSize = 16
+                val xOnLine = coordinates[0]
+                val yOnLine = coordinates[1]
+
+                if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
+                    if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
+                        removeStroke(i)
+                        strokeFound = true
+                        break
+                    }
+                }
+
+                distance += speed
+            }
+
+            if (strokeFound)
+                break
+        }
     }
 
     private fun touchMoved(event: MotionEvent) {
@@ -158,7 +161,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         currentStartY = event.y
     }
 
-    private fun drawReceived(obj: JSONObject) {
+    private fun strokeReceived(obj: JSONObject) {
         val path = Path()
         path.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
         path.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
