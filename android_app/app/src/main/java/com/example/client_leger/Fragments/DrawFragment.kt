@@ -5,7 +5,6 @@ import android.graphics.*
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -38,7 +37,7 @@ class DrawFragment: Fragment() {
 
     private fun switchStrokeEraser(v: ViewGroup) {
         val drawCanvasView = v.getChildAt(2) as DrawCanvas
-        drawCanvasView.isErasemode = !drawCanvasView.isErasemode
+        drawCanvasView.isEraseMode = !drawCanvasView.isEraseMode
     }
 
     private fun openColorPicker(v: ViewGroup) {
@@ -57,17 +56,14 @@ class Stroke(var path: Path, var paint: Paint)
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
-    var isErasemode = false
+    var isEraseMode = false
 
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
     private var currentPath = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
-    private val moveTolerence = 5f
     private val strokes = ArrayList<Stroke>()
-    private var paintScreen: Paint = Paint()
-
 
     init {
         paintLine.isAntiAlias = true
@@ -87,16 +83,15 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawBitmap(bitmap, 0.0f, 0.0f, paintScreen)
+        repeat(strokes.count()) {
+            canvas.drawPath(strokes[it].path, strokes[it].paint)
+        }
 
         canvas.drawPath(currentPath, paintLine)
-
-        repeat(strokes.count()) {
-            canvas.drawPath(strokes[it].path, paintLine)
-        }
     }
 
     private fun removeStroke(index: Int) {
+        //TODO: inform server of stroke removal
         strokes.removeAt(index)
         invalidate()
     }
@@ -104,21 +99,36 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
 
-        if (isErasemode) {
-            val regionClip = Region(width / 2, 0, width, height)
-            val currentPathRegion = Region()
-            if (!currentPathRegion.setPath(currentPath, regionClip))
-                Log.d("erase", "current path has an empty region")
+        if (isEraseMode) {
+            var strokeFound = false
+
             for (i in 0 until strokes.size) {
-                val otherPathRegion = Region()
-                if (!otherPathRegion.setPath(strokes[i].path, regionClip))
-                    Log.d("erase", "other path has an empty region")
-                Log.d("erase", "testing path $i")
-                if (currentPathRegion.op(otherPathRegion,Region.Op.INTERSECT)) {
-                    Log.d("erase", "FOUND!")
-                    removeStroke(i)
-                    break
+                val pm = PathMeasure(strokes[i].path, false)
+
+                val nbStep: Int = pm.length.toInt() / 20
+                val speed = pm.length / nbStep
+                val coordinates = FloatArray(2)
+
+                var distance = 0f
+                while (distance < pm.length) {
+                    pm.getPosTan(distance, coordinates, null)
+                    val eraserHalfSize = 16
+                    val xOnLine = coordinates[0]
+                    val yOnLine = coordinates[1]
+
+                    if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
+                        if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
+                            removeStroke(i)
+                            strokeFound = true
+                            break
+                        }
+                    }
+
+                    distance += speed
                 }
+
+                if (strokeFound)
+                    break
             }
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y)
@@ -133,21 +143,17 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun touchMoved(event: MotionEvent) {
-         if ( kotlin.math.abs(event.x - currentStartX) >= moveTolerence &&
-             kotlin.math.abs(event.y - currentStartY) >= moveTolerence ) {
+        sendStroke(currentStartX, event.x, currentStartY, event.y)
 
-            sendStroke(currentStartX, event.x, currentStartY, event.y)
+        currentPath.quadTo(
+            currentStartX,
+            currentStartY,
+            (event.x + currentStartX) / 2,
+            (event.y + currentStartY) / 2
+        )
 
-            currentPath.quadTo(
-                currentStartX,
-                currentStartY,
-                (event.x + currentStartX) / 2,
-                (event.y + currentStartY) / 2
-            )
-
-            currentStartX = event.x
-            currentStartY = event.y
-        }
+        currentStartX = event.x
+        currentStartY = event.y
     }
 
     private fun drawReceived(obj: JSONObject) {
@@ -182,9 +188,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun touchEnded() {
-        if (!isErasemode) {
-            strokes.add(Stroke(currentPath, paintLine))
-            bitmapCanvas.drawPath(currentPath, paintLine)
+        if (!isEraseMode) {
+            strokes.add(Stroke(Path(currentPath), Paint(paintLine)))
         }
 
         currentPath.reset()
