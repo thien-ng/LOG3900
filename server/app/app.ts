@@ -10,7 +10,6 @@ import { ChatController } from './controllers/chat.controller';
 import Types from './types';
 import { GameController } from './controllers/game.controller';
 import { GameCreatorController } from './controllers/game-creator.controller';
-import { CardController } from './controllers/card.controller';
 
 import * as swaggerDoc from 'swagger-jsdoc';
 import * as swaggerUI from 'swagger-ui-express';
@@ -41,7 +40,6 @@ export class Application {
         @inject(Types.ChatController) private chatController: ChatController,
         @inject(Types.GameController) private gameController: GameController,
         @inject(Types.GameCreatorController) private gameCreatorController: GameCreatorController,
-        @inject(Types.CardController) private cardController: CardController,
     ) {
         this.app = express();
     
@@ -67,7 +65,6 @@ export class Application {
         this.app.use('/chat', this.chatController.router);
         this.app.use('/game', this.gameController.router);
         this.app.use('/creator', this.gameCreatorController.router);
-        this.app.use('/card', this.cardController.router);
         this.errorHandling();
     }
 

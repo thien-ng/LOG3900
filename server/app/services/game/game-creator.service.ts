@@ -1,28 +1,27 @@
 import { injectable, inject } from "inversify";
 import { ISuggestion, ICreateGame } from "../../interfaces/creator";
-import { IGameCard } from "../../interfaces/card";
-import { uuid } from "uuidv4";
-import { CardsDbService } from "../../database/cards-db.service";
+import { IGameRule } from "../../interfaces/rule";
+import { RulesDbService } from "../../database/rules-db.service";
+import { CreationAssist2 } from "./utils/creation-assists";
 
 import Types from '../../types';
-import { CreationAssist2 } from "./utils/creation-assists";
 
 @injectable()
 export class GameCreatorService {
 
-    public constructor(@inject(Types.CardsDbService) private db: CardsDbService) {}
+    public constructor(@inject(Types.RulesDbService) private db: RulesDbService) {}
 
     public async getSuggestion(): Promise<ISuggestion> {
         return CreationAssist2.fetchSuggestion();
     }
 
     public createGame(configs: ICreateGame): void {
-        const card: IGameCard = {
+        const rule: IGameRule = {
             gameName: configs.gameName,
-            gameID: uuid(),
-            mode: configs.mode,
+            solution: configs.solution,
+            clues: configs.clues,
         }
-        this.db.addCard(card);
+        this.db.addRule(rule);
     }
 
 }

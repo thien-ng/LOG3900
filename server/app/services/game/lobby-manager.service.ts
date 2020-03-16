@@ -1,8 +1,7 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby, GameMode } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
-import { isUuid } from 'uuidv4';
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -32,10 +31,10 @@ export class LobbyManagerService {
         return users;
     }
 
-    public getActiveLobbies(gameID: string): IGetLobby[] {
+    public getActiveLobbies(mode: GameMode): IGetLobby[] {
         const list: IGetLobby[] = [];
         this.lobbies.forEach((lob) => {
-            if (lob.gameID === gameID)
+            if (lob.mode === mode)
                 list.push(this.mapLobby(lob));
         })
         return list;
@@ -51,7 +50,7 @@ export class LobbyManagerService {
             private: lobbyAct.private,
             size: lobbyAct.size,
             lobbyName: lobbyAct.lobbyName,
-            gameID: lobbyAct.gameID,
+            mode: lobbyAct.mode,
         }; 
     }
 
@@ -88,10 +87,11 @@ export class LobbyManagerService {
             // Create Lobby
             if (!req.size)
                 throw new Error("Lobby size must be specified when lobby does not exist")
-            if (!req.gameID || (req.gameID && !isUuid(req.gameID)))
-                throw new Error("UUID attribute must be an UUID");
+            if (!req.mode || (req.mode && !(req.mode in GameMode))) {
+                throw new Error("Creating lobby must have correct mode");
+            }
            
-            this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, gameID: req.gameID} as IActiveLobby);
+            this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode} as IActiveLobby);
             this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);          
         }        
 

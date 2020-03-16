@@ -8,7 +8,7 @@ export interface IGetLobby {
     private:    boolean,
     lobbyName:  string,
     size:       number,
-    gameID:     string,
+    mode:       GameMode,
 }
 
 export interface IActiveLobby {
@@ -17,7 +17,7 @@ export interface IActiveLobby {
     password?:  string,
     lobbyName:  string,
     size:       number,
-    gameID:     string,
+    mode:       GameMode,
 }
 
 export interface IJoinLobby {
@@ -25,7 +25,7 @@ export interface IJoinLobby {
     private:   boolean,
     lobbyName: string,
     size?:     number,
-    gameID?:   string,
+    mode?:     GameMode,
     password?: string,
 }
 
@@ -91,7 +91,7 @@ export interface IGameplayDraw extends IDrawing{
  *  OTHER
  */
 export enum GameMode {
-    FFA,
-    SprintSolo,
-    SprintCollab,
+    FFA = "FFA",
+    SOLO = "SOLO",
+    COOP = "COOP",
 }
