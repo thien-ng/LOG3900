@@ -29,7 +29,7 @@ export class RulesDbService {
     }
 
     public async addRule(rule: IGameRule): Promise<void> {
-        if (this.validateCard(rule)) {
+        if (this.validateRule(rule)) {
             this.collection.insertOne(rule).catch(e => {
                 throw e;
             });
@@ -38,7 +38,7 @@ export class RulesDbService {
         }
     }
 
-    private validateCard(rule: IGameRule): boolean {
+    private validateRule(rule: IGameRule): boolean {
         // TODO add vallidation of card before adding to db
         // add validation when we know what is needed for a card
         return true
