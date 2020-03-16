@@ -5,6 +5,7 @@ import android.graphics.*
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
+
 class DrawFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
@@ -25,13 +27,22 @@ class DrawFragment: Fragment() {
             openColorPicker(v)
         }
 
+        v.button_strokeErase.setOnClickListener {
+            switchStrokeEraser(v)
+        }
+
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
 
         return v
     }
 
+    private fun switchStrokeEraser(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(2) as DrawCanvas
+        drawCanvasView.isErasemode = !drawCanvasView.isErasemode
+    }
+
     private fun openColorPicker(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(1) as DrawCanvas
+        val drawCanvasView = v.getChildAt(2) as DrawCanvas
         val colorPicker = AmbilWarnaDialog(this.context, drawCanvasView.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {}
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
@@ -42,14 +53,21 @@ class DrawFragment: Fragment() {
     }
 }
 
-class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) :
-    View(ctx, attr) {
+class Stroke(var path: Path, var paint: Paint)
+
+class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
+    var isErasemode = false
+
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
+    private var currentPath = Path()
+    private var currentStartX = 0f
+    private var currentStartY = 0f
+    private val moveTolerence = 5f
+    private val strokes = ArrayList<Stroke>()
     private var paintScreen: Paint = Paint()
-    private var pathMap: HashMap<Int, Path>
-    private var previousPointMap: HashMap<Int, Point>
+
 
     init {
         paintLine.isAntiAlias = true
@@ -57,8 +75,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 7.0F
         paintLine.strokeCap = Paint.Cap.ROUND
-        pathMap = HashMap()
-        previousPointMap = HashMap()
         Communication.getDrawListener().subscribe{ obj ->
             drawReceived(obj)
         }
@@ -73,19 +89,65 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     override fun onDraw(canvas: Canvas) {
         canvas.drawBitmap(bitmap, 0.0f, 0.0f, paintScreen)
 
-        repeat(pathMap.count()) {
-            canvas.drawPath(pathMap[it]!!, paintLine)
+        canvas.drawPath(currentPath, paintLine)
+
+        repeat(strokes.count()) {
+            canvas.drawPath(strokes[it].path, paintLine)
         }
+    }
+
+    private fun removeStroke(index: Int) {
+        strokes.removeAt(index)
+        invalidate()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
-        val actionIndex = event.actionIndex
 
-        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
-            touchStarted(event.x, event.y, event.getPointerId(actionIndex))
+
+/*
+int x, y;
+Path tempPath = new Path(); // Create temp Path
+tempPath.moveTo(x,y); // Move cursor to point
+RectF rectangle = new RectF(x-1, y-1, x+1, y+1); // create rectangle with size 2xp
+tempPath.addRect(rectangle, Path.Direction.CW); // add rect to temp path
+tempPath.op(pathToDetect, Path.Op.DIFFERENCE); // get difference with our PathToCheck
+if (tempPath.isEmpty()) // if out path cover temp path we get empty path in result
+{
+    Log.d(TAG, "Path contains this point");
+    return true;
+}
+else
+{
+    Log.d(TAG, "Path don't contains this point");
+    return false;
+}
+*/
+
+        if (isErasemode) {
+            for (i in 0 until strokes.size) {
+                val r = RectF()
+                val pComp = Point(event.x.toInt(), event.y.toInt())
+                val mPath: Path = strokes[i].path
+                mPath.computeBounds(r, false)
+                Log.d("erase", "r.height: " + r.height())
+                Log.d("erase", "r.width: " + r.width())
+                Log.d("erase", "r.top: " + r.top)
+                Log.d("erase", "r.bottom: " + r.bottom)
+                Log.d("erase", "r.left: " + r.left)
+                Log.d("erase", "r.right: " + r.right)
+                if (r.contains(pComp.x.toFloat(), pComp.y.toFloat())) {
+
+                    Log.d("erase", "FOUND!")
+                    removeStroke(i)
+                    break
+                }
+            }
+            return false
+        } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+            touchStarted(event.x, event.y)
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP){
-            touchEnded(event.getPointerId(actionIndex))
+            touchEnded()
         } else {
             touchMoved(event)
         }
@@ -95,24 +157,20 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun touchMoved(event: MotionEvent) {
-        for(i in 0 until event.pointerCount) {
-            val pointerId = event.getPointerId(i)
+        if ( kotlin.math.abs(event.x - currentStartX) >= moveTolerence &&
+             kotlin.math.abs(event.y - currentStartY) >= moveTolerence ) {
 
-            if (pathMap.containsKey(pointerId)) {
-                val point = previousPointMap[pointerId]!!
+            sendStroke(currentStartX, event.x, currentStartY, event.y)
 
-                sendStroke(point.x.toFloat(), event.x, point.y.toFloat(), event.y)
+            currentPath.quadTo(
+                currentStartX,
+                currentStartY,
+                (event.x + currentStartX) / 2,
+                (event.y + currentStartY) / 2
+            )
 
-                pathMap[pointerId]!!.quadTo(
-                    point.x.toFloat(),
-                    point.y.toFloat(),
-                    (event.x + point.x.toFloat()) / 2,
-                    (event.y + point.y.toFloat()) / 2
-                )
-
-                point.x = event.x.toInt()
-                point.y = event.y.toInt()
-            }
+            currentStartX = event.x
+            currentStartY = event.y
         }
     }
 
@@ -147,28 +205,21 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         SocketIO.sendMessage("gameplay", obj)
     }
 
-    private fun touchEnded(pointerId: Int) {
-        val path = pathMap[pointerId]!!
-        bitmapCanvas.drawPath(path, paintLine)
-        path.reset()
+    private fun touchEnded() {
+        strokes.add(Stroke(currentPath, paintLine))
+
+        bitmapCanvas.drawPath(currentPath, paintLine)
+        currentPath.reset()
     }
 
-    private fun touchStarted(x: Float, y: Float, pointerId: Int) {
-        val path: Path
-        val point: Point
+    private fun touchStarted(x: Float, y: Float) {
+        currentStartX = x
+        currentStartY = y
 
-        if (pathMap.containsKey(pointerId)) {
-            path = pathMap[pointerId]!!
-            point = previousPointMap[pointerId]!!
-        } else {
-            path = Path()
-            pathMap[pointerId] = path
-            point = Point()
-            previousPointMap[pointerId] = point
-        }
+        //TODO: currentPath = Path() ???
 
-        path.moveTo(x, y)
-        point.x = x.toInt()
-        point.y = y.toInt()
+        currentPath.moveTo(x, y)
     }
 }
+
+
