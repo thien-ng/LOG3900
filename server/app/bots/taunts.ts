@@ -3,8 +3,16 @@ export enum Personality {
     kind,
     humour,
     mean,
-    rand
+    length // this must be the last one
 }
+
+export enum DisplayMode {
+    classic,
+    rand,
+    panoramic,
+    centered
+}
+
 
 export class Taunt {
 
@@ -39,9 +47,6 @@ export class Taunt {
     ];
 
     public static getTaunts(style: Personality): string[] {
-        if (style == Personality.rand)
-            style = Math.floor(Math.random() * Personality.rand);
-
         switch (style) {
             case Personality.humour:
                 return this.humour;
