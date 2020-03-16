@@ -104,46 +104,22 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
 
-
-/*
-int x, y;
-Path tempPath = new Path(); // Create temp Path
-tempPath.moveTo(x,y); // Move cursor to point
-RectF rectangle = new RectF(x-1, y-1, x+1, y+1); // create rectangle with size 2xp
-tempPath.addRect(rectangle, Path.Direction.CW); // add rect to temp path
-tempPath.op(pathToDetect, Path.Op.DIFFERENCE); // get difference with our PathToCheck
-if (tempPath.isEmpty()) // if out path cover temp path we get empty path in result
-{
-    Log.d(TAG, "Path contains this point");
-    return true;
-}
-else
-{
-    Log.d(TAG, "Path don't contains this point");
-    return false;
-}
-*/
-
         if (isErasemode) {
+            val regionClip = Region(width / 2, 0, width, height)
+            val currentPathRegion = Region()
+            if (!currentPathRegion.setPath(currentPath, regionClip))
+                Log.d("erase", "current path has an empty region")
             for (i in 0 until strokes.size) {
-                val r = RectF()
-                val pComp = Point(event.x.toInt(), event.y.toInt())
-                val mPath: Path = strokes[i].path
-                mPath.computeBounds(r, false)
-                Log.d("erase", "r.height: " + r.height())
-                Log.d("erase", "r.width: " + r.width())
-                Log.d("erase", "r.top: " + r.top)
-                Log.d("erase", "r.bottom: " + r.bottom)
-                Log.d("erase", "r.left: " + r.left)
-                Log.d("erase", "r.right: " + r.right)
-                if (r.contains(pComp.x.toFloat(), pComp.y.toFloat())) {
-
+                val otherPathRegion = Region()
+                if (!otherPathRegion.setPath(strokes[i].path, regionClip))
+                    Log.d("erase", "other path has an empty region")
+                Log.d("erase", "testing path $i")
+                if (currentPathRegion.op(otherPathRegion,Region.Op.INTERSECT)) {
                     Log.d("erase", "FOUND!")
                     removeStroke(i)
                     break
                 }
             }
-            return false
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y)
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP){
@@ -157,7 +133,7 @@ else
     }
 
     private fun touchMoved(event: MotionEvent) {
-        if ( kotlin.math.abs(event.x - currentStartX) >= moveTolerence &&
+         if ( kotlin.math.abs(event.x - currentStartX) >= moveTolerence &&
              kotlin.math.abs(event.y - currentStartY) >= moveTolerence ) {
 
             sendStroke(currentStartX, event.x, currentStartY, event.y)
@@ -206,18 +182,17 @@ else
     }
 
     private fun touchEnded() {
-        strokes.add(Stroke(currentPath, paintLine))
+        if (!isErasemode) {
+            strokes.add(Stroke(currentPath, paintLine))
+            bitmapCanvas.drawPath(currentPath, paintLine)
+        }
 
-        bitmapCanvas.drawPath(currentPath, paintLine)
         currentPath.reset()
     }
 
     private fun touchStarted(x: Float, y: Float) {
         currentStartX = x
         currentStartY = y
-
-        //TODO: currentPath = Path() ???
-
         currentPath.moveTo(x, y)
     }
 }
