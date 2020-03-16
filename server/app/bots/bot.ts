@@ -83,9 +83,9 @@ export class Bot {
         // considering if b should come before a.
         switch (this.panoramicFirstSide) {
             case Side.up:
-                return Math.max(this.image[b].startPosY, this.image[b].endPosY) > Math.max(this.image[a].startPosY, this.image[a].endPosY);
-            case Side.down:
                 return Math.max(this.image[b].startPosY, this.image[b].endPosY) < Math.max(this.image[a].startPosY, this.image[a].endPosY);
+            case Side.down:
+                return Math.max(this.image[b].startPosY, this.image[b].endPosY) > Math.max(this.image[a].startPosY, this.image[a].endPosY);
             case Side.left:
                 return Math.max(this.image[b].startPosX, this.image[b].endPosX) < Math.max(this.image[a].startPosX, this.image[a].endPosX);
             case Side.right:
@@ -95,15 +95,29 @@ export class Bot {
     }
 
     private sortCentered(): void { // bubble sort
-        const centerX = 0;
-        const centerY = 0; // probably needs to be changed
+        const center = this.findCenter();
         for (let i = 0; i < this.image.length - 1; i++) {
             for (let j = 0; j < this.image.length - i - 1; j++) {
-                if (this.squaredDistance(j, centerX, centerY) > this.squaredDistance(j + 1, centerX, centerY)) {
+                if (this.squaredDistance(j, center.x, center.x) > this.squaredDistance(j + 1, center.x, center.x)) {
                     this.swapStroke(j, j + 1);
                 }
             }
         }
+    }
+
+    private findCenter(): { x: number, y: number } { // we are looking for an approximate value
+        let bigX = 0;
+        let bigY = 0;
+        let smallX = Infinity;
+        let smallY = Infinity;
+        for (let i = 0; i < this.image.length; i++) {
+            smallX = (this.image[i].startPosX < smallX) ? this.image[i].startPosX : smallX;
+            smallY = (this.image[i].startPosY < smallY) ? this.image[i].startPosY : smallX;
+            bigX = (this.image[i].startPosX > bigX) ? this.image[i].startPosX : smallX;
+            bigY = (this.image[i].startPosY > bigY) ? this.image[i].startPosY : smallX;
+        }
+
+        return { x: (smallX + bigX) / 2, y: (smallY + bigY) / 2 };
     }
 
     private squaredDistance(a: number, centerX: number, centerY: number): number {
