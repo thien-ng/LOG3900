@@ -29,18 +29,35 @@ class DrawFragment: Fragment() {
             switchStrokeEraser(v)
         }
 
+        v.button_normalErase.setOnClickListener {
+            switchNormalEraser(v)
+        }
+
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
 
         return v
     }
 
     private fun switchStrokeEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(2) as DrawCanvas
-        drawCanvasView.isEraseMode = !drawCanvasView.isEraseMode
+        val drawCanvasView = v.getChildAt(3) as DrawCanvas
+        drawCanvasView.isStrokeErasing = !drawCanvasView.isStrokeErasing
+        if (drawCanvasView.isNormalErasing) {
+            drawCanvasView.isNormalErasing = false
+            v.button_normalErase.toggle()
+        }
+    }
+
+    private fun switchNormalEraser(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(3) as DrawCanvas
+        drawCanvasView.isNormalErasing = !drawCanvasView.isNormalErasing
+        if (drawCanvasView.isStrokeErasing) {
+            drawCanvasView.isStrokeErasing = false
+            v.button_strokeErase.toggle()
+        }
     }
 
     private fun openColorPicker(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(2) as DrawCanvas
+        val drawCanvasView = v.getChildAt(3) as DrawCanvas
         val colorPicker = AmbilWarnaDialog(this.context, drawCanvasView.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {}
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
@@ -55,7 +72,10 @@ class Stroke(var path: Path, var paint: Paint)
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
-    var isEraseMode = false
+    var paintLineWhite: Paint
+    val paintLineDefault = Paint()
+    var isStrokeErasing = false
+    var isNormalErasing = false
 
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
@@ -70,6 +90,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 7.0F
         paintLine.strokeCap = Paint.Cap.ROUND
+        paintLineWhite = Paint(paintLine)
+        paintLineWhite.color = Color.WHITE
         Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
@@ -79,14 +101,18 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
+        bitmapCanvas.drawColor(Color.WHITE)
     }
 
     override fun onDraw(canvas: Canvas) {
+        canvas.drawBitmap(bitmap, 0.0f, 0.0f, paintLineDefault)
+
         repeat(strokes.count()) {
             canvas.drawPath(strokes[it].path, strokes[it].paint)
         }
 
-        canvas.drawPath(currentPath, paintLine)
+        val paint = if (isNormalErasing) paintLineWhite else paintLine
+        canvas.drawPath(currentPath, paint)
 
         invalidate()
     }
@@ -100,7 +126,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
 
-        if (isEraseMode) {
+        if (isStrokeErasing) {
             checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y)
@@ -118,6 +144,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         var strokeFound = false
 
         for (i in 0 until strokes.size) {
+            if (strokes[i].paint.color == Color.WHITE) {
+                continue
+            }
+
             val pm = PathMeasure(strokes[i].path, false)
 
             val nbStep: Int = pm.length.toInt() / 20
@@ -185,15 +215,18 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("startPosY", startPointY)
         obj.put("endPosX", finishPointX)
         obj.put("endPosY", finishPointY)
-        obj.put("color", paintLine.color)
-        obj.put("width", paintLine.strokeWidth)
+        obj.put("color", if (isNormalErasing) Color.WHITE else paintLine.color)
+        obj.put("width", paintLine.strokeWidth) //TODO custom width if isNormalErasing
 
         SocketIO.sendMessage("gameplay", obj)
     }
 
     private fun touchEnded() {
-        if (!isEraseMode) {
-            strokes.add(Stroke(Path(currentPath), Paint(paintLine)))
+        if (!isStrokeErasing) {
+            val paint = Paint(paintLine)
+            if (isNormalErasing)
+                paint.color = Color.WHITE
+            strokes.add(Stroke(Path(currentPath), paint))
         }
 
         currentPath.reset()
