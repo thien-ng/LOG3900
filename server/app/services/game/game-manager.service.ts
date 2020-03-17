@@ -2,7 +2,6 @@ import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { Arena } from "./arena";
 import { IActiveLobby, IGameplayChat, IGameplayDraw } from "../../interfaces/game";
-import { CardsDbService } from "../../database/cards-db.service";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -16,9 +15,7 @@ export class GameManagerService {
 
     private socketServer: io.Server;
     
-    public constructor(
-        @inject(Types.LobbyManagerService) private lobServ: LobbyManagerService,
-        @inject(Types.CardsDbService) private db: CardsDbService) {
+    public constructor(@inject(Types.LobbyManagerService) private lobServ: LobbyManagerService) {
 
         this.arenas = new Map<number, Arena>();
         this.userMapArenaId = new Map<string, number>();
@@ -54,7 +51,6 @@ export class GameManagerService {
         this.lobServ.lobbies.delete(lobby.lobbyName);
 
         // TODO get arena rules
-        this.db.getRulesByGameID(lobby.gameID);
         const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
 
         this.arenas.set(this.arenaId, arena);

@@ -3,25 +3,27 @@ package com.example.client_leger.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.client_leger.models.GameCard;
+import com.example.client_leger.models.Lobby;
 import com.example.client_leger.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.ArrayList;
 
 public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRecyclerViewAdapter.ViewHolder> {
 
-    private JSONArray mData;
+    private ArrayList<GameCard> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-
+    private GameCard currentCard;
     // data is passed into the constructor
-    public GameCardRecyclerViewAdapter(Context context, JSONArray data) {
+    public GameCardRecyclerViewAdapter(Context context, ArrayList<GameCard> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -37,28 +39,25 @@ public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRe
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        try {
-            holder.myTextView.setText(mData.getJSONObject(position).getString("gameName"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        holder.myTextView.setText(mData.get(position).getGameName());
+        holder.spinner.setAdapter(mData.get(position).getAdapter());
     }
 
     // total number of cells
     @Override
     public int getItemCount() {
-        return mData.length();
+        return mData.size();
     }
 
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView myTextView;
-
+        Spinner spinner;
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.textView_gameName);
-            itemView.setOnClickListener(this);
+            spinner = itemView.findViewById(R.id.lobbies);
         }
 
         @Override
@@ -68,16 +67,34 @@ public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRe
     }
 
     // convenience method for getting data at click position
-    public JSONObject getItem(int id) throws JSONException {
-        return mData.getJSONObject(id);
+    public GameCard getItem(int id) {
+        return mData.get(id);
     }
 
-    public void addItems(JSONArray items) throws JSONException {
-        for (int i = 0; i < items.length(); i++) {
-            mData.put(items.getJSONObject(i));
+    public int getItemPos(String gameID) {
+        for (int i = 0; i < mData.size(); i++) {
+            GameCard item = mData.get(i);
+            if (item.getGameId().equals(gameID)) return i;
+        }
+        return -1;
+    }
+
+    public void addItems(ArrayList<GameCard> items) {
+        for (int i = 0; i < items.size(); i++) {
+            mData.add(items.get(i));
             notifyItemChanged(i);
         }
+    }
 
+    public void addLobbies(ArrayList<Lobby> lobbies, String gameID){
+        int itempos = getItemPos(gameID);
+        GameCard item = mData.get(itempos);
+        item.setLobbies(lobbies);
+        for (Lobby lobby:lobbies) {
+            item.getAdapter().add(lobby.getLobbyName());
+        }
+
+        notifyItemChanged(itempos);
     }
 
     // allows clicks events to be caught
