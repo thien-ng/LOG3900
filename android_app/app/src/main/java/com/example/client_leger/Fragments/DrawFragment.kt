@@ -84,10 +84,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.isAntiAlias = true
         paintLine.color = Color.BLACK
         paintLine.style = Paint.Style.STROKE
-        paintLine.strokeWidth = 7.0F
+        paintLine.strokeWidth = 16.0F
         paintLine.strokeCap = Paint.Cap.ROUND
         paintLineWhite = Paint(paintLine)
         paintLineWhite.color = Color.WHITE
+        paintLineWhite.strokeWidth = 32.0F
         Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
@@ -212,9 +213,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun touchEnded() {
         if (!isStrokeErasing) {
-            val paint = Paint(paintLine)
-            if (isNormalErasing)
-                paint.color = Color.WHITE
+            val paint: Paint = if (isNormalErasing) paintLineWhite else paintLine
             strokes.add(Stroke(Path(currentPath), paint))
         }
 
