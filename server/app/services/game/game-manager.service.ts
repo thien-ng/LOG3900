@@ -1,7 +1,10 @@
 import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
-import { Arena } from "./arena";
-import { IActiveLobby, IGameplayChat, IGameplayDraw } from "../../interfaces/game";
+import { ArenaFfa } from "./arena-ffa";
+import { ArenaSolo } from "./arena-solo";
+import { ArenaCoop } from "./arena-coop";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode } from "../../interfaces/game";
+import { IUser } from "../../interfaces/user-manager";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -9,7 +12,7 @@ import * as io from 'socket.io';
 @injectable()
 export class GameManagerService {
 
-    private arenas: Map<number, Arena>;
+    private arenas: Map<number, ArenaFfa | ArenaSolo | ArenaCoop>;
     private userMapArenaId: Map<string, number>;
     private arenaId: number;
 
@@ -17,7 +20,7 @@ export class GameManagerService {
     
     public constructor(@inject(Types.LobbyManagerService) private lobServ: LobbyManagerService) {
 
-        this.arenas = new Map<number, Arena>();
+        this.arenas = new Map<number, ArenaFfa | ArenaSolo | ArenaCoop>();
         this.userMapArenaId = new Map<string, number>();
         this.arenaId = 0;
     }
@@ -48,20 +51,27 @@ export class GameManagerService {
 
         this.addUsersToArena(lobby, room, this.arenaId);
 
-        this.lobServ.lobbies.delete(lobby.lobbyName);
-
         // TODO get arena rules
-        const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
+        const arena = this.createArenaAccordingToMode(lobby, room);
 
+        this.lobServ.lobbies.delete(lobby.lobbyName);
+        
         this.arenas.set(this.arenaId, arena);
-        // TODO uncomment later to increment arena id
-        // this.arenaId++;
-
         this.socketServer.in(room).emit("game-start");
 
         arena.start();
     }
 
+    private createArenaAccordingToMode(lobby: IActiveLobby, room: string): ArenaFfa | ArenaSolo | ArenaCoop {
+        switch(lobby.mode) {
+            case GameMode.FFA:
+                return new ArenaFfa(lobby.users, lobby.size, room, this.socketServer);
+            case GameMode.SOLO:
+                return new ArenaSolo(lobby.users, lobby.size, room, this.socketServer);
+            case GameMode.COOP:
+                return new ArenaCoop(lobby.users, lobby.size, room, this.socketServer);
+        }
+    }
     private addUsersToArena(lobby: IActiveLobby, room: string, arenaID: number): void {        
         // add users to socket room
         lobby.users.forEach(u => {
