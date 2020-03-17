@@ -33,6 +33,17 @@
             <TextBlock Text="Gamelist" FontSize="30" VerticalAlignment="Center" Foreground="White"/>
         </StackPanel>
         <Button Grid.Column="2" Grid.Row="2" Content="ADD" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
+            <materialDesign:PopupBox Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
+                <materialDesign:PopupBox.ToggleContent>
+                    <TextBlock Text="GameMode" FontSize="30" Foreground="White" />
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel>
+                    <Button Command="{Binding ModeFFA}" Content="Free for all" ></Button>
+                    <Button Command="{Binding ModeSolo}" Content="Sprint Solo" ></Button>
+                    <Button Command="{Binding ModeCoop}" Content="Sprint Coop" ></Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+            <Button Grid.Column="2" Grid.Row="2" Content="ADD" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
             <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
                       VerticalScrollBarVisibility="Auto"
                       >
