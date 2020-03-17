@@ -4,7 +4,6 @@ import { ArenaFfa } from "./arena-ffa";
 import { ArenaSolo } from "./arena-solo";
 import { ArenaCoop } from "./arena-coop";
 import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode } from "../../interfaces/game";
-import { IUser } from "../../interfaces/user-manager";
 
 import Types from '../../types';
 import * as io from 'socket.io';

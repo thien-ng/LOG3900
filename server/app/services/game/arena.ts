@@ -48,8 +48,10 @@ export abstract class Arena {
     }
 
     public disconnectPlayer(username: string): void {
+        // disconnect user from arena but does not remove from users list to be persisted in db
         const user = this.users.find(u => {return u.username === username});
-        user?.socket?.leave(this.room);
+        if (user && user.socket)
+            user.socket.leave(this.room);
     }
 
     private mapToDrawing(draw: IGameplayDraw): IDrawing {
