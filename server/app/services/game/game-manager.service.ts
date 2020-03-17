@@ -38,12 +38,12 @@ export class GameManagerService {
         this.setupArena(lobby);
     }
 
-    public sendMessageToArena(mes: IGameplayChat | IGameplayDraw): void {
+    public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw): void {
         const arenaId = this.userMapArenaId.get(mes.username) as number;
         const arena = this.arenas.get(arenaId);
 
         if (arena)
-            arena.receiveInfo(mes);
+            arena.receiveInfo(socket, mes);
     }
 
     private setupArena(lobby: IActiveLobby): void {
@@ -72,6 +72,15 @@ export class GameManagerService {
                 return new ArenaCoop(lobby.users, lobby.size, room, this.socketServer);
         }
     }
+
+    public handleDisconnect(username: string): void {
+        const arenaId = this.userMapArenaId.get(username) as number;
+        const arena = this.arenas.get(arenaId);
+
+        if (arena)
+            arena.disconnectPlayer(username);
+    }
+
     private addUsersToArena(lobby: IActiveLobby, room: string, arenaID: number): void {        
         // add users to socket room
         lobby.users.forEach(u => {

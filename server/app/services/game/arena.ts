@@ -3,7 +3,7 @@ import { IGameplayChat, IGameplayDraw, IDrawing } from "../../interfaces/game";
 
 import * as io from 'socket.io';
 
-export class Arena {
+export abstract class Arena {
 
     private socketServer: io.Server;
     private users: IUser[];
@@ -38,13 +38,18 @@ export class Arena {
         });
     }
 
-    public receiveInfo(mes: IGameplayChat | IGameplayDraw): void {
+    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw): void {
         if (this.isDraw(mes)) {
             this.users.forEach(u => {
                 if (u.username != mes.username)
-                    this.socketServer.to(u.socketId).emit("draw", this.mapToDrawing(mes));
+                    socket.to(this.room).emit("draw", this.mapToDrawing(mes))
             });
         }
+    }
+
+    public disconnectPlayer(username: string): void {
+        const user = this.users.find(u => {return u.username === username});
+        user?.socket?.leave(this.room);
     }
 
     private mapToDrawing(draw: IGameplayDraw): IDrawing {
