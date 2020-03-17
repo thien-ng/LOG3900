@@ -21,12 +21,14 @@ export class Bot {
         hint: string = "no hint for you!",
         mode: DisplayMode = DisplayMode.classic,
         style: Personality = Personality.length,
+        panoramicFirstSide: Side = Side.up,
         @inject(Types.GameManagerService) private gameManager: GameManagerService) {
 
         this.username = username;
         this.mode = mode;
         this.image = image;
         this.hint = hint;
+        this.panoramicFirstSide = panoramicFirstSide;
         this.sort();
         this.findStroke();
         if (style == Personality.length)
@@ -83,11 +85,11 @@ export class Bot {
         // considering if b should come before a.
         switch (this.panoramicFirstSide) {
             case Side.up:
-                return Math.max(this.image[b].startPosY, this.image[b].endPosY) < Math.max(this.image[a].startPosY, this.image[a].endPosY);
+                return Math.min(this.image[b].startPosY, this.image[b].endPosY) < Math.min(this.image[a].startPosY, this.image[a].endPosY);
             case Side.down:
                 return Math.max(this.image[b].startPosY, this.image[b].endPosY) > Math.max(this.image[a].startPosY, this.image[a].endPosY);
             case Side.left:
-                return Math.max(this.image[b].startPosX, this.image[b].endPosX) < Math.max(this.image[a].startPosX, this.image[a].endPosX);
+                return Math.min(this.image[b].startPosX, this.image[b].endPosX) < Math.min(this.image[a].startPosX, this.image[a].endPosX);
             case Side.right:
                 return Math.max(this.image[b].startPosX, this.image[b].endPosX) > Math.max(this.image[a].startPosX, this.image[a].endPosX);
         }
@@ -141,7 +143,7 @@ export class Bot {
         return this.hint;
     }
 
-    public launtTaunt(): string {
+    public launchTaunt(): string {
         return this.taunts[Math.floor(Math.random() * this.taunts.length)]; //ceci ou la fonction qui envoie un message avec Username
     }
 
