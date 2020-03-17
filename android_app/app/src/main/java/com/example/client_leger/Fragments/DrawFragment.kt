@@ -188,14 +188,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         val paint = Paint()
         paint.isAntiAlias = true
-        //paint.color = obj.getInt("color") TODO: get received color
-        paint.color = Color.BLACK         //TODO: and remove this line
+        paint.color = obj.getInt("color")
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = obj.getInt("width").toFloat()
         paint.strokeCap = Paint.Cap.ROUND
 
         strokes.add(Stroke(path, paint))
-        //draw(bitmapCanvas) TODO: test if it works
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
@@ -206,7 +204,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("endPosX", finishPointX)
         obj.put("endPosY", finishPointY)
         obj.put("color", if (isNormalErasing) Color.WHITE else paintLine.color)
-        obj.put("width", paintLine.strokeWidth) //TODO custom width if isNormalErasing
+        obj.put("width", if (isNormalErasing) paintLineWhite.strokeWidth else paintLine.strokeWidth)
 
         SocketIO.sendMessage("gameplay", obj)
     }
