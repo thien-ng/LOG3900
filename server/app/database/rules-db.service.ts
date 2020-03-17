@@ -38,6 +38,14 @@ export class RulesDbService {
         }
     }
 
+    public async getRules(): Promise<IGameRule[]> {
+        return this.collection.find({}).toArray().then((rules) => {
+            return rules;
+        }).catch((error: Error) => {
+            throw error;
+        });
+    }
+
     private validateRule(rule: IGameRule): boolean {
         // TODO add vallidation of card before adding to db
         // add validation when we know what is needed for a card

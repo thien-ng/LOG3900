@@ -1,21 +1,24 @@
 import { IUser } from "../../interfaces/user-manager";
 import { IGameplayChat, IGameplayDraw, IDrawing } from "../../interfaces/game";
+import { IGameRule } from "../../interfaces/rule";
 
 import * as io from 'socket.io';
 
 export abstract class Arena {
 
-    private socketServer: io.Server;
-    private users: IUser[];
+    protected socketServer: io.Server;
+    protected users: IUser[];
+    protected rules: IGameRule[];
     private room: string;
     private size: number;
     // TODO add attribute game rule search by the uuid
 
-    public constructor(users: IUser[], size: number, room: string, io: io.Server) {
+    public constructor(users: IUser[], size: number, room: string, io: io.Server, rules: IGameRule[]) {
         this.users = users;
         this.room = room;
         this.size = size;
         this.socketServer = io;
+        this.rules = rules;
         
         if (this.users || this.size || this.room || this.socketServer) {}
     }
