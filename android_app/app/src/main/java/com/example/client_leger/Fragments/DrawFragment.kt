@@ -211,7 +211,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun touchEnded() {
         if (!isStrokeErasing) {
-            val paint: Paint = if (isNormalErasing) paintLineWhite else paintLine
+            val paint: Paint = if (isNormalErasing) Paint(paintLineWhite) else Paint(paintLine)
             strokes.add(Stroke(Path(currentPath), paint))
         }
 
