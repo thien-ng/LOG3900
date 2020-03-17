@@ -73,12 +73,8 @@ class Stroke(var path: Path, var paint: Paint)
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
     var paintLineWhite: Paint
-    val paintLineDefault = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
-
-    private lateinit var bitmap: Bitmap
-    private lateinit var bitmapCanvas: Canvas
     private var currentPath = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
@@ -97,15 +93,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        bitmapCanvas = Canvas(bitmap)
-        bitmap.eraseColor(Color.WHITE)
-        bitmapCanvas.drawColor(Color.WHITE)
-    }
-
     override fun onDraw(canvas: Canvas) {
-        canvas.drawBitmap(bitmap, 0.0f, 0.0f, paintLineDefault)
+        canvas.drawColor(Color.WHITE)
 
         repeat(strokes.count()) {
             canvas.drawPath(strokes[it].path, strokes[it].paint)
@@ -205,7 +194,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paint.strokeCap = Paint.Cap.ROUND
 
         strokes.add(Stroke(path, paint))
-        draw(bitmapCanvas)
+        //draw(bitmapCanvas) TODO: test if it works
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
