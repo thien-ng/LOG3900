@@ -16,72 +16,44 @@ using System.Windows.Input;
 
 namespace PolyPaint.Modeles
 {
-    public class GameCard: INotifyPropertyChanged
+    public class GameCard : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public GameCard(string gameName, string gameID, string mode)
+        public GameCard(Lobby lobby)
         {
             _visibilityPrivate = "Hidden";
-            _gameName = gameName;
-            _mode = mode;
-            _gameID = gameID;
-            Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            _gameLobbies = new ObservableCollection<Lobby>();
-            getLobbies();
+            _players = new ObservableCollection<string>();
+            foreach (var item in lobby.usernames)
+            {
+                _players.Add(item);
+            }
 
+            _lobby = lobby;
+            _mode = lobby.mode;
+            _lobbyName = lobby.lobbyName;
         }
 
-        public ObservableCollection<int> Numbers { get; }
+        private Lobby _lobby;
+        public Lobby Lobby
+        {
+            get { return _lobby; }
+            set { _lobby = value; ProprieteModifiee(nameof(Lobby)); }
+        }
 
-        private string _gameID;
-        public string GameID { get { return _gameID; } }
+
 
         private string _mode;
         public string Mode { get { return _mode; } }
-        private string _gameName;
-        public string GameName
-        {
-            get { return _gameName; }
-            set { _gameName = value; }
-        }
 
-        private ObservableCollection<Lobby> _gameLobbies;
-        public ObservableCollection<Lobby> GameLobbies
+        private ObservableCollection<string> _players;
+        public ObservableCollection<string> Players
         {
-            get { return _gameLobbies; }
-            set { _gameLobbies = value; ProprieteModifiee(nameof(GameLobbies)); }
+            get { return _players; }
+            set { _players = value; ProprieteModifiee(nameof(Players)); }
         }
         protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        private async void createLobby()
-        {
-            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.Add("private", _isPrivate);
-            values.lobbyName = _lobbyName;
-            values.size = _selectedSize;
-            values.password = _password;
-            values.gameID = _gameID;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
-            {
-                Lobby lobby = new Lobby(_lobbyName, new string[] {ServerService.instance.username}, _isPrivate, int.Parse(_selectedSize), _password, _gameID);
-                App.Current.Dispatcher.Invoke(delegate
-                {
-                    getLobbies();
-                });
-                Mediator.Notify("GoToLobbyScreen", _lobbyName);
-                LobbyName = "";
-
-            }
         }
 
         private string _lobbyName;
@@ -149,89 +121,44 @@ namespace PolyPaint.Modeles
             get { return _selectedSize; }
             set { _selectedSize = value; ProprieteModifiee(); }
         }
-
-        private async void getLobbies()
+        private async void joinLobby()
         {
-            ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _gameID);
-
-            StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-            String responseData = streamReader.ReadToEnd();
-            var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
-            foreach (var item in myData)
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.Add("private", _lobby.isPrivate);
+            values.lobbyName = _lobby.lobbyName;
+            values.size = _lobby.size;
+            values.password = _lobby.password;
+            values.mode = _lobby.mode;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            Console.WriteLine(response);
+            Console.WriteLine(byteContent);
+            Console.WriteLine(response.StatusCode);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-
-                    lobbies.Add(item);
-                });
+                Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
             }
-            GameLobbies = lobbies;
         }
 
-        private ICommand _acceptCommand;
-        public ICommand AcceptCommand
+        private ICommand _joinLobbyCommand;
+        public ICommand JoinLobbyCommand
         {
             get
             {
-                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
+                return _joinLobbyCommand ?? (_joinLobbyCommand = new RelayCommand(x =>
                 {
-                    await Task.Run(() => createLobby());
-                    IsCreateGameDialogOpen = false;
-                }));
-            }
-        }
-        private ICommand _addLobbyCommand;
-        public ICommand AddLobbyCommand
-        {
-            get
-            {
-                return _addLobbyCommand ?? (_addLobbyCommand = new RelayCommand(x =>
-                {
-                    DialogContent = new CreateLobbyControl();
-                    IsCreateGameDialogOpen = true;
-                }));
-            }
-        }
+                    Console.WriteLine("joinlobby");
+                    joinLobby();
 
-        private ICommand _cancelCommand;
-        public ICommand CancelCommand
-        {
-            get
-            {
-                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
-                {
-                    LobbyName = "";
-                    IsCreateGameDialogOpen = false;
-                }));
-            }
-        }
-        private bool _isCreateGameDialogOpen;
-        public bool IsCreateGameDialogOpen
-        {
-            get { return _isCreateGameDialogOpen; }
-            set
-            {
-                if (_isCreateGameDialogOpen == value) return;
-                _isCreateGameDialogOpen = value;
-                ProprieteModifiee();
-            }
-        }
 
-        private ICommand _deleteCommand;
-        public ICommand DeleteCommand
-        {
-            get
-            {
-                return _deleteCommand ?? (_deleteCommand = new RelayCommand(x =>
-                {
-                    LobbyName = "";
-                    IsCreateGameDialogOpen = false;
                 }));
             }
         }
 
     }
-
-
 }

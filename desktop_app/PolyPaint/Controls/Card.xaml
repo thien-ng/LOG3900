@@ -29,7 +29,7 @@
             <materialDesign:ColorZone
                 Mode="PrimaryLight"
                 VerticalAlignment="Stretch">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding GameName}" FontSize="25" Foreground="White" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LobbyName}" FontSize="25" Foreground="White" />
             </materialDesign:ColorZone>
         <StackPanel
             Grid.Row="1"
@@ -39,7 +39,7 @@
                             <Button Style="{StaticResource MaterialDesignFlatButton}"
                                 Command="{x:Static materialDesign:Flipper.FlipCommand}"
                                 Margin="0 4 0 0">
-                            View lobbies
+                            Players
                         </Button>
         </StackPanel>
     </Grid>
@@ -49,6 +49,7 @@
                 <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="220"/>
@@ -80,20 +81,19 @@
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                         
-                            <Button Command="{Binding AddLobbyCommand}" Content="add Lobby"/>
                             <ScrollViewer Margin="10" Grid.Row="1" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
-                                <ItemsControl ItemsSource="{Binding GameLobbies}">
+                                <ItemsControl ItemsSource="{Binding Players}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <Button Content="{Binding lobbyName}" Command="{Binding JoinLobbyCommand}" Margin="5,0,5,0" FontSize="15"/>
-                                                <TextBlock Text="{Binding size}" Margin="5,0,5,0" FontSize="15"/>
+                                                <TextBlock Text="{Binding}" Margin="5,0,5,0" FontSize="15"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
                         </Grid>
+                            <Button Margin="10" Grid.Row="2" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Join Lobby" Command="{Binding JoinLobbyCommand}" FontSize="15"/>
                 </Grid>
             </materialDesign:Flipper.BackContent>
         </materialDesign:Flipper>

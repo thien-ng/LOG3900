@@ -26,17 +26,16 @@ namespace PolyPaint.VueModeles
             Usernames = new ObservableCollection<string>();
             this.LobbyName = lobbyname;
             fetchUsername();
-            Mediator.Subscribe("joinLobby", refreshUserList);
+            ServerService.instance.socket.On("lobby-notif", refreshUserList);
+
         }
 
-        private void refreshUserList(object lobbyName)
+        private void refreshUserList()
         {
-            Console.WriteLine("hellop");
-            Console.WriteLine(lobbyName);
-            if((string)lobbyName == this.LobbyName)
-            {
+            //if((string)lobbyName == this.LobbyName)
+            //{
                 fetchUsername();
-            }
+            //}
         }
         private async void fetchUsername()
         {
@@ -54,6 +53,18 @@ namespace PolyPaint.VueModeles
                 });
             }
             Usernames = usernames;
+            _isGameMaster = ServerService.instance.username == Usernames.First<string>();
+        }
+
+        private bool _isGameMaster;
+        public bool IsGameMaster
+        {
+            get { return _isGameMaster; }
+            set
+            {
+                _isGameMaster = value;
+                ProprieteModifiee();
+            }
         }
     }
 }
