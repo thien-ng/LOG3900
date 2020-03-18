@@ -73,6 +73,10 @@ export interface IGameplayChat {
     content:    string,
 }
 
+export interface IGameplayAnnouncement extends IGameplayChat{
+    isServer:   boolean,
+}
+
 export interface IDrawing {
     startPosX:      number,
     startPosY:      number,
