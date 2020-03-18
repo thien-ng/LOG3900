@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import com.example.client_leger.Adapters.GameCardRecyclerViewAdapter
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.GameCardsController
@@ -22,6 +24,7 @@ class GameCardsFragment : Fragment(), GameCardRecyclerViewAdapter.ItemClickListe
     lateinit var username: String
     lateinit var adapterGameCard: GameCardRecyclerViewAdapter
     private lateinit var recyclerViewGameCards: RecyclerView
+    private lateinit var spinnerGameModes: Spinner
     private lateinit var gameCardsController: GameCardsController
     private lateinit var connexionController:ConnexionController
     private lateinit var gameCards: ArrayList<GameCard>
@@ -39,7 +42,10 @@ class GameCardsFragment : Fragment(), GameCardRecyclerViewAdapter.ItemClickListe
         adapterGameCard = GameCardRecyclerViewAdapter(context, gameCards)
         adapterGameCard.setClickListener(this)
         recyclerViewGameCards.adapter = adapterGameCard
-
+        spinnerGameModes = v.findViewById(R.id.GameMode)
+        var gamemodes = arrayListOf<String>("Free for all","Sprint Solo","Sprint Co-op")
+        var dataAdapter  = ArrayAdapter<String>(context,  R.layout.gamemode_item, gamemodes)
+        spinnerGameModes.adapter = dataAdapter
         return v
     }
 

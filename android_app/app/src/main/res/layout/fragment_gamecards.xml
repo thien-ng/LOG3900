@@ -23,16 +23,17 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-        <TextView
-                android:id="@+id/textGrid"
+        <Spinner
+                android:id="@+id/GameMode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="11dp"
                 android:layout_marginLeft="11dp"
-                android:text="Game list"
                 android:textColor="@android:color/white"
                 android:textSize="45sp"
+                android:popupBackground="@android:color/transparent"
+                android:overlapAnchor="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
                 app:layout_constraintTop_toTopOf="parent" />
