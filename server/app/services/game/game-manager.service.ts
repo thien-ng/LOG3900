@@ -3,7 +3,7 @@ import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
 import { ArenaSolo } from "./arena-solo";
 import { ArenaCoop } from "./arena-coop";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { IGameRule } from "../../interfaces/rule";
 
@@ -49,13 +49,21 @@ export class GameManagerService {
             arena.receiveInfo(socket, mes);
     }
 
+    public deleteArena(arenaId: number): void {
+        this.arenas.delete(arenaId);
+    }
+
+    public persistPoints(pts: IPoints[]): void {
+        // TODO persist to db points
+    }
+
     private async setupArena(lobby: IActiveLobby): Promise<void> {
         const room = `arena${this.arenaId}`;
 
         this.addUsersToArena(lobby, room, this.arenaId);
 
         const rules: IGameRule[] = await this.db.getRules();
-        const arena = this.createArenaAccordingToMode(lobby, room, rules);
+        const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
 
         this.lobServ.lobbies.delete(lobby.lobbyName);
         
@@ -65,14 +73,14 @@ export class GameManagerService {
         arena.start();
     }
 
-    private createArenaAccordingToMode(lobby: IActiveLobby, room: string, rules: IGameRule[]): ArenaFfa | ArenaSolo | ArenaCoop {
+    private createArenaAccordingToMode(arenaId: number, lobby: IActiveLobby, room: string, rules: IGameRule[]): ArenaFfa | ArenaSolo | ArenaCoop {
         switch(lobby.mode) {
             case GameMode.FFA:
-                return new ArenaFfa(lobby.users, lobby.size, room, this.socketServer, rules);
+                return new ArenaFfa(arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.SOLO:
-                return new ArenaSolo(lobby.users, lobby.size, room, this.socketServer, rules);
+                return new ArenaSolo(arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.COOP:
-                return new ArenaCoop(lobby.users, lobby.size, room, this.socketServer, rules);
+                return new ArenaCoop(arenaId, lobby.users, room, this.socketServer, rules, this);
         }
     }
 

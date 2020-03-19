@@ -91,6 +91,20 @@ export interface IGameplayDraw extends IDrawing{
     // TODO add others
 }
 
+export interface ICorrAns {
+    username:  string,
+    time:      number,
+    ratio:     number,
+}
+
+/**
+ * POINTS
+ */
+export interface IPoints {
+    username: string,
+    points:   number,
+}
+
 /**
  *  OTHER
  */

@@ -11,4 +11,8 @@ export class ArenaCoop extends Arena {
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw): void {}
 
+    protected handleGameplayChat(mes: IGameplayChat): void {}
+
+    protected handlePoints(): void {}
+
 }
