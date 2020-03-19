@@ -51,11 +51,14 @@ export abstract class Arena {
 
     protected end(): void {
         console.log("[Debug] End routine");
+        const pts = this.preparePtsToBePersisted();
+        console.log("[Debug] end game points are: ", pts);
+        
+
         this.users.forEach(u => {
-            this.socketServer.to(this.room).emit("game-over");
+            this.socketServer.to(this.room).emit("game-over", pts);
         });
         
-        const pts = this.preparePtsToBePersisted();
         this.gm.persistPoints(pts);
         this.gm.deleteArena(this.arenaId);
     }
@@ -76,6 +79,7 @@ export abstract class Arena {
     }
 
     protected chooseRandomRule(): void {
+        // May fail if there is no rules in mongodb
         const index =  Math.floor(Math.random() * this.rules.length);
         this.curRule = this.rules[index];
 
