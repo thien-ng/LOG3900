@@ -110,8 +110,9 @@ class DrawFragment: Fragment() {
 
     private fun updateSeekBarThumbSize(seekBar: SeekBar) {
         val th = ShapeDrawable(OvalShape())
-        th.intrinsicWidth = seekBar.progress
-        th.intrinsicHeight = seekBar.progress
+        val minThumbWidth = 5
+        th.intrinsicWidth = seekBar.progress + minThumbWidth
+        th.intrinsicHeight = seekBar.progress + minThumbWidth
         seekBar.thumb = th
     }
 }
