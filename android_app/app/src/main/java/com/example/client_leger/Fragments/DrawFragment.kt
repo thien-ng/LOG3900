@@ -8,11 +8,10 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.client_leger.Communication.Communication
@@ -81,6 +80,14 @@ class DrawFragment: Fragment() {
         val drawCanvasView = v.getChildAt(4) as DrawCanvas
         val popup = AlertDialog.Builder(v.context)
         val view = layoutInflater.inflate(R.layout.popup_change_width, null)
+        val popupWindow = PopupWindow(
+            view,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            true)
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
         val seekBar = view.findViewById<SeekBar>(R.id.seekBar_changeWidth)
         val okButton = view.findViewById<Button>(R.id.button_changeWidthOk)
 
@@ -89,7 +96,7 @@ class DrawFragment: Fragment() {
 
         okButton.setOnClickListener {
             drawCanvasView.paintLine.strokeWidth = seekBar.progress.toFloat()
-            view.visibility = View.GONE
+            popupWindow.dismiss()
         }
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
@@ -101,11 +108,6 @@ class DrawFragment: Fragment() {
                 updateSeekBarThumbSize(seekBar)
             }
         })
-
-
-        popup.setView(view)
-        popup.create()
-        popup.show()
     }
 
     private fun updateSeekBarThumbSize(seekBar: SeekBar) {
