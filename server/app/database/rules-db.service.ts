@@ -30,7 +30,7 @@ export class RulesDbService {
 
     public async addRule(rule: IGameRule): Promise<void> {
         if (this.validateRule(rule)) {
-            this.collection.insertOne(rule).catch(e => {
+            await this.collection.insertOne(rule).catch(e => {
                 throw e;
             });
         } else {

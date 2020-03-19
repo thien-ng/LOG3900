@@ -1,14 +1,18 @@
 package com.example.client_leger.Fragments
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Button
+import android.widget.PopupWindow
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
@@ -17,6 +21,8 @@ import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class DrawFragment: Fragment() {
+
+    private val canvasViewChildPosition = 4
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
@@ -33,13 +39,17 @@ class DrawFragment: Fragment() {
             switchNormalEraser(v)
         }
 
+        v.button_changeWidth.setOnClickListener {
+            openWidthSelector(v)
+        }
+
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
 
         return v
     }
 
     private fun switchStrokeEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(3) as DrawCanvas
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
         drawCanvasView.isStrokeErasing = !drawCanvasView.isStrokeErasing
         if (drawCanvasView.isNormalErasing) {
             drawCanvasView.isNormalErasing = false
@@ -48,7 +58,7 @@ class DrawFragment: Fragment() {
     }
 
     private fun switchNormalEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(3) as DrawCanvas
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
         drawCanvasView.isNormalErasing = !drawCanvasView.isNormalErasing
         if (drawCanvasView.isStrokeErasing) {
             drawCanvasView.isStrokeErasing = false
@@ -57,7 +67,7 @@ class DrawFragment: Fragment() {
     }
 
     private fun openColorPicker(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(3) as DrawCanvas
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
         val colorPicker = AmbilWarnaDialog(this.context, drawCanvasView.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {}
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
@@ -65,6 +75,48 @@ class DrawFragment: Fragment() {
                 }
             })
         colorPicker.show()
+    }
+
+    private fun openWidthSelector(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        val popup = AlertDialog.Builder(v.context)
+        val view = layoutInflater.inflate(R.layout.popup_change_width, null)
+        val popupWindow = PopupWindow(
+            view,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            true)
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+
+        val seekBar = view.findViewById<SeekBar>(R.id.seekBar_changeWidth)
+        val okButton = view.findViewById<Button>(R.id.button_changeWidthOk)
+
+        updateSeekBarThumbSize(seekBar)
+        seekBar.progress = drawCanvasView.paintLine.strokeWidth.toInt()
+
+        okButton.setOnClickListener {
+            drawCanvasView.paintLine.strokeWidth = seekBar.progress.toFloat()
+            popupWindow.dismiss()
+        }
+
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onStopTrackingTouch(seekBar: SeekBar) { }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) { }
+
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                updateSeekBarThumbSize(seekBar)
+            }
+        })
+    }
+
+    private fun updateSeekBarThumbSize(seekBar: SeekBar) {
+        val th = ShapeDrawable(OvalShape())
+        val minThumbWidth = 5
+        th.intrinsicWidth = seekBar.progress + minThumbWidth
+        th.intrinsicHeight = seekBar.progress + minThumbWidth
+        seekBar.thumb = th
     }
 }
 
