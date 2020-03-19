@@ -4,7 +4,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#62def8">
+        android:background="#ba160c">
 
     <android.support.design.widget.TextInputEditText
             android:id="@+id/textInput_channelNameToCreate"
