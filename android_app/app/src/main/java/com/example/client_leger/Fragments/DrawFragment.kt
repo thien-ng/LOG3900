@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment
 import android.util.AttributeSet
 import android.view.*
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -22,6 +21,8 @@ import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
 class DrawFragment: Fragment() {
+
+    private val canvasViewChildPosition = 4
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
@@ -48,7 +49,7 @@ class DrawFragment: Fragment() {
     }
 
     private fun switchStrokeEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(4) as DrawCanvas
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
         drawCanvasView.isStrokeErasing = !drawCanvasView.isStrokeErasing
         if (drawCanvasView.isNormalErasing) {
             drawCanvasView.isNormalErasing = false
@@ -57,7 +58,7 @@ class DrawFragment: Fragment() {
     }
 
     private fun switchNormalEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(4) as DrawCanvas
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
         drawCanvasView.isNormalErasing = !drawCanvasView.isNormalErasing
         if (drawCanvasView.isStrokeErasing) {
             drawCanvasView.isStrokeErasing = false
@@ -66,7 +67,7 @@ class DrawFragment: Fragment() {
     }
 
     private fun openColorPicker(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(4) as DrawCanvas
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
         val colorPicker = AmbilWarnaDialog(this.context, drawCanvasView.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {}
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
@@ -77,7 +78,7 @@ class DrawFragment: Fragment() {
     }
 
     private fun openWidthSelector(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(4) as DrawCanvas
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
         val popup = AlertDialog.Builder(v.context)
         val view = layoutInflater.inflate(R.layout.popup_change_width, null)
         val popupWindow = PopupWindow(
