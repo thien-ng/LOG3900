@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
@@ -32,7 +33,7 @@ namespace PolyPaint.VueModeles
 
         private void refreshUserList()
         {
-            //if((string)lobbyName == this.LobbyName)
+            //if((string)lobbyName == this.LobbyName) TODO
             //{
                 fetchUsername();
             //}
@@ -40,7 +41,7 @@ namespace PolyPaint.VueModeles
         private async void fetchUsername()
         {
             ObservableCollection<string> usernames = new ObservableCollection<string>();
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);//TODO
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);
 
             StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
             String responseData = streamReader.ReadToEnd();
@@ -53,7 +54,7 @@ namespace PolyPaint.VueModeles
                 });
             }
             Usernames = usernames;
-            _isGameMaster = ServerService.instance.username == Usernames.First<string>();
+            IsGameMaster = ServerService.instance.username == Usernames.First<string>();
         }
 
         private bool _isGameMaster;
@@ -65,6 +66,24 @@ namespace PolyPaint.VueModeles
                 _isGameMaster = value;
                 ProprieteModifiee();
             }
+        }
+
+        private ICommand _startGameCommand;
+        public ICommand StartGameCommand
+        {
+            get
+            {
+                return _startGameCommand ?? (_startGameCommand = new RelayCommand(async x =>
+                {
+                    await Task.Run(() => startGame());
+                }));
+            }
+        }
+
+        private async Task startGame()
+        {
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
+            Console.WriteLine(response.StatusCode);
         }
     }
 }

@@ -136,9 +136,6 @@ namespace PolyPaint.Modeles
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            Console.WriteLine(response);
-            Console.WriteLine(byteContent);
-            Console.WriteLine(response.StatusCode);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
                 Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);

@@ -25,11 +25,11 @@ namespace PolyPaint.VueModeles
             _gameCards = new ObservableCollection<GameCard>();
             getLobbies();
             Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            Mode = new ObservableCollection<string> { "Free for all", "Sprint coop", "Sprint solo" };
-            _selectedMode = "Choose GameMode";
+            _selectedMode = "Select GameMode";
+            IsModeSelected = false;
+            _isModeSelected = false;
         }
 
-        public ObservableCollection<string> Mode { get; }
         public ObservableCollection<int> Numbers { get; }
 
 
@@ -66,6 +66,7 @@ namespace PolyPaint.VueModeles
                     GameCards.Add(gameCard);
                 }
             }
+            else { IsModeSelected = false; }
         }
 
 
@@ -113,6 +114,16 @@ namespace PolyPaint.VueModeles
                     VisibilityPrivate = "Visible";
                 else
                     VisibilityPrivate = "Hidden";
+            }
+        }
+
+        private bool _isModeSelected;
+        public bool IsModeSelected
+        {
+            get { return _isModeSelected; }
+            set
+            {
+                _isModeSelected = value; ProprieteModifiee(); Console.WriteLine(_isModeSelected);
             }
         }
 
@@ -220,6 +231,7 @@ namespace PolyPaint.VueModeles
                 return _modeFFA ?? (_modeFFA = new RelayCommand(x =>
                 {
                     SelectedMode = "FFA";
+                    IsModeSelected = true;
                 }));
             }
         }
@@ -232,6 +244,7 @@ namespace PolyPaint.VueModeles
                 return _modeSolo ?? (_modeSolo = new RelayCommand(x =>
                 {
                     SelectedMode = "SOLO";
+                    IsModeSelected = true;
                 }));
             }
         }
@@ -244,6 +257,7 @@ namespace PolyPaint.VueModeles
                 return _modeCoop ?? (_modeCoop = new RelayCommand(x =>
                 {
                     SelectedMode = "COOP";
+                    IsModeSelected = true;
                 }));
             }
         }

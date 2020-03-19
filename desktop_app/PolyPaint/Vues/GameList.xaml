@@ -33,9 +33,12 @@
             <TextBlock Text="Gamelist" FontSize="30" VerticalAlignment="Center" Foreground="White"/>
         </StackPanel>
         <Button Grid.Column="2" Grid.Row="2" Content="ADD" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
-            <materialDesign:PopupBox Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
+            <materialDesign:PopupBox Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Select the game mode">
                 <materialDesign:PopupBox.ToggleContent>
-                    <TextBlock Text="{Binding SelectedMode}" FontSize="30" Foreground="White" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding SelectedMode}" FontSize="30" Foreground="White" />
+                        <materialDesign:PackIcon HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Width="30" Height="30" Kind="ArrowUpDownBold" />
+                    </StackPanel>
                 </materialDesign:PopupBox.ToggleContent>
                 <StackPanel>
                     <Button Command="{Binding ModeFFA}" Content="Free for all" ></Button>
@@ -43,7 +46,7 @@
                     <Button Command="{Binding ModeCoop}" Content="Sprint Coop" ></Button>
                 </StackPanel>
             </materialDesign:PopupBox>
-            <Button Grid.Column="2" Grid.Row="2" Content="ADD" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
+            <Button Grid.Column="2" Grid.Row="2" Content="ADD" IsEnabled="{Binding IsModeSelected}" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
             <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
                       VerticalScrollBarVisibility="Auto"
                       >
