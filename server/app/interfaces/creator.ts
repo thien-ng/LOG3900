@@ -3,9 +3,29 @@ export interface ISuggestion {
     object: string,
 }
 
-export interface ICreateGame {
-    gameName:   string,
+interface ICreateGame {
     solution:   string,
     clues:      string[],
-    // add other informations
+    difficulty: Difficulty
+}
+
+export interface IManuel1 extends ICreateGame {
+    drawing: IDrawing[]
+}
+
+export interface IDrawing {
+    color:  string,
+    width:  number,
+    points: IPoints[],
+}
+
+export interface IPoints {
+    x: number,
+    y: number,
+}
+
+export enum Difficulty {
+    EASY    = "easy",
+    MEDIUM  = "medium",
+    HARD    = "hard",
 }
