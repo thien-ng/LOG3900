@@ -124,7 +124,9 @@ describe("ChatService, Join/Leave", () => {
 
     it("Should join channel succesfully", async () => {
         //given
-        chai.spy.on(service["db"], "joinChannel", () => { });
+        chai.spy.on(service["db"], "joinChannel", () => { 
+            return { rows: [{ joinchannel: 0 }] }
+        });
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
             return { rows: [{ channel_id: "notEqualChannel" }] }
         });
@@ -132,7 +134,7 @@ describe("ChatService, Join/Leave", () => {
 
         //when
         const result = await service.joinChannel({ username: "username", channel: "channel" });
-
+        
         //then
         chai.expect(result.status).to.be.equal(200);
         chai.expect(result.message).to.be.equal("Successfully joined channel");

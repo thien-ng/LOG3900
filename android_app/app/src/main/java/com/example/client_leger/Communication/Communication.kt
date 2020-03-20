@@ -30,8 +30,8 @@ object Communication {
         return channelSource
     }
 
-    fun updateChannels() {
-        channelSource.onNext("newChannel")
+    fun updateChannels(channelId: String) {
+        channelSource.onNext(channelId)
     }
 
     fun getConnectionListener(): PublishSubject<JSONObject>{

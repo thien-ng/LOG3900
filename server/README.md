@@ -44,7 +44,8 @@
 | login          | emit when logged in                               |                      |
 | logout         | emit when logging out                             |                      |
 | chat           | emit when sending chat messages                   |                      |
-| channel-update | emit when a channel is created or deleted         |                      |
+| channel-update | emit when a channel is created or deleted (depecrated)      |
+| channel-new    | emit when a new channel is created                |
 | lobby-chat     | emit when sending messages in lobby               |                      |
 | lobby-notif    | emit when sending notification about lobby update |                      |
 | game-start     | emit when game is started                         | N/A                  |
@@ -52,3 +53,4 @@
 | game-chat     | emit when sending to game chat                    | {username: string, content: string, isServer:  boolean}|
 | drawer-update | emit when changing roles of players in arena      | username: string      |
 | game-over     | emit when it's end of the game                    | [{username: string, points: number}, {...}, ...]
+
