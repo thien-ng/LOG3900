@@ -12,6 +12,8 @@
             android:layout_marginTop="44dp"
             android:layout_marginEnd="38dp"
             android:layout_marginRight="38dp"
+            android:visibility="invisible"
+            android:enabled="false"
             android:text="Start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
