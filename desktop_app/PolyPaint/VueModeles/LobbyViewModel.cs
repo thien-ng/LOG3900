@@ -45,19 +45,22 @@ namespace PolyPaint.VueModeles
         {
             ObservableCollection<string> usernames = new ObservableCollection<string>();
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);
-
-            StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-            String responseData = streamReader.ReadToEnd();
-            var myData = JsonConvert.DeserializeObject<List<String>>(responseData);
-            foreach (var item in myData)
+            if (response.IsSuccessStatusCode)
             {
-                App.Current.Dispatcher.Invoke(delegate
+                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+                String responseData = streamReader.ReadToEnd();
+
+                var myData = JsonConvert.DeserializeObject<List<String>>(responseData);
+                foreach (var item in myData)
                 {
-                    usernames.Add(item);
-                });
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        usernames.Add(item);
+                    });
+                }
+                Usernames = usernames;
+                IsGameMaster = ServerService.instance.username == Usernames.First<string>();
             }
-            Usernames = usernames;
-            IsGameMaster = ServerService.instance.username == Usernames.First<string>();
         }
 
         private bool _isGameMaster;

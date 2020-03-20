@@ -175,6 +175,7 @@ namespace PolyPaint.VueModeles
         private void goToGameListView(object obj)
         {
             SwitchView = 0;
+            IsInLobby = true;
         }
 
         private void goToLobbyView(object lobbyname)
