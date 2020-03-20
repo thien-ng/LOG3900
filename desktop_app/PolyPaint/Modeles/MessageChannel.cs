@@ -9,6 +9,7 @@ namespace PolyPaint.Modeles
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public string id { get; set; }
+        public bool isLobbyChat { get; set; }
         public string initials { 
             get
             {
@@ -19,10 +20,11 @@ namespace PolyPaint.Modeles
             } 
         }
 
-        public MessageChannel(string id, bool isSubbed)
+        public MessageChannel(string id, bool isSubbed, bool isLobbyChat)
         {
             this.id = id;
             this.isSubbed = isSubbed;
+            this.isLobbyChat = isLobbyChat;
             isSelected = false;
         }
 
@@ -37,7 +39,7 @@ namespace PolyPaint.Modeles
 
         private bool _isSubbed;
         public bool isSubbed { 
-            get { return _isSubbed && id != Constants.DEFAULT_CHANNEL; }
+            get { return _isSubbed && id != Constants.DEFAULT_CHANNEL && !isLobbyChat; }
             set { _isSubbed = value; }
         }
 
@@ -49,7 +51,7 @@ namespace PolyPaint.Modeles
             {
                 return _selectChannelCommand ?? (_selectChannelCommand = new RelayCommand(x =>
                 {
-                    if (isSubbed || id == Constants.DEFAULT_CHANNEL)
+                    if (_isSubbed || id == Constants.DEFAULT_CHANNEL)
                         Mediator.Notify("ChangeChannel", id);
                     else
                         Mediator.Notify("SubToChannel", id);

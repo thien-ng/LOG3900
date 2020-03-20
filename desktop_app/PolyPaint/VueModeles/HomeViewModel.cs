@@ -70,7 +70,7 @@ namespace PolyPaint.VueModeles
             get { return _switchView; }
             set { _switchView = value; ProprieteModifiee();
                 if (_switchView == 2){
-                    IsInLobby = false;
+                    IsNotInLobby = false;
                 } }
         }
 
@@ -102,11 +102,11 @@ namespace PolyPaint.VueModeles
             set { _backEnabled = value; ProprieteModifiee(); }
         }
 
-        private bool _isInLobby;
-        public bool IsInLobby
+        private bool _isNotInLobby;
+        public bool IsNotInLobby
         {
-            get { return _isInLobby; }
-            set { _isInLobby = value; ProprieteModifiee(); }
+            get { return _isNotInLobby; }
+            set { _isNotInLobby = value; ProprieteModifiee(); }
         }
 
         private bool _isCreateChannelDialogOpen;
@@ -165,17 +165,17 @@ namespace PolyPaint.VueModeles
             _switchView = 0;
             _switchViewButton = "Profile";
             _switchViewButtonTooltip = "Access to profile";
-            _isInLobby = true;
+            _isNotInLobby = true;
             _frontEnabled = false;
             _backEnabled = false;
-            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
+            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
             _searchString = "";
         }
 
         private void goToGameListView(object obj)
         {
             SwitchView = 0;
-            IsInLobby = true;
+            IsNotInLobby = true;
         }
 
         private void goToLobbyView(object lobbyname)
@@ -183,6 +183,10 @@ namespace PolyPaint.VueModeles
             SwitchView = 2;
             LobbyViewModel = new LobbyViewModel((string)lobbyname);
             this.Lobbyname = (string)lobbyname;
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+               _subChannels.Add(new MessageChannel(this.Lobbyname, true, true));
+            });
         }
 
         private async void FetchChannels()
@@ -209,7 +213,7 @@ namespace PolyPaint.VueModeles
                     {
                         Application.Current.Dispatcher.Invoke(delegate
                         {
-                            list.Add(new MessageChannel(item.GetValue("id").ToString(), isSubbed));
+                            list.Add(new MessageChannel(item.GetValue("id").ToString(), isSubbed, false));
                         });
                     }
                 }
@@ -224,8 +228,7 @@ namespace PolyPaint.VueModeles
             if (channelId != _selectedChannel.ID)
             {
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = false;
-
-                _selectedChannel = new ChatRoom((string)id);
+                _selectedChannel = new ChatRoom((string)id, !IsNotInLobby);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
 
                 ProprieteModifiee("Messages");
@@ -256,7 +259,7 @@ namespace PolyPaint.VueModeles
             {
                 Application.Current.Dispatcher.Invoke(delegate
                 {
-                    MessageChannel joinedChannel = new MessageChannel(channelId, true);
+                    MessageChannel joinedChannel = new MessageChannel(channelId, true, false);
                     _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
                     _subChannels.Add(joinedChannel);
                 });
@@ -290,7 +293,7 @@ namespace PolyPaint.VueModeles
                 if (_selectedChannel.ID == channelId)
                     ChangeChannel(Constants.DEFAULT_CHANNEL);
 
-                MessageChannel leftChannel = new MessageChannel(channelId, false);
+                MessageChannel leftChannel = new MessageChannel(channelId, false, false);
                 _subChannels.Remove(_subChannels.SingleOrDefault(i => i.id == channelId));
                 _notSubChannels.Add(leftChannel);
             }
@@ -327,9 +330,9 @@ namespace PolyPaint.VueModeles
                                 continue;
 
                             if (item.GetValue("sub").Value<bool>() == true)
-                                _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true));
+                                _subChannels.Add(new MessageChannel(item.GetValue("id").ToString(), true, false));
                             else
-                                _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false));
+                                _notSubChannels.Add(new MessageChannel(item.GetValue("id").ToString(), false, false));
                         }
                     });
                 });

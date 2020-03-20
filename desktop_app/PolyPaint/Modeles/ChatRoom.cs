@@ -13,12 +13,21 @@ namespace PolyPaint.Modeles
         public event PropertyChangedEventHandler PropertyChanged;
         public string ID { get; set; }
         private ObservableCollection<MessageChat> _messages;
+        public bool IsLobbyChat { get; set; }
 
-        public ChatRoom(string id)
+        public ChatRoom(string id, bool isLobbyChat)
         {
             _messages = new ObservableCollection<MessageChat>();
             ID = id;
-            Setup();
+            IsLobbyChat = isLobbyChat;
+            if (isLobbyChat) { SetupLobbyChat(); }
+            else { Setup(); }
+            
+        }
+
+        private void SetupLobbyChat()
+        {
+            ServerService.instance.socket.On("lobby-chat", data => ReceiveMessage((JObject)data));
         }
 
         private void Setup()
@@ -41,7 +50,14 @@ namespace PolyPaint.Modeles
             MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, ID);
 
             var messageJson = JObject.FromObject(messageToSend);
-            ServerService.instance.socket.Emit("chat", messageJson);
+            if (IsLobbyChat)
+            {
+                ServerService.instance.socket.Emit("lobby-chat", messageJson);
+            }
+            else
+            {
+                ServerService.instance.socket.Emit("chat", messageJson);
+            }
         }
 
         private void ReceiveMessage(JToken jsonMessage)
