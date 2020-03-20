@@ -162,6 +162,7 @@ namespace PolyPaint.VueModeles
         {
             _subChannels.Clear();
             _notSubChannels.Clear();
+            
             var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             

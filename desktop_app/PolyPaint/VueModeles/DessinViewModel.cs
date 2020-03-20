@@ -51,6 +51,10 @@ namespace PolyPaint.VueModeles
             set { _traits = value; ProprieteModifiee(); }
         }
 
+        public int Width { get; set; }
+        
+        public int Height { get; set; }
+
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<string> ChoisirPointe { get; set; }
         public RelayCommand<string> ChoisirOutil { get; set; }
@@ -60,9 +64,14 @@ namespace PolyPaint.VueModeles
         /// On récupère certaines données initiales du modèle et on construit les commandes
         /// sur lesquelles la vue se connectera.
         /// </summary>
-        public DessinViewModel()
+        public DessinViewModel(int width = 600, int height = 500)
         {
-            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
+            
+            //ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
+
+            Width = width;
+            Height = height;
+
             // On écoute pour des changements sur le modèle. Lorsqu'il y en a, EditeurProprieteModifiee est appelée.
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
@@ -171,23 +180,23 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        public void OnDraw(JObject data) 
-        {
-            double X1 = (double)data.GetValue("startPosX");
-            double X2 = (double)data.GetValue("endPosX");
-            double Y1 = (double)data.GetValue("startPosY");
-            double Y2 = (double)data.GetValue("endPosY");
+        //public void OnDraw(JObject data) 
+        //{
+        //    double X1 = (double)data.GetValue("startPosX");
+        //    double X2 = (double)data.GetValue("endPosX");
+        //    double Y1 = (double)data.GetValue("startPosY");
+        //    double Y2 = (double)data.GetValue("endPosY");
 
-            StylusPointCollection coll = new StylusPointCollection();
-            coll.Add(new StylusPoint(X1, Y1));
-            coll.Add(new StylusPoint(X2, Y2));
+        //    StylusPointCollection coll = new StylusPointCollection();
+        //    coll.Add(new StylusPoint(X1, Y1));
+        //    coll.Add(new StylusPoint(X2, Y2));
 
-            Stroke str = new Stroke(coll);
+        //    Stroke str = new Stroke(coll);
 
-            App.Current.Dispatcher.Invoke(delegate
-            {
-                Traits.Add(str);
-            });
-        }
+        //    App.Current.Dispatcher.Invoke(delegate
+        //    {
+        //        Traits.Add(str);
+        //    });
+        //}
     }
 }

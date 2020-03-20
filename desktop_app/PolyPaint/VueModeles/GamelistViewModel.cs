@@ -1,17 +1,18 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PolyPaint.Modeles;
 using PolyPaint.Controls;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Windows.Input;
 using System.IO;
 using MaterialDesignThemes.Wpf;
+using System.Threading.Tasks;
+using System;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace PolyPaint.VueModeles
 {
@@ -21,16 +22,20 @@ namespace PolyPaint.VueModeles
         {
 
             _gameCards = new ObservableCollection<GameCard>();
-            getGameCards();
-            Mode = new ObservableCollection<string> { "Free for all", "Sprint coop", "Sprint solo" };
+            //_ = getGameCards();
 
         }
 
-        public ObservableCollection<string> Mode { get; }
-
-        private async void getGameCards()
+        private async Task getGameCards()
         {
-            ObservableCollection<GameCard> gamecards = new ObservableCollection<GameCard>();
+            if (_gameCards.Count > 0)
+            {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    _gameCards.Clear();
+                });
+            }
+
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
 
             StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
@@ -38,14 +43,14 @@ namespace PolyPaint.VueModeles
             var myData = JsonConvert.DeserializeObject<List<GameCard>>(responseData);
             foreach (var item in myData)
             {
+                Console.WriteLine(item.GameName);
                 App.Current.Dispatcher.Invoke(delegate
                 {
-
-                    gamecards.Add(item);
+                    _gameCards.Add(item);
                 });
             }
-            GameCards = gamecards;
         }
+
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
         {
@@ -63,9 +68,36 @@ namespace PolyPaint.VueModeles
                 {
                     var view = new CreateGameControl { DataContext = new CreateGameViewModel() };
 
-                    await DialogHost.Show(view, "RootDialog");
+                    await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
                 }));
             }
         }
+
+        private void ClosingEventHandler(object sender, DialogClosingEventArgs args)
+        {
+            if (args.Parameter == null) return;
+
+            JObject parameters = (JObject)args.Parameter;
+
+            if ((bool)parameters.SelectToken("IsAccept") == false) return;
+
+            //await getGameCards();
+        }
+
+        private async Task postCardRequest(string gamename, string selectedmode)
+        {
+            dynamic values = new JObject();
+            values.gameName = gamename;
+            values.solution = "solution";
+            values.clues = "clues";
+            values.mode = selectedmode;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
+        }
+
+
     }
 }

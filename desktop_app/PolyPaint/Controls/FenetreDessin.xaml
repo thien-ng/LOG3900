@@ -1,4 +1,4 @@
-<Grid
+<Grid   x:Class="PolyPaint.Controls.FenetreDessin"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,7 +7,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"       
         xmlns:vues="clr-namespace:PolyPaint.Vues"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="PolyPaint.FenetreDessin"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d">
     <Grid.Resources>
         <convertisseurs:ConvertisseurBordure x:Key="convertisseurBordure" />
@@ -102,6 +102,8 @@
                         Foreground="Gray"                        
                         TickFrequency="10" TickPlacement="BottomRight" IsSnapToTickEnabled="False">
                 </Slider>
+
+                <Button Content="test" Command="{Binding Test}"/>
             </StackPanel>
 
         </Border>
@@ -115,11 +117,11 @@
 
         <Grid DockPanel.Dock="Left" Margin="0,1,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Name="colonne" Width="1000" />
+                <ColumnDefinition Name="colonne" Width="{Binding Width}" />
                 <ColumnDefinition Width="6" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Name="ligne" Height="800" />
+                <RowDefinition Name="ligne" Height="{Binding Height}" />
                 <RowDefinition Height="6" />
             </Grid.RowDefinitions>
             <Border BorderThickness="5,5,0,0">
