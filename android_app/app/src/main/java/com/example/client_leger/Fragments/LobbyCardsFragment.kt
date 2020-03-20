@@ -16,6 +16,7 @@ import com.example.client_leger.Controller.LobbyCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
 import com.example.client_leger.models.Lobby
+import kotlinx.android.synthetic.main.dialog_createlobby.*
 import org.json.JSONObject
 
 
@@ -67,15 +68,17 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
         np.wrapSelectorWheel = true
         val button: Button = d.findViewById(R.id.button_CreateLobby)
         button.setOnClickListener {
-            var data = JSONObject()
-            data.put("username", username)
-            data.put("private", d.findViewById<Switch>(R.id.switch_private).isChecked)
-            data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
-            data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
-            data.put("mode", "FFA")
-            Log.d("lobby data", data.toString())
-            createLobby(data)
-            d.hide()
+            if(validateLobbyFields(d)) {
+                var data = JSONObject()
+                data.put("username", username)
+                data.put("private", d.findViewById<Switch>(R.id.switch_private).isChecked)
+                data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
+                data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
+                data.put("mode", "FFA")
+                Log.d("lobby data", data.toString())
+                createLobby(data)
+                d.hide()
+            }
         }
         d.show()
     }
@@ -114,5 +117,14 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
 
     private fun createLobby(lobby: JSONObject){
         lobbyCardsController.joinLobby(this, lobby)
+    }
+    private fun validateLobbyFields(d: Dialog):Boolean{
+        return if (d.lobbyname.text.isBlank()) {
+            d.lobbyname.error = "Enter a Lobby Name"
+            d.lobbyname.requestFocus()
+            false
+        }
+        else true
+
     }
 }
