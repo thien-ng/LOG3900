@@ -39,17 +39,12 @@ export class CreationAssist2 {
                 const x = data.drawing[i][0][j];
                 const y = data.drawing[i][1][j];
                 
-                if(j === 0) {
+                if(j === 0)
                     ctx.moveTo(x, y);
-                    points.push({x: x, y: y, isEnd: 1});
-                }
-                if(j > 0) {
+                if(j > 0)
                     ctx.lineTo(x, y);
-                    if (j + 1 === len)
-                        points.push({x: x, y: y, isEnd: 1});
-                    else
-                        points.push({x: x, y: y, isEnd: 0});
-                }
+                    
+                points.push({x: x, y: y});
             }
             ctx.stroke();
 

@@ -23,7 +23,6 @@ export interface IDrawingCreator {
 export interface IPoint {
     x:      number,
     y:      number,
-    isEnd:  number,
 }
 
 export enum Difficulty {
