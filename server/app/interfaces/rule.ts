@@ -1,10 +1,10 @@
 import { Difficulty } from "./creator";
-import { IDrawing } from "./creator";
+import { IDrawingCreator } from "./creator";
 
 
 export interface IGameRule {
     solution:   string,
     clues:      string[],
     difficulty: Difficulty,
-    drawing:    IDrawing[],
+    drawing:    IDrawingCreator[],
 }
