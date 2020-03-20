@@ -305,7 +305,7 @@ namespace PolyPaint.VueModeles
 
         private void UpdateUnsubChannel(JObject channelMes) 
         {
-            MessageChannel newChannel = new MessageChannel(channelMes.GetValue("id").ToString(), false);
+            MessageChannel newChannel = new MessageChannel(channelMes.GetValue("id").ToString(), false, false);
             App.Current.Dispatcher.Invoke(delegate
             {
                 _notSubChannels.Add(newChannel);

@@ -47,15 +47,19 @@ namespace PolyPaint.Modeles
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, ID);
 
-            var messageJson = JObject.FromObject(messageToSend);
             if (IsLobbyChat)
             {
-                ServerService.instance.socket.Emit("lobby-chat", messageJson);
+                var newMessage = new JObject(new JProperty("lobbyName", ID),
+                                             new JProperty("username", ServerService.instance.username),
+                                             new JProperty("message", message));
+                ServerService.instance.socket.Emit("lobby-chat", newMessage);
             }
             else
             {
+                MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, ID);
+
+                var messageJson = JObject.FromObject(messageToSend);
                 ServerService.instance.socket.Emit("chat", messageJson);
             }
         }
