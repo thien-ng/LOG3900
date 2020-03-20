@@ -1,5 +1,6 @@
 package com.example.client_leger.Fragments
 
+import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -8,7 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.*
 import com.example.client_leger.Adapters.LobbyCardRecyclerViewAdapter
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.LobbyCardsController
@@ -50,7 +51,33 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
         adapterLobbyCard.setClickListener(this)
         recyclerViewGameCards.adapter = adapterLobbyCard
 
+        val button: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
+        button.setOnClickListener { showDialog() }
+
         return v
+    }
+
+    private fun showDialog() {
+        val d = Dialog(context)
+        d.setTitle("NumberPicker")
+        d.setContentView(R.layout.dialog_createlobby)
+        val np: NumberPicker = d.findViewById(R.id.np__numberpicker_input)
+        np.maxValue = 9
+        np.minValue = 2
+        np.wrapSelectorWheel = true
+        val button: Button = d.findViewById(R.id.button_CreateLobby)
+        button.setOnClickListener {
+            var data = JSONObject()
+            data.put("username", username)
+            data.put("private", d.findViewById<Switch>(R.id.switch_private).isChecked)
+            data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
+            data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
+            data.put("mode", "FFA")
+            Log.d("lobby data", data.toString())
+            createLobby(data)
+            d.hide()
+        }
+        d.show()
     }
 
     override fun onItemClick(view: View?, position: Int) {
@@ -83,5 +110,9 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
 
     private fun toggleView(v: View) {
         v.visibility = if (v.isShown) View.GONE else View.VISIBLE
+    }
+
+    private fun createLobby(lobby: JSONObject){
+        lobbyCardsController.joinLobby(this, lobby)
     }
 }

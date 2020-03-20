@@ -19,7 +19,6 @@ class Lobby(jsonObject: JSONObject, context: Context) {
         R.layout.simple_list_item_1,
         usernames
     )
-
     private fun jsonArrayToStringArray(usersJsonArray: JSONArray): ArrayList<String> {
         var tempArray: ArrayList<String> = arrayListOf()
         for (i in 0 until usersJsonArray.length())
