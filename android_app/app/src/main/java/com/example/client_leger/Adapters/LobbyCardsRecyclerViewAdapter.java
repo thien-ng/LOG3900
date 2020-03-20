@@ -15,14 +15,14 @@ import com.example.client_leger.R;
 
 import java.util.ArrayList;
 
-public class LobbyCardRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCardRecyclerViewAdapter.ViewHolder> {
+public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCardsRecyclerViewAdapter.ViewHolder> {
 
     private ArrayList<Lobby> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    public LobbyCardRecyclerViewAdapter(Context context, ArrayList<Lobby> data) {
+    public LobbyCardsRecyclerViewAdapter(Context context, ArrayList<Lobby> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
