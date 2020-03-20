@@ -66,7 +66,7 @@ namespace PolyPaint.VueModeles
         /// </summary>
         public DessinViewModel(int width = 600, int height = 500)
         {
-            
+         
             //ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
 
             Width = width;

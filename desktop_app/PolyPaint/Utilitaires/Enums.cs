@@ -5,4 +5,17 @@
         Game,
         ManuelleI
     }
+
+    enum CreationType
+    {
+        Manual,
+        Assisted1,
+        Assisted2
+    }
+
+    enum GameCreationObjects
+    {
+        Canvas,
+        FileSelector
+    }
 }

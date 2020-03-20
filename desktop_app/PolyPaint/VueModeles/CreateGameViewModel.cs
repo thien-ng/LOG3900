@@ -18,6 +18,7 @@ namespace PolyPaint.VueModeles
             Difficulty = new ObservableCollection<string> { "Easy", "Medium", "Hard" };
             Hints = new ObservableCollection<HintModel> { new HintModel(true) };
             DrawViewModel = new CreateGameDrawViewModel();
+            SelectedCreationType = CreationType.Manual;
         }
 
         #region Public Attributes
@@ -52,6 +53,18 @@ namespace PolyPaint.VueModeles
             {
                 if (_selectedDifficulty == value) return;
                 _selectedDifficulty = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private CreationType _selectedCreationType;
+        public CreationType SelectedCreationType
+        {
+            get { return _selectedCreationType; }
+            set
+            {
+                if (_selectedCreationType == value) return;
+                _selectedCreationType = value;
                 ProprieteModifiee();
             }
         }
@@ -135,6 +148,34 @@ namespace PolyPaint.VueModeles
                     if (indexToRemove != -1)
                         Hints.RemoveAt(indexToRemove);
 
+                }));
+            }
+        }
+
+        private ICommand _selectCreationTypeCommand;
+        public ICommand SelectCreationTypeCommand
+        {
+            get
+            {
+                return _selectCreationTypeCommand ?? (_selectCreationTypeCommand = new RelayCommand(x =>
+                {
+                    string creationType = (string) x;
+
+                    switch (creationType)
+                    {
+                        case "man":
+                            SelectedCreationType = CreationType.Manual;
+                            break;
+                        case "ass1":
+                            SelectedCreationType = CreationType.Assisted1;
+                            break;
+                        case "ass2":
+                            SelectedCreationType = CreationType.Assisted2;
+                            break;
+                        default:
+                            SelectedCreationType = CreationType.Manual;
+                            break;
+                    }
                 }));
             }
         }

@@ -36,7 +36,7 @@
                         Command="{Binding Path=ChoisirOutil}"
                         Style="{DynamicResource MaterialDesignFlatButton}"
                         CommandParameter="crayon">
-                    <materialDesign:PackIcon Kind="LeadPencil"/>
+                    <materialDesign:PackIcon Kind="LeadPencil" Foreground="{StaticResource PrimaryHueLightBrush}"/>
                 </Button>
                 <Button Name="efface_segment" 
                         BorderBrush="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurBordure}, ConverterParameter=efface_segment, UpdateSourceTrigger=PropertyChanged}" 
@@ -44,7 +44,7 @@
                         Command="{Binding Path=ChoisirOutil}"
                         Style="{DynamicResource MaterialDesignFlatButton}"
                         CommandParameter="efface_segment">
-                    <materialDesign:PackIcon Kind="Eraser"/>
+                    <materialDesign:PackIcon Kind="Eraser" Foreground="{StaticResource PrimaryHueLightBrush}"/>
                 </Button>
                 <Button Name="efface_trait" 
                         BorderBrush="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurBordure}, ConverterParameter=efface_trait, UpdateSourceTrigger=PropertyChanged}" 
@@ -52,7 +52,7 @@
                         Command="{Binding Path=ChoisirOutil}"
                         Style="{DynamicResource MaterialDesignFlatButton}"
                         CommandParameter="efface_trait">
-                    <materialDesign:PackIcon Kind="EraserVariant"/>
+                    <materialDesign:PackIcon Kind="EraserVariant" Foreground="{StaticResource PrimaryHueLightBrush}"/>
                 </Button>
 
                 <StackPanel Orientation="Horizontal">
@@ -67,7 +67,7 @@
                             Command="{Binding Path=ChoisirPointe}"
                             Style="{DynamicResource MaterialDesignFlatButton}"
                             CommandParameter="ronde">
-                            <materialDesign:PackIcon Kind="Circle"/>
+                            <materialDesign:PackIcon Kind="Circle" Foreground="{StaticResource PrimaryHueLightBrush}"/>
                         </Button>
                         <Button Name="PointeCarree" Margin="0"
                             HorizontalContentAlignment="Center"                            
@@ -76,7 +76,7 @@
                             Command="{Binding Path=ChoisirPointe}"
                             Style="{DynamicResource MaterialDesignFlatButton}"
                             CommandParameter="carree">
-                            <materialDesign:PackIcon Kind="Square"/>
+                            <materialDesign:PackIcon Kind="Square" Foreground="{StaticResource PrimaryHueLightBrush}"/>
                         </Button>
                     </StackPanel>
 
@@ -87,7 +87,7 @@
                   Background="#00000000"
                   ShowDropDownButton="False"
                   ShowRecentColors="True"
-                  BorderBrush="#80000000"
+                  BorderBrush="{StaticResource PrimaryHueLightBrush}"
                   Margin="5,0,0,0" Width="39" Height="38"
                   SelectedColor="{Binding Path=CouleurSelectionnee, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                   AvailableColorsHeader="Palette"
@@ -99,11 +99,9 @@
                 <Slider Width="100" Height="26" Minimum="1" Maximum="50"
                         Value="{Binding Path=TailleTrait, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                         Margin="12"
-                        Foreground="Gray"                        
+                        Foreground="{StaticResource PrimaryHueLightBrush}"                        
                         TickFrequency="10" TickPlacement="BottomRight" IsSnapToTickEnabled="False">
                 </Slider>
-
-                <Button Content="test" Command="{Binding Test}"/>
             </StackPanel>
 
         </Border>
