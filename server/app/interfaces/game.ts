@@ -40,6 +40,10 @@ export interface IReceptMesLob {
     message:   string,
 }
 
+export interface ILobEmitMes extends IReceptMesLob{
+    time: string,
+}
+
 /**
  * LOBBY NOTIFICATIONS
  */
