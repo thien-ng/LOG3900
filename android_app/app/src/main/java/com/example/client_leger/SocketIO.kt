@@ -27,8 +27,8 @@ object SocketIO {
             Communication.updateDraw(it[0] as JSONObject)
         }
 
-        socket.on("channel-update") {
-            Communication.updateChannels()
+        socket.on("channel-new") {
+            Communication.updateChannels((it[0] as JSONObject)["id"].toString())
         }
     }
 
