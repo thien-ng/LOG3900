@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.example.client_leger.Adapters.LobbyCardRecyclerViewAdapter
+import com.example.client_leger.Adapters.LobbyCardsRecyclerViewAdapter
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.LobbyCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
@@ -19,11 +19,11 @@ import kotlinx.android.synthetic.main.dialog_createlobby.*
 import org.json.JSONObject
 
 
-class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickListener,
+class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickListener,
     FragmentChangeListener {
     lateinit var username: String
     lateinit var userListAdapter: ArrayAdapter<String>
-    private lateinit var adapterLobbyCard: LobbyCardRecyclerViewAdapter
+    private lateinit var adapterLobbyCards: LobbyCardsRecyclerViewAdapter
     private lateinit var recyclerViewGameCards: RecyclerView
     private lateinit var lobbyCardsController: LobbyCardsController
     private lateinit var connexionController: ConnexionController
@@ -47,9 +47,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
         recyclerViewGameCards = v.findViewById(R.id.recyclerView_gameCards)
         var numberOfColumns = 2
         recyclerViewGameCards.layoutManager = GridLayoutManager(context, numberOfColumns)
-        adapterLobbyCard = LobbyCardRecyclerViewAdapter(context, lobbyCards)
-        adapterLobbyCard.setClickListener(this)
-        recyclerViewGameCards.adapter = adapterLobbyCard
+        adapterLobbyCards =
+            LobbyCardsRecyclerViewAdapter(
+                context,
+                lobbyCards
+            )
+        adapterLobbyCards.setClickListener(this)
+        recyclerViewGameCards.adapter = adapterLobbyCards
 
         val buttonShowDialog: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
         buttonShowDialog.setOnClickListener { showDialog() }
@@ -65,6 +69,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
         np.maxValue = 9
         np.minValue = 2
         np.wrapSelectorWheel = true
+
+        val switch: Switch = d.findViewById(R.id.switch_private)
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            d.findViewById<EditText>(R.id.lobbyPassword).visibility = if(isChecked) View.VISIBLE else View.GONE
+        }
+
+
         val button: Button = d.findViewById(R.id.button_CreateLobby)
         button.setOnClickListener {
             if(validateLobbyFields(d)) {
@@ -73,6 +84,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
                 data.put("private", d.findViewById<Switch>(R.id.switch_private).isChecked)
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
+                if(switch.isChecked) data.put("password", d.findViewById<EditText>(R.id.lobbyPassword).text.trim())
                 data.put("mode", "FFA")
                 createLobby(data)
                 d.hide()
@@ -88,7 +100,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
     override fun onJoinClick(view: View?, position: Int) {
         var lobby = JSONObject()
         lobby.put("username", username)
-        lobby.put("lobbyName", adapterLobbyCard.getItem(position).lobbyName)
+        lobby.put("lobbyName", adapterLobbyCards.getItem(position).lobbyName)
         lobbyCardsController.joinLobby(this, lobby)
     }
 
@@ -104,7 +116,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
     }
 
     fun loadLobbies(lobbies: ArrayList<Lobby>) {
-        adapterLobbyCard.addItems(lobbies)
+        adapterLobbyCards.addItems(lobbies)
     }
 
     private fun toggleView(v: View) {
@@ -115,12 +127,21 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
         lobbyCardsController.joinLobby(this, lobby)
     }
     private fun validateLobbyFields(d: Dialog):Boolean{
-        return if (d.lobbyname.text.isBlank()) {
-            d.lobbyname.error = "Enter a Lobby Name"
-            d.lobbyname.requestFocus()
-            false
+        return when {
+            d.lobbyname.text.isBlank() -> {
+                d.lobbyname.error = "Enter a Lobby Name"
+                d.lobbyname.requestFocus()
+                false
+            }
+            d.switch_private.isChecked -> {
+                if(d.lobbyPassword.text.isBlank()) {
+                    d.lobbyPassword.error = "Enter a password"
+                    d.lobbyPassword.requestFocus()
+                    false
+                }else true
+            }
+            else -> true
         }
-        else true
 
     }
 }
