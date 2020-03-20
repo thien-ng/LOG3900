@@ -189,6 +189,7 @@ namespace PolyPaint.VueModeles
             {
                _subChannels.Add(new MessageChannel(this.Lobbyname, true, true));
             });
+            ChangeChannel(this.Lobbyname);
         }
 
         private async void FetchChannels()

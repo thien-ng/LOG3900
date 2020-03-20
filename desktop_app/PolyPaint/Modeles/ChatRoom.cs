@@ -22,7 +22,6 @@ namespace PolyPaint.Modeles
             IsLobbyChat = isLobbyChat;
             if (isLobbyChat) { SetupLobbyChat(); }
             else { Setup(); }
-            
         }
 
         private void SetupLobbyChat()
@@ -52,7 +51,7 @@ namespace PolyPaint.Modeles
             {
                 var newMessage = new JObject(new JProperty("lobbyName", ID),
                                              new JProperty("username", ServerService.instance.username),
-                                             new JProperty("message", message));
+                                             new JProperty("content", message));
                 ServerService.instance.socket.Emit("lobby-chat", newMessage);
             }
             else
@@ -66,6 +65,7 @@ namespace PolyPaint.Modeles
 
         private void ReceiveMessage(JToken jsonMessage)
         {
+            Console.WriteLine(jsonMessage);
             MessageReception message = jsonMessage.ToObject<MessageReception>();
             bool isSentByMe = message.username == ServerService.instance.username;
             App.Current.Dispatcher.Invoke(delegate
