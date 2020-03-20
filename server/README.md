@@ -44,6 +44,7 @@
 | login          | emit when logged in                               |
 | logout         | emit when logging out                             |
 | chat           | emit when sending chat messages                   |
-| channel-update | emit when a channel is created or deleted         |
+| channel-update | emit when a channel is created or deleted (depecrated)      |
+| channel-new    | emit when a new channel is created                |
 | lobby-chat     | emit when sending messages in lobby               |
 | lobby-notif    | emit when sending notification about lobby update |
