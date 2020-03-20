@@ -170,6 +170,8 @@ namespace PolyPaint.VueModeles
             _backEnabled = false;
             _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
             _searchString = "";
+
+            ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
         }
 
         private void goToGameListView(object obj)
@@ -299,6 +301,15 @@ namespace PolyPaint.VueModeles
             }
             else
                 MessageBox.Show(responseJson.GetValue("message").ToString());
+        }
+
+        private void UpdateUnsubChannel(JObject channelMes) 
+        {
+            MessageChannel newChannel = new MessageChannel(channelMes.GetValue("id").ToString(), false);
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                _notSubChannels.Add(newChannel);
+            });
         }
 
         private void Disconnect()

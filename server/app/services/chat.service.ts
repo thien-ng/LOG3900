@@ -8,6 +8,7 @@ import { IStatus, IInvitationChannel, IInviteFriend, IChannelParticipation } fro
 import * as pg from "pg";
 import * as io from 'socket.io';
 import { Time } from '../utils/date';
+import { UserManagerService } from "./user-manager.service";
 
 @injectable()
 export class ChatService {
@@ -22,7 +23,9 @@ export class ChatService {
 
     private usernameMapSocketId: Map<string, string>;
 
-    public constructor(@inject(Types.ChatDbService) private db: ChatDbService) {
+    public constructor(
+            @inject(Types.ChatDbService)      private db:       ChatDbService,
+            @inject(Types.UserManagerService) private userServ: UserManagerService) {
         this.channelMapUsersList = new Map<string, IUser[]>();
         this.usernameMapUserId = new Map<string, number>();
         this.usernameMapSocketId = new Map<string, string>();
@@ -147,7 +150,15 @@ export class ChatService {
             if (subbedChannels.some(chan => { return chan.id === join.channel }))
                 throw new Error(`${join.username} is already subscribed to ${join.channel}.`);
 
-            await this.db.joinChannel(join.username, join.channel);
+            const isNew = (await this.db.joinChannel(join.username, join.channel)).rows[0].joinchannel;
+            const users = this.userServ.getUsers();
+            if (isNew === 1) {
+                users.forEach(u => {
+                    if (u.username !== join.username)
+                        this.socket.to(u.socketId).emit("channel-new", {id: join.channel});
+                });
+            }
+            
             this.updateUserToChannels(join.username, join.channel, true);
         } catch (e) {
             result.status = 400

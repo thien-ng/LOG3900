@@ -1,11 +1,32 @@
 export interface ISuggestion {
-    drawing: string,
-    object: string,
+    drawPng: string,
+    drawPxl: IDrawingCreator[];
+    object:  string,
 }
 
-export interface ICreateGame {
-    gameName:   string,
+interface ICreateGame {
     solution:   string,
     clues:      string[],
-    // add other informations
+    difficulty: Difficulty
+}
+
+export interface IManuel1 extends ICreateGame {
+    drawing: IDrawingCreator[]
+}
+
+export interface IDrawingCreator {
+    color:  string,
+    width:  number,
+    points: IPoint[],
+}
+
+export interface IPoint {
+    x:      number,
+    y:      number,
+}
+
+export enum Difficulty {
+    EASY    = "easy",
+    MEDIUM  = "medium",
+    HARD    = "hard",
 }
