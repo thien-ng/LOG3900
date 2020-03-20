@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
@@ -6,6 +7,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -83,7 +86,36 @@ namespace PolyPaint.VueModeles
         private async Task startGame()
         {
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
-            Console.WriteLine(response.StatusCode);
+            Mediator.Notify("GoToDrawScreen");
+        }
+
+        private ICommand _leaveLobbyCommand;
+        public ICommand LeaveLobbyCommand
+        {
+            get
+            {
+                return _leaveLobbyCommand ?? (_leaveLobbyCommand = new RelayCommand(async x =>
+                {
+                    await Task.Run(() => leaveLobby());
+                }));
+            }
+        }
+
+        private async Task leaveLobby()
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.lobbyName = LobbyName;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            {
+                Mediator.Notify("LeaveLobby","");
+            }
         }
     }
 }

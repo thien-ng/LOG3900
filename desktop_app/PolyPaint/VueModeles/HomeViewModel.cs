@@ -155,6 +155,7 @@ namespace PolyPaint.VueModeles
             Mediator.Subscribe("SubToChannel", SubToChannel);
             Mediator.Subscribe("UnsubChannel", UnsubChannel);
             Mediator.Subscribe("GoToLobbyScreen", goToLobbyView);
+            Mediator.Subscribe("LeaveLobby", goToGameListView);
 
             _subChannels = new ObservableCollection<MessageChannel>();
             _notSubChannels = new ObservableCollection<MessageChannel>();
@@ -169,6 +170,11 @@ namespace PolyPaint.VueModeles
             _backEnabled = false;
             _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL);
             _searchString = "";
+        }
+
+        private void goToGameListView(object obj)
+        {
+            SwitchView = 0;
         }
 
         private void goToLobbyView(object lobbyname)

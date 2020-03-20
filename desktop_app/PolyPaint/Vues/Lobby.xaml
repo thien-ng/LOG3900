@@ -19,20 +19,23 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="1" Text="Lobby"/>
-        
-            <ItemsControl Grid.Row="2" ItemsSource="{Binding Usernames}">
+        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" FontSize="35"  Foreground="White" Text="Lobby"/>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Player in this lobby:" FontSize="20" Foreground="White" />
+        <Button Grid.Column="2" Grid.Row="1" Width="125" HorizontalAlignment="Right" Content="Leave lobby" Command="{Binding LeaveLobbyCommand}" Background="{StaticResource SecondaryAccentBrush}" BorderThickness="0"/>
+        <ItemsControl Margin="15" Grid.Row="2" ItemsSource="{Binding Usernames}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-
-                            <TextBlock Foreground="White" FontSize="16" Text="{Binding}" />
-
+                        <StackPanel Orientation="Horizontal">
+                        <TextBlock Foreground="White" FontSize="20" Text="-"/>
+                        <TextBlock Foreground="White" FontSize="20" Text="{Binding}" />
+                        </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        <Button Grid.Column="1" Grid.Row="2" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Start game" Command="{Binding StartGameCommand}" Visibility="{Binding IsGameMaster, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <Button Grid.Column="1" Grid.Row="3" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Start game" Command="{Binding StartGameCommand}" Visibility="{Binding IsGameMaster, Converter={StaticResource BooleanToVisibilityConverter}}"/>
     </Grid>
 </UserControl>
