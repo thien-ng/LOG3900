@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,8 +51,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
         adapterLobbyCard.setClickListener(this)
         recyclerViewGameCards.adapter = adapterLobbyCard
 
-        val button: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
-        button.setOnClickListener { showDialog() }
+        val buttonShowDialog: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
+        buttonShowDialog.setOnClickListener { showDialog() }
 
         return v
     }
@@ -75,7 +74,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
                 data.put("mode", "FFA")
-                Log.d("lobby data", data.toString())
                 createLobby(data)
                 d.hide()
             }
@@ -96,8 +94,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardRecyclerViewAdapter.ItemClickLis
 
     override fun onUsersDropClick(view: View?, position: Int) {
         if (view != null) {
-            Log.d("FragmentOnClick", "toggleView")
-
             toggleView(view)
         }
     }
