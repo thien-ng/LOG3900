@@ -1,18 +1,15 @@
 import * as chai from "chai";
 import * as spies from "chai-spies";
-import Types from '../types';
 import { container } from "../inversify.config";
-import { Bot } from "./bot";
-import { IDrawing } from "../interfaces/game";
-import { DisplayMode, Personality } from "./taunts";
-import { GameManagerService } from "../services/game/game-manager.service";
+import { Bot } from "../bots/bot";
+import { IDrawing, IGameplayDraw } from "../interfaces/game";
+import { DisplayMode, Personality } from "../bots/taunts";
 import { Side } from "../utils/Side";
 
 chai.use(spies);
 
 describe("Bot", () => {
 
-    let service: GameManagerService;
 
     let image: IDrawing[] = [
         {
@@ -195,7 +192,6 @@ describe("Bot", () => {
 
     beforeEach(() => {
         container.snapshot();
-        service = container.get<GameManagerService>(Types.GameManagerService);
     });
 
     afterEach(() => {
@@ -204,7 +200,7 @@ describe("Bot", () => {
 
     it("Should have the good default properties", () => {
         //when
-        const dude: Bot = new Bot(image, undefined, undefined, undefined, undefined, undefined, service);
+        const dude: Bot = new Bot(image, undefined, undefined, undefined, undefined, undefined);
         //then
         chai.expect(dude).to.have.property('username').to.equal("BOT:bob");
         chai.expect(dude).to.have.property('hint').to.equal("no hint for you!");
@@ -212,9 +208,9 @@ describe("Bot", () => {
         chai.expect(dude).to.have.property('taunts').not.to.equal(undefined);
     });
 
-    it("Should have the good properties", async () => {
+    it("Should have the good properties", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, mode, style, side, service);
+        const dude: Bot = new Bot(image, username, hint, mode, style, side);
         //then
         chai.expect(dude).to.have.property('username').to.equal("dude");
         chai.expect(dude).to.have.property('hint').to.equal("a circle");
@@ -231,35 +227,47 @@ describe("Bot", () => {
         ]);
     });
 
-    it("Should have the strokes in the right classic order", async () => {
+    it("Should have the strokes in the right classic order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.classic, style, side, service);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.classic, style, side);
         //then
         chai.expect(dude).to.have.property('image').to.eql(image);
     });
 
-    it("Should have the strokes in the right centered order", async () => {
+    it("Should have the strokes in the right centered order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.centered, style, side, service);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.centered, style, side);
 
         //then
         chai.expect(dude).to.have.property('image').to.eql(imageCentered);
     });
 
-    it("Should have the strokes in a panoramic from up order", async () => {
+    it("Should have the strokes in a panoramic from up order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, style, Side.up, service);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, style, Side.up);
 
         //then
         chai.expect(dude).to.have.property('image').to.eql(imagePanoUp);
     });
 
-    it("Should have the strokes in a panoramic from right order", async () => {
+    it("Should have the strokes in a panoramic from right order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, style, Side.right, service);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, style, Side.right);
 
         //then
         chai.expect(dude).to.have.property('image').to.eql(imagePanoRight);
+    });
+
+    it("Should print the strokes one after the other and throw error after image.length", () => {
+        //when
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.classic, style, Side.up);
+        //then
+        for (let i = 0; i < dude.length; i++) {
+            const stroke: IGameplayDraw = dude.GetNextStroke();
+            chai.expect(stroke.username).to.equal(username);
+            chai.expect(stroke).to.equal(image[i]);
+        }
+        chai.expect(dude.GetNextStroke).to.throw();
     });
 
 });

@@ -1,12 +1,12 @@
-import { injectable, inject } from "inversify";
+import { injectable } from "inversify";
 import { IGameplayDraw, IDrawing } from "../interfaces/game";
-import { GameManagerService } from "../services/game/game-manager.service";
-import Types from '../types';
 import { Taunt, Personality, DisplayMode } from './taunts';
 import { Side } from '../utils/Side';
 
 @injectable()
 export class Bot {
+
+    public length: number;
 
     private image: IDrawing[];
     private taunts: string[];
@@ -21,40 +21,33 @@ export class Bot {
         hint: string = "no hint for you!",
         mode: DisplayMode = DisplayMode.classic,
         style: Personality = Personality.length,
-        panoramicFirstSide: Side = Side.up,
-        @inject(Types.GameManagerService) private gameManager: GameManagerService) {
+        panoramicFirstSide: Side = Side.up) {
 
         this.username = username;
         this.mode = mode;
         this.image = image;
+        this.length = this.image.length;
         this.hint = hint;
         this.panoramicFirstSide = panoramicFirstSide;
+        this.nextStroke = 0;
         this.sort();
-        this.findStroke();
         if (style == Personality.length)
             style = this.randPersonality();
         this.taunts = Taunt.getTaunts(style);
     }
 
-    public sendNextStroke(): boolean {
-        const out: any = this.image[this.nextStroke];           // whacky stuff here
+    public GetNextStroke(): IGameplayDraw {
+        if (this.isDone()) {
+            throw Error("image already drawn. \n the length is a public parameter");
+        }
+        const out: any = this.image[this.nextStroke++];         // whacky stuff here
         out.username = this.username;                           // whacky stuff here
         const res: IGameplayDraw = out;                         // whacky stuff here
-        this.gameManager.sendMessageToArena(res);               // ceci ou la fonction qui enverra a tout le monde
-        this.findStroke();
-        return !this.isDone();   // retourne true si il reste des traits a ajouter.
+        return res;   // retourne true si il reste des traits a ajouter.
     }
 
     private isDone(): boolean {
         return (this.nextStroke == this.image.length);
-    }
-
-    private findStroke(): void { // quand le dernier trait a ete envoyee, on met le prochain a image.length;
-        if (this.nextStroke == null) {
-            this.nextStroke = 0;
-            return;
-        }
-        this.nextStroke++;
     }
 
     private sort(): void {
