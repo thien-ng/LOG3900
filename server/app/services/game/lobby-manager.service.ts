@@ -1,7 +1,8 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby, GameMode } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby, GameMode, ILobEmitMes } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
+import { Time } from "../../utils/date";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -146,8 +147,10 @@ export class LobbyManagerService {
 
         if (this.isNotification(mes))
             lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif") });
-        else 
-            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", mes.message) });
+        else {
+            const message = {lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
+        }
     }
 
     private isNotification(object: any): object is INotify {
