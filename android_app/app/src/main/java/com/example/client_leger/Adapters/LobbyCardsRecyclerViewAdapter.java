@@ -98,6 +98,13 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         }
     }
 
+    public void setItems(ArrayList<Lobby> items) {
+        mData.clear();
+        for (int i = 0; i < items.size(); i++) {
+            mData.add(items.get(i));
+            notifyItemChanged(i);
+        }
+    }
 
     // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {

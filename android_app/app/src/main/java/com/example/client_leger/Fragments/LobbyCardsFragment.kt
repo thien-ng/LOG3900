@@ -14,6 +14,7 @@ import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.LobbyCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
+import com.example.client_leger.models.GameMode
 import com.example.client_leger.models.Lobby
 import kotlinx.android.synthetic.main.dialog_createlobby.*
 import org.json.JSONObject
@@ -29,6 +30,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private lateinit var connexionController: ConnexionController
     private lateinit var lobbyCards: ArrayList<Lobby>
     private lateinit var userList: ArrayList<String>
+    private lateinit var spinnerGameModes: Spinner
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,7 +45,9 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             android.R.layout.simple_list_item_1,
             userList
         )
-        lobbyCardsController.getLobbies(this, "FFA")
+
+
+
         recyclerViewGameCards = v.findViewById(R.id.recyclerView_gameCards)
         var numberOfColumns = 2
         recyclerViewGameCards.layoutManager = GridLayoutManager(context, numberOfColumns)
@@ -56,7 +60,26 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         recyclerViewGameCards.adapter = adapterLobbyCards
 
         val buttonShowDialog: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
+        buttonShowDialog.isEnabled = false
         buttonShowDialog.setOnClickListener { showDialog() }
+
+        spinnerGameModes = v.findViewById(R.id.GameMode)
+        var gamemodes = arrayListOf("Select Game Mode","Free for all","Sprint Solo","Sprint Co-op")
+        var dataAdapter  = ArrayAdapter(context,  R.layout.gamemode_item, gamemodes)
+        spinnerGameModes.adapter = dataAdapter
+        spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(position > 0)
+                    buttonShowDialog.isEnabled = true
+                lobbyCardsController.getLobbies(this@LobbyCardsFragment, spinnerToGameMode(position).toString())
+            }
+
+        }
+
 
         return v
     }
@@ -85,7 +108,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
                 if(switch.isChecked) data.put("password", d.findViewById<EditText>(R.id.lobbyPassword).text.trim())
-                data.put("mode", "FFA")
+                data.put("mode", spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString())
                 createLobby(data)
                 d.hide()
             }
@@ -116,7 +139,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     fun loadLobbies(lobbies: ArrayList<Lobby>) {
-        adapterLobbyCards.addItems(lobbies)
+        adapterLobbyCards.setItems(lobbies)
     }
 
     private fun toggleView(v: View) {
@@ -157,5 +180,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             else -> true
         }
 
+    }
+    private fun spinnerToGameMode(id:Int):GameMode{
+        return when (id) {
+            1 -> GameMode.FFA
+            2 -> GameMode.SOLO
+            3 -> GameMode.COOP
+            else -> GameMode.FFA
+        }
     }
 }
