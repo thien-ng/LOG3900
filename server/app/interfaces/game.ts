@@ -88,6 +88,7 @@ export interface IDrawing {
     endPosY:        number,
     color:          number,
     width:          number,
+    idEnd:          number,
 }
 
 export interface IGameplayDraw extends IDrawing{
