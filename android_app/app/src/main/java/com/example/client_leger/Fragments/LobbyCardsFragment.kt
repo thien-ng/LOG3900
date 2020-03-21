@@ -3,8 +3,10 @@ package com.example.client_leger.Fragments
 import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.LobbyCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
+import com.example.client_leger.models.GameMode
 import com.example.client_leger.models.Lobby
 import kotlinx.android.synthetic.main.dialog_createlobby.*
 import org.json.JSONObject
@@ -29,6 +32,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private lateinit var connexionController: ConnexionController
     private lateinit var lobbyCards: ArrayList<Lobby>
     private lateinit var userList: ArrayList<String>
+    private lateinit var spinnerGameModes: Spinner
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,7 +47,27 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             android.R.layout.simple_list_item_1,
             userList
         )
-        lobbyCardsController.getLobbies(this, "FFA")
+        spinnerGameModes = v.findViewById(R.id.GameMode)
+        var gamemodes = arrayListOf("Select Game Mode","Free for all","Sprint Solo","Sprint Co-op")
+        var dataAdapter  = ArrayAdapter(context,  R.layout.gamemode_item, gamemodes)
+        spinnerGameModes.adapter = dataAdapter
+        spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(position > 0)
+                    lobbyCardsController.getLobbies(activity as LobbyCardsFragment, ((position-1) as GameMode).toString())
+
+            }
+
+        }
+
+
+
+        Log.d("game mode ",(spinnerGameModes.selectedItemId as GameMode).toString())
+
         recyclerViewGameCards = v.findViewById(R.id.recyclerView_gameCards)
         var numberOfColumns = 2
         recyclerViewGameCards.layoutManager = GridLayoutManager(context, numberOfColumns)
@@ -57,6 +81,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
         val buttonShowDialog: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
         buttonShowDialog.setOnClickListener { showDialog() }
+
+
 
         return v
     }
