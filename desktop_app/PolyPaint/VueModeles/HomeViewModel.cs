@@ -15,7 +15,7 @@ using System.Windows.Input;
 namespace PolyPaint.VueModeles
 {
     class HomeViewModel : BaseViewModel, IPageViewModel
-    {
+    { 
         public LobbyViewModel LobbyViewModel { get; private set; }
         public string Lobbyname { get; set; }
         public HomeViewModel()
@@ -178,6 +178,10 @@ namespace PolyPaint.VueModeles
         {
             SwitchView = 0;
             IsNotInLobby = true;
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                FetchChannels();
+            });
         }
 
         private void goToLobbyView(object lobbyname)
