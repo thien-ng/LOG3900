@@ -149,6 +149,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private fun createLobby(lobby: JSONObject){
         lobbyCardsController.joinLobby(this, lobby)
     }
+    
     private fun validateLobbyFields(d: Dialog):Boolean{
         return when {
             d.lobbyname.text.isBlank() -> {
@@ -156,12 +157,25 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 d.lobbyname.requestFocus()
                 false
             }
+            d.lobbyname.text.length > 20 ->{
+                d.lobbyname.error = "Lobby name must be between 1 and 20 characters"
+                d.lobbyname.requestFocus()
+                false
+            }
             d.switch_private.isChecked -> {
-                if(d.lobbyPassword.text.isBlank()) {
-                    d.lobbyPassword.error = "Enter a password"
-                    d.lobbyPassword.requestFocus()
-                    false
-                }else true
+                when {
+                    d.lobbyPassword.text.isBlank() -> {
+                        d.lobbyPassword.error = "Enter a password"
+                        d.lobbyPassword.requestFocus()
+                        false
+                    }
+                    d.lobbyPassword.text.length > 20 ->{
+                        d.lobbyPassword.error = "Lobby password must be between 1 and 20 characters"
+                        d.lobbyPassword.requestFocus()
+                        false
+                    }
+                    else -> true
+                }
             }
             else -> true
         }
