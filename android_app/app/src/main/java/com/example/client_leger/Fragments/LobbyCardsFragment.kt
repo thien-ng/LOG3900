@@ -45,21 +45,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             android.R.layout.simple_list_item_1,
             userList
         )
-        spinnerGameModes = v.findViewById(R.id.GameMode)
-        var gamemodes = arrayListOf("Select Game Mode","Free for all","Sprint Solo","Sprint Co-op")
-        var dataAdapter  = ArrayAdapter(context,  R.layout.gamemode_item, gamemodes)
-        spinnerGameModes.adapter = dataAdapter
-        spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {
 
-            }
 
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(position > 0)
-                    lobbyCardsController.getLobbies(this@LobbyCardsFragment, spinnerToGameMode(position).toString())
-            }
-
-        }
 
         recyclerViewGameCards = v.findViewById(R.id.recyclerView_gameCards)
         var numberOfColumns = 2
@@ -73,8 +60,25 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         recyclerViewGameCards.adapter = adapterLobbyCards
 
         val buttonShowDialog: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
+        buttonShowDialog.isEnabled = false
         buttonShowDialog.setOnClickListener { showDialog() }
 
+        spinnerGameModes = v.findViewById(R.id.GameMode)
+        var gamemodes = arrayListOf("Select Game Mode","Free for all","Sprint Solo","Sprint Co-op")
+        var dataAdapter  = ArrayAdapter(context,  R.layout.gamemode_item, gamemodes)
+        spinnerGameModes.adapter = dataAdapter
+        spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(position > 0)
+                    buttonShowDialog.isEnabled = true
+                lobbyCardsController.getLobbies(this@LobbyCardsFragment, spinnerToGameMode(position).toString())
+            }
+
+        }
 
 
         return v
