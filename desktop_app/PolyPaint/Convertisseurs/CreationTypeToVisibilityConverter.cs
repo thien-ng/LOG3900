@@ -18,7 +18,11 @@ namespace PolyPaint.Convertisseurs
                     if (obj == GameCreationObjects.Canvas)
                         return Visibility.Visible;
                     else if (obj == GameCreationObjects.FileSelector)
-                        return Visibility.Hidden;                        
+                        return Visibility.Hidden;
+                    else if (obj == GameCreationObjects.CanvasFileselector)
+                        return Visibility.Visible;
+                    else if (obj == GameCreationObjects.Generator)
+                        return Visibility.Hidden;
                     break;
                 
                 case CreationType.Assisted1:
@@ -26,6 +30,10 @@ namespace PolyPaint.Convertisseurs
                         return Visibility.Hidden;
                     else if (obj == GameCreationObjects.FileSelector)
                         return Visibility.Visible;
+                    else if (obj == GameCreationObjects.CanvasFileselector)
+                        return Visibility.Visible;
+                    else if (obj == GameCreationObjects.Generator)
+                        return Visibility.Hidden;
                     break;
                 
                 case CreationType.Assisted2:
@@ -33,6 +41,10 @@ namespace PolyPaint.Convertisseurs
                         return Visibility.Hidden;
                     else if (obj == GameCreationObjects.FileSelector)
                         return Visibility.Hidden;
+                    else if (obj == GameCreationObjects.CanvasFileselector)
+                        return Visibility.Hidden;
+                    else if (obj == GameCreationObjects.Generator)
+                        return Visibility.Visible;
                     break;
                 
                 default:
