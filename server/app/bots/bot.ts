@@ -1,9 +1,7 @@
-import { injectable } from "inversify";
 import { IGameplayDraw, IDrawing } from "../interfaces/game";
 import { Taunt, Personality, DisplayMode } from './taunts';
 import { Side } from '../utils/Side';
 
-@injectable()
 export class Bot {
 
     public length: number;
