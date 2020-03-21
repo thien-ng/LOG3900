@@ -30,7 +30,7 @@
                     Margin="4">
 
             <RadioButton Margin="0 0 8 8"
-                         x:Name="man2"
+                         x:Name="man"
                          Background="{StaticResource PrimaryHueLightBrush}"
                          Command="{Binding SelectCreationTypeCommand}"
                          CommandParameter="{Binding ElementName=man, Path=Name}"
