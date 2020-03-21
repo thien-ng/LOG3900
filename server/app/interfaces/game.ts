@@ -77,6 +77,10 @@ export interface IGameplayChat {
     content:    string,
 }
 
+export interface IGameplayAnnouncement extends IGameplayChat{
+    isServer:   boolean,
+}
+
 export interface IDrawing {
     startPosX:      number,
     startPosY:      number,
@@ -89,6 +93,20 @@ export interface IDrawing {
 export interface IGameplayDraw extends IDrawing{
     username:       string,
     // TODO add others
+}
+
+export interface ICorrAns {
+    username:  string,
+    time:      number,
+    ratio:     number,
+}
+
+/**
+ * POINTS
+ */
+export interface IPoints {
+    username: string,
+    points:   number,
 }
 
 /**

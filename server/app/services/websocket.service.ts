@@ -55,7 +55,7 @@ export class WebsocketService {
             });
 
             socket.on('gameplay', (mes: IGameplayChat | IGameplayDraw) => {
-                this.gameServ.sendMessageToArena(mes);
+                this.gameServ.sendMessageToArena(socket, mes);
             });
 
             socket.on('logout', () => {
@@ -84,6 +84,7 @@ export class WebsocketService {
     }
 
     private logout(username: string): void {
+        this.gameServ.handleDisconnect(username);
         this.lobServ.handleDisconnect(username);
         this.chatServ.removeUserFromChannelMap(username);
         this.userServ.deleteUser(username);
