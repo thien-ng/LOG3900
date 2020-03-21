@@ -39,6 +39,15 @@
 
 # Socket
 
+## Lobby
+| Event          | Description                                       | Object               |
+| -------------- | ------------------------------------------------- |-----------------     |
+| lobby-chat     | emit when sending messages in lobby               |                      |
+| lobby-notif    | emit when sending notification about lobby update when is join  |{type: join, lobbyName: string, user: string}|
+| lobby-notif    | emit when sending notification about lobby update when is leave |{type: leave, lobbyName: string, user: string}|
+| lobby-notif    | emit when sending notification about lobby update when is create|{type: create, lobbyName: string, users: string[], private: boolean, size: number}|
+| lobby-notif    | emit when sending notification about lobby update when is delete|{type: delete, lobbyName: string}|
+
 | Event          | Description                                       | Object               |
 | -------------- | ------------------------------------------------- |-----------------     |
 | login          | emit when logged in                               |                      |
@@ -46,8 +55,6 @@
 | chat           | emit when sending chat messages                   |                      |
 | channel-update | emit when a channel is created or deleted (depecrated)      |
 | channel-new    | emit when a new channel is created                |
-| lobby-chat     | emit when sending messages in lobby               |                      |
-| lobby-notif    | emit when sending notification about lobby update |                      |
 | game-start     | emit when game is started                         | N/A                  |
 | draw           | emit when sending drawings to clients             | {startPosX: number,startPosY :number,endPosX:number,endPosY:number,color:number,width:number}|
 | game-chat     | emit when sending to game chat                    | {username: string, content: string, isServer:  boolean}|
