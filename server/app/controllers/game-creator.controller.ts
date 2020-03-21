@@ -18,8 +18,12 @@ export class GameCreatorController {
             res.json(await this.creatorServ.getSuggestion());
         });
 
-        this.router.post('/game/new', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.creatorServ.createGame(req.body));
+        this.router.post('/game/new', async (req: Request, res: Response, next: NextFunction) => {
+            await this.creatorServ.createGame(req.body).catch(e => {
+                res.status(500);
+                res.json(e.message);
+            });
+            res.status(200).send();
         });
     }
 
