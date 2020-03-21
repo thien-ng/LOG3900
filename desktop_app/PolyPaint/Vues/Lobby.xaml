@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:PolyPaint.Vues"
              xmlns:localView="clr-namespace:PolyPaint.Vues"
              xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -25,7 +26,9 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" FontSize="35"  Foreground="White" Text="Lobby"/>
         <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="Player in this lobby:" FontSize="20" Foreground="White" />
-        <Button Grid.Column="2" Grid.Row="1" Width="125" HorizontalAlignment="Right" Content="Leave lobby" Command="{Binding LeaveLobbyCommand}" Background="{StaticResource SecondaryAccentBrush}" BorderThickness="0"/>
+        <Button Grid.Column="2" Grid.Row="1" ToolTip="Leave lobby"  HorizontalAlignment="Right" Command="{Binding LeaveLobbyCommand}" Style="{StaticResource MaterialDesignIconButton}">
+            <materialDesign:PackIcon Kind="DoorClosed" Foreground="DarkRed" Height="40" Width="40" />
+        </Button>
         <ItemsControl Margin="15" Grid.Row="2" ItemsSource="{Binding Usernames}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

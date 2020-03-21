@@ -77,8 +77,8 @@
                         HorizontalAlignment="Center" 
                         VerticalAlignment="Center" 
                         Style="{DynamicResource MaterialDesignToolButton}">
-                    
-                    <materialDesign:PackIcon Kind="CreateOutline"
+
+                    <materialDesign:PackIcon Kind="MessagePlusOutline"
                                              Foreground="White"/>
                 </Button>
                 

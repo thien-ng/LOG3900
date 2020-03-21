@@ -7,6 +7,17 @@ namespace PolyPaint.Modeles
 {
     public class MessageChannel: INotifyPropertyChanged
     {
+     
+        public MessageChannel(string id, bool isSubbed, bool isLobbyChat)
+        {
+            this.id = id;
+            this.isSubbed = isSubbed;
+            this.isLobbyChat = isLobbyChat;
+            isSelected = false;
+        }
+
+        #region Public Attributes
+
         public event PropertyChangedEventHandler PropertyChanged;
         public string id { get; set; }
         public bool isLobbyChat { get; set; }
@@ -20,15 +31,6 @@ namespace PolyPaint.Modeles
             } 
         }
 
-        public MessageChannel(string id, bool isSubbed, bool isLobbyChat)
-        {
-            this.id = id;
-            this.isSubbed = isSubbed;
-            this.isLobbyChat = isLobbyChat;
-            isSelected = false;
-        }
-
-
         private bool _isSelected;
         public bool isSelected 
         { 
@@ -36,14 +38,21 @@ namespace PolyPaint.Modeles
             set { _isSelected = value; ProprieteModifiee(); } 
         }
 
-
         private bool _isSubbed;
         public bool isSubbed { 
             get { return _isSubbed && id != Constants.DEFAULT_CHANNEL && !isLobbyChat; }
             set { _isSubbed = value; }
         }
+        #endregion
 
+        #region Methods
+        protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
 
+        #region Commands
         private ICommand _selectChannelCommand;
         public ICommand SelectChannelCommand
         {
@@ -71,10 +80,6 @@ namespace PolyPaint.Modeles
                 }));
             }
         }
-
-        protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #endregion
     }
 }

@@ -17,6 +17,15 @@ namespace PolyPaint.VueModeles
 {
     class LobbyViewModel: BaseViewModel, IPageViewModel
     {
+        public LobbyViewModel(string lobbyname)
+        {
+            Usernames = new ObservableCollection<string>();
+            this.LobbyName = lobbyname;
+            fetchUsername();
+            ServerService.instance.socket.On("lobby-notif", refreshUserList);
+        }
+
+        #region Public Attributes
         public string LobbyName { get; set; }
         private ObservableCollection<string> _usernames;
         public ObservableCollection<string> Usernames
@@ -24,14 +33,34 @@ namespace PolyPaint.VueModeles
             get { return _usernames; }
             set { _usernames = value; ProprieteModifiee(); }
         }
-
-        public LobbyViewModel(string lobbyname)
+        private bool _isGameMaster;
+        public bool IsGameMaster
         {
-            Usernames = new ObservableCollection<string>();
-            this.LobbyName = lobbyname;
-            fetchUsername();
-            ServerService.instance.socket.On("lobby-notif", refreshUserList);
+            get { return _isGameMaster; }
+            set
+            {
+                _isGameMaster = value;
+                ProprieteModifiee();
+            }
+        }
+        #endregion
 
+        #region Methods
+        private async Task leaveLobby()
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.lobbyName = LobbyName;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            {
+                Mediator.Notify("LeaveLobby", "");
+            }
         }
 
         private void refreshUserList()
@@ -62,17 +91,15 @@ namespace PolyPaint.VueModeles
                 IsGameMaster = ServerService.instance.username == Usernames.First<string>();
             }
         }
-
-        private bool _isGameMaster;
-        public bool IsGameMaster
+        private async Task startGame()
         {
-            get { return _isGameMaster; }
-            set
-            {
-                _isGameMaster = value;
-                ProprieteModifiee();
-            }
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
+            Mediator.Notify("GoToDrawScreen");
         }
+
+        #endregion
+
+        #region Commands
 
         private ICommand _startGameCommand;
         public ICommand StartGameCommand
@@ -84,13 +111,7 @@ namespace PolyPaint.VueModeles
                     await Task.Run(() => startGame());
                 }));
             }
-        }
-
-        private async Task startGame()
-        {
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
-            Mediator.Notify("GoToDrawScreen");
-        }
+        }    
 
         private ICommand _leaveLobbyCommand;
         public ICommand LeaveLobbyCommand
@@ -103,22 +124,6 @@ namespace PolyPaint.VueModeles
                 }));
             }
         }
-
-        private async Task leaveLobby()
-        {
-            string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.lobbyName = LobbyName;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
-            {
-                Mediator.Notify("LeaveLobby","");
-            }
-        }
+        #endregion
     }
 }

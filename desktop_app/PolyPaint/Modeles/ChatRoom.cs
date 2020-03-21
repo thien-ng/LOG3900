@@ -10,10 +10,6 @@ namespace PolyPaint.Modeles
 {
     class ChatRoom: INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public string ID { get; set; }
-        private ObservableCollection<MessageChat> _messages;
-        public bool IsLobbyChat { get; set; }
 
         public ChatRoom(string id, bool isLobbyChat)
         {
@@ -23,6 +19,24 @@ namespace PolyPaint.Modeles
             if (isLobbyChat) { SetupLobbyChat(); }
             else { Setup(); }
         }
+
+        #region Public Attributes
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string ID { get; set; }
+
+        public bool IsLobbyChat { get; set; }
+
+        private ObservableCollection<MessageChat> _messages;
+        public ObservableCollection<MessageChat> Messages
+        {
+            get { return _messages; }
+            set { _messages = value; ProprieteModifiee(nameof(Messages)); }
+        }
+
+        #endregion
+
+        #region Methods
 
         private void SetupLobbyChat()
         {
@@ -34,13 +48,6 @@ namespace PolyPaint.Modeles
             LoadMessages();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
         }
-
-        public ObservableCollection<MessageChat> Messages
-        {
-            get { return _messages; }
-            set { _messages = value; ProprieteModifiee(nameof(Messages)); }
-        }
-
         public void SendMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -65,7 +72,6 @@ namespace PolyPaint.Modeles
 
         private void ReceiveMessage(JToken jsonMessage)
         {
-            Console.WriteLine(jsonMessage);
             MessageReception message = jsonMessage.ToObject<MessageReception>();
             bool isSentByMe = message.username == ServerService.instance.username;
             App.Current.Dispatcher.Invoke(delegate
@@ -88,5 +94,6 @@ namespace PolyPaint.Modeles
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

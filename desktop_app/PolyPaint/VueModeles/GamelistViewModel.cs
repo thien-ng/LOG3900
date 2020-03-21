@@ -25,62 +25,17 @@ namespace PolyPaint.VueModeles
             _gameCards = new ObservableCollection<GameCard>();
             getLobbies();
             Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            _selectedMode = "Select GameMode";
-            IsModeSelected = false;
-            _isModeSelected = false;
+            _selectedMode = "FFA";
         }
 
+        #region Public Attributes
         public ObservableCollection<int> Numbers { get; }
-
 
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
         {
             get { return _gameCards; }
             set { _gameCards = value; ProprieteModifiee(); }
-        }
-
-        private async void getLobbies()
-        {
-            if (_selectedMode == "FFA" || _selectedMode == "SOLO" || _selectedMode == "COOP")
-            {
-                GameCards.Clear();
-                ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
-                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
-
-                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-                String responseData = streamReader.ReadToEnd();
-                var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
-
-                foreach (var item in myData)
-                {
-                    App.Current.Dispatcher.Invoke(delegate
-                    {
-
-                        lobbies.Add(item);
-                    });
-                }
-                foreach (var item in lobbies)
-                {
-                    GameCard gameCard = new GameCard(item);
-                    GameCards.Add(gameCard);
-                }
-            }
-            else { IsModeSelected = false; }
-        }
-
-
-        private ICommand _addGameCommand;
-        public ICommand AddGameCommand
-        {
-            get
-            {
-                return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
-                {
-                    DialogContent = new CreateLobbyControl();
-                    IsCreateGameDialogOpen = true;
-                }));
-            }
         }
 
         private object _dialogContent;
@@ -99,7 +54,7 @@ namespace PolyPaint.VueModeles
         private string _selectedMode;
         public string SelectedMode
         {
-            get { return _selectedMode;  }
+            get { return _selectedMode; }
             set { _selectedMode = value; ProprieteModifiee(); getLobbies(); }
         }
 
@@ -114,16 +69,6 @@ namespace PolyPaint.VueModeles
                     VisibilityPrivate = "Visible";
                 else
                     VisibilityPrivate = "Hidden";
-            }
-        }
-
-        private bool _isModeSelected;
-        public bool IsModeSelected
-        {
-            get { return _isModeSelected; }
-            set
-            {
-                _isModeSelected = value; ProprieteModifiee(); Console.WriteLine(_isModeSelected);
             }
         }
 
@@ -167,8 +112,61 @@ namespace PolyPaint.VueModeles
             set { _visibilityPrivate = value; ProprieteModifiee(); }
         }
 
+        private string _gameName;
+        public string GameName
+        {
+            get { return _gameName; }
+            set
+            {
+                if (_gameName == value) return;
+                _gameName = value;
+                ProprieteModifiee();
+            }
+        }
 
+        private bool _isCreateGameDialogOpen;
+        public bool IsCreateGameDialogOpen
+        {
+            get { return _isCreateGameDialogOpen; }
+            set
+            {
+                if (_isCreateGameDialogOpen == value) return;
+                _isCreateGameDialogOpen = value;
+                ProprieteModifiee();
+            }
+        }
 
+        #endregion
+
+        #region Methods
+
+        private async void getLobbies()
+        {
+            if (_selectedMode == "FFA" || _selectedMode == "SOLO" || _selectedMode == "COOP")
+            {
+                GameCards.Clear();
+                ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
+                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
+
+                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+                String responseData = streamReader.ReadToEnd();
+                var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
+
+                foreach (var item in myData)
+                {
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+
+                        lobbies.Add(item);
+                    });
+                }
+                foreach (var item in lobbies)
+                {
+                    GameCard gameCard = new GameCard(item);
+                    GameCards.Add(gameCard);
+                }
+            }
+        }
         private async void createLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
@@ -184,7 +182,6 @@ namespace PolyPaint.VueModeles
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            Console.WriteLine(response.StatusCode);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
                 App.Current.Dispatcher.Invoke(delegate
@@ -194,6 +191,23 @@ namespace PolyPaint.VueModeles
                 Mediator.Notify("GoToLobbyScreen", _lobbyName);
                 LobbyName = "";
 
+            }
+        }
+
+        #endregion
+
+        #region Command
+
+        private ICommand _addGameCommand;
+        public ICommand AddGameCommand
+        {
+            get
+            {
+                return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
+                {
+                    DialogContent = new CreateLobbyControl();
+                    IsCreateGameDialogOpen = true;
+                }));
             }
         }
 
@@ -231,7 +245,6 @@ namespace PolyPaint.VueModeles
                 return _modeFFA ?? (_modeFFA = new RelayCommand(x =>
                 {
                     SelectedMode = "FFA";
-                    IsModeSelected = true;
                 }));
             }
         }
@@ -244,7 +257,6 @@ namespace PolyPaint.VueModeles
                 return _modeSolo ?? (_modeSolo = new RelayCommand(x =>
                 {
                     SelectedMode = "SOLO";
-                    IsModeSelected = true;
                 }));
             }
         }
@@ -257,33 +269,9 @@ namespace PolyPaint.VueModeles
                 return _modeCoop ?? (_modeCoop = new RelayCommand(x =>
                 {
                     SelectedMode = "COOP";
-                    IsModeSelected = true;
                 }));
             }
         }
-
-        private string _gameName;
-        public string GameName
-        {
-            get { return _gameName; }
-            set
-            {
-                if (_gameName == value) return;
-                _gameName = value;
-                ProprieteModifiee();
-            }
-        }
-
-        private bool _isCreateGameDialogOpen;
-        public bool IsCreateGameDialogOpen
-        {
-            get { return _isCreateGameDialogOpen; }
-            set
-            {
-                if (_isCreateGameDialogOpen == value) return;
-                _isCreateGameDialogOpen = value;
-                ProprieteModifiee();
-            }
-        }
+        #endregion
     }
 }

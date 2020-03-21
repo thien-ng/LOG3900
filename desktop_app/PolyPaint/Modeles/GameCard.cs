@@ -18,7 +18,6 @@ namespace PolyPaint.Modeles
 {
     public class GameCard : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public GameCard(Lobby lobby)
         {
             _visibilityPrivate = "Hidden";
@@ -33,14 +32,15 @@ namespace PolyPaint.Modeles
             _lobbyName = lobby.lobbyName;
         }
 
+        #region Public Attributes
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private Lobby _lobby;
         public Lobby Lobby
         {
             get { return _lobby; }
             set { _lobby = value; ProprieteModifiee(nameof(Lobby)); }
         }
-
-
 
         private string _mode;
         public string Mode { get { return _mode; } }
@@ -50,10 +50,6 @@ namespace PolyPaint.Modeles
         {
             get { return _players; }
             set { _players = value; ProprieteModifiee(nameof(Players)); }
-        }
-        protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private string _lobbyName;
@@ -121,6 +117,13 @@ namespace PolyPaint.Modeles
             get { return _selectedSize; }
             set { _selectedSize = value; ProprieteModifiee(); }
         }
+        #endregion
+
+        #region Methods
+        protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
         private async void joinLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
@@ -141,6 +144,9 @@ namespace PolyPaint.Modeles
                 Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
             }
         }
+        #endregion
+
+        #region Commands
 
         private ICommand _joinLobbyCommand;
         public ICommand JoinLobbyCommand
@@ -149,13 +155,10 @@ namespace PolyPaint.Modeles
             {
                 return _joinLobbyCommand ?? (_joinLobbyCommand = new RelayCommand(x =>
                 {
-                    Console.WriteLine("joinlobby");
                     joinLobby();
-
-
                 }));
             }
         }
-
+        #endregion
     }
 }
