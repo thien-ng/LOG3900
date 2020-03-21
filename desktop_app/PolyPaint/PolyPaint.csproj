@@ -133,6 +133,7 @@
     <Compile Include="Controls\HintInputControl.xaml.cs">
       <DependentUpon>HintInputControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Convertisseurs\Base64ImageConverter.cs" />
     <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
     <Compile Include="Convertisseurs\CreationTypeToVisibilityConverter.cs" />

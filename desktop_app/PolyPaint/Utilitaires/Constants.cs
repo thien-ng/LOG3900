@@ -17,7 +17,9 @@ namespace PolyPaint.Utilitaires
         public const string CHANNELS_PATH           = "/chat/channels";
         public const string GAME_PATH               = "/game/lobby";
         public const string GAMECARDS_PATH          = "/card";
-        public const string CARDSCREATOR_PATH       = "/creator/game/new";
+        public const string CREATOR_PATH            = "/creator";
+        public const string CARDSCREATOR_PATH       = CREATOR_PATH + "/game/new";
+        public const string SUGGESTION_PATH         = CREATOR_PATH + "/game/suggestion";
         public const string GAME_JOIN_PATH          = "/game/lobby/join";
         public const string GET_ACTIVE_LOBBY_PATH   = "/game/lobby/active";
         public const string SUB_CHANNELS_PATH       = CHANNELS_PATH + "/sub";

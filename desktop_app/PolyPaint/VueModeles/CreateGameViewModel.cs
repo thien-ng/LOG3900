@@ -2,10 +2,12 @@
 using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json.Linq;
 using PolyPaint.Modeles;
+using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -19,7 +21,9 @@ namespace PolyPaint.VueModeles
             Hints = new ObservableCollection<HintModel> { new HintModel(true) };
             DrawViewModel = new CreateGameDrawViewModel();
             SelectedCreationType = CreationType.Manual;
+            IsReqActive = true;
         }
+
 
         #region Public Attributes
 
@@ -45,6 +49,18 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private string _base64ImageData;
+        public string Base64ImageData
+        { 
+            get { return _base64ImageData; }
+            set 
+            {
+                if (_base64ImageData == value) return;
+                _base64ImageData = value;
+                ProprieteModifiee();
+            } 
+        }
+
         private string _selectedDifficulty;
         public string SelectedDifficulty
         {
@@ -53,6 +69,31 @@ namespace PolyPaint.VueModeles
             {
                 if (_selectedDifficulty == value) return;
                 _selectedDifficulty = value;
+                ProprieteModifiee();
+            }
+        }
+
+        // TODO add drawpxl
+        private string _objectName;
+        public string ObjectName
+        {
+            get { return _objectName; }
+            set
+            {
+                if (_objectName == value) return;
+                _objectName = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isReqActive;
+        public bool IsReqActive
+        {
+            get { return _isReqActive; }
+            set
+            {
+                if (_isReqActive == value) return;
+                _isReqActive = value;
                 ProprieteModifiee();
             }
         }
@@ -176,6 +217,39 @@ namespace PolyPaint.VueModeles
                             SelectedCreationType = CreationType.Manual;
                             break;
                     }
+                }));
+            }
+        }
+
+        private ICommand _generateNewQuickdrawCommand;
+        public ICommand GenerateNewQuickDrawCommand 
+        {
+            get 
+            {
+                return _generateNewQuickdrawCommand ?? (_generateNewQuickdrawCommand = new RelayCommand(async x =>
+                {
+                    IsReqActive = false;
+                    var requestPath = Constants.SERVER_PATH + Constants.SUGGESTION_PATH;
+                    var response = await ServerService.instance.client.GetAsync(requestPath);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Error while joining channel");
+                        return;
+                    }
+
+                    JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+                    if (!(responseJson.ContainsKey("drawPng") && responseJson.ContainsKey("drawPxl") && responseJson.ContainsKey("object")))
+                    {
+                        MessageBox.Show("Error parsing server response");
+                        return;
+                    }
+
+                    // TODO garder en memoire drawpxl
+                    Base64ImageData = responseJson.GetValue("drawPng").ToString().Split(',')[1];
+                    ObjectName = responseJson.GetValue("object").ToString();
+                    IsReqActive = true;
                 }));
             }
         }

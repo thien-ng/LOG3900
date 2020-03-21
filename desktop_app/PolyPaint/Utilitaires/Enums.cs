@@ -16,6 +16,8 @@
     enum GameCreationObjects
     {
         Canvas,
-        FileSelector
+        FileSelector,
+        CanvasFileselector,
+        Generator
     }
 }
