@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,6 @@ import com.example.client_leger.LogState
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
 import kotlinx.android.synthetic.main.fragment_login.view.*
-import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONObject
 
 class LoginFragment : Fragment(), FragmentChangeListener {

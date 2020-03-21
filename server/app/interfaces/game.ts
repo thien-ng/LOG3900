@@ -37,7 +37,11 @@ export interface ILeaveLobby {
 export interface IReceptMesLob {
     lobbyName: string,
     username:  string,
-    message:   string,
+    content:   string,
+}
+
+export interface ILobEmitMes extends IReceptMesLob{
+    time: string,
 }
 
 /**
