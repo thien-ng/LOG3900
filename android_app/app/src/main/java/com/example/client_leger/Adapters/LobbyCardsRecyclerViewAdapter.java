@@ -3,27 +3,26 @@ package com.example.client_leger.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Spinner;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.client_leger.models.GameCard;
 import com.example.client_leger.models.Lobby;
 import com.example.client_leger.R;
 
 import java.util.ArrayList;
 
-public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRecyclerViewAdapter.ViewHolder> {
+public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCardsRecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<GameCard> mData;
+    private ArrayList<Lobby> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-    private GameCard currentCard;
+
     // data is passed into the constructor
-    public GameCardRecyclerViewAdapter(Context context, ArrayList<GameCard> data) {
+    public LobbyCardsRecyclerViewAdapter(Context context, ArrayList<Lobby> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
     }
@@ -32,15 +31,17 @@ public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRe
     @Override
     @NonNull
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.gamecard_layout, parent, false);
+        View view = mInflater.inflate(R.layout.lobbycard_layout, parent, false);
         return new ViewHolder(view);
     }
 
     // binds the data to the TextView in each cell
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.myTextView.setText(mData.get(position).getGameName());
-        holder.spinner.setAdapter(mData.get(position).getAdapter());
+        Lobby currLobby = mData.get(position);
+        holder.myTextView.setText(currLobby.getLobbyName());
+        holder.usersListView.setAdapter(currLobby.getAdapter());
+        holder.lobbySize.setText(currLobby.getUsernames().size()+"/"+currLobby.getSize()+" players");
     }
 
     // total number of cells
@@ -53,49 +54,50 @@ public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRe
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView myTextView;
-        Spinner spinner;
+        TextView lobbySize;
+        View expandUsers;
+        ListView usersListView;
+        Button joinButton;
         ViewHolder(View itemView) {
             super(itemView);
+            itemView.findViewById(R.id.listView_users).setVisibility(View.GONE);
+
             myTextView = itemView.findViewById(R.id.textView_gameName);
-            spinner = itemView.findViewById(R.id.lobbies);
+            expandUsers = itemView.findViewById(R.id.view_expandUsers);
+            lobbySize = itemView.findViewById(R.id.textView_lobbySize);
+            usersListView = itemView.findViewById(R.id.listView_users);
+            joinButton = itemView.findViewById(R.id.button_join);
+
+            joinButton.setOnClickListener(this);
+            expandUsers.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) {
+                mClickListener.onItemClick(view, getAdapterPosition());
+                if (view.getId() == joinButton.getId()) {
+                    mClickListener.onJoinClick(view, getAdapterPosition());
+                }else if(view.getId() == expandUsers.getId()){
+                    mClickListener.onUsersDropClick(usersListView, getAdapterPosition());
+                }
+
+            }
         }
     }
 
     // convenience method for getting data at click position
-    public GameCard getItem(int id) {
+    public Lobby getItem(int id) {
         return mData.get(id);
     }
 
-    public int getItemPos(String gameID) {
-        for (int i = 0; i < mData.size(); i++) {
-            GameCard item = mData.get(i);
-            if (item.getGameId().equals(gameID)) return i;
-        }
-        return -1;
-    }
-
-    public void addItems(ArrayList<GameCard> items) {
+    public void addItems(ArrayList<Lobby> items) {
         for (int i = 0; i < items.size(); i++) {
             mData.add(items.get(i));
             notifyItemChanged(i);
         }
     }
 
-    public void addLobbies(ArrayList<Lobby> lobbies, String gameID){
-        int itempos = getItemPos(gameID);
-        GameCard item = mData.get(itempos);
-        item.setLobbies(lobbies);
-        for (Lobby lobby:lobbies) {
-            item.getAdapter().add(lobby.getLobbyName());
-        }
-
-        notifyItemChanged(itempos);
-    }
 
     // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {
@@ -105,5 +107,7 @@ public class GameCardRecyclerViewAdapter extends RecyclerView.Adapter<GameCardRe
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+        void onJoinClick(View view, int position);
+        void onUsersDropClick(View view, int position);
     }
 }
