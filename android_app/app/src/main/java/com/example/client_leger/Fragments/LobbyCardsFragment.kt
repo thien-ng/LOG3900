@@ -3,10 +3,8 @@ package com.example.client_leger.Fragments
 import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,15 +56,10 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if(position > 0)
-                    lobbyCardsController.getLobbies(activity as LobbyCardsFragment, ((position-1) as GameMode).toString())
-
+                    lobbyCardsController.getLobbies(this@LobbyCardsFragment, spinnerToGameMode(position).toString())
             }
 
         }
-
-
-
-        Log.d("game mode ",(spinnerGameModes.selectedItemId as GameMode).toString())
 
         recyclerViewGameCards = v.findViewById(R.id.recyclerView_gameCards)
         var numberOfColumns = 2
@@ -111,7 +104,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
                 if(switch.isChecked) data.put("password", d.findViewById<EditText>(R.id.lobbyPassword).text.trim())
-                data.put("mode", "FFA")
+                data.put("mode", spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString())
                 createLobby(data)
                 d.hide()
             }
@@ -142,7 +135,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     fun loadLobbies(lobbies: ArrayList<Lobby>) {
-        adapterLobbyCards.addItems(lobbies)
+        adapterLobbyCards.setItems(lobbies)
     }
 
     private fun toggleView(v: View) {
@@ -169,5 +162,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             else -> true
         }
 
+    }
+    private fun spinnerToGameMode(id:Int):GameMode{
+        return when (id) {
+            1 -> GameMode.FFA
+            2 -> GameMode.SOLO
+            3 -> GameMode.COOP
+            else -> GameMode.FFA
+        }
     }
 }
