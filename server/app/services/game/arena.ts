@@ -1,11 +1,12 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IDrawing, IPoints } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
 import * as io from 'socket.io';
 
 const StringBuilder = require("string-builder");
+const CHECK_INTERVAL_TIME = 500;
 
 export abstract class Arena {
 
@@ -19,6 +20,8 @@ export abstract class Arena {
     protected curRule:       IGameRule;
     protected userMapPoints: Map<string, number>;
 
+    protected userMapReady:  Map<string, boolean>;
+
     private arenaId: number;
 
     public constructor(arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
@@ -31,14 +34,18 @@ export abstract class Arena {
         this.gm             = gm;
         this.arenaId        = arenaId;
 
+        this.initReadyMap();
         this.setupPoints();
     }
     
     public abstract start(): void;
-    public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw): void;
+    public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void;
 
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
+    protected handleGameplayReady(mes: IGameplayReady): void {
+        this.userMapReady.set(mes.username, true);
+    }
 
     public disconnectPlayer(username: string): void {
         // disconnect user from arena but does not remove from users list to be persisted in db
@@ -49,6 +56,23 @@ export abstract class Arena {
         }
     }
 
+    protected checkArenaLoadingState(callback: () => void): void {
+        let numOfTries = 0;
+        const checkInterval = setInterval(() => {
+            
+            if (this.checkIfEveryoneIsReady()) {
+                clearInterval(checkInterval);
+                callback();
+            }
+            else if (numOfTries >= 3) {
+                clearInterval(checkInterval);
+                this.end(); // TODO should handle game which doesn't affect player's kdr
+            }
+            numOfTries++;
+
+        }, CHECK_INTERVAL_TIME);
+    }
+
     protected end(): void {
         console.log("[Debug] End routine");
         const pts = this.preparePtsToBePersisted();
@@ -56,7 +80,7 @@ export abstract class Arena {
         
 
         this.users.forEach(u => {
-            this.socketServer.to(this.room).emit("game-over", pts);
+            this.socketServer.to(this.room).emit("game-over", {points: pts});
         });
         
         this.gm.persistPoints(pts);
@@ -75,8 +99,12 @@ export abstract class Arena {
         }
     }
 
-    protected isDraw(mes: IGameplayChat | IGameplayDraw): mes is IGameplayDraw {
+    protected isDraw(mes: IGameplayChat | IGameplayDraw | IGameplayReady): mes is IGameplayDraw {
         return "startPosX" in mes;
+    }
+
+    protected isChat(mes: IGameplayChat | IGameplayReady): mes is IGameplayChat {
+        return "content" in mes;
     }
 
     protected chooseRandomRule(): void {
@@ -110,6 +138,24 @@ export abstract class Arena {
         this.users.forEach(u => {
             this.userMapPoints.set(u.username, 0);
         });
+    }
+
+    private initReadyMap(): void {
+        this.userMapReady = new Map<string, boolean>();
+        this.users.forEach(u => { this.userMapReady.set(u.username, false); });
+    }
+
+    private checkIfEveryoneIsReady(): boolean {
+        let isEveryoneReady = true;
+
+        this.userMapReady.forEach((state: boolean, key: string) => {
+            if (!this.dcPlayer.includes(key)) {
+                if (state == false)
+                    isEveryoneReady = false;
+            }
+        });
+        
+        return isEveryoneReady;
     }
 
     private preparePtsToBePersisted(): IPoints[] {

@@ -72,6 +72,10 @@ export enum LobbyNotif {
 /**
  * GAMEPLAY
  */
+export interface IGameplayReady {
+    username: string,
+}
+
 export interface IGameplayChat {
     username:   string,
     content:    string,
