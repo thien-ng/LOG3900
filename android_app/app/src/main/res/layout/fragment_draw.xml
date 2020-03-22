@@ -40,15 +40,4 @@
             android:text="Change width"
             app:layout_constraintStart_toEndOf="@+id/button_change_color"
             app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-            android:id="@+id/timer"
-            android:layout_width="252dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="7dp"
-            android:text="TEST"
-            android:textColor="#FF0000"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_change_color" />
-
 </android.support.constraint.ConstraintLayout>

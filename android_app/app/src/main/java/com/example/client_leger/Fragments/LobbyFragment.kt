@@ -32,7 +32,7 @@ class LobbyFragment : Fragment(),
 
         Communication.getGameStartListener().subscribe{res ->
             activity!!.runOnUiThread {
-                replaceFragment(DrawFragment())
+                replaceFragment(GameplayFragment())
             }
         }
         return  v
