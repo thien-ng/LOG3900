@@ -27,8 +27,5 @@ namespace PolyPaint.Modeles
             this.password   = password;
             this.mode       = mode;
         }
-
-        
-
     }
 }
