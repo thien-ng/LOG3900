@@ -24,7 +24,7 @@ import yuku.ambilwarna.AmbilWarnaDialog
 
 class DrawFragment: Fragment() {
 
-    private val canvasViewChildPosition = 5
+    private val canvasViewChildPosition = 4
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
