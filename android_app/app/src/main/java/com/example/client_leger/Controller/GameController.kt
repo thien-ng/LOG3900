@@ -19,7 +19,7 @@ class GameController {
             Request.Method.GET,
             Constants.SERVER_URL + Constants.START_GAME_ENDPOINT + lobbyName,
             Response.Listener {
-                    fragment.replaceFragment(DrawFragment())
+//                    fragment.replaceFragment(DrawFragment())
             }, Response.ErrorListener{
                     error ->
                 Toast.makeText(

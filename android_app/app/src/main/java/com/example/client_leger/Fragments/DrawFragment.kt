@@ -8,21 +8,23 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.client_leger.Communication.Communication
+import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
 import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
-class DrawFragment: Fragment() {
+class DrawFragment: Fragment(), FragmentChangeListener {
 
-    private val canvasViewChildPosition = 4
+    private val canvasViewChildPosition = 5
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
@@ -44,6 +46,12 @@ class DrawFragment: Fragment() {
         }
 
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
+
+        Communication.getEndGameListener().subscribe{res ->
+            // TODO show points from res, and then change to lobbyCardsFragment
+            Log.w("Points", res.toString())
+            replaceFragment(LobbyCardsFragment())
+        }
 
         return v
     }
@@ -109,6 +117,7 @@ class DrawFragment: Fragment() {
                 updateSeekBarThumbSize(seekBar)
             }
         })
+
     }
 
     private fun updateSeekBarThumbSize(seekBar: SeekBar) {
@@ -117,6 +126,10 @@ class DrawFragment: Fragment() {
         th.intrinsicWidth = seekBar.progress + minThumbWidth
         th.intrinsicHeight = seekBar.progress + minThumbWidth
         seekBar.thumb = th
+    }
+
+    override fun replaceFragment(fragment: Fragment) {
+        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment).commit()
     }
 }
 

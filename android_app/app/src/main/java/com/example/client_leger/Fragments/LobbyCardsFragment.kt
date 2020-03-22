@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.example.client_leger.Adapters.LobbyCardsRecyclerViewAdapter
+import com.example.client_leger.Communication.Communication
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.LobbyCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
@@ -79,7 +80,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             }
 
         }
-
 
         return v
     }
