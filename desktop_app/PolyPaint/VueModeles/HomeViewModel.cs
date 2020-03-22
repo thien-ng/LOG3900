@@ -25,6 +25,13 @@ namespace PolyPaint.VueModeles
 
         #region Public Attributes
 
+        public enum Views
+        {
+            Gamelist,
+            Profile,
+            Lobby
+        }
+
         private ObservableCollection<MessageChannel> _subChannels;
         public ObservableCollection<MessageChannel> SubChannels
         {
@@ -64,12 +71,12 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private int _switchView;
-        public int SwitchView
+        private Views _switchView;
+        public Views SwitchView
         {
             get { return _switchView; }
             set { _switchView = value; ProprieteModifiee();
-                if (_switchView == 2){
+                if (_switchView == Views.Lobby){
                     IsNotInLobby = false;
                 } }
         }
@@ -162,7 +169,7 @@ namespace PolyPaint.VueModeles
 
             FetchChannels();
             
-            _switchView = 0;
+            _switchView = Views.Gamelist;
             _switchViewButton = "Profile";
             _switchViewButtonTooltip = "Access to profile";
             _isNotInLobby = true;
@@ -176,7 +183,7 @@ namespace PolyPaint.VueModeles
 
         private void goToGameListView(object obj)
         {
-            SwitchView = 0;
+            SwitchView = Views.Gamelist;
             IsNotInLobby = true;
             Application.Current.Dispatcher.Invoke(delegate
             {
@@ -186,7 +193,7 @@ namespace PolyPaint.VueModeles
 
         private void goToLobbyView(object lobbyname)
         {
-            SwitchView = 2;
+            SwitchView = Views.Lobby;
             LobbyViewModel = new LobbyViewModel((string)lobbyname);
             this.Lobbyname = (string)lobbyname;
             Application.Current.Dispatcher.Invoke(delegate
@@ -388,7 +395,7 @@ namespace PolyPaint.VueModeles
             {
                 return _switchViewCommand ?? (_switchViewCommand = new RelayCommand(x =>
                 {
-                    SwitchView = SwitchView == 0 ? 1 : 0;
+                    SwitchView = SwitchView == Views.Gamelist ? Views.Profile : Views.Gamelist;
                     SwitchViewButton = SwitchViewButton == "Profile" ? "GameList" : "Profile";
                     SwitchViewButtonTooltip = SwitchViewButtonTooltip == "Access to profile" ? "Access to gameList" : "Access to profile";
                     if (!FrontEnabled && !BackEnabled)
