@@ -6,10 +6,9 @@
         android:layout_width="match_parent" android:layout_height="match_parent">
 
     <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/Timer"
             android:layout_width="137dp"
             android:layout_height="72dp"
-            android:text="TextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

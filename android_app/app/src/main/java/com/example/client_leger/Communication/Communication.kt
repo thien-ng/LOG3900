@@ -30,6 +30,6 @@ object Communication {
     fun updateEndGame(obj: JSONObject) { gameEndSource.onNext(obj) }
 
     private var timerSource: PublishSubject<JSONObject> = PublishSubject.create()
-    fun getTimerListener(): PublishSubject<JSONObject>{ return gameEndSource }
+    fun getTimerListener(): PublishSubject<JSONObject>{ return timerSource }
     fun updateTimer(obj: JSONObject) { timerSource.onNext(obj) }
 }

@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
-class DrawFragment: Fragment(), FragmentChangeListener {
+class DrawFragment: Fragment() {
 
     private val canvasViewChildPosition = 5
 
@@ -46,12 +46,6 @@ class DrawFragment: Fragment(), FragmentChangeListener {
         }
 
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
-
-        Communication.getEndGameListener().subscribe{res ->
-            // TODO show points from res, and then change to lobbyCardsFragment
-            Log.w("Points", res.toString())
-            replaceFragment(LobbyCardsFragment())
-        }
 
         return v
     }
@@ -126,10 +120,6 @@ class DrawFragment: Fragment(), FragmentChangeListener {
         th.intrinsicWidth = seekBar.progress + minThumbWidth
         th.intrinsicHeight = seekBar.progress + minThumbWidth
         seekBar.thumb = th
-    }
-
-    override fun replaceFragment(fragment: Fragment) {
-        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment).commit()
     }
 }
 
