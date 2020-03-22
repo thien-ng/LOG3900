@@ -36,7 +36,7 @@
             <materialDesign:PopupBox Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Select the game mode">
                 <materialDesign:PopupBox.ToggleContent>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding SelectedMode}" FontSize="30" Foreground="White" />
+                        <TextBlock Text="{Binding SelectedMode}" HorizontalAlignment="Center" FontSize="30" Foreground="White" />
                         <materialDesign:PackIcon HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Width="30" Height="30" Kind="ArrowUpDownBold" />
                     </StackPanel>
                 </materialDesign:PopupBox.ToggleContent>
