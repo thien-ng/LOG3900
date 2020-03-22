@@ -12,13 +12,27 @@ import kotlinx.android.synthetic.main.fragment_gameplay_menu.view.*
 
 class GameplayMenuFragment: Fragment() {
 
+    lateinit var username: String
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay_menu, container, false)
 
+        username = activity!!.intent.getStringExtra("username")
+
         Communication.getTimerListener().subscribe{res ->
             Log.w("TEDAWD", res.toString())
+
             activity!!.runOnUiThread {
-                v.Timer.setText(res.getString("time"))
+                v.timer.setText(res.getString("time"))
+            }
+        }
+
+        Communication.getDrawerUpdateListener().subscribe{res ->
+            activity!!.runOnUiThread {
+                if (res.getString("username") == username)
+                    v.role.setText("drawer")
+                else
+                    v.role.setText("guesser")
             }
         }
 

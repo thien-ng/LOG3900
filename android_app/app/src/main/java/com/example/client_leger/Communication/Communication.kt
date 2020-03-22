@@ -32,4 +32,8 @@ object Communication {
     private var timerSource: PublishSubject<JSONObject> = PublishSubject.create()
     fun getTimerListener(): PublishSubject<JSONObject>{ return timerSource }
     fun updateTimer(obj: JSONObject) { timerSource.onNext(obj) }
+
+    private var drawerUpdateSource: PublishSubject<JSONObject> = PublishSubject.create()
+    fun getDrawerUpdateListener(): PublishSubject<JSONObject>{ return drawerUpdateSource }
+    fun updateDrawer(obj: JSONObject) { drawerUpdateSource.onNext(obj) }
 }
