@@ -63,6 +63,10 @@ export class GameManagerService {
         this.addUsersToArena(lobby, room, this.arenaId);
 
         const rules: IGameRule[] = await this.db.getRules();
+        
+        if (rules.length < lobby.users.length)
+            throw new Error("Not enough drawings are in db");
+
         const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
 
         this.lobServ.lobbies.delete(lobby.lobbyName);
