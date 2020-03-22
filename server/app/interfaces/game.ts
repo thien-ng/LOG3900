@@ -48,25 +48,25 @@ export interface ILobEmitMes extends IReceptMesLob{
  * LOBBY NOTIFICATIONS
  */
 export interface INotify {
-    lobbyName: string,
     type:      LobbyNotif,
+    lobbyName: string,
 }
 
 export interface INotifyUpdateUser extends INotify{
-    user:      IUser;
+    user:      string;
 }
 
 export interface INotifyLobbyUpdate extends INotify {
-    users?:     IUser[],
+    users?:     string[],
     private?:   boolean,
     size?:      number,
 }
 
 export enum LobbyNotif {
-    join,
-    leave,
-    create,
-    delete,
+    join   = "join",
+    leave  = "leave",
+    create = "create",
+    delete = "delete",
 }
 
 /**

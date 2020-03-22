@@ -75,11 +75,11 @@ export class LobbyManagerService {
                     throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
 
                 lobby.users.push(user);
-                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user});
+                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username} as INotifyUpdateUser);
             }
             else if (lobby.private == false){
                 lobby.users.push(user);
-                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user});
+                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username} as INotifyUpdateUser);
             }
             else
                 throw new Error(`Wrong password for lobby ${req.lobbyName}`);
@@ -93,7 +93,7 @@ export class LobbyManagerService {
             }
            
             this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode} as IActiveLobby);
-            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);          
+            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.private, size: req.size} as INotifyLobbyUpdate);          
         }        
 
         return `Successfully joined lobby ${req.lobbyName}`;
@@ -117,7 +117,7 @@ export class LobbyManagerService {
             } else {
                 // Leave lobby
                 this.lobbies.set(req.lobbyName, lobby);
-                this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.leave});
+                this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.leave, user: req.username});
             }
 
         } else {
@@ -146,7 +146,7 @@ export class LobbyManagerService {
         if (!lobby) return;
 
         if (this.isNotification(mes))
-            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif") });
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif", mes) });
         else {
             const message = {lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
             lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
