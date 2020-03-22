@@ -8,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
+import com.example.client_leger.SocketIO
 import kotlinx.android.synthetic.main.fragment_gameplay_menu.view.*
+import org.json.JSONObject
 
 class GameplayMenuFragment: Fragment() {
 
@@ -18,6 +20,7 @@ class GameplayMenuFragment: Fragment() {
         val v = inflater.inflate(R.layout.fragment_gameplay_menu, container, false)
 
         username = activity!!.intent.getStringExtra("username")
+        SocketIO.sendMessage("gameplay", JSONObject().put("username", username))
 
         Communication.getTimerListener().subscribe{res ->
             Log.w("TEDAWD", res.toString())
@@ -28,6 +31,7 @@ class GameplayMenuFragment: Fragment() {
         }
 
         Communication.getDrawerUpdateListener().subscribe{res ->
+            Log.w("ROLE", res.toString())
             activity!!.runOnUiThread {
                 if (res.getString("username") == username)
                     v.role.setText("drawer")
