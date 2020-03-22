@@ -20,18 +20,17 @@ class GameplayMenuFragment: Fragment() {
         val v = inflater.inflate(R.layout.fragment_gameplay_menu, container, false)
 
         username = activity!!.intent.getStringExtra("username")
+
+        // Emit to tell server the view is ready
         SocketIO.sendMessage("gameplay", JSONObject().put("username", username))
 
         Communication.getTimerListener().subscribe{res ->
-            Log.w("TEDAWD", res.toString())
-
             activity!!.runOnUiThread {
                 v.timer.setText(res.getString("time"))
             }
         }
 
         Communication.getDrawerUpdateListener().subscribe{res ->
-            Log.w("ROLE", res.toString())
             activity!!.runOnUiThread {
                 if (res.getString("username") == username)
                     v.role.setText("drawer")
