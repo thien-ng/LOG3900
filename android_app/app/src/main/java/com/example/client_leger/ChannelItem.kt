@@ -1,6 +1,5 @@
 package com.example.client_leger
 
-import android.R
 import android.graphics.Color
 import android.view.View
 import com.amulyakhare.textdrawable.TextDrawable
