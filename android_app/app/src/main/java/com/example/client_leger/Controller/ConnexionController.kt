@@ -29,8 +29,14 @@ class ConnexionController {
                     SocketIO.connect(body.get("username").toString())
                     activity.login_button.isEnabled = true
                 }
-                else
+                else {
+                    Toast.makeText(
+                        applicationContext,
+                        response["message"].toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     activity.login_button.isEnabled = true
+                }
             },
             Response.ErrorListener {
                 Toast.makeText(
@@ -64,8 +70,14 @@ class ConnexionController {
                     SocketIO.connect(body.get("username").toString())
                     activity.register_button.isEnabled = true
                 }
-                else
+                else {
+                    Toast.makeText(
+                        applicationContext,
+                        response["message"].toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     activity.register_button.isEnabled = true
+                }
             },
             Response.ErrorListener {
                 Toast.makeText(
