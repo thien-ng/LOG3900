@@ -80,7 +80,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
         }
 
-
         return v
     }
 

@@ -107,6 +107,7 @@ class DrawFragment: Fragment() {
                 updateSeekBarThumbSize(seekBar)
             }
         })
+
     }
 
     private fun updateSeekBarThumbSize(seekBar: SeekBar) {
