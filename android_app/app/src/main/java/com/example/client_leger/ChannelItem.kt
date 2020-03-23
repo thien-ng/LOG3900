@@ -23,8 +23,12 @@ class ChannelItem(private val channelId: String, private val isSub: Boolean, pri
             viewHolder.itemView.imageButton_leaveChannel.visibility = View.GONE
         }
 
-        val drawable = TextDrawable.builder().buildRound("A", Color.WHITE)
-        viewHolder.itemView.channel_image.setImageDrawable(drawable)
+        var string: String = channelId.substring(0, 1).toUpperCase()
+        if (channelId.length >= 2) {
+            string += channelId.substring(1, 2)
+        }
+        viewHolder.itemView.channel_image.text = string
+
     }
 
     override fun getLayout(): Int {
