@@ -19,6 +19,7 @@ namespace PolyPaint.VueModeles
             _connections = ServerService.instance.user._connections;
 
         }
+        #region Public Attributes
 
         String _username;
         public string Username
@@ -42,5 +43,6 @@ namespace PolyPaint.VueModeles
         {
             get { return _connections; }
         }
+        #endregion
     }
 }

@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PolyPaint.Controls
+namespace PolyPaint.Vues
 {
     /// <summary>
-    /// Logique d'interaction pour CreateGameControl.xaml
+    /// Interaction logic for Lobby.xaml
     /// </summary>
-    public partial class CreateGameControl : UserControl
+    public partial class Lobby : UserControl
     {
-        public CreateGameControl()
+        public Lobby()
         {
             InitializeComponent();
         }
