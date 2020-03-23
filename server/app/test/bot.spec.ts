@@ -6,7 +6,7 @@ import { kindBot } from "../bots/kindBot";
 import { meanBot } from "../bots/meanBot";
 import { humourBot } from "../bots/humourBot";
 import { Taunt } from "../bots/taunts";
-import { IDrawing, IGameplayDraw } from "../interfaces/game";
+import { IDrawing, IGameplayDraw, Format, Type } from "../interfaces/game";
 import { DisplayMode } from "../bots/taunts";
 import { Side } from "../utils/Side";
 
@@ -23,6 +23,9 @@ describe("Bot", () => {
             endPosY: 40,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 31,
@@ -31,6 +34,9 @@ describe("Bot", () => {
             endPosY: 80,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 70,
@@ -39,6 +45,9 @@ describe("Bot", () => {
             endPosY: 81,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 71,
@@ -47,6 +56,9 @@ describe("Bot", () => {
             endPosY: 41,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 100,
@@ -55,6 +67,9 @@ describe("Bot", () => {
             endPosY: 110,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         }
 
     ];
@@ -66,6 +81,9 @@ describe("Bot", () => {
             endPosY: 81,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 71,
@@ -74,6 +92,9 @@ describe("Bot", () => {
             endPosY: 41,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 31,
@@ -82,6 +103,9 @@ describe("Bot", () => {
             endPosY: 80,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 30,
@@ -90,6 +114,9 @@ describe("Bot", () => {
             endPosY: 40,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 100,
@@ -98,6 +125,9 @@ describe("Bot", () => {
             endPosY: 110,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         }
 
     ];
@@ -109,6 +139,9 @@ describe("Bot", () => {
             endPosY: 40,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 71,
@@ -117,6 +150,9 @@ describe("Bot", () => {
             endPosY: 41,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 31,
@@ -125,6 +161,9 @@ describe("Bot", () => {
             endPosY: 80,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 70,
@@ -133,6 +172,9 @@ describe("Bot", () => {
             endPosY: 81,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 100,
@@ -141,6 +183,9 @@ describe("Bot", () => {
             endPosY: 110,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         }
 
     ];
@@ -152,6 +197,9 @@ describe("Bot", () => {
             endPosY: 110,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 71,
@@ -160,6 +208,9 @@ describe("Bot", () => {
             endPosY: 41,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 70,
@@ -168,6 +219,9 @@ describe("Bot", () => {
             endPosY: 81,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 31,
@@ -176,6 +230,9 @@ describe("Bot", () => {
             endPosY: 80,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         },
         {
             startPosX: 30,
@@ -184,6 +241,9 @@ describe("Bot", () => {
             endPosY: 40,
             color: 3,
             width: 2,
+            isEnd: true,
+            format: Format.circle,
+            type: Type.ink
         }
 
     ];
@@ -210,7 +270,7 @@ describe("Bot", () => {
         chai.expect(kinddude).to.have.property('username').to.equal("BOT:bob");
         chai.expect(kinddude).to.have.property('hint').to.equal("no hint for you!");
         chai.expect(kinddude).to.have.property('mode').to.equal(DisplayMode.classic);
-        chai.expect(kinddude).to.have.property('taunts').to.eql(Taunt.kind);// eql for == instead of === cause [1,2,3] === [1,2,3] is false in typescript.
+        chai.expect(kinddude).to.have.property('taunts').to.eql(Taunt.kind);// eql for == instead of === cause [1,2,3] === [1,2,3] is false in typescType.inkipt.
 
         chai.expect(meandude).to.have.property('username').to.equal("BOT:bob");
         chai.expect(meandude).to.have.property('hint').to.equal("no hint for you!");
