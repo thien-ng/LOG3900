@@ -120,17 +120,16 @@ class DrawFragment: Fragment() {
     }
 }
 
-class Stroke(var path: Path, var paint: Paint)
+class Segment(var path: Path, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
-    var paintLineWhite: Paint
     var isStrokeErasing = false
     var isNormalErasing = false
     private var currentPath = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
-    private val strokes = ArrayList<Stroke>()
+    private val segments = ArrayList<Segment>()
 
     init {
         paintLine.isAntiAlias = true
@@ -138,9 +137,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 16.0F
         paintLine.strokeCap = Paint.Cap.ROUND
-        paintLineWhite = Paint(paintLine)
-        paintLineWhite.color = Color.WHITE
-        paintLineWhite.strokeWidth = 32.0F
         Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
@@ -149,19 +145,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     override fun onDraw(canvas: Canvas) {
         canvas.drawColor(Color.WHITE)
 
-        repeat(strokes.count()) {
-            canvas.drawPath(strokes[it].path, strokes[it].paint)
+        for (segment in segments) {
+            canvas.drawPath(segment.path, segment.paint)
         }
 
-        val paint = if (isNormalErasing) paintLineWhite else paintLine
-        canvas.drawPath(currentPath, paint)
+        canvas.drawPath(currentPath, paintLine)
 
-        invalidate()
-    }
-
-    private fun removeStroke(index: Int) {
-        //TODO: inform server of stroke removal
-        strokes.removeAt(index)
         invalidate()
     }
 
@@ -185,12 +174,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun checkForStrokesToErase(event: MotionEvent) {
         var strokeFound = false
 
-        for (i in 0 until strokes.size) {
-            if (strokes[i].paint.color == Color.WHITE) {
+        for (segment in segments) {
+            if (segment.paint.color == Color.WHITE) {
                 continue
             }
 
-            val pm = PathMeasure(strokes[i].path, false)
+            val pm = PathMeasure(segment.path, false)
 
             val nbStep: Int = pm.length.toInt() / 20
             val speed = pm.length / nbStep
@@ -205,7 +194,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
                 if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
                     if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
-                        removeStroke(i)
+                        segment.paint.color = Color.WHITE
+                        //TODO: inform server of stroke removal
                         strokeFound = true
                         break
                     }
@@ -245,7 +235,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paint.strokeWidth = obj.getInt("width").toFloat()
         paint.strokeCap = Paint.Cap.ROUND
 
-        strokes.add(Stroke(path, paint))
+        segments.add(Segment(path, paint, null, null))
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
@@ -255,16 +245,16 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("startPosY", startPointY)
         obj.put("endPosX", finishPointX)
         obj.put("endPosY", finishPointY)
-        obj.put("color", if (isNormalErasing) Color.WHITE else paintLine.color)
-        obj.put("width", if (isNormalErasing) paintLineWhite.strokeWidth else paintLine.strokeWidth)
+        obj.put("color", paintLine.color)
+        obj.put("width", paintLine.strokeWidth)
 
         SocketIO.sendMessage("gameplay", obj)
     }
 
     private fun touchEnded() {
         if (!isStrokeErasing) {
-            val paint: Paint = if (isNormalErasing) Paint(paintLineWhite) else Paint(paintLine)
-            strokes.add(Stroke(Path(currentPath), paint))
+            val paint = Paint(paintLine)
+            segments.add(Segment(Path(currentPath), paint, null, null))
         }
 
         currentPath.reset()
