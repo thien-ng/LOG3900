@@ -91,7 +91,7 @@ export abstract class Arena {
 
         clearInterval(this.chronometerTimer);
         
-        this.gm.persistPoints(pts, this.chronometerTimer, this.type);
+        this.gm.persistPoints(pts, this.chronometerTimer / ONE_SEC, this.type);
         this.gm.deleteArena(this.arenaId);
     }
 

@@ -122,7 +122,12 @@ export interface IGameInfo {
     date:   string,
     timer:  number,
     winner: string,
-    users:  string[],
+    users:  IUserPt[],
+}
+
+export interface IUserPt {
+    username: string,
+    point:    number,
 }
 
 

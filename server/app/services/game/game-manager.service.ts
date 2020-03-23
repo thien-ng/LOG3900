@@ -3,7 +3,7 @@ import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
 import { ArenaSolo } from "./arena-solo";
 import { ArenaCoop } from "./arena-coop";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
@@ -101,6 +101,8 @@ export class GameManagerService {
         const winner = this.determineWinner(pts);
         const users = this.getPlayersInGame(pts);
         const date = Time.today();
+        console.log(JSON.stringify(users));
+        
 
         this.gameDb.registerGame({type: type, date: date, timer: timer, winner: winner, users: users});
     }
@@ -118,9 +120,9 @@ export class GameManagerService {
         return winner;
     }
 
-    private getPlayersInGame(pts: IPoints[]): string[] {
-        const list: string[] = [];
-        pts.forEach(p => {list.push(p.username)});
+    private getPlayersInGame(pts: IPoints[]): IUserPt[] {
+        const list: IUserPt[] = [];
+        pts.forEach(p => {list.push({username: p.username, point: p.points})});
         return list;
     }
 

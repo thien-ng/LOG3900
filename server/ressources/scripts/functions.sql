@@ -160,3 +160,22 @@ RETURNS TABLE (out_channel VARCHAR(20), sub TEXT) AS $$
         AND id LIKE in_word;
     END
 $$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.registerGame(in_gamemode VARCHAR(20), in_date VARCHAR(30), in_elapsedTime INT, in_winner VARCHAR(20), in_userPts json) RETURNS VOID AS $$
+    DECLARE
+        winner_id INT;
+        game_id INT;
+        i json;
+        user_id_loop INT;
+    BEGIN
+        SELECT account.id FROM log3900.account WHERE username = in_winner INTO winner_id;
+
+        INSERT INTO Log3900.game VALUES(DEFAULt, in_gamemode, in_date, in_elapsedTime, winner_id) RETURNING game.id INTO game_id;
+
+        FOR i IN SELECT * FROM json_array_elements(in_userPts)
+        LOOP
+            SELECT account.id FROM log3900.account WHERE username = i->>'username' INTO user_id_loop;
+            INSERT INTO Log3900.accountgame VALUES(user_id_loop, game_id, CAST(i->>'point' AS INT));
+        END LOOP;
+    END
+$$LANGUAGE plpgsql;
