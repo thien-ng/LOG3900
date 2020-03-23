@@ -128,7 +128,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var paintScreen = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
-    var currentPath = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
     private val segments = ArrayList<Segment>()
@@ -154,11 +153,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onDraw(canvas: Canvas) {
-        //for (segment in segments) {
-            //canvas.drawPath(segment.path, segment.paint)
-        //}
-        canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
-        canvas.drawPath(currentPath, paintLine)
+        for (segment in segments) {
+            canvas.drawPath(segment.path, segment.paint)
+        }
+        //canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -167,15 +165,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (isStrokeErasing || isNormalErasing) {
             checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
-            currentPath.reset()
-            currentPath.moveTo(event.x, event.y)
             currentStartX = event.x
             currentStartY = event.y
         } else if (action == MotionEvent.ACTION_MOVE){
-            currentPath.lineTo(event.x, event.y)
             touchMoved(event)
-        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
-            bitmapCanvas.drawPath(Path(currentPath), Paint(paintLine))
         }
 
         invalidate()
