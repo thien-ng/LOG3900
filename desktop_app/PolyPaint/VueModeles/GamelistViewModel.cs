@@ -23,50 +23,19 @@ namespace PolyPaint.VueModeles
         {
 
             _gameCards = new ObservableCollection<GameCard>();
-            getGameCards();
-            Mode = new ObservableCollection<string> { "Free for all", "Sprint coop", "Sprint solo" };
-
+            getLobbies();
+            Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            _selectedMode = "FFA";
         }
 
-        public ObservableCollection<string> Mode { get; }
+        #region Public Attributes
+        public ObservableCollection<int> Numbers { get; }
 
-        private async void getGameCards()
-        {
-            ObservableCollection<GameCard> gamecards = new ObservableCollection<GameCard>();
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAMECARDS_PATH);
-
-            StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-            String responseData = streamReader.ReadToEnd();
-            var myData = JsonConvert.DeserializeObject<List<GameCard>>(responseData);
-            foreach (var item in myData)
-            {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-
-                    gamecards.Add(item);
-                });
-            }
-            GameCards = gamecards;
-        }
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
         {
             get { return _gameCards; }
             set { _gameCards = value; ProprieteModifiee(); }
-        }
-
-
-        private ICommand _addGameCommand;
-        public ICommand AddGameCommand
-        {
-            get
-            {
-                return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
-                {
-                    DialogContent = new CreateGameControl();
-                    IsCreateGameDialogOpen = true;
-                }));
-            }
         }
 
         private object _dialogContent;
@@ -81,63 +50,66 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private async void postCardRequest(string gamename, string selectedmode)
-        {
-            dynamic values = new JObject();
-            values.gameName = gamename;
-            values.solution = "solution";
-            values.clues = "clues";
-            values.mode = selectedmode;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
-            getGameCards();
-
-        }
-
 
         private string _selectedMode;
         public string SelectedMode
         {
             get { return _selectedMode; }
-            set { _selectedMode = value; ProprieteModifiee(); }
+            set { _selectedMode = value; ProprieteModifiee(); getLobbies(); }
         }
 
-
-
-        private void createGame()
+        private bool _isPrivate;
+        public bool IsPrivate
         {
-            postCardRequest(GameName, SelectedMode);
-            
-
-        }
-
-        private ICommand _acceptCommand;
-        public ICommand AcceptCommand
-        {
-            get
+            get { return _isPrivate; }
+            set
             {
-                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
-                {
-                    await Task.Run(() => createGame());
-                    IsCreateGameDialogOpen = false;
-                }));
+                _isPrivate = value; ProprieteModifiee();
+                if (_isPrivate)
+                    VisibilityPrivate = "Visible";
+                else
+                    VisibilityPrivate = "Hidden";
             }
         }
 
-        private ICommand _cancelCommand;
-        public ICommand CancelCommand
+        private string _selectedSize;
+        public string SelectedSize
         {
-            get
+            get { return _selectedSize; }
+            set { _selectedSize = value; ProprieteModifiee(); }
+        }
+
+        private string _lobbyName;
+        public string LobbyName
+        {
+            get { return _lobbyName; }
+            set
             {
-                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
-                {
-                    GameName = "";
-                    IsCreateGameDialogOpen = false;
-                }));
+                if (_lobbyName == value) return;
+                _lobbyName = value;
+                ProprieteModifiee();
             }
+        }
+
+        private string _password;
+        public string Password
+        {
+            get { return _password; }
+            set
+            {
+                if (_password == value) return;
+                _password = value;
+                ProprieteModifiee();
+            }
+        }
+
+
+
+        private string _visibilityPrivate;
+        public string VisibilityPrivate
+        {
+            get { return _visibilityPrivate; }
+            set { _visibilityPrivate = value; ProprieteModifiee(); }
         }
 
         private string _gameName;
@@ -163,5 +135,143 @@ namespace PolyPaint.VueModeles
                 ProprieteModifiee();
             }
         }
+
+        #endregion
+
+        #region Methods
+
+        private async void getLobbies()
+        {
+            if (_selectedMode == "FFA" || _selectedMode == "SOLO" || _selectedMode == "COOP")
+            {
+                GameCards.Clear();
+                ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
+                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
+
+                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+                String responseData = streamReader.ReadToEnd();
+                var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
+
+                foreach (var item in myData)
+                {
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+
+                        lobbies.Add(item);
+                    });
+                }
+                foreach (var item in lobbies)
+                {
+                    GameCard gameCard = new GameCard(item);
+                    GameCards.Add(gameCard);
+                }
+            }
+        }
+        private async void createLobby()
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.Add("private", _isPrivate);
+            values.lobbyName = _lobbyName;
+            values.size = _selectedSize;
+            values.password = _password;
+            values.mode = _selectedMode;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    getLobbies();
+                });
+                Mediator.Notify("GoToLobbyScreen", _lobbyName);
+                LobbyName = "";
+
+            }
+        }
+
+        #endregion
+
+        #region Command
+
+        private ICommand _addGameCommand;
+        public ICommand AddGameCommand
+        {
+            get
+            {
+                return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
+                {
+                    DialogContent = new CreateLobbyControl();
+                    IsCreateGameDialogOpen = true;
+                }));
+            }
+        }
+
+        private ICommand _acceptCommand;
+        public ICommand AcceptCommand
+        {
+            get
+            {
+                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
+                {
+                    await Task.Run(() => createLobby());
+                    IsCreateGameDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
+                {
+                    GameName = "";
+                    IsCreateGameDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _modeFFA;
+        public ICommand ModeFFA
+        {
+            get
+            {
+                return _modeFFA ?? (_modeFFA = new RelayCommand(x =>
+                {
+                    SelectedMode = "FFA";
+                }));
+            }
+        }
+
+        private ICommand _modeSolo;
+        public ICommand ModeSolo
+        {
+            get
+            {
+                return _modeSolo ?? (_modeSolo = new RelayCommand(x =>
+                {
+                    SelectedMode = "SOLO";
+                }));
+            }
+        }
+
+        private ICommand _modeCoop;
+        public ICommand ModeCoop
+        {
+            get
+            {
+                return _modeCoop ?? (_modeCoop = new RelayCommand(x =>
+                {
+                    SelectedMode = "COOP";
+                }));
+            }
+        }
+        #endregion
     }
 }

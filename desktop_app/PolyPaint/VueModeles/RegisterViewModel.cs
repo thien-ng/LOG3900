@@ -21,25 +21,14 @@ namespace PolyPaint.VueModeles
         private string   _firstName;
         private string   _lastName;
         private bool     _registerIsRunning;
-
-        public PasswordBox Password { private get; set; }
-        public PasswordBox PasswordConfirm { private get; set; }
-
         public RegisterViewModel()
         {
             _username = "";
         }
 
-        public ICommand GoToLogin
-        {
-            get
-            {
-                return _goToLogin ?? (_goToLogin = new RelayCommand(x =>
-                {
-                    Mediator.Notify("GoToLoginScreen", "");
-                }));
-            }
-        }
+        #region Public Attributes
+        public PasswordBox Password { private get; set; }
+        public PasswordBox PasswordConfirm { private get; set; }
 
         public string Username
         {
@@ -77,6 +66,9 @@ namespace PolyPaint.VueModeles
                 }
             }
         }
+        #endregion
+
+        #region Methods
 
         private void ReceiveMessage(JObject jsonMessage)
         {
@@ -104,6 +96,27 @@ namespace PolyPaint.VueModeles
                 ServerService.instance.user = data;
             }
         }
+        public async Task<JObject> RegisterRequestAsync(string username, string password, string firstName, string lastName)
+        {
+            var values = new Dictionary<string, string>
+                {
+                    { "username", username },
+                    { "password", password },
+                    { "firstName", firstName},
+                    { "lastName", lastName}
+                };
+
+            var content = new FormUrlEncodedContent(values);
+
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.REGISTER_PATH, content);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            return JObject.Parse(responseString);
+        }
+        #endregion
+
+        #region Commands
 
         public ICommand Register
         {
@@ -150,24 +163,18 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        public async Task<JObject> RegisterRequestAsync(string username, string password, string firstName, string lastName)
+        public ICommand GoToLogin
         {
-            var values = new Dictionary<string, string>
+            get
+            {
+                return _goToLogin ?? (_goToLogin = new RelayCommand(x =>
                 {
-                    { "username", username },
-                    { "password", password },
-                    { "firstName", firstName},
-                    { "lastName", lastName}
-                };
-
-            var content = new FormUrlEncodedContent(values);
-
-            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.REGISTER_PATH, content);
-
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            return JObject.Parse(responseString);
+                    Mediator.Notify("GoToLoginScreen", "");
+                }));
+            }
         }
+        #endregion
+
     }
 
 }

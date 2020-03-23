@@ -11,6 +11,9 @@ namespace PolyPaint.Modeles
     /// </summary>
     class Editeur : INotifyPropertyChanged
     {
+
+        #region Public Attributes
+
         public event PropertyChangedEventHandler PropertyChanged;
         public StrokeCollection traits = new StrokeCollection();
         private StrokeCollection traitsRetires = new StrokeCollection();
@@ -65,7 +68,9 @@ namespace PolyPaint.Modeles
                 ProprieteModifiee();
             }
         }
+        #endregion
 
+        #region Methods
         /// <summary>
         /// Appelee lorsqu'une propriété d'Editeur est modifiée.
         /// Un évènement indiquant qu'une propriété a été modifiée est alors émis à partir d'Editeur.
@@ -83,5 +88,6 @@ namespace PolyPaint.Modeles
 
         // L'outil actif devient celui passé en paramètre.
         public void ChoisirOutil(string outil) => OutilSelectionne = outil;
+        #endregion
     }
 }
