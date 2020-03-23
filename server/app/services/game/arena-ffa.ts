@@ -21,11 +21,14 @@ export class ArenaFfa extends Arena {
     private curTime: number;
     private userWithCorrectAns: ICorrAns[];
 
+    private isEveryoneHasRightAnswer: boolean;
+
     public constructor(arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(arenaId, users, room, io, rules, gm)
         
         this.drawPtr = 0;
         this.userWithCorrectAns = [];
+        this.isEveryoneHasRightAnswer = false;
     }
 
     public start(): void {
@@ -48,7 +51,7 @@ export class ArenaFfa extends Arena {
             this.socketServer.to(this.room).emit("game-timer", {time: (TOTAL_TIME - timer)/ONE_SEC});
             this.curTime = timer;
 
-            if (timer >= TOTAL_TIME) {
+            if (timer >= TOTAL_TIME || this.isEveryoneHasRightAnswer) {
                 clearInterval(this.curArenaInterval);
 
                 this.handlePoints()
@@ -70,6 +73,7 @@ export class ArenaFfa extends Arena {
         this.attributeRoles();
         this.chooseRandomRule();
         this.userWithCorrectAns = [];
+        this.isEveryoneHasRightAnswer = false;
     }
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
@@ -90,11 +94,10 @@ export class ArenaFfa extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
-        
         if (this.isRightAnswer(mes.content)) {
             this.userWithCorrectAns.push({
                 username: mes.username,
-                time: TOTAL_TIME - this.curTime,
+                time: (TOTAL_TIME - this.curTime)/ONE_SEC,
                 ratio: 1 - this.calculateRatio()});
 
             const encAnswer = this.encryptAnswer(mes.content);
@@ -103,6 +106,9 @@ export class ArenaFfa extends Arena {
                 username: "Server",
                 content: format(ANNOUNCEMENT, mes.username),
                 isServer: true});
+
+            if (this.checkIfEveryoneHasRightAnswer())
+                this.isEveryoneHasRightAnswer = true;
         } else {
             this.sendToChat({username: mes.username, content: mes.content, isServer: false});
         }
@@ -155,6 +161,10 @@ export class ArenaFfa extends Arena {
 
     private calculateRatio(): number {
         return Math.floor(this.userWithCorrectAns.length / this.users.length);
+    }
+
+    private checkIfEveryoneHasRightAnswer(): boolean {
+        return (this.users.length - this.dcPlayer.length) === this.userWithCorrectAns.length;
     }
 
 }
