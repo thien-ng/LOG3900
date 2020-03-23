@@ -15,16 +15,16 @@ object SocketIO {
             Log.w("socket","Connected to ${Constants.SERVER_URL}")
         }
 
-        socket.on("chat") {
-            Communication.updateChatMessage(it[0] as JSONObject)
-        }
-
-        socket.on("logging") {
-            Communication.updateConnection(it[0] as JSONObject)
-        }
-
-        socket.on("draw") {
-            Communication.updateDraw(it[0] as JSONObject)
+        socket.on("chat")           { Communication.updateChatMessage(it[0] as JSONObject) }
+        socket.on("logging")        { Communication.updateConnection(it[0] as JSONObject) }
+        socket.on("draw")           { Communication.updateDraw(it[0] as JSONObject) }
+        socket.on("channel-new")    { Communication.updateChannels((it[0] as JSONObject)["id"].toString()) }
+        socket.on("game-start")     { Communication.updateGameStart() }
+        socket.on("game-over")      { Communication.updateEndGame(it[0] as JSONObject) }
+        socket.on("game-timer")     { Communication.updateTimer(it[0] as JSONObject) }
+        socket.on("game-drawer")    { Communication.updateDrawer(it[0] as JSONObject) }
+        socket.on("game-chat")      {
+            //TODO handle game chat
         }
     }
 

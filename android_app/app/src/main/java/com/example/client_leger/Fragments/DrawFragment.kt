@@ -1,121 +1,269 @@
 package com.example.client_leger.Fragments
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Button
+import android.widget.PopupWindow
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.client_leger.Communication.Communication
+import com.example.client_leger.R
 import com.example.client_leger.SocketIO
-import kotlinx.android.synthetic.main.fragment_chat.view.*
-import org.json.JSONArray
+import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
+import yuku.ambilwarna.AmbilWarnaDialog
 
 class DrawFragment: Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return DrawCanvas(activity!!.applicationContext, null)
+    private val canvasViewChildPosition = 4
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
+        val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
+
+        v.button_change_color.setOnClickListener {
+            openColorPicker(v)
+        }
+
+        v.button_strokeErase.setOnClickListener {
+            switchStrokeEraser(v)
+        }
+
+        v.button_normalErase.setOnClickListener {
+            switchNormalEraser(v)
+        }
+
+        v.button_changeWidth.setOnClickListener {
+            openWidthSelector(v)
+        }
+
+        v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
+
+        return v
     }
-}
 
-class DrawCanvas: View {
-
-    private var paint = Paint()
-    private var path = Path()
-    private var startPointX: Float = 0.0F
-    private var startPointY: Float = 0.0F
-    private var finishPointX: Float = 0.0F
-    private var finishPointY: Float = 0.0F
-
-    private var newPath = Path()
-    private var newPaint = Paint()
-    private var isExternal = false
-
-    constructor(ctx: Context, attr: AttributeSet?): super(ctx, attr) {
-        paint.isAntiAlias = true
-        paint.color = (Color.BLACK)
-        paint.strokeJoin = Paint.Join.ROUND
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 10f
-
-        Communication.getDrawListener().subscribe{ obj ->
-            draw(obj)
+    private fun switchStrokeEraser(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        drawCanvasView.isStrokeErasing = !drawCanvasView.isStrokeErasing
+        if (drawCanvasView.isNormalErasing) {
+            drawCanvasView.isNormalErasing = false
+            v.button_normalErase.toggle()
         }
     }
 
-    private fun draw(obj: JSONObject) {
-        newPath.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
-        newPath.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
-
-        // TODO get the actual color
-        // newPaint.color = obj.getInt("color")
-        newPaint.isAntiAlias = true
-        newPaint.strokeJoin = Paint.Join.ROUND
-        newPaint.style = Paint.Style.STROKE
-
-        newPaint.color = (Color.BLACK)
-        newPaint.strokeWidth = obj.getInt("width").toFloat()
-        isExternal = true
-        postInvalidate()
+    private fun switchNormalEraser(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        drawCanvasView.isNormalErasing = !drawCanvasView.isNormalErasing
+        if (drawCanvasView.isStrokeErasing) {
+            drawCanvasView.isStrokeErasing = false
+            v.button_strokeErase.toggle()
+        }
     }
 
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-
-        if (isExternal)
-            canvas!!.drawPath(newPath, newPaint)
-        else
-            canvas!!.drawPath(path, paint)
+    private fun openColorPicker(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        val colorPicker = AmbilWarnaDialog(this.context, drawCanvasView.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
+                override fun onCancel(dialog: AmbilWarnaDialog?) {}
+                override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
+                    drawCanvasView.paintLine.color = color
+                }
+            })
+        colorPicker.show()
     }
 
-    private fun sendStroke() {
-        val obj = JSONObject()
-        obj.put("username", "asd")
-        obj.put("startPosX", startPointX)
-        obj.put("startPosY", startPointY)
-        obj.put("endPosX", finishPointX)
-        obj.put("endPosY", finishPointY)
-        obj.put("color", paint.color)
-        obj.put("width", paint.strokeWidth)
+    private fun openWidthSelector(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        val view = layoutInflater.inflate(R.layout.popup_change_width, null)
+        val popupWindow = PopupWindow(
+            view,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            true)
 
-        SocketIO.sendMessage("gameplay", obj)
-    }
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
 
-    override fun onTouchEvent(e: MotionEvent?): Boolean {
-        val x = e!!.x
-        val y = e!!.y
+        val seekBar = view.findViewById<SeekBar>(R.id.seekBar_changeWidth)
+        val okButton = view.findViewById<Button>(R.id.button_changeWidthOk)
 
-        isExternal = false
+        updateSeekBarThumbSize(seekBar)
+        seekBar.progress = drawCanvasView.paintLine.strokeWidth.toInt()
 
-        when (e.action) {
-            MotionEvent.ACTION_DOWN -> {
-                path.moveTo(x, y)
-                startPointX = x
-                startPointY = y
-                return true
+        okButton.setOnClickListener {
+            drawCanvasView.paintLine.strokeWidth = seekBar.progress.toFloat()
+            popupWindow.dismiss()
+        }
+
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onStopTrackingTouch(seekBar: SeekBar) { }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) { }
+
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                updateSeekBarThumbSize(seekBar)
             }
-            MotionEvent.ACTION_MOVE -> {
-                path.lineTo(x, y)
-                finishPointX = x
-                finishPointY = y
-                sendStroke()
-                startPointX = finishPointX
-                startPointY = finishPointY
-            }
-            MotionEvent.ACTION_UP -> {}
-            else -> { return false }
+        })
+
+    }
+
+    private fun updateSeekBarThumbSize(seekBar: SeekBar) {
+        val th = ShapeDrawable(OvalShape())
+        val minThumbWidth = 5
+        th.intrinsicWidth = seekBar.progress + minThumbWidth
+        th.intrinsicHeight = seekBar.progress + minThumbWidth
+        seekBar.thumb = th
+    }
+}
+
+class Segment(var path: Path, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
+
+class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
+    var paintLine: Paint = Paint()
+    var isStrokeErasing = false
+    var isNormalErasing = false
+    private var currentStartX = 0f
+    private var currentStartY = 0f
+    private val segments = ArrayList<Segment>()
+
+    init {
+        paintLine.isAntiAlias = true
+        paintLine.color = Color.BLACK
+        paintLine.style = Paint.Style.STROKE
+        paintLine.strokeWidth = 16.0F
+        paintLine.strokeCap = Paint.Cap.ROUND
+        Communication.getDrawListener().subscribe{ obj ->
+            strokeReceived(obj)
+        }
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        for (segment in segments) {
+            canvas.drawPath(segment.path, segment.paint)
+        }
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val action = event.actionMasked
+
+        if (isStrokeErasing || isNormalErasing) {
+            checkForStrokesToErase(event)
+        } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+            currentStartX = event.x
+            currentStartY = event.y
+        } else if (action == MotionEvent.ACTION_MOVE){
+            touchMoved(event)
         }
 
         invalidate()
         return true
     }
 
+    private fun batchErase(segment: Segment) {
+        // recursive breadth search
+        if (segment.nextSegment != null) {
+            if (segment.nextSegment!!.paint.color != Color.TRANSPARENT) {
+                segment.nextSegment!!.paint.color = Color.TRANSPARENT
+                batchErase(segment.nextSegment!!)
+            }
+        }
+
+        if (segment.previousSegment != null) {
+            if (segment.previousSegment!!.paint.color != Color.TRANSPARENT) {
+                segment.previousSegment!!.paint.color = Color.TRANSPARENT
+                batchErase(segment.previousSegment!!)
+            }
+        }
+    }
+
+    private fun checkForStrokesToErase(event: MotionEvent) {
+        var strokeFound = false
+
+        for (segment in segments) {
+            if (segment.paint.color == Color.TRANSPARENT) {
+                continue
+            }
+
+            val pm = PathMeasure(segment.path, false)
+            val coordinates = FloatArray(2)
+
+            var distance = 0f
+            while (distance <= pm.length) {
+                pm.getPosTan(distance, coordinates, null)
+                val eraserHalfSize = segment.paint.strokeWidth / 2.0f
+                val xOnLine = coordinates[0]
+                val yOnLine = coordinates[1]
+
+                if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
+                    if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
+                        segment.paint.color = Color.TRANSPARENT
+                        if (isStrokeErasing) {
+                            batchErase(segment)
+                        }
+
+                        //TODO: inform server of stroke removal
+                        strokeFound = true
+                        break
+                    }
+                }
+
+                distance += 1.0f
+            }
+
+            if (strokeFound)
+                break
+        }
+    }
+
+    private fun touchMoved(event: MotionEvent) {
+        sendStroke(currentStartX, event.x, currentStartY, event.y)
+
+        val newSegment = Path()
+        newSegment.moveTo(currentStartX, currentStartY)
+        //TODO: Can be even more precise by bisecting the line from currentStart the MotionEvent position
+        newSegment.lineTo(event.x, event.y)
+        segments.add(Segment(newSegment, Paint(paintLine), null, null))
+        if (segments.size - 2 >= 0) {
+            // segments.size - 1 is the index of the segment we just added,
+            // segments.size - 2 is the index of the segment just before it.
+            segments[segments.size - 1].previousSegment = segments[segments.size - 2]
+            segments[segments.size - 2].nextSegment = segments[segments.size - 1]
+        }
+
+        currentStartX = event.x
+        currentStartY = event.y
+    }
+
+    private fun strokeReceived(obj: JSONObject) {
+        val path = Path()
+        path.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
+        path.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
+
+        val paint = Paint()
+        paint.isAntiAlias = true
+        paint.color = obj.getInt("color")
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = obj.getInt("width").toFloat()
+        paint.strokeCap = Paint.Cap.ROUND
+
+        segments.add(Segment(path, paint, null, null))
+    }
+
+    private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
+        val obj = JSONObject()
+        obj.put("username", username)
+        obj.put("startPosX", startPointX)
+        obj.put("startPosY", startPointY)
+        obj.put("endPosX", finishPointX)
+        obj.put("endPosY", finishPointY)
+        obj.put("color", paintLine.color)
+        obj.put("width", paintLine.strokeWidth)
+
+        SocketIO.sendMessage("gameplay", obj)
+    }
 }
+
+

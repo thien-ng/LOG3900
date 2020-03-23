@@ -42,7 +42,7 @@ CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_pass
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_login BOOLEAN) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_login BOOLEAN, in_times VARCHAR(30)) RETURNS void AS $$
     DECLARE
     the_id INT;
     BEGIN
@@ -52,9 +52,9 @@ CREATE OR REPLACE FUNCTION LOG3900.logConnection(in_username VARCHAR(20), is_log
         INTO the_id;
 
         IF the_id IS NULL THEN
-            INSERT INTO LOG3900.connection VALUES(null, is_login, DEFAULT);
+            INSERT INTO LOG3900.connection VALUES(null, is_login, in_times);
         ELSE
-            INSERT INTO LOG3900.connection VALUES(the_id, is_login, DEFAULT);
+            INSERT INTO LOG3900.connection VALUES(the_id, is_login, in_times);
         END IF;
     END;
 $$LANGUAGE plpgsql;
@@ -83,22 +83,29 @@ RETURNS TABLE (out_username VARCHAR(20), out_content TEXT, out_times VARCHAR(8))
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS INTEGER AS $$
     DECLARE
         channel_id VARCHAR(20);
         account_id INTEGER;
+        is_new     INTEGER;
     BEGIN
         SELECT id FROM log3900.Channel WHERE id = in_channel_id INTO channel_id;
         SELECT id FROM log3900.account WHERE username = in_account_un INTO account_id;
 
+        is_new = 0;
+
         IF channel_id IS NOT NULL THEN
             INSERT INTO LOG3900.accountchannel VALUES(account_id, channel_id);
         ELSE
+            is_new = 1;
             INSERT INTO log3900.channel VALUES(in_channel_id, DEFAULT);
             INSERT INTO LOG3900.accountchannel VALUES(account_id, in_channel_id);
         END IF;
+
+        RETURN is_new;
     END;
 $$LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS VOID AS $$
     DECLARE

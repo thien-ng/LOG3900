@@ -15,12 +15,16 @@ namespace PolyPaint.Utilitaires
         public const string REGISTER_PATH           = ACCOUNT_PATH + "/register";
         public const string CHAT_MESSAGES_PATH      = "/chat/messages";
         public const string CHANNELS_PATH           = "/chat/channels";
+        public const string USER_INFO_PATH          = ACCOUNT_PATH + "/user/info/";
         public const string GAME_PATH               = "/game/lobby";
+        public const string USERS_LOBBY_PATH        = GAME_PATH + "/users/";
+        public const string START_GAME_PATH         = "/game/start/";
         public const string GAMECARDS_PATH          = "/card";
         public const string CREATOR_PATH            = "/creator";
         public const string CARDSCREATOR_PATH       = CREATOR_PATH + "/game/new";
         public const string SUGGESTION_PATH         = CREATOR_PATH + "/game/suggestion";
         public const string GAME_JOIN_PATH          = "/game/lobby/join";
+        public const string GAME_LEAVE_PATH         = "/game/lobby/leave";
         public const string GET_ACTIVE_LOBBY_PATH   = "/game/lobby/active";
         public const string SUB_CHANNELS_PATH       = CHANNELS_PATH + "/sub";
         public const string NOT_SUB_CHANNELS_PATH   = CHANNELS_PATH + "/notsub";

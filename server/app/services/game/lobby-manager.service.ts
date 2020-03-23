@@ -1,8 +1,8 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby, GameMode, ILobEmitMes } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
-import { isUuid } from 'uuidv4';
+import { Time } from "../../utils/date";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -23,10 +23,19 @@ export class LobbyManagerService {
         this.socketServer = socketServer;     
     }
 
-    public getActiveLobbies(gameID: string): IGetLobby[] {
+    public getUsersInLobby(lobbyName: string): string[] {
+        const lobby = this.lobbies.get(lobbyName) as IActiveLobby;
+
+        const users: string[] = [];
+        lobby.users.forEach(u => { users.push(u.username) });
+
+        return users;
+    }
+
+    public getActiveLobbies(mode: GameMode): IGetLobby[] {
         const list: IGetLobby[] = [];
         this.lobbies.forEach((lob) => {
-            if (lob.gameID === gameID)
+            if (lob.mode === mode)
                 list.push(this.mapLobby(lob));
         })
         return list;
@@ -39,10 +48,10 @@ export class LobbyManagerService {
         });
         return {
             usernames: usernames,
-            private: lobbyAct.private,
+            isPrivate: lobbyAct.isPrivate,
             size: lobbyAct.size,
             lobbyName: lobbyAct.lobbyName,
-            gameID: lobbyAct.gameID,
+            mode: lobbyAct.mode,
         }; 
     }
 
@@ -61,16 +70,16 @@ export class LobbyManagerService {
             if (this.isUserInLobbyAlready(lobby.users, user.username))
                 throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
 
-            if (lobby.private && this.isPwdMatching(req.password as string, lobby.password as string)) {
+            if (lobby.isPrivate && this.isPwdMatching(req.password as string, lobby.password as string)) {
                 if ((lobby.users.length + 1) > lobby.size)
                     throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
 
                 lobby.users.push(user);
-                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user});
+                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username} as INotifyUpdateUser);
             }
-            else if (lobby.private == false){
+            else if (lobby.isPrivate == false){
                 lobby.users.push(user);
-                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user});
+                this.sendMessages({lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username} as INotifyUpdateUser);
             }
             else
                 throw new Error(`Wrong password for lobby ${req.lobbyName}`);
@@ -79,11 +88,12 @@ export class LobbyManagerService {
             // Create Lobby
             if (!req.size)
                 throw new Error("Lobby size must be specified when lobby does not exist")
-            if (!req.gameID || (req.gameID && !isUuid(req.gameID)))
-                throw new Error("UUID attribute must be an UUID");
+            if (!req.mode || (req.mode && !(req.mode in GameMode))) {
+                throw new Error("Creating lobby must have correct mode");
+            }
            
-            this.lobbies.set(req.lobbyName, {users: [user], private: req.private, size: req.size, password: req.password, lobbyName: req.lobbyName, gameID: req.gameID} as IActiveLobby);
-            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user], private: req.private, size: req.size} as INotifyLobbyUpdate);          
+            this.lobbies.set(req.lobbyName, {users: [user], isPrivate: req.isPrivate, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode} as IActiveLobby);
+            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size} as INotifyLobbyUpdate);          
         }        
 
         return `Successfully joined lobby ${req.lobbyName}`;
@@ -107,7 +117,7 @@ export class LobbyManagerService {
             } else {
                 // Leave lobby
                 this.lobbies.set(req.lobbyName, lobby);
-                this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.leave});
+                this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.leave, user: req.username});
             }
 
         } else {
@@ -136,9 +146,11 @@ export class LobbyManagerService {
         if (!lobby) return;
 
         if (this.isNotification(mes))
-            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif") });
-        else 
-            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", mes.message) });
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif", mes) });
+        else {
+            const message = {lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
+            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
+        }
     }
 
     private isNotification(object: any): object is INotify {
@@ -170,9 +182,9 @@ export class LobbyManagerService {
         if (req.size || req.size === 0) 
             if (req.size < 1 || req.size > 10)
                 throw new Error("Lobby size should be between 1 and 10");
-        if (typeof req.private !== "boolean")
-            throw new Error("Private attribute must be boolean");
-        if (req.private)
+        if (typeof req.isPrivate !== "boolean")
+            throw new Error("Private attribute must be boolean");        
+        if (req.isPrivate)
             if (!req.password)
                 throw new Error("Private lobby must have password");
             else if (req.password.length < 1 || req.password.length > 20)
@@ -180,7 +192,7 @@ export class LobbyManagerService {
     }
 
     private isJoinLobby(req: IJoinLobby | ILeaveLobby): req is IJoinLobby {
-        return "private" in req;
+        return "isPrivate" in req;
     }
 
     private verifySocketConnection(): void {

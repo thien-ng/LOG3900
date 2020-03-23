@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { Collection, MongoClient, MongoClientOptions } from 'mongodb';
-import { IGameCard } from "../interfaces/card";
+import { IGameRule } from "../interfaces/rule";
 
 import 'reflect-metadata';
 
@@ -9,9 +9,9 @@ const DATABASE_NAME = 'database';
 const DATABASE_COLLECTION = 'cards';
 
 @injectable()
-export class CardsDbService {
+export class RulesDbService {
 
-    private collection: Collection<IGameCard>;
+    private collection: Collection<IGameRule>;
 
     private options: MongoClientOptions = {
         useNewUrlParser : true,
@@ -28,23 +28,9 @@ export class CardsDbService {
         });
     }
 
-    public async getCards(): Promise<IGameCard[]> {
-        return await this.collection.find({}).toArray();
-    }
-
-    public async getCardByGameId(gameID: string): Promise<IGameCard | null> {
-        return await this.collection.findOne({gameID: gameID});
-    }
-
-    public async deleteCard(gameID: string): Promise<void> {
-        this.collection.deleteOne({gameID: gameID})
-            .then()
-            .catch(e => {throw e});
-    } 
-
-    public async addCard(card: IGameCard): Promise<void> {
-        if (this.validateCard(card)) {
-            this.collection.insertOne(card).catch(e => {
+    public async addRule(rule: IGameRule): Promise<void> {
+        if (this.validateRule(rule)) {
+            await this.collection.insertOne(rule).catch(e => {
                 throw e;
             });
         } else {
@@ -52,13 +38,15 @@ export class CardsDbService {
         }
     }
 
-    public getRulesByGameID(gameID: string): void {
-        this.collection.findOne({gameID: gameID})
-        .then(IGameCard => { return IGameCard })
-        .catch(e => { throw e });
+    public async getRules(): Promise<IGameRule[]> {
+        return this.collection.find({}).toArray().then((rules) => {
+            return rules;
+        }).catch((error: Error) => {
+            throw error;
+        });
     }
 
-    private validateCard(card: IGameCard): boolean {
+    private validateRule(rule: IGameRule): boolean {
         // TODO add vallidation of card before adding to db
         // add validation when we know what is needed for a card
         return true

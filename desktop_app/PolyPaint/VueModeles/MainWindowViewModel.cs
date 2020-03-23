@@ -8,6 +8,26 @@ namespace PolyPaint.VueModeles
 {
     class MainWindowViewModel : BaseViewModel
     {
+        public MainWindowViewModel()
+        {
+            // Add available pages and set page
+            PageViewModels[nameof(LoginViewModel)] = new LoginViewModel();
+
+            CurrentPageViewModel = PageViewModels[nameof(LoginViewModel)];
+
+            Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
+            Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);
+            Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
+            Mediator.Subscribe("GoToHomeScreen", OnGoToHomeScreen);
+
+            Socket socket = IO.Socket(Constants.SERVER_PATH);
+            socket.On(Socket.EVENT_CONNECT, () =>
+            {
+                ServerService.instance.socket = socket;
+            });
+        }
+
+        #region Attributes
         private IPageViewModel _currentPageViewModel;
         private Dictionary<string, IPageViewModel> _pageViewModels;
 
@@ -34,7 +54,9 @@ namespace PolyPaint.VueModeles
                 ProprieteModifiee("CurrentPageViewModel");
             }
         }
+        #endregion
 
+        #region Methods
         private void ChangeViewModel(string viewModelName, Type viewModelType)
         {
             if (!PageViewModels.ContainsKey(viewModelName))
@@ -64,24 +86,6 @@ namespace PolyPaint.VueModeles
             ChangeViewModel(nameof(HomeViewModel), typeof(HomeViewModel));
         }
 
-        public MainWindowViewModel()
-        {
-            // Add available pages and set page
-            PageViewModels[nameof(LoginViewModel)] = new LoginViewModel();
-
-            CurrentPageViewModel = PageViewModels[nameof(LoginViewModel)];
-
-            Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
-            Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);
-            Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
-            Mediator.Subscribe("GoToHomeScreen", OnGoToHomeScreen);
-
-            Socket socket = IO.Socket(Constants.SERVER_PATH);
-            socket.On(Socket.EVENT_CONNECT, () =>
-            {
-                ServerService.instance.socket = socket;
-            });
-        }
-
+        #endregion
     }
 }

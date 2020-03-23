@@ -5,27 +5,27 @@ import { IUser } from "./user-manager";
  */
 export interface IGetLobby {
     usernames:  string[]
-    private:    boolean,
+    isPrivate:  boolean,
     lobbyName:  string,
     size:       number,
-    gameID:     string,
+    mode:       GameMode,
 }
 
 export interface IActiveLobby {
     users:      IUser[],
-    private:    boolean,
+    isPrivate:  boolean,
     password?:  string,
     lobbyName:  string,
     size:       number,
-    gameID:     string,
+    mode:       GameMode,
 }
 
 export interface IJoinLobby {
     username:  string,
-    private:   boolean,
+    isPrivate: boolean,
     lobbyName: string,
     size?:     number,
-    gameID?:   string,
+    mode?:     GameMode,
     password?: string,
 }
 
@@ -37,40 +37,59 @@ export interface ILeaveLobby {
 export interface IReceptMesLob {
     lobbyName: string,
     username:  string,
-    message:   string,
+    content:   string,
+}
+
+export interface ILobEmitMes extends IReceptMesLob{
+    time: string,
 }
 
 /**
  * LOBBY NOTIFICATIONS
  */
 export interface INotify {
-    lobbyName: string,
     type:      LobbyNotif,
+    lobbyName: string,
 }
 
 export interface INotifyUpdateUser extends INotify{
-    user:      IUser;
+    user:      string;
 }
 
 export interface INotifyLobbyUpdate extends INotify {
-    users?:     IUser[],
-    private?:   boolean,
+    users?:     string[],
+    isPrivate?: boolean,
     size?:      number,
 }
 
 export enum LobbyNotif {
-    join,
-    leave,
-    create,
-    delete,
+    join   = "join",
+    leave  = "leave",
+    create = "create",
+    delete = "delete",
 }
 
 /**
  * GAMEPLAY
  */
+export interface IGameplayReady {
+    username: string,
+}
+
 export interface IGameplayChat {
     username:   string,
     content:    string,
+}
+
+export interface IGameplayAnnouncement extends IGameplayChat{
+    isServer:   boolean,
+}
+
+
+export interface ICorrAns {
+    username:  string,
+    time:      number,
+    ratio:     number,
 }
 
 export interface IDrawing {
@@ -80,6 +99,9 @@ export interface IDrawing {
     endPosY:        number,
     color:          number,
     width:          number,
+    isEnd:          boolean,
+    format:         Format,
+    type:           Type,
 }
 
 export interface IGameplayDraw extends IDrawing{
@@ -87,11 +109,43 @@ export interface IGameplayDraw extends IDrawing{
     // TODO add others
 }
 
+export interface IEraser {
+    type:       EraserType,
+    username:   string,
+    x:          number,
+    y:          number,
+    width?:     number,
+}
+
+export enum EraserType {
+    point  = "point",
+    stroke = "stroke",
+}
+
+export enum Format {
+    circle = "circle",
+    square = "square",
+}
+
+export enum Type {
+    ink     = "ink",
+    estroke = "estroke",
+    epoint  = "epoint",
+}
+
+/**
+ * POINTS
+ */
+export interface IPoints {
+    username: string,
+    points:   number,
+}
+
 /**
  *  OTHER
  */
 export enum GameMode {
-    FFA,
-    SprintSolo,
-    SprintCollab,
+    FFA = "FFA",
+    SOLO = "SOLO",
+    COOP = "COOP",
 }

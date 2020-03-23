@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PolyPaint.Services;
 using System.Windows;
+using Newtonsoft.Json;
+using PolyPaint.Modeles;
 
 namespace PolyPaint.VueModeles
 {
@@ -17,27 +19,16 @@ namespace PolyPaint.VueModeles
         private ICommand _register;
         private string   _username;
         private string   _firstName;
-        private string   _name;
+        private string   _lastName;
         private bool     _registerIsRunning;
-
-        public PasswordBox Password { private get; set; }
-        public PasswordBox PasswordConfirm { private get; set; }
-
         public RegisterViewModel()
         {
             _username = "";
         }
 
-        public ICommand GoToLogin
-        {
-            get
-            {
-                return _goToLogin ?? (_goToLogin = new RelayCommand(x =>
-                {
-                    Mediator.Notify("GoToLoginScreen", "");
-                }));
-            }
-        }
+        #region Public Attributes
+        public PasswordBox Password { private get; set; }
+        public PasswordBox PasswordConfirm { private get; set; }
 
         public string Username
         {
@@ -63,18 +54,21 @@ namespace PolyPaint.VueModeles
                 }
             }
         }
-        public string Name
+        public string LastName
         {
-            get { return _username; }
+            get { return _lastName; }
             set
             {
-                if (value != _name)
+                if (value != _lastName)
                 {
-                    _name = value;
-                    ProprieteModifiee("Name");
+                    _lastName = value;
+                    ProprieteModifiee("LastName");
                 }
             }
         }
+        #endregion
+
+        #region Methods
 
         private void ReceiveMessage(JObject jsonMessage)
         {
@@ -83,6 +77,7 @@ namespace PolyPaint.VueModeles
             if (status == 200)
             {
                 ServerService.instance.username = _username;
+                fetchProfile();
                 Mediator.Notify("GoToHomeScreen", "");
             }
             else
@@ -90,6 +85,38 @@ namespace PolyPaint.VueModeles
                 MessageBox.Show(message);
             }
         }
+
+        private async void fetchProfile()
+        {
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
+            if (response.IsSuccessStatusCode)
+            {
+                string responseString = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<User>(responseString);
+                ServerService.instance.user = data;
+            }
+        }
+        public async Task<JObject> RegisterRequestAsync(string username, string password, string firstName, string lastName)
+        {
+            var values = new Dictionary<string, string>
+                {
+                    { "username", username },
+                    { "password", password },
+                    { "firstName", firstName},
+                    { "lastName", lastName}
+                };
+
+            var content = new FormUrlEncodedContent(values);
+
+            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.REGISTER_PATH, content);
+
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            return JObject.Parse(responseString);
+        }
+        #endregion
+
+        #region Commands
 
         public ICommand Register
         {
@@ -100,7 +127,7 @@ namespace PolyPaint.VueModeles
                     if (_registerIsRunning)
                         return;
 
-                    if (_username == null || Password.SecurePassword.Length == 0)
+                    if (_username == null || Password.SecurePassword.Length == 0 || _firstName == null || _lastName == null)
                     {
                         MessageBox.Show("Please fill every parameter");
                         return;
@@ -110,7 +137,7 @@ namespace PolyPaint.VueModeles
                     {
                         _registerIsRunning = true;
 
-                        JObject res = await RegisterRequestAsync(_username,Password.Password);
+                        JObject res = await RegisterRequestAsync(_username,Password.Password, _firstName, _lastName);
 
                         if (res.ContainsKey("status"))
                         {
@@ -136,22 +163,18 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        public async Task<JObject> RegisterRequestAsync(string username, string password)
+        public ICommand GoToLogin
         {
-            var values = new Dictionary<string, string>
+            get
+            {
+                return _goToLogin ?? (_goToLogin = new RelayCommand(x =>
                 {
-                    { "username", username },
-                    { "password", password }
-                };
-
-            var content = new FormUrlEncodedContent(values);
-
-            var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.REGISTER_PATH, content);
-
-            var responseString = await response.Content.ReadAsStringAsync();
-
-            return JObject.Parse(responseString);
+                    Mediator.Notify("GoToLoginScreen", "");
+                }));
+            }
         }
+        #endregion
+
     }
 
 }

@@ -1,14 +1,40 @@
-import { GameMode } from "./game";
-
 export interface ISuggestion {
-    drawing: string,
-    object: string,
+    drawPng: string,
+    drawPxl: IDrawingCreator[];
+    object:  string,
 }
 
-export interface ICreateGame {
-    gameName:   string,
-    solution:   string,
-    clues:      string[],
-    mode:       GameMode
-    // add other informations
+interface ICreateGame {
+    solution:       string,
+    clues:          string[],
+    difficulty:     Difficulty,
+    displayMode:    DisplayMode,
+}
+
+export interface IManuel1 extends ICreateGame {
+    drawing: IDrawingCreator[]
+}
+
+export interface IDrawingCreator {
+    color:  string,
+    width:  number,
+    points: IPoint[],
+}
+
+export interface IPoint {
+    x:      number,
+    y:      number,
+}
+
+export enum Difficulty {
+    EASY    = "easy",
+    MEDIUM  = "medium",
+    HARD    = "hard",
+}
+
+export enum DisplayMode {
+    CLASSIC     = "classic",
+    RANDOM      = "random",
+    PANORAMIC   = "panoramic",
+    CENTERED    = "centered",
 }

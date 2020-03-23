@@ -1,8 +1,11 @@
 import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
-import { Arena } from "./arena";
-import { IActiveLobby, IGameplayChat, IGameplayDraw } from "../../interfaces/game";
-import { CardsDbService } from "../../database/cards-db.service";
+import { ArenaFfa } from "./arena-ffa";
+import { ArenaSolo } from "./arena-solo";
+import { ArenaCoop } from "./arena-coop";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady } from "../../interfaces/game";
+import { RulesDbService } from "../../database/rules-db.service";
+import { IGameRule } from "../../interfaces/rule";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -10,17 +13,17 @@ import * as io from 'socket.io';
 @injectable()
 export class GameManagerService {
 
-    private arenas: Map<number, Arena>;
+    private arenas: Map<number, ArenaFfa | ArenaSolo | ArenaCoop>;
     private userMapArenaId: Map<string, number>;
     private arenaId: number;
 
     private socketServer: io.Server;
     
     public constructor(
-        @inject(Types.LobbyManagerService) private lobServ: LobbyManagerService,
-        @inject(Types.CardsDbService) private db: CardsDbService) {
+        @inject(Types.LobbyManagerService)  private lobServ: LobbyManagerService,
+        @inject(Types.RulesDbService)       private db: RulesDbService) {
 
-        this.arenas = new Map<number, Arena>();
+        this.arenas = new Map<number, ArenaFfa | ArenaSolo | ArenaCoop>();
         this.userMapArenaId = new Map<string, number>();
         this.arenaId = 0;
     }
@@ -38,40 +41,70 @@ export class GameManagerService {
         this.setupArena(lobby);
     }
 
-    public sendMessageToArena(mes: IGameplayChat | IGameplayDraw): void {
+    public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
         const arenaId = this.userMapArenaId.get(mes.username) as number;
         const arena = this.arenas.get(arenaId);
 
         if (arena)
-            arena.receiveInfo(mes);
+            arena.receiveInfo(socket, mes);
     }
 
-    private setupArena(lobby: IActiveLobby): void {
+    public deleteArena(arenaId: number): void {
+        this.arenas.delete(arenaId);
+    }
+
+    public persistPoints(pts: IPoints[]): void {
+        // TODO persist to db points
+    }
+
+    private async setupArena(lobby: IActiveLobby): Promise<void> {
         const room = `arena${this.arenaId}`;
 
         this.addUsersToArena(lobby, room, this.arenaId);
 
+        const rules: IGameRule[] = await this.db.getRules();
+        
+        if (rules.length < lobby.users.length)
+            throw new Error("Not enough drawings are in db");
+
+        const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
+
         this.lobServ.lobbies.delete(lobby.lobbyName);
-
-        // TODO get arena rules
-        this.db.getRulesByGameID(lobby.gameID);
-        const arena = new Arena(lobby.users, lobby.size, room, this.socketServer);
-
+        
         this.arenas.set(this.arenaId, arena);
-        // TODO uncomment later to increment arena id
-        // this.arenaId++;
+        this.arenaId++;
 
         this.socketServer.in(room).emit("game-start");
 
         arena.start();
     }
 
+    private createArenaAccordingToMode(arenaId: number, lobby: IActiveLobby, room: string, rules: IGameRule[]): ArenaFfa | ArenaSolo | ArenaCoop {
+        switch(lobby.mode) {
+            case GameMode.FFA:
+                return new ArenaFfa(arenaId, lobby.users, room, this.socketServer, rules, this);
+            case GameMode.SOLO:
+                return new ArenaSolo(arenaId, lobby.users, room, this.socketServer, rules, this);
+            case GameMode.COOP:
+                return new ArenaCoop(arenaId, lobby.users, room, this.socketServer, rules, this);
+        }
+    }
+
+    public handleDisconnect(username: string): void {
+        const arenaId = this.userMapArenaId.get(username) as number;
+        const arena = this.arenas.get(arenaId);
+
+        if (arena)
+            arena.disconnectPlayer(username);
+    }
+
     private addUsersToArena(lobby: IActiveLobby, room: string, arenaID: number): void {        
         // add users to socket room
         lobby.users.forEach(u => {
-            if (u.socket)
-            u.socket.join(room);
-            this.userMapArenaId.set(u.username, arenaID);
+            if (u.socket) {
+                u.socket.join(room);
+                this.userMapArenaId.set(u.username, arenaID);
+            }
         });
     }
     

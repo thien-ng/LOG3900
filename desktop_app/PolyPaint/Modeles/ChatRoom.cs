@@ -9,15 +9,37 @@ namespace PolyPaint.Modeles
 {
     class ChatRoom: INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        public string ID { get; set; }
-        private ObservableCollection<MessageChat> _messages;
 
-        public ChatRoom(string id)
+        public ChatRoom(string id, bool isLobbyChat)
         {
             _messages = new ObservableCollection<MessageChat>();
             ID = id;
-            Setup();
+            IsLobbyChat = isLobbyChat;
+            if (isLobbyChat) { SetupLobbyChat(); }
+            else { Setup(); }
+        }
+
+        #region Public Attributes
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string ID { get; set; }
+
+        public bool IsLobbyChat { get; set; }
+
+        private ObservableCollection<MessageChat> _messages;
+        public ObservableCollection<MessageChat> Messages
+        {
+            get { return _messages; }
+            set { _messages = value; ProprieteModifiee(nameof(Messages)); }
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void SetupLobbyChat()
+        {
+            ServerService.instance.socket.On("lobby-chat", data => ReceiveMessage((JObject)data));
         }
 
         private void Setup()
@@ -25,22 +47,26 @@ namespace PolyPaint.Modeles
             LoadMessages();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
         }
-
-        public ObservableCollection<MessageChat> Messages
-        {
-            get { return _messages; }
-            set { _messages = value; ProprieteModifiee(nameof(Messages)); }
-        }
-
         public void SendMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-            MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, ID);
 
-            var messageJson = JObject.FromObject(messageToSend);
-            ServerService.instance.socket.Emit("chat", messageJson);
+            if (IsLobbyChat)
+            {
+                var newMessage = new JObject(new JProperty("lobbyName", ID),
+                                             new JProperty("username", ServerService.instance.username),
+                                             new JProperty("content", message));
+                ServerService.instance.socket.Emit("lobby-chat", newMessage);
+            }
+            else
+            {
+                MessageSend messageToSend = new MessageSend(ServerService.instance.username, message, ID);
+
+                var messageJson = JObject.FromObject(messageToSend);
+                ServerService.instance.socket.Emit("chat", messageJson);
+            }
         }
 
         private void ReceiveMessage(JToken jsonMessage)
@@ -67,5 +93,6 @@ namespace PolyPaint.Modeles
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        #endregion
     }
 }

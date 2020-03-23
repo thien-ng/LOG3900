@@ -8,7 +8,6 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.client_leger.Fragments.*
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -30,8 +29,14 @@ class ConnexionController {
                     SocketIO.connect(body.get("username").toString())
                     activity.login_button.isEnabled = true
                 }
-                else
+                else {
+                    Toast.makeText(
+                        applicationContext,
+                        response["message"].toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     activity.login_button.isEnabled = true
+                }
             },
             Response.ErrorListener {
                 Toast.makeText(
@@ -65,8 +70,14 @@ class ConnexionController {
                     SocketIO.connect(body.get("username").toString())
                     activity.register_button.isEnabled = true
                 }
-                else
+                else {
+                    Toast.makeText(
+                        applicationContext,
+                        response["message"].toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     activity.register_button.isEnabled = true
+                }
             },
             Response.ErrorListener {
                 Toast.makeText(
@@ -122,11 +133,37 @@ class ConnexionController {
             Response.Listener<JSONObject>{
                 activity.setChannel(channelId)
             },Response.ErrorListener{ error ->
-                Log.w("socket", "join")
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }
         )
         requestQueue.add(jsonObjectRequest)
+    }
+
+    fun leaveChannel(activity: ChatFragment, channelId: String) {
+        val requestQueue = Volley.newRequestQueue(activity.context)
+
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.DELETE,
+            Constants.SERVER_URL + "/chat/channels/leave/" + activity.username + "/" + channelId ,
+            null,
+            Response.Listener<JSONObject>{
+                if (activity.channelId == channelId) {
+                    activity.setChannel(Constants.DEFAULT_CHANNEL_ID)
+                }
+                else {
+                    activity.loadChannels()
+                }
+            },Response.ErrorListener{ error ->
+                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+            }
+        )
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    fun createChannel(activity: ChatFragment, channelId: String) {
+        if (channelId.isNotEmpty()) {
+            joinChannel(activity, channelId)
+        }
     }
 
     fun loadChannels(activity: ChatFragment, search: String? = null) {
@@ -141,8 +178,10 @@ class ConnexionController {
                     activity.channelAdapter.clear()
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)
-                        activity.channelAdapter.add(ChannelItem(channelId.getString("id")))
+                        activity.channelAdapter.add(ChannelItem(channelId.getString("id"), true, this, activity))
+
                         activity.channelAdapter.setOnItemClickListener { item, _ ->
+
                             activity.setChannel(item.toString())
                         }
                     }
@@ -161,7 +200,7 @@ class ConnexionController {
                     activity.notSubChannelAdapter.clear()
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)
-                        activity.notSubChannelAdapter.add(ChannelItem(channelId.getString("id")))
+                        activity.notSubChannelAdapter.add(ChannelItem(channelId.getString("id"), false, this, activity))
                         activity.notSubChannelAdapter.setOnItemClickListener { item, _ ->
                             joinChannel(activity, item.toString())
                         }
@@ -185,13 +224,13 @@ class ConnexionController {
                     for (i in 0 until response.length()) {
                         val channel = response.getJSONObject(i)
                         if (channel.getString("sub") == "true") {
-                            activity.channelAdapter.add(ChannelItem(channel.getString("id")))
+                            activity.channelAdapter.add(ChannelItem(channel.getString("id"), true, this, activity))
                             activity.channelAdapter.setOnItemClickListener { item, _ ->
                                 activity.setChannel(item.toString())
                             }
                         }
                         else {
-                            activity.notSubChannelAdapter.add(ChannelItem(channel.getString("id")))
+                            activity.notSubChannelAdapter.add(ChannelItem(channel.getString("id"), false, this, activity))
                             activity.notSubChannelAdapter.setOnItemClickListener { item, _ ->
                                 joinChannel(activity, item.toString())
                             }
@@ -205,27 +244,4 @@ class ConnexionController {
         }
     }
 
-    fun joinLobby(activity: GameCardsFragment, body: JSONObject){
-        val mRequestQueue = Volley.newRequestQueue(activity.context)
-
-        val mJsonObjectRequest = object : StringRequest(
-            Method.POST,
-            Constants.SERVER_URL + Constants.LOBBY_JOIN_ENDPOINT,
-            Response.Listener {
-                    activity.replaceFragment(DrawFragment())
-            },
-            Response.ErrorListener {error->
-                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
-            }) {
-            override fun getBodyContentType(): String {
-                return "application/json"
-            }
-
-            @Throws(AuthFailureError::class)
-            override fun getBody(): ByteArray {
-                return body.toString().toByteArray()
-            }
-        }
-        mRequestQueue!!.add(mJsonObjectRequest)
-    }
 }

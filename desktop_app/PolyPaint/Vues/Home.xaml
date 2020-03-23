@@ -21,7 +21,11 @@
             </DataTemplate>
 
             <DataTemplate x:Key="Profile" DataType="{x:Type model:ProfileViewModel}">
-                <local:Profile />
+                <local:Profile/>
+            </DataTemplate>
+
+            <DataTemplate x:Key="Lobby" DataType="{x:Type model:LobbyViewModel}">
+                <local:Lobby DataContext="{Binding LobbyViewModel}"/>
             </DataTemplate>
         </ResourceDictionary>
         
@@ -46,6 +50,9 @@
                             <DataTrigger Binding="{Binding SwitchView}" Value="1">
                                 <Setter Property="ContentTemplate" Value="{StaticResource Profile}" />
                             </DataTrigger>
+                            <DataTrigger Binding="{Binding SwitchView}" Value="2">
+                                <Setter Property="ContentTemplate" Value="{StaticResource Lobby}" />
+                            </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </ContentControl.Style>
@@ -55,15 +62,15 @@
                 <Button Width="50" Grid.Column="2" Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="left" VerticalAlignment="Top" Click="Button_Click">
                     <materialDesign:PackIcon Kind="DockWindow" Width="25" Height="30" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center"/>
                 </Button>
-                <Button Width="50" IsEnabled="{Binding BackEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button Width="50" IsEnabled="{Binding BackEnabled}" Visibility="{Binding IsNotInLobby, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Foreground="White" Kind="ArrowBack" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Button>
-                <Button Width="50" IsEnabled="{Binding FrontEnabled}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button Width="50" IsEnabled="{Binding FrontEnabled}" Visibility="{Binding IsNotInLobby, Converter={StaticResource BooleanToVisibilityConverter}}" Command="{Binding SwitchViewCommand}" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Foreground="White" Kind="ArrowForward" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Button>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right"  Visibility="{Binding IsNotInLobby, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Button Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Command="{Binding CreateGameCommand}">
                     CREATE GAME
                 </Button>

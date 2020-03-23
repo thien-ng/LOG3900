@@ -2,9 +2,9 @@ export class Time {
 
     public static today(): string {
         const today = new Date();
-        return this.formatTime(today.getDate()) + "-" +
-            this.formatTime(today.getMonth() + 1) + "-" +
-            this.formatTime(today.getFullYear()) + "-" +
+        return this.formatTime(today.getDate()) + "/" +
+            this.formatTime(today.getMonth() + 1) + "/" +
+            this.formatTime(today.getFullYear()) + " " +
             this.now(today);
     }
 

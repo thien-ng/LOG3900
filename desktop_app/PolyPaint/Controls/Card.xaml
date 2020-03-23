@@ -6,43 +6,54 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PolyPaint.Controls"
              mc:Ignorable="d"
-                Background="White"
              d:DesignHeight="1000" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Flipper.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    
     <materialDesign:DialogHost IsOpen="{Binding IsCreateGameDialogOpen}"
                                DialogContent="{Binding DialogContent}"
                                CloseOnClickAway="True">
-        <Grid>
-        <materialDesign:Flipper>
+        <materialDesign:Flipper Width="220" Style="{StaticResource MaterialDesignCardFlipper}" Margin="0" Padding="0">
             <materialDesign:Flipper.FrontContent>
-                <Grid Height="200" Width="200">
+                <Grid Height="150" Width="220">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="120" />
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
             <materialDesign:ColorZone
                 Mode="PrimaryLight"
                 VerticalAlignment="Stretch">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding GameName}" FontSize="25" Foreground="White" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LobbyName}" FontSize="25" Foreground="White" />
             </materialDesign:ColorZone>
         <StackPanel
             Grid.Row="1"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Mode}" />
+                            <TextBlock HorizontalAlignment="Center" Text="{Binding Mode}" />
                             <Button Style="{StaticResource MaterialDesignFlatButton}"
                                 Command="{x:Static materialDesign:Flipper.FlipCommand}"
                                 Margin="0 4 0 0">
-                            View lobbies
+                            Players
                         </Button>
         </StackPanel>
     </Grid>
         </materialDesign:Flipper.FrontContent>
         <materialDesign:Flipper.BackContent>
-            <Grid Height="250" Width="200">
+            <Grid Height="150" Width="220">
                 <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                    </Grid.ColumnDefinitions>
             <materialDesign:ColorZone Mode="PrimaryLight">
                 <StackPanel Orientation="Horizontal">
                         <Button
@@ -70,23 +81,21 @@
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                         
-                            <Button Command="{Binding AddLobbyCommand}" Content="add Lobby"/>
                             <ScrollViewer Margin="10" Grid.Row="1" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
-                                <ItemsControl ItemsSource="{Binding GameLobbies}">
+                                <ItemsControl ItemsSource="{Binding Players}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
-                                                <Button Content="{Binding lobbyName}" Command="{Binding JoinLobbyCommand}" Margin="5,0,5,0" FontSize="15"/>
-                                                <TextBlock Text="{Binding size}" Margin="5,0,5,0" FontSize="15"/>
+                                                <TextBlock Text="{Binding}" Margin="5,0,5,0" FontSize="15"/>
                                             </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
                         </Grid>
+                            <Button Margin="10" Grid.Row="2" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Join Lobby" Command="{Binding JoinLobbyCommand}" FontSize="15"/>
                 </Grid>
             </materialDesign:Flipper.BackContent>
         </materialDesign:Flipper>
-    </Grid>
     </materialDesign:DialogHost>
 </UserControl>

@@ -9,7 +9,7 @@ import { IUser } from '../interfaces/user-manager';
 import { IReceptMes } from '../interfaces/chat';
 import { LobbyManagerService } from '../services/game/lobby-manager.service';
 import { GameManagerService } from '../services/game/game-manager.service';
-import { IReceptMesLob, IGameplayChat, IGameplayDraw } from '../interfaces/game';
+import { IReceptMesLob, IGameplayChat, IGameplayDraw, IGameplayReady } from '../interfaces/game';
 import { AccountDbService } from '../database/account-db.service';
 
 @injectable()
@@ -54,8 +54,8 @@ export class WebsocketService {
                 this.lobServ.sendMessages(mes);
             });
 
-            socket.on('gameplay', (mes: IGameplayChat | IGameplayDraw) => {
-                this.gameServ.sendMessageToArena(mes);
+            socket.on('gameplay', (mes: IGameplayChat | IGameplayDraw | IGameplayReady) => {
+                this.gameServ.sendMessageToArena(socket, mes);
             });
 
             socket.on('logout', () => {
@@ -84,6 +84,7 @@ export class WebsocketService {
     }
 
     private logout(username: string): void {
+        this.gameServ.handleDisconnect(username);
         this.lobServ.handleDisconnect(username);
         this.chatServ.removeUserFromChannelMap(username);
         this.userServ.deleteUser(username);

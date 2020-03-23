@@ -4,8 +4,7 @@ import * as spies from "chai-spies";
 import Types from '../../types';
 import { container } from "../../inversify.config";
 import { LobbyManagerService } from "../../services/game/lobby-manager.service";
-import { IJoinLobby, IActiveLobby, ILeaveLobby } from "../../interfaces/game";
-import { uuid } from 'uuidv4';
+import { IJoinLobby, IActiveLobby, ILeaveLobby, GameMode } from "../../interfaces/game";
 
 chai.use(spies);
 
@@ -24,7 +23,7 @@ describe("LobbyManagerService", () => {
 
     it("Should fail when joining lobby but socket is not connected", async () => {
         //given
-        const req: IJoinLobby = {username:"", private: true, lobbyName: "name", password: "password", size: 2};
+        const req: IJoinLobby = {username:"", isPrivate: true, lobbyName: "name", password: "password", size: 2};
 
         //when
         //then
@@ -35,8 +34,8 @@ describe("LobbyManagerService", () => {
     it("Should fail when joining lobby with incorrect username", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
-        const req1: IJoinLobby = {username:"", private: true, lobbyName: "name", password: "password", size: 2};
-        const req2: IJoinLobby = {username:"LongerThan20Character", private: true, lobbyName: "name", password: "password", size: 2};
+        const req1: IJoinLobby = {username:"", isPrivate: true, lobbyName: "name", password: "password", size: 2};
+        const req2: IJoinLobby = {username:"LongerThan20Character", isPrivate: true, lobbyName: "name", password: "password", size: 2};
 
         //when
         //then
@@ -47,7 +46,7 @@ describe("LobbyManagerService", () => {
     it("Should fail when joining private lobby without password", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
-        const req: IJoinLobby = {username:"aaa", private: true, lobbyName: "name", password: undefined, size: 2};
+        const req: IJoinLobby = {username:"aaa", isPrivate: true, lobbyName: "name", password: undefined, size: 2};
 
         //when
         //then
@@ -58,7 +57,7 @@ describe("LobbyManagerService", () => {
     it("Should fail when joining private lobby with incorrect password length", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
-        const req: IJoinLobby = {username:"aaa", private: true, lobbyName: "name", password: "LongerThan20Character", size: 2};
+        const req: IJoinLobby = {username:"aaa", isPrivate: true, lobbyName: "name", password: "LongerThan20Character", size: 2};
 
         //when
         //then
@@ -68,8 +67,8 @@ describe("LobbyManagerService", () => {
     it("Should fail when lobby size is not in correct range", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
-        const req1: IJoinLobby = {username:"aaa", private: true, lobbyName: "name", password: "LongerThan20Character", size: 0};
-        const req2: IJoinLobby = {username:"aaa", private: true, lobbyName: "name", password: "LongerThan20Character", size: 11};
+        const req1: IJoinLobby = {username:"aaa", isPrivate: true, lobbyName: "name", password: "LongerThan20Character", size: 0};
+        const req2: IJoinLobby = {username:"aaa", isPrivate: true, lobbyName: "name", password: "LongerThan20Character", size: 11};
         
         //when
         //then
@@ -80,24 +79,24 @@ describe("LobbyManagerService", () => {
     it("Should fail when joining when user is not found in online users", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
-        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
+        const req: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "password", size: 2};
 
         //when
         //then
         try {service.join(req)} catch(e) {chai.expect(e.message).to.equal("username is not found in logged users")};
     });
 
-    it("Should when creating new lobby without with wrong uuid", async () => {
+    it("Should fail when creating new lobby without with wrong mode", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
         chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
 
-        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
+        const req: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "password", size: 2, mode: "WRONG" as GameMode};
         
         //when
         //then
-        try {service.join(req)} catch(e) {chai.expect(e.message).to.equal("UUID attribute must be an UUID")};
+        try {service.join(req)} catch(e) {chai.expect(e.message).to.equal("Creating lobby must have correct mode")};
     });
 
     it("Should fail when joining when user is already in lobby", async () => {
@@ -106,8 +105,8 @@ describe("LobbyManagerService", () => {
         chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
 
-        const req1: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2, gameID: uuid()};
-        const req2: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
+        const req1: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "password", size: 2, mode: GameMode.FFA};
+        const req2: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "password", size: 2};
         service.join(req1);
 
         //when
@@ -122,9 +121,9 @@ describe("LobbyManagerService", () => {
 
         const user1 = {username:"username1", socketId: "testId"};
         const user2 = {username:"username2", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
+        service["lobbies"].set("name", {users: [user1, user2], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
-        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password"};
+        const req: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "password"};
 
         //when
         //then
@@ -137,7 +136,7 @@ describe("LobbyManagerService", () => {
         chai.spy.on(service, "sendMessages", () => {});
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
 
-        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2, gameID: uuid()};
+        const req: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "password", size: 2, mode: GameMode.FFA};
 
         //when
         const result = service.join(req);
@@ -156,9 +155,9 @@ describe("LobbyManagerService", () => {
         const spy = chai.spy.on(service, "isPwdMatching");
         
         const user = {username:"test", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: false, lobbyName:"name", size: 2, gameID: uuid()})
+        service["lobbies"].set("name", {users: [user], isPrivate: false, lobbyName:"name", size: 2, mode: GameMode.FFA})
 
-        const req: IJoinLobby = {username:"username", private: false, lobbyName: "name", size: 2};
+        const req: IJoinLobby = {username:"username", isPrivate: false, lobbyName: "name", size: 2};
 
         //when
         const result = service.join(req);
@@ -178,9 +177,9 @@ describe("LobbyManagerService", () => {
         const spy = chai.spy.on(service, "isPwdMatching");
         
         const user = {username:"test", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
+        service["lobbies"].set("name", {users: [user], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
-        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "password", size: 2};
+        const req: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "password", size: 2};
 
         //when
         const result = service.join(req);
@@ -199,9 +198,9 @@ describe("LobbyManagerService", () => {
         const spy = chai.spy.on(service, "isPwdMatching");
         
         const user = {username:"test", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
+        service["lobbies"].set("name", {users: [user], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
-        const req: IJoinLobby = {username:"username", private: true, lobbyName: "name", password: "incorrectPW", size: 2};
+        const req: IJoinLobby = {username:"username", isPrivate: true, lobbyName: "name", password: "incorrectPW", size: 2};
 
         //when
         
@@ -220,7 +219,7 @@ describe("LobbyManagerService", () => {
         chai.spy.on(service["userServ"], "getUsersByName", () => {return {username:"username", socketId: "id"}})
         
         const user = {username:"username", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
+        service["lobbies"].set("name", {users: [user], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
         const req: ILeaveLobby = {username:"username", lobbyName: "name"};
 
@@ -241,7 +240,7 @@ describe("LobbyManagerService", () => {
         
         const user1 = {username:"username", socketId: "testId"};
         const user2 = {username:"username2", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
+        service["lobbies"].set("name", {users: [user1, user2], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
         const req: ILeaveLobby = {username:"username", lobbyName: "name"};
 
@@ -262,7 +261,7 @@ describe("LobbyManagerService", () => {
 
         const user1 = {username:"username", socketId: "testId"};
         const user2 = {username:"username2", socketId: "testId"};
-        service["lobbies"].set("name", {users: [user1, user2], private: true, lobbyName:"name", password: "password", size: 2, gameID: uuid()})
+        service["lobbies"].set("name", {users: [user1, user2], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
         //when
         service.handleDisconnect(user1.username);

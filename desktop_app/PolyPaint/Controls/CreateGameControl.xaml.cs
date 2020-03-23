@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace PolyPaint.Controls
 {
     /// <summary>
-    /// Logique d'interaction pour CreateGameControl.xaml
+    /// Interaction logic for CreateGameControl.xaml
     /// </summary>
     public partial class CreateGameControl : UserControl
     {
