@@ -144,16 +144,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     override fun onDraw(canvas: Canvas) {
         for (segment in segments) {
-            Log.w("draw", "drawing segment")
-            Log.w("draw", "segments.size: " + segments.size)
             canvas.drawPath(segment.path, segment.paint)
         }
-
-        val testPath = Path()
-        testPath.moveTo(0.0f,0.0f)
-        testPath.moveTo(500.0f, 500.0f)
-        val testPaint = Paint()
-        canvas.drawPath(testPath, testPaint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -216,7 +208,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         val newSegment = Path()
         newSegment.moveTo(currentStartX, currentStartY)
-        newSegment.moveTo(event.x, event.y)
+        newSegment.lineTo(event.x, event.y)
 
 
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
