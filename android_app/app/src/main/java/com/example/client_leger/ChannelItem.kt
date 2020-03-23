@@ -1,11 +1,15 @@
 package com.example.client_leger
 
+import android.R
+import android.graphics.Color
 import android.view.View
+import com.amulyakhare.textdrawable.TextDrawable
 import com.example.client_leger.Fragments.ChatFragment
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.channel_layout.view.*
 import kotlinx.android.synthetic.main.fragment_chat.view.textView_channelName
+
 
 class ChannelItem(private val channelId: String, private val isSub: Boolean, private val controller: ConnexionController, private val activity: ChatFragment): Item<ViewHolder>(){
 
@@ -19,6 +23,9 @@ class ChannelItem(private val channelId: String, private val isSub: Boolean, pri
         else {
             viewHolder.itemView.imageButton_leaveChannel.visibility = View.GONE
         }
+
+        val drawable = TextDrawable.builder().buildRect("A", Color.RED)
+        viewHolder.itemView.channel_image.setImageDrawable(drawable)
     }
 
     override fun getLayout(): Int {
