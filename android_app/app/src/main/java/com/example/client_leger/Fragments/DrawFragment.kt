@@ -2,9 +2,12 @@ package com.example.client_leger.Fragments
 
 import android.content.Context
 import android.graphics.*
+import android.graphics.Bitmap.createBitmap
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
 import android.view.*
@@ -16,6 +19,7 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
 import kotlinx.android.synthetic.main.fragment_draw.view.*
+import kotlinx.android.synthetic.main.fragment_profil.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
 
@@ -128,6 +132,23 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var currentStartX = 0f
     private var currentStartY = 0f
     private val segments = ArrayList<Segment>()
+    lateinit var bitmap: Bitmap
+    lateinit var canvasBitmap: Canvas
+
+    override fun removeOnUnhandledKeyEventListener(listener: OnUnhandledKeyEventListener?) {
+        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+        bitmap = createBitmap(
+            context.resources.displayMetrics,
+            view.width,
+            view.height,
+            Bitmap.Config.ARGB_8888
+        )
+
+        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+        canvasBitmap = Canvas(bitmap)
+
+        super.removeOnUnhandledKeyEventListener(listener)
+    }
 
     init {
         paintLine.isAntiAlias = true
@@ -140,10 +161,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun onDraw(canvas: Canvas) {
         for (segment in segments) {
-            canvas.drawPath(segment.path, segment.paint)
+            canvasBitmap.drawPath(segment.path, segment.paint)
+            //canvas.drawPath(segment.path, segment.paint)
         }
+        canvas.setBitmap(bitmap)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
