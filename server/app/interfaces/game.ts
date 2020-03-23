@@ -5,7 +5,7 @@ import { IUser } from "./user-manager";
  */
 export interface IGetLobby {
     usernames:  string[]
-    private:    boolean,
+    isPrivate:  boolean,
     lobbyName:  string,
     size:       number,
     mode:       GameMode,
@@ -13,7 +13,7 @@ export interface IGetLobby {
 
 export interface IActiveLobby {
     users:      IUser[],
-    private:    boolean,
+    isPrivate:  boolean,
     password?:  string,
     lobbyName:  string,
     size:       number,
@@ -22,7 +22,7 @@ export interface IActiveLobby {
 
 export interface IJoinLobby {
     username:  string,
-    private:   boolean,
+    isPrivate: boolean,
     lobbyName: string,
     size?:     number,
     mode?:     GameMode,
@@ -48,30 +48,34 @@ export interface ILobEmitMes extends IReceptMesLob{
  * LOBBY NOTIFICATIONS
  */
 export interface INotify {
-    lobbyName: string,
     type:      LobbyNotif,
+    lobbyName: string,
 }
 
 export interface INotifyUpdateUser extends INotify{
-    user:      IUser;
+    user:      string;
 }
 
 export interface INotifyLobbyUpdate extends INotify {
-    users?:     IUser[],
-    private?:   boolean,
+    users?:     string[],
+    isPrivate?: boolean,
     size?:      number,
 }
 
 export enum LobbyNotif {
-    join,
-    leave,
-    create,
-    delete,
+    join   = "join",
+    leave  = "leave",
+    create = "create",
+    delete = "delete",
 }
 
 /**
  * GAMEPLAY
  */
+export interface IGameplayReady {
+    username: string,
+}
+
 export interface IGameplayChat {
     username:   string,
     content:    string,
@@ -88,6 +92,7 @@ export interface IDrawing {
     endPosY:        number,
     color:          number,
     width:          number,
+    idEnd:          number,
 }
 
 export interface IGameplayDraw extends IDrawing{

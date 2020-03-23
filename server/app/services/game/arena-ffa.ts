@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
@@ -29,24 +29,23 @@ export class ArenaFfa extends Arena {
     }
 
     public start(): void {
-        console.log("[Debug] Starting arena", this.room);   
+        console.log("[Debug] Starting arena FFA", this.room);   
         try {
-            this.startSubGame();
+            this.checkArenaLoadingState(() => this.startSubGame());
         }  catch(e) {
             this.end();
         }
     }
 
     private startSubGame(): void {
-
+        
         this.resetSubGame();
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
-
-            console.log("[Debug] Timer is: ", timer += ONE_SEC);
+            console.log("[Debug] Timer is: ", timer);
             
-            this.socketServer.to(this.room).emit("timer", timer/ONE_SEC);
+            this.socketServer.to(this.room).emit("game-timer", {time: (TOTAL_TIME - timer)/ONE_SEC});
             this.curTime = timer;
 
             if (timer >= TOTAL_TIME) {
@@ -62,6 +61,7 @@ export class ArenaFfa extends Arena {
                     this.startSubGame();
                 }
             }
+            timer += ONE_SEC;
 
         }, ONE_SEC);
     }
@@ -72,13 +72,15 @@ export class ArenaFfa extends Arena {
         this.userWithCorrectAns = [];
     }
 
-    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw): void {
+    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
         if (this.isDraw(mes)) {
             this.handleGameplayDraw(socket, mes);
-        } else {
+        } else if (this.isChat(mes)) {
             this.handleGameplayChat(mes);
-        }
+        } else 
+            this.handleGameplayReady(mes);
     }
+
 
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw): void {
         this.users.forEach(u => {
@@ -117,19 +119,19 @@ export class ArenaFfa extends Arena {
 
         // Give points to drawer
         // pts = 20 * ratio_found
-        const drawName = this.users[this.drawPtr].username;
+        const drawName = this.users[this.drawPtr - 1].username;
         const drawPts = this.userMapPoints.get(drawName) as number;
         const drawNewPts = Math.floor(INIT_DRAW_PTS * this.calculateRatio());
         this.userMapPoints.set(drawName, drawNewPts + drawPts);
     }
 
     private attributeRoles(): void {
-        let user = this.users[this.drawPtr];
+        let user = this.users[this.drawPtr++];
 
         while (this.checkIfUserIsDC(user.username)) {
 
             // if player is disconnect, increment drawer pointer
-            if (++this.drawPtr >= this.users.length) {
+            if (this.drawPtr++ >= this.users.length) {
                 clearInterval(this.curArenaInterval);
                 throw new Error("Everyone has drawn once");
             }
@@ -140,7 +142,7 @@ export class ArenaFfa extends Arena {
     }
     
     private updateDrawerRole(user: IUser): void {
-        this.socketServer.to(this.room).emit("drawer-update", user.username);
+        this.socketServer.to(this.room).emit("game-drawer", {username: user.username});
     }
 
     private sendToChat(obj: IGameplayAnnouncement): void {

@@ -3,7 +3,7 @@ import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
 import { ArenaSolo } from "./arena-solo";
 import { ArenaCoop } from "./arena-coop";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { IGameRule } from "../../interfaces/rule";
 
@@ -41,7 +41,7 @@ export class GameManagerService {
         this.setupArena(lobby);
     }
 
-    public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw): void {
+    public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
         const arenaId = this.userMapArenaId.get(mes.username) as number;
         const arena = this.arenas.get(arenaId);
 
@@ -63,6 +63,10 @@ export class GameManagerService {
         this.addUsersToArena(lobby, room, this.arenaId);
 
         const rules: IGameRule[] = await this.db.getRules();
+        
+        if (rules.length < lobby.users.length)
+            throw new Error("Not enough drawings are in db");
+
         const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
 
         this.lobServ.lobbies.delete(lobby.lobbyName);

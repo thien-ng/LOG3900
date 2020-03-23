@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Controller.GameController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
@@ -29,7 +30,11 @@ class LobbyFragment : Fragment(),
         }
         gameController.getUsers(this, lobbyName)
 
-
+        Communication.getGameStartListener().subscribe{res ->
+            activity!!.runOnUiThread {
+                replaceFragment(GameplayFragment())
+            }
+        }
         return  v
     }
 
