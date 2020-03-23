@@ -95,7 +95,10 @@ export abstract class Arena {
             endPosY:    draw.endPosY,
             color:      draw.color,
             width:      draw.width,
-            idEnd:      draw.idEnd,
+            isEnd:      draw.isEnd,
+            format:     draw.format,
+            type:       draw.type,
+
         }
     }
 

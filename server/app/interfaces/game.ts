@@ -99,7 +99,7 @@ export interface IDrawing {
     endPosY:        number,
     color:          number,
     width:          number,
-    idEnd:          boolean,
+    isEnd:          boolean,
     format:         Format,
     type:           Type,
 }
