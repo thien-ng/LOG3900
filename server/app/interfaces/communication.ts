@@ -1,3 +1,5 @@
+import { GameMode } from "./game";
+
 export interface IRegistration {
     username: string,
     password: string,

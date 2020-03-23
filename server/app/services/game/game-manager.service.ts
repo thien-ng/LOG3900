@@ -5,6 +5,7 @@ import { ArenaSolo } from "./arena-solo";
 import { ArenaCoop } from "./arena-coop";
 import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
+import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
 import { Time } from "../../utils/date";
 
@@ -22,7 +23,8 @@ export class GameManagerService {
     
     public constructor(
         @inject(Types.LobbyManagerService)  private lobServ: LobbyManagerService,
-        @inject(Types.RulesDbService)       private db: RulesDbService) {
+        @inject(Types.RulesDbService)       private rulesDb: RulesDbService,
+        @inject(Types.GameDbService)        private gameDb: GameDbService) {
 
         this.arenas = new Map<number, ArenaFfa | ArenaSolo | ArenaCoop>();
         this.userMapArenaId = new Map<string, number>();
@@ -59,7 +61,7 @@ export class GameManagerService {
 
         this.addUsersToArena(lobby, room, this.arenaId);
 
-        const rules: IGameRule[] = await this.db.getRules();
+        const rules: IGameRule[] = await this.rulesDb.getRules();
         
         if (rules.length < lobby.users.length)
             throw new Error("Not enough drawings are in db");
@@ -96,10 +98,11 @@ export class GameManagerService {
     }
 
     public persistPoints(pts: IPoints[], timer: number, type: GameMode): void {
-        // TODO persist to db points
         const winner = this.determineWinner(pts);
         const users = this.getPlayersInGame(pts);
         const date = Time.today();
+
+        this.gameDb.registerGame({type: type, date: date, timer: timer, winner: winner, users: users});
     }
 
     private determineWinner(pts: IPoints[]): string {

@@ -115,6 +115,18 @@ export interface IPoints {
 }
 
 /**
+ * PERSISTANCE
+ */
+export interface IGameInfo {
+    type:   GameMode,
+    date:   string,
+    timer:  number,
+    winner: string,
+    users:  string[],
+}
+
+
+/**
  *  OTHER
  */
 export enum GameMode {
