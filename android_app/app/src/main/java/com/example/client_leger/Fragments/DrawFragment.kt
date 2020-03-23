@@ -5,9 +5,7 @@ import android.graphics.*
 import android.graphics.Bitmap.createBitmap
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
 import android.view.*
@@ -19,9 +17,9 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
 import kotlinx.android.synthetic.main.fragment_draw.view.*
-import kotlinx.android.synthetic.main.fragment_profil.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
+
 
 class DrawFragment: Fragment() {
 
@@ -127,28 +125,15 @@ class Segment(var path: Path, var paint: Paint, var previousSegment: Segment?, v
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
+    var paintScreen = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
+    var currentPath = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
     private val segments = ArrayList<Segment>()
     lateinit var bitmap: Bitmap
-    lateinit var canvasBitmap: Canvas
-
-    override fun removeOnUnhandledKeyEventListener(listener: OnUnhandledKeyEventListener?) {
-        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-        bitmap = createBitmap(
-            context.resources.displayMetrics,
-            view.width,
-            view.height,
-            Bitmap.Config.ARGB_8888
-        )
-
-        @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-        canvasBitmap = Canvas(bitmap)
-
-        super.removeOnUnhandledKeyEventListener(listener)
-    }
+    lateinit var bitmapCanvas: Canvas
 
     init {
         paintLine.isAntiAlias = true
@@ -159,15 +144,21 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
+
     }
 
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmapCanvas = Canvas(bitmap)
+        bitmap.eraseColor(Color.TRANSPARENT)
+    }
+
     override fun onDraw(canvas: Canvas) {
-        for (segment in segments) {
-            canvasBitmap.drawPath(segment.path, segment.paint)
+        //for (segment in segments) {
             //canvas.drawPath(segment.path, segment.paint)
-        }
-        canvas.setBitmap(bitmap)
+        //}
+        canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
+        canvas.drawPath(currentPath, paintLine)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -176,10 +167,15 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (isStrokeErasing || isNormalErasing) {
             checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+            currentPath.reset()
+            currentPath.moveTo(event.x, event.y)
             currentStartX = event.x
             currentStartY = event.y
         } else if (action == MotionEvent.ACTION_MOVE){
+            currentPath.lineTo(event.x, event.y)
             touchMoved(event)
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+            bitmapCanvas.drawPath(Path(currentPath), Paint(paintLine))
         }
 
         invalidate()
