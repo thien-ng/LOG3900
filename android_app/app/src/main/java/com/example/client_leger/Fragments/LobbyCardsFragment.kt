@@ -103,7 +103,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             if(validateLobbyFields(d)) {
                 var data = JSONObject()
                 data.put("username", username)
-                data.put("private", d.findViewById<Switch>(R.id.switch_private).isChecked)
+                data.put("isPrivate", d.findViewById<Switch>(R.id.switch_private).isChecked)
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
                 if(switch.isChecked) data.put("password", d.findViewById<EditText>(R.id.lobbyPassword).text.trim())
