@@ -8,6 +8,7 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.PopupWindow
@@ -126,7 +127,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var paintLine: Paint = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
-    private var currentPath = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
     private val segments = ArrayList<Segment>()
@@ -144,12 +144,16 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     override fun onDraw(canvas: Canvas) {
         for (segment in segments) {
+            Log.w("draw", "drawing segment")
+            Log.w("draw", "segments.size: " + segments.size)
             canvas.drawPath(segment.path, segment.paint)
         }
 
-        canvas.drawPath(currentPath, paintLine)
-
-        invalidate()
+        val testPath = Path()
+        testPath.moveTo(0.0f,0.0f)
+        testPath.moveTo(500.0f, 500.0f)
+        val testPaint = Paint()
+        canvas.drawPath(testPath, testPaint)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -160,7 +164,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y)
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP){
-            touchEnded()
+            // do nothing for now
         } else {
             touchMoved(event)
         }
@@ -214,14 +218,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         newSegment.moveTo(currentStartX, currentStartY)
         newSegment.moveTo(event.x, event.y)
 
-        segments.add(Segment(newSegment, Paint(paintLine), null, null))
 
-        currentPath.quadTo(
-            currentStartX,
-            currentStartY,
-            (event.x + currentStartX) / 2,
-            (event.y + currentStartY) / 2
-        )
+        segments.add(Segment(newSegment, Paint(paintLine), null, null))
 
         currentStartX = event.x
         currentStartY = event.y
@@ -255,19 +253,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         SocketIO.sendMessage("gameplay", obj)
     }
 
-    private fun touchEnded() {
-        //if (!isStrokeErasing) { //TODO: check needed?
-        //    val paint = Paint(paintLine)
-        //    segments.add(Segment(Path(currentPath), paint, null, null))
-        //}
-
-        currentPath.reset()
-    }
-
     private fun touchStarted(x: Float, y: Float) {
         currentStartX = x
         currentStartY = y
-        currentPath.moveTo(x, y)
     }
 }
 
