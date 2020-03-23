@@ -6,7 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        tools:context=".Chat">
 
     <TextView
             android:id="@+id/textView_channelName"
@@ -87,11 +88,11 @@
 
                 <ImageButton
                         android:id="@+id/imageButton_createChannel"
-                        android:layout_width="0dp"
+                        android:layout_width="25dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="#00FFFFFF"
-                        android:src="@drawable/ic_add_circle_black_30dp" />
+                        android:src="@drawable/ic_add_black_24dp" />
 
             </LinearLayout>
 
