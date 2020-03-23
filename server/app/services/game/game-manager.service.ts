@@ -72,6 +72,8 @@ export class GameManagerService {
         this.lobServ.lobbies.delete(lobby.lobbyName);
         
         this.arenas.set(this.arenaId, arena);
+        this.arenaId++;
+
         this.socketServer.in(room).emit("game-start");
 
         arena.start();
