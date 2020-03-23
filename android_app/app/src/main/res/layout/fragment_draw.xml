@@ -18,9 +18,12 @@
             android:id="@+id/button_strokeErase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_eraser_stroke"
             android:checked="false"
-            android:textOff="Stroke Erase"
-            android:textOn="Stroke Erase"
+            android:gravity="center"
+            android:textOff=""
+            android:textOn=""
+            android:textSize="0dp"
             app:layout_constraintStart_toEndOf="@+id/button_changeWidth"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,8 +31,12 @@
             android:id="@+id/button_normalErase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textOff="Normal Eraser"
-            android:textOn="Normal Eraser"
+            android:drawableTop="@drawable/ic_eraser"
+            android:checked="false"
+            android:gravity="center"
+            android:textOff=""
+            android:textOn=""
+            android:textSize="0dp"
             app:layout_constraintStart_toEndOf="@+id/button_strokeErase"
             app:layout_constraintTop_toTopOf="parent" />
 

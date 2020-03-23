@@ -95,7 +95,10 @@ export abstract class Arena {
             endPosY:    draw.endPosY,
             color:      draw.color,
             width:      draw.width,
-            idEnd:      draw.idEnd,
+            isEnd:      draw.isEnd,
+            format:     draw.format,
+            type:       draw.type,
+
         }
     }
 
@@ -126,7 +129,7 @@ export abstract class Arena {
         for (let i = 0; i < ans.length; i++) {
             enc.append("*");
         }
-        return enc;
+        return enc.toString();
     }
 
     protected isRightAnswer(ans: string): boolean {
