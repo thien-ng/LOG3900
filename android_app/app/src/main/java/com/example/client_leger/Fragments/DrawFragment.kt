@@ -154,9 +154,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onDraw(canvas: Canvas) {
-        //for (segment in segments) {
-            //canvas.drawPath(segment.path, segment.paint)
-        //}
+        //TODO: only if changed, draw bitmap
         canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
         canvas.drawPath(currentPath, paintLine)
     }
@@ -226,6 +224,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
                         //TODO: inform server of stroke removal
                         strokeFound = true
+
                         break
                     }
                 }
@@ -234,8 +233,17 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             }
 
             if (strokeFound)
+                redrawPaths()
                 break
         }
+    }
+
+    private fun redrawPaths() {
+        bitmap.eraseColor(Color.TRANSPARENT)
+        for (segment in segments) {
+            bitmapCanvas.drawPath(segment.path, segment.paint)
+        }
+        invalidate()
     }
 
     private fun touchMoved(event: MotionEvent) {
