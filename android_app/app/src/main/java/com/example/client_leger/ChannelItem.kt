@@ -1,8 +1,6 @@
 package com.example.client_leger
 
-import android.graphics.Color
 import android.view.View
-import com.amulyakhare.textdrawable.TextDrawable
 import com.example.client_leger.Fragments.ChatFragment
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
