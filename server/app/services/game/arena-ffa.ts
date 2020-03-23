@@ -23,8 +23,8 @@ export class ArenaFfa extends Arena {
 
     private isEveryoneHasRightAnswer: boolean;
 
-    public constructor(arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
-        super(arenaId, users, room, io, rules, gm)
+    public constructor(type: string, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
+        super(type, arenaId, users, room, io, rules, gm)
         
         this.drawPtr = 0;
         this.userWithCorrectAns = [];

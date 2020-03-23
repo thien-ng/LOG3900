@@ -6,6 +6,7 @@ import { ArenaCoop } from "./arena-coop";
 import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { IGameRule } from "../../interfaces/rule";
+import { Time } from "../../utils/date";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -53,10 +54,6 @@ export class GameManagerService {
         this.arenas.delete(arenaId);
     }
 
-    public persistPoints(pts: IPoints[]): void {
-        // TODO persist to db points
-    }
-
     private async setupArena(lobby: IActiveLobby): Promise<void> {
         const room = `arena${this.arenaId}`;
 
@@ -82,11 +79,11 @@ export class GameManagerService {
     private createArenaAccordingToMode(arenaId: number, lobby: IActiveLobby, room: string, rules: IGameRule[]): ArenaFfa | ArenaSolo | ArenaCoop {
         switch(lobby.mode) {
             case GameMode.FFA:
-                return new ArenaFfa(arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaFfa(GameMode.FFA, arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.SOLO:
-                return new ArenaSolo(arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaSolo(GameMode.SOLO, arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.COOP:
-                return new ArenaCoop(arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaCoop(GameMode.COOP, arenaId, lobby.users, room, this.socketServer, rules, this);
         }
     }
 
@@ -96,6 +93,32 @@ export class GameManagerService {
 
         if (arena)
             arena.disconnectPlayer(username);
+    }
+
+    public persistPoints(pts: IPoints[], timer: number, type: GameMode): void {
+        // TODO persist to db points
+        const winner = this.determineWinner(pts);
+        const users = this.getPlayersInGame(pts);
+        const date = Time.today();
+    }
+
+    private determineWinner(pts: IPoints[]): string {
+        let maxPts = -1;
+        let winner = "";
+        pts.forEach(p => {
+            if (p.points > maxPts) {
+                winner = p.username;
+                maxPts = p.points;
+            }
+        });
+        
+        return winner;
+    }
+
+    private getPlayersInGame(pts: IPoints[]): string[] {
+        const list: string[] = [];
+        pts.forEach(p => {list.push(p.username)});
+        return list;
     }
 
     private addUsersToArena(lobby: IActiveLobby, room: string, arenaID: number): void {        
