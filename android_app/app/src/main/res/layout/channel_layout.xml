@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        android:layout_height="50dp">
 
     <View
             android:id="@+id/channel_image"
@@ -13,7 +12,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginBottom="9dp"
             android:background="@drawable/channel_image_bubble"
-            android:scaleType="centerInside" />
+            android:scaleType="centerInside"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp" />
 
     <TextView
             android:id="@+id/textView_channelName"
@@ -25,8 +26,7 @@
             android:layout_marginBottom="5dp"
             android:layout_toEndOf="@+id/channel_image"
             android:layout_toRightOf="@+id/channel_image"
-            android:paddingBottom="4dp"
-            android:text="TestName" />
+            android:paddingBottom="4dp"/>
 
     <ImageButton
             android:id="@+id/imageButton_leaveChannel"
@@ -34,8 +34,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginTop="7dp"
+            android:layout_marginRight="2dp"
             android:background="#00FFFFFF"
             android:cropToPadding="false"
-            app:srcCompat="@android:drawable/btn_dialog" />
+            android:src="@drawable/ic_close_black_24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="2dp" />
 
 </RelativeLayout>

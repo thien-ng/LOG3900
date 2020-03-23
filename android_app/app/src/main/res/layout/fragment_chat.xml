@@ -92,7 +92,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="#00FFFFFF"
-                        android:src="@android:drawable/ic_input_add" />
+                        android:src="@drawable/ic_edit_black_24dp" />
 
             </LinearLayout>
 
