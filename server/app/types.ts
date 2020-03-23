@@ -21,4 +21,5 @@ export default {
     ChatDbService:          Symbol('ChatDbService'),
     DatabaseService:        Symbol('DatabaseService'),
     RulesDbService:         Symbol('RulesDbService'),
+    GameDbService:          Symbol('GameDbService'),
 };

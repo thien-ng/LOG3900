@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
 import { DatabaseService } from "../database/database";
 import { IRegistration, ILogin } from "../interfaces/communication";
-import * as pg from "pg";
 import { Time } from "../utils/date";
+
+import * as pg from "pg";
 
 @injectable()
 export class AccountDbService extends DatabaseService {
