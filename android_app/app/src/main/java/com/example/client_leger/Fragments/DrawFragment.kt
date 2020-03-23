@@ -170,15 +170,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             }
 
             val pm = PathMeasure(segment.path, false)
-
-            val nbStep: Int = pm.length.toInt() / 20
-            val speed = pm.length / nbStep
             val coordinates = FloatArray(2)
 
             var distance = 0f
-            while (distance < pm.length) {
+            while (distance <= pm.length) {
                 pm.getPosTan(distance, coordinates, null)
-                val eraserHalfSize = 16
+                val eraserHalfSize = segment.paint.strokeWidth / 2.0f
                 val xOnLine = coordinates[0]
                 val yOnLine = coordinates[1]
 
@@ -191,7 +188,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     }
                 }
 
-                distance += speed
+                distance += 1.0f
             }
 
             if (strokeFound)
