@@ -57,47 +57,5 @@ namespace PolyPaint.VueModeles
             get { return _gameCards; }
             set { _gameCards = value; ProprieteModifiee(); }
         }
-
-
-        private ICommand _addGameCommand;
-        public ICommand AddGameCommand
-        {
-            get
-            {
-                return _addGameCommand ?? (_addGameCommand = new RelayCommand(async x =>
-                {
-                    var view = new CreateGameControl { DataContext = new CreateGameViewModel() };
-
-                    await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
-                }));
-            }
-        }
-
-        private void ClosingEventHandler(object sender, DialogClosingEventArgs args)
-        {
-            if (args.Parameter == null) return;
-
-            JObject parameters = (JObject)args.Parameter;
-
-            if ((bool)parameters.SelectToken("IsAccept") == false) return;
-
-            //await getGameCards();
-        }
-
-        private async Task postCardRequest(string gamename, string selectedmode)
-        {
-            dynamic values = new JObject();
-            values.gameName = gamename;
-            values.solution = "solution";
-            values.clues = "clues";
-            values.mode = selectedmode;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.CARDSCREATOR_PATH, byteContent);
-        }
-
-
     }
 }

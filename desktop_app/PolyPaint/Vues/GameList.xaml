@@ -36,8 +36,7 @@
                     Grid.Row="2" 
                     Content="ADD" 
                     BorderThickness="0" 
-                    Background="{StaticResource PrimaryHueLightBrush}" 
-                    Command="{Binding AddGameCommand}" />
+                    Background="{StaticResource PrimaryHueLightBrush}"/>
 
             <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
                           VerticalScrollBarVisibility="Auto"

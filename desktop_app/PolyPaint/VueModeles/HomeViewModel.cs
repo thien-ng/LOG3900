@@ -395,6 +395,31 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private ICommand _createGameCommand;
+        public ICommand CreateGameCommand
+        {
+            get
+            {
+                return _createGameCommand ?? (_createGameCommand = new RelayCommand(async x =>
+                {
+                    var view = new CreateGameControl { DataContext = new CreateGameViewModel() };
+
+                    await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+                }));
+            }
+        }
+
+        private void ClosingEventHandler(object sender, DialogClosingEventArgs args)
+        {
+            if (args.Parameter == null) return;
+
+            JObject parameters = (JObject)args.Parameter;
+
+            if ((bool)parameters.SelectToken("IsAccept") == false) return;
+
+            //await getGameCards();
+        }
+
 
         #endregion
 

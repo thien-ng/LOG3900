@@ -14,7 +14,8 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="4*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="3*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
@@ -55,7 +56,7 @@
         </StackPanel>
 
         <TextBox Grid.Row="1"
-                 wpf:HintAssist.Hint="Word or expression" 
+                 wpf:HintAssist.Hint="Word or expression"
                  Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
                  Text="{Binding Solution}"
                  Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=CanvasFileselector}"
@@ -76,6 +77,7 @@
                     Grid.Column="1"
                     FontSize="25"
                     FontWeight="Bold"
+                    Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=GeneratedWord}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center" 
                     Margin="0 0 5 0"/>
@@ -88,13 +90,12 @@
                        FontSize="15" 
                        VerticalAlignment="Center" 
                        Margin="0 0 5 0"/>
-            <ComboBox
-                wpf:ComboBoxAssist.ShowSelectedItem="True"
-                Margin="0 8 0 8"
-                ItemsSource="{Binding Difficulty}"
-                SelectedValue="{Binding SelectedDifficulty}"
-                HorizontalAlignment="Left">
-            </ComboBox>
+            <ComboBox wpf:ComboBoxAssist.ShowSelectedItem="True"
+                      Margin="0 8 0 8"
+                      FontSize="15"
+                      ItemsSource="{Binding Difficulty}"
+                      SelectedValue="{Binding SelectedDifficulty}"
+                      HorizontalAlignment="Left"/>
         </StackPanel>
 
         <Border Grid.Row="1"
@@ -103,7 +104,7 @@
                 Margin="0 5 0 0"
                 BorderThickness="0 3 0 0"/>
 
-        <Button Grid.Row="2" 
+        <Button Grid.Row="3" 
                 IsCancel="True" 
                 HorizontalAlignment="Stretch"
                 Margin="8 15 0 0" 
@@ -113,7 +114,7 @@
             NEW HINT
         </Button>
 
-        <ScrollViewer Grid.Row="3" 
+        <ScrollViewer Grid.Row="4" 
                       VerticalScrollBarVisibility="Auto"
                       Margin="0,10,0,0">
             <ItemsControl ItemsSource="{Binding Hints}">
@@ -125,10 +126,30 @@
             </ItemsControl>
         </ScrollViewer>
 
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Text="Drawing Type: "
+                       FontSize="15" 
+                       VerticalAlignment="Center" 
+                       Margin="0 0 5 0"/>
+
+            <ComboBox wpf:ComboBoxAssist.ClassicMode="True"
+                      FontSize="15"
+                      Grid.Column="1"
+                      HorizontalAlignment="Stretch"
+                      Margin="0 8 0 8"
+                      ItemsSource="{Binding DisplayMode}"
+                      SelectedValue="{Binding SelectedDisplayMode}"/>
+        </Grid>
+
         <Border Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Grid.Row="2"
-                Grid.RowSpan="2"
+                Grid.RowSpan="3"
                 Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=Canvas}"
                 BorderBrush="{StaticResource SecondaryAccentBrush}"
                 BorderThickness="1.5"
@@ -141,7 +162,7 @@
         <Border Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Grid.Row="2"
-                Grid.RowSpan="2"
+                Grid.RowSpan="3"
                 Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=Generator}"
                 BorderBrush="{StaticResource SecondaryAccentBrush}"
                 BorderThickness="1.5"
@@ -151,7 +172,7 @@
             <Image Source="{Binding Base64ImageData, Converter={converter:Base64ImageConverter}}"/>
         </Border>
 
-        <Grid Grid.Row="4"
+        <Grid Grid.Row="5"
               Grid.ColumnSpan="3"
               Margin="0 16 0 0">
 

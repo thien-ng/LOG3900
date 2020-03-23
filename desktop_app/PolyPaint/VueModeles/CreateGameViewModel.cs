@@ -18,9 +18,12 @@ namespace PolyPaint.VueModeles
         public CreateGameViewModel()
         {
             Difficulty = new ObservableCollection<string> { "Easy", "Medium", "Hard" };
+            DisplayMode = new ObservableCollection<string> { "Classic", "Random", "Panoramic", "Centered" };
             Hints = new ObservableCollection<HintModel> { new HintModel(true) };
             DrawViewModel = new CreateGameDrawViewModel();
             SelectedCreationType = CreationType.Manual;
+            SelectedDisplayMode = DisplayMode[0];
+            SelectedDifficulty = Difficulty[1];
             IsReqActive = true;
         }
 
@@ -28,6 +31,7 @@ namespace PolyPaint.VueModeles
         #region Public Attributes
 
         public ObservableCollection<string> Difficulty { get; set; }
+        public ObservableCollection<string> DisplayMode { get; set; }
         public CreateGameDrawViewModel DrawViewModel { get; set; }
 
         private ObservableCollection<HintModel> _hints;
@@ -110,6 +114,18 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private string _selectedDisplayMode;
+        public string SelectedDisplayMode
+        {
+            get { return _selectedDisplayMode; }
+            set
+            {
+                if (_selectedDisplayMode == value) return;
+                _selectedDisplayMode = value;
+                ProprieteModifiee();
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -130,7 +146,8 @@ namespace PolyPaint.VueModeles
                     var newGame = new JObject( new JProperty("solution", Solution),
                                                new JProperty("clues", clues.ToArray()), 
                                                new JProperty("difficulty", SelectedDifficulty.ToLower()), 
-                                               new JProperty("drawing", drawing)); 
+                                               new JProperty("drawing", drawing),
+                                               new JProperty("displayMode", SelectedDisplayMode)); 
                     
                     // Do post here //
 
@@ -188,7 +205,6 @@ namespace PolyPaint.VueModeles
 
                     if (indexToRemove != -1)
                         Hints.RemoveAt(indexToRemove);
-
                 }));
             }
         }

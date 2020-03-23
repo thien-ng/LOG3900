@@ -18,6 +18,7 @@
         Canvas,
         FileSelector,
         CanvasFileselector,
-        Generator
+        Generator,
+        GeneratedWord
     }
 }

@@ -62,17 +62,23 @@
                     <materialDesign:PackIcon Foreground="White" Kind="ArrowForward" Width="25" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Button>
             </StackPanel>
-            <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
-                <materialDesign:PopupBox.ToggleContent>
-                    <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5,5,5,5" Foreground="White" />
-                </materialDesign:PopupBox.ToggleContent>
-                <StackPanel>
-                    <Button ToolTip="{Binding SwitchViewButtonTooltip}" Command="{Binding SwitchViewCommand}" Content="{Binding SwitchViewButton}" ></Button>
-                    <Button VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="disconnect" Command="{Binding DisconnectCommand}">
-                        <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" Height="30" Kind="PowerStandby" Foreground="Red"/>
-                    </Button>
-                </StackPanel>
-            </materialDesign:PopupBox>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right">
+                <Button Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Command="{Binding CreateGameCommand}">
+                    CREATE GAME
+                </Button>
+                <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
+                    <materialDesign:PopupBox.ToggleContent>
+                        <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5,5,5,5" Foreground="White" />
+                    </materialDesign:PopupBox.ToggleContent>
+                    <StackPanel>
+                        <Button ToolTip="{Binding SwitchViewButtonTooltip}" Command="{Binding SwitchViewCommand}" Content="{Binding SwitchViewButton}" ></Button>
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" ToolTip="disconnect" Command="{Binding DisconnectCommand}">
+                            <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" Height="30" Kind="PowerStandby" Foreground="Red"/>
+                        </Button>
+                    </StackPanel>
+                </materialDesign:PopupBox>
+            </StackPanel>
         </Grid>
     </materialDesign:DialogHost>
 </Page>
