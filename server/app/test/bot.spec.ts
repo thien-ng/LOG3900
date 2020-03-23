@@ -2,8 +2,12 @@ import * as chai from "chai";
 import * as spies from "chai-spies";
 import { container } from "../inversify.config";
 import { Bot } from "../bots/bot";
+import { kindBot } from "../bots/kindBot";
+import { meanBot } from "../bots/meanBot";
+import { humourBot } from "../bots/humourBot";
+import { Taunt } from "../bots/taunts";
 import { IDrawing, IGameplayDraw } from "../interfaces/game";
-import { DisplayMode, Personality } from "../bots/taunts";
+import { DisplayMode } from "../bots/taunts";
 import { Side } from "../utils/Side";
 
 chai.use(spies);
@@ -187,7 +191,6 @@ describe("Bot", () => {
     let username: string = "dude";
     let hint: string = "a circle";
     let mode: DisplayMode = DisplayMode.classic;
-    let style: Personality = Personality.kind;
     let side: Side = Side.up;
 
     beforeEach(() => {
@@ -200,43 +203,46 @@ describe("Bot", () => {
 
     it("Should have the good default properties", () => {
         //when
-        const dude: Bot = new Bot(image, undefined, undefined, undefined, undefined, undefined);
+        const kinddude: Bot = new kindBot(image, undefined, undefined, undefined, undefined);
+        const meandude: Bot = new meanBot(image, undefined, undefined, undefined, undefined);
+        const humourdude: Bot = new humourBot(image, undefined, undefined, undefined, undefined);
         //then
-        chai.expect(dude).to.have.property('username').to.equal("BOT:bob");
-        chai.expect(dude).to.have.property('hint').to.equal("no hint for you!");
-        chai.expect(dude).to.have.property('mode').to.equal(DisplayMode.classic);
-        chai.expect(dude).to.have.property('taunts').not.to.equal(undefined);
+        chai.expect(kinddude).to.have.property('username').to.equal("BOT:bob");
+        chai.expect(kinddude).to.have.property('hint').to.equal("no hint for you!");
+        chai.expect(kinddude).to.have.property('mode').to.equal(DisplayMode.classic);
+        chai.expect(kinddude).to.have.property('taunts').to.eql(Taunt.kind);// eql for == instead of === cause [1,2,3] === [1,2,3] is false in typescript.
+
+        chai.expect(meandude).to.have.property('username').to.equal("BOT:bob");
+        chai.expect(meandude).to.have.property('hint').to.equal("no hint for you!");
+        chai.expect(meandude).to.have.property('mode').to.equal(DisplayMode.classic);
+        chai.expect(meandude).to.have.property('taunts').to.eql(Taunt.mean);
+
+        chai.expect(humourdude).to.have.property('username').to.equal("BOT:bob");
+        chai.expect(humourdude).to.have.property('hint').to.equal("no hint for you!");
+        chai.expect(humourdude).to.have.property('mode').to.equal(DisplayMode.classic);
+        chai.expect(humourdude).to.have.property('taunts').to.eql(Taunt.humour);
     });
 
     it("Should have the good properties", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, mode, style, side);
+        const dude: Bot = new Bot(image, username, hint, mode, side);
         //then
         chai.expect(dude).to.have.property('username').to.equal("dude");
         chai.expect(dude).to.have.property('hint').to.equal("a circle");
         chai.expect(dude).to.have.property('mode').to.equal(DisplayMode.classic);
         chai.expect(dude).to.have.property('panoramicFirstSide').to.equal(side);
-        chai.expect(dude).to.have.property('taunts').to.eql([ // eql for == instead of === cause [1,2,3] === [1,2,3] is false in typescript.
-            "Good work!",
-            "Wow!",
-            "Nice try",
-            "you are good!",
-            "better luck next time!",
-            "you're pretty quick",
-            "nicely done!" // those are the taunts of the kind personality
-        ]);
     });
 
     it("Should have the strokes in the right classic order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.classic, style, side);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.classic, side);
         //then
         chai.expect(dude).to.have.property('image').to.eql(image);
     });
 
     it("Should have the strokes in the right centered order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.centered, style, side);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.centered, side);
 
         //then
         chai.expect(dude).to.have.property('image').to.eql(imageCentered);
@@ -244,7 +250,7 @@ describe("Bot", () => {
 
     it("Should have the strokes in a panoramic from up order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, style, Side.up);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, Side.up);
 
         //then
         chai.expect(dude).to.have.property('image').to.eql(imagePanoUp);
@@ -252,7 +258,7 @@ describe("Bot", () => {
 
     it("Should have the strokes in a panoramic from right order", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, style, Side.right);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.panoramic, Side.right);
 
         //then
         chai.expect(dude).to.have.property('image').to.eql(imagePanoRight);
@@ -260,7 +266,7 @@ describe("Bot", () => {
 
     it("Should print the strokes one after the other and throw error after image.length", () => {
         //when
-        const dude: Bot = new Bot(image, username, hint, DisplayMode.classic, style, Side.up);
+        const dude: Bot = new Bot(image, username, hint, DisplayMode.classic, Side.up);
         //then
         for (let i = 0; i < dude.length; i++) {
             const stroke: IGameplayDraw = dude.GetNextStroke();

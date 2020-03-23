@@ -45,18 +45,4 @@ export class Taunt {
         "it's raw!",
         "my grandmother thinks faster than you do!"
     ];
-
-    public static getTaunts(style: Personality): string[] {
-        switch (style) {
-            case Personality.humour:
-                return this.humour;
-            case Personality.mean:
-                return this.mean;
-            case Personality.kind:
-                return this.kind;
-            default:
-                return [];
-        }
-    }
-
 }

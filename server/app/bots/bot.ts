@@ -1,24 +1,23 @@
 import { IGameplayDraw, IDrawing } from "../interfaces/game";
-import { Taunt, Personality, DisplayMode } from './taunts';
+import { DisplayMode } from './taunts';
 import { Side } from '../utils/Side';
 
 export class Bot {
 
     public length: number;
 
-    private image: IDrawing[];
-    private taunts: string[];
-    private username: string;
-    private nextStroke: number;
-    private hint: string;
-    private mode: DisplayMode;
-    private panoramicFirstSide: Side;
+    protected image: IDrawing[];
+    protected taunts: string[];
+    protected username: string;
+    protected nextStroke: number;
+    protected hint: string;
+    protected mode: DisplayMode;
+    protected panoramicFirstSide: Side;
 
     constructor(image: IDrawing[],
         username: string = "BOT:bob",
         hint: string = "no hint for you!",
         mode: DisplayMode = DisplayMode.classic,
-        style: Personality = Personality.length,
         panoramicFirstSide: Side = Side.up) {
 
         this.username = username;
@@ -29,9 +28,6 @@ export class Bot {
         this.panoramicFirstSide = panoramicFirstSide;
         this.nextStroke = 0;
         this.sort();
-        if (style == Personality.length)
-            style = this.randPersonality();
-        this.taunts = Taunt.getTaunts(style);
     }
 
     public GetNextStroke(): IGameplayDraw {
@@ -44,11 +40,11 @@ export class Bot {
         return res;   // retourne true si il reste des traits a ajouter.
     }
 
-    private isDone(): boolean {
+    protected isDone(): boolean {
         return (this.nextStroke == this.image.length);
     }
 
-    private sort(): void {
+    protected sort(): void {
         switch (this.mode) {
             case DisplayMode.centered:
                 this.sortCentered();
@@ -62,7 +58,7 @@ export class Bot {
         }
     }
 
-    private sortPanoramic(): void { //bubble sort
+    protected sortPanoramic(): void { //bubble sort
         for (let i = 0; i < this.image.length - 1; i++) {
             for (let j = 0; j < this.image.length - i - 1; j++) {
                 if (this.comparePanoramic(j, j + 1)) {
@@ -72,7 +68,7 @@ export class Bot {
         }
     }
 
-    private comparePanoramic(a: number, b: number): boolean {
+    protected comparePanoramic(a: number, b: number): boolean {
         // considering if b should come before a.
         switch (this.panoramicFirstSide) {
             case Side.up:
@@ -87,7 +83,7 @@ export class Bot {
         return false;
     }
 
-    private sortCentered(): void { // bubble sort
+    protected sortCentered(): void { // bubble sort
         const center = this.findCenter();
         for (let i = 0; i < this.image.length - 1; i++) {
             for (let j = 0; j < this.image.length - i - 1; j++) {
@@ -98,7 +94,7 @@ export class Bot {
         }
     }
 
-    private findCenter(): { x: number, y: number } { // we are looking for an approximate value
+    protected findCenter(): { x: number, y: number } { // we are looking for an approximate value
         let bigX = 0;
         let bigY = 0;
         let smallX = Infinity;
@@ -113,18 +109,18 @@ export class Bot {
         return { x: (smallX + bigX) / 2, y: (smallY + bigY) / 2 };
     }
 
-    private squaredDistance(a: number, centerX: number, centerY: number): number {
+    protected squaredDistance(a: number, centerX: number, centerY: number): number {
         return Math.pow(Math.min(Math.abs(this.image[a].startPosX - centerX), Math.abs(this.image[a].endPosX - centerX)), 2) +
             Math.pow(Math.min(Math.abs(this.image[a].startPosY - centerY), Math.abs(this.image[a].endPosY - centerY)), 2);
     }
 
-    private sortRand(): void {
+    protected sortRand(): void {
         for (let i = 0; i < this.image.length - 1; i++) {
             this.swapStroke(i, i + Math.floor(Math.random() * (this.taunts.length - i)));
         }
     }
 
-    private swapStroke(a: number, b: number): void {
+    protected swapStroke(a: number, b: number): void {
         const temp: IDrawing = this.image[b];
         this.image[b] = this.image[a];
         this.image[a] = temp;
@@ -137,9 +133,9 @@ export class Bot {
     public launchTaunt(): string {
         return this.taunts[Math.floor(Math.random() * this.taunts.length)]; //ceci ou la fonction qui envoie un message avec Username
     }
-
-    private randPersonality(): Personality {
-        return Math.floor(Math.random() * Personality.length);
-    }
-
+    /*
+        protected randPersonality(): Personality {
+            return Math.floor(Math.random() * Personality.length);
+        }
+    */
 }
