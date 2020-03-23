@@ -8,7 +8,6 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.PopupWindow
@@ -80,7 +79,6 @@ class DrawFragment: Fragment() {
 
     private fun openWidthSelector(v: ViewGroup) {
         val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        val popup = AlertDialog.Builder(v.context)
         val view = layoutInflater.inflate(R.layout.popup_change_width, null)
         val popupWindow = PopupWindow(
             view,
@@ -155,9 +153,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y)
-        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP){
-            // do nothing for now
-        } else {
+        } else if (action == MotionEvent.ACTION_MOVE){
             touchMoved(event)
         }
 
