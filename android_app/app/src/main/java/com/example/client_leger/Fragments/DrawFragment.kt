@@ -143,8 +143,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.drawColor(Color.WHITE)
-
         for (segment in segments) {
             canvas.drawPath(segment.path, segment.paint)
         }
@@ -175,7 +173,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         var strokeFound = false
 
         for (segment in segments) {
-            if (segment.paint.color == Color.WHITE) {
+            if (segment.paint.color == Color.TRANSPARENT) {
                 continue
             }
 
@@ -194,7 +192,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
                 if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
                     if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
-                        segment.paint.color = Color.WHITE
+                        segment.paint.color = Color.TRANSPARENT
                         //TODO: inform server of stroke removal
                         strokeFound = true
                         break
