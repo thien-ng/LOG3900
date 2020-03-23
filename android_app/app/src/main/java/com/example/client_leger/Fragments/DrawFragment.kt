@@ -161,6 +161,23 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         return true
     }
 
+    private fun batchErase(segment: Segment) {
+        // recursive breadth search
+        if (segment.nextSegment != null) {
+            if (segment.nextSegment!!.paint.color != Color.TRANSPARENT) {
+                segment.nextSegment!!.paint.color = Color.TRANSPARENT
+                batchErase(segment.nextSegment!!)
+            }
+        }
+
+        if (segment.previousSegment != null) {
+            if (segment.previousSegment!!.paint.color != Color.TRANSPARENT) {
+                segment.previousSegment!!.paint.color = Color.TRANSPARENT
+                batchErase(segment.previousSegment!!)
+            }
+        }
+    }
+
     private fun checkForStrokesToErase(event: MotionEvent) {
         var strokeFound = false
 
@@ -182,6 +199,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
                     if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
                         segment.paint.color = Color.TRANSPARENT
+                        if (isStrokeErasing) {
+                            batchErase(segment)
+                        }
+
                         //TODO: inform server of stroke removal
                         strokeFound = true
                         break
