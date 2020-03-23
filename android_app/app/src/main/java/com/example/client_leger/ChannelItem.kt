@@ -23,7 +23,7 @@ class ChannelItem(private val channelId: String, private val isSub: Boolean, pri
             viewHolder.itemView.imageButton_leaveChannel.visibility = View.GONE
         }
 
-        val drawable = TextDrawable.builder().buildRect("A", Color.RED)
+        val drawable = TextDrawable.builder().buildRound("A", Color.WHITE)
         viewHolder.itemView.channel_image.setImageDrawable(drawable)
     }
 
