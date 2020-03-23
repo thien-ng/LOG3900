@@ -155,7 +155,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
 
-        if (isStrokeErasing) {
+        if (isStrokeErasing || isNormalErasing) {
             checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
             touchStarted(event.x, event.y)
@@ -210,6 +210,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun touchMoved(event: MotionEvent) {
         sendStroke(currentStartX, event.x, currentStartY, event.y)
 
+        val newSegment = Path()
+        newSegment.moveTo(currentStartX, currentStartY)
+        newSegment.moveTo(event.x, event.y)
+
+        segments.add(Segment(newSegment, Paint(paintLine), null, null))
+
         currentPath.quadTo(
             currentStartX,
             currentStartY,
@@ -250,10 +256,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun touchEnded() {
-        if (!isStrokeErasing) {
-            val paint = Paint(paintLine)
-            segments.add(Segment(Path(currentPath), paint, null, null))
-        }
+        //if (!isStrokeErasing) { //TODO: check needed?
+        //    val paint = Paint(paintLine)
+        //    segments.add(Segment(Path(currentPath), paint, null, null))
+        //}
 
         currentPath.reset()
     }
