@@ -1,6 +1,5 @@
 package com.example.client_leger.Fragments
 
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ShapeDrawable
@@ -152,7 +151,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (isStrokeErasing || isNormalErasing) {
             checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
-            touchStarted(event.x, event.y)
+            currentStartX = event.x
+            currentStartY = event.y
         } else if (action == MotionEvent.ACTION_MOVE){
             touchMoved(event)
         }
@@ -222,7 +222,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         val newSegment = Path()
         newSegment.moveTo(currentStartX, currentStartY)
-        //TODO: Can be even more precise by bisecting the line from currentStart to event position
+        //TODO: Can be even more precise by bisecting the line from currentStart the MotionEvent position
         newSegment.lineTo(event.x, event.y)
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
         if (segments.size - 2 >= 0) {
@@ -262,11 +262,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("width", paintLine.strokeWidth)
 
         SocketIO.sendMessage("gameplay", obj)
-    }
-
-    private fun touchStarted(x: Float, y: Float) {
-        currentStartX = x
-        currentStartY = y
     }
 }
 
