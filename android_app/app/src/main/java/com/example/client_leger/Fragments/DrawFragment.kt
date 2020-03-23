@@ -126,6 +126,7 @@ class Segment(var path: Path, var paint: Paint, var previousSegment: Segment?, v
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
     var paintScreen = Paint()
+    var currentStroke = Path()
     var isStrokeErasing = false
     var isNormalErasing = false
     private var currentStartX = 0f
@@ -150,14 +151,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
-        bitmap.eraseColor(Color.TRANSPARENT)
+        bitmap.eraseColor(Color.WHITE)
     }
 
     override fun onDraw(canvas: Canvas) {
-        for (segment in segments) {
-            canvas.drawPath(segment.path, segment.paint)
-        }
-        //canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
+        canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
+        canvas.drawPath(currentStroke, paintLine)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -166,16 +165,27 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (isStrokeErasing || isNormalErasing) {
             checkForStrokesToErase(event)
         } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+            currentStroke.moveTo(event.x, event.y)
             currentStartX = event.x
             currentStartY = event.y
         } else if (action == MotionEvent.ACTION_MOVE){
             touchMoved(event)
+            currentStroke.lineTo(event.x, event.y)
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
             strokeJustEnded = true
+            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
+            currentStroke.reset()
         }
 
         invalidate()
         return true
+    }
+
+    private fun redrawPathsToBitmap() {
+        bitmap.eraseColor(Color.WHITE)
+        for (segment in segments) {
+            bitmapCanvas.drawPath(segment.path, segment.paint)
+        }
     }
 
     private fun batchErase(segment: Segment) {
@@ -232,6 +242,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             if (strokeFound)
                 break
         }
+
+        redrawPathsToBitmap()
     }
 
     private fun touchMoved(event: MotionEvent) {
