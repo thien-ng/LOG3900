@@ -201,10 +201,15 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         val newSegment = Path()
         newSegment.moveTo(currentStartX, currentStartY)
+        //TODO: Can be even more precise by bisecting the line from currentStart to event position
         newSegment.lineTo(event.x, event.y)
-
-
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
+        if (segments.size - 2 >= 0) {
+            // segments.size - 1 is the index of the segment we just added,
+            // segments.size - 2 is the index of the segment just before it.
+            segments[segments.size - 1].previousSegment = segments[segments.size - 2]
+            segments[segments.size - 2].nextSegment = segments[segments.size - 1]
+        }
 
         currentStartX = event.x
         currentStartY = event.y
