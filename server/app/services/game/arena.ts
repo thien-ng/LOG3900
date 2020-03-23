@@ -126,7 +126,7 @@ export abstract class Arena {
         for (let i = 0; i < ans.length; i++) {
             enc.append("*");
         }
-        return enc;
+        return enc.toString();
     }
 
     protected isRightAnswer(ans: string): boolean {
