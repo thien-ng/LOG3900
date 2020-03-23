@@ -85,6 +85,13 @@ export interface IGameplayAnnouncement extends IGameplayChat{
     isServer:   boolean,
 }
 
+
+export interface ICorrAns {
+    username:  string,
+    time:      number,
+    ratio:     number,
+}
+
 export interface IDrawing {
     startPosX:      number,
     startPosY:      number,
@@ -92,7 +99,9 @@ export interface IDrawing {
     endPosY:        number,
     color:          number,
     width:          number,
-    idEnd:          number,
+    idEnd:          boolean,
+    format:         Format,
+    type:           Type,
 }
 
 export interface IGameplayDraw extends IDrawing{
@@ -100,10 +109,28 @@ export interface IGameplayDraw extends IDrawing{
     // TODO add others
 }
 
-export interface ICorrAns {
-    username:  string,
-    time:      number,
-    ratio:     number,
+export interface IEraser {
+    type:       EraserType,
+    username:   string,
+    x:          number,
+    y:          number,
+    width?:     number,
+}
+
+export enum EraserType {
+    point  = "point",
+    stroke = "stroke",
+}
+
+export enum Format {
+    circle = "circle",
+    square = "square",
+}
+
+export enum Type {
+    ink     = "ink",
+    estroke = "estroke",
+    epoint  = "epoint",
 }
 
 /**
