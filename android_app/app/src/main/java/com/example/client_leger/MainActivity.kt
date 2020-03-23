@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_draw -> {
-                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, DrawFragment()).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, GameplayFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
         }

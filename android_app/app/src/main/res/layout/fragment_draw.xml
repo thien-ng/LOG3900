@@ -40,5 +40,4 @@
             android:text="Change width"
             app:layout_constraintStart_toEndOf="@+id/button_change_color"
             app:layout_constraintTop_toTopOf="parent" />
-
 </android.support.constraint.ConstraintLayout>
