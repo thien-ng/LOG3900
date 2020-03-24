@@ -100,6 +100,8 @@ class ChatFragment: Fragment() {
             SocketIO.disconnect()
             val intent = Intent(activity, LogPageActivity::class.java)
             startActivity(intent)
+
+            activity!!.finish()
         }
 
         Communication.getChatMessageListener().subscribe{receptMes ->

@@ -22,19 +22,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         SocketIO.disconnect()
 
-        var fragment = supportFragmentManager.findFragmentById(R.id.container_view_left)
-
-        if (fragment != null) {
-            supportFragmentManager.beginTransaction().remove(fragment).commit()
-        }
-
-        fragment = supportFragmentManager.findFragmentById(R.id.container_view_right)
-
-        if (fragment != null) {
-            supportFragmentManager.beginTransaction().remove(fragment).commit()
-        }
-
-        super.onBackPressed()
+        finish()
     }
 
     private val onNavigationListener = BottomNavigationView.OnNavigationItemSelectedListener  {menuItem ->
