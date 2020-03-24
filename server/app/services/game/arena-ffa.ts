@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady, GameMode } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
@@ -23,8 +23,8 @@ export class ArenaFfa extends Arena {
 
     private isEveryoneHasRightAnswer: boolean;
 
-    public constructor(arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
-        super(arenaId, users, room, io, rules, gm)
+    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
+        super(type, arenaId, users, room, io, rules, gm)
         
         this.drawPtr = 0;
         this.userWithCorrectAns = [];

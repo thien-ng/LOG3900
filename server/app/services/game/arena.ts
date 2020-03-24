@@ -1,5 +1,5 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
@@ -7,6 +7,7 @@ import * as io from 'socket.io';
 
 const StringBuilder = require("string-builder");
 const CHECK_INTERVAL_TIME = 500;
+const ONE_SEC = 1000;
 
 export abstract class Arena {
 
@@ -21,10 +22,13 @@ export abstract class Arena {
     protected userMapPoints: Map<string, number>;
 
     protected userMapReady:  Map<string, boolean>;
+    protected type:          GameMode;
 
-    private arenaId: number;
+    private arenaId:             number;
+    public  chronometerInterval: NodeJS.Timeout;
+    private chronometerTimer:    number;
 
-    public constructor(arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
+    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
         this.room           = room;
         this.socketServer   = io;
@@ -33,6 +37,7 @@ export abstract class Arena {
         this.curRule        = this.rules[0];
         this.gm             = gm;
         this.arenaId        = arenaId;
+        this.type           = type;
 
         this.initReadyMap();
         this.setupPoints();
@@ -62,6 +67,7 @@ export abstract class Arena {
             
             if (this.checkIfEveryoneIsReady()) {
                 clearInterval(checkInterval);
+                this.startChronometer();
                 callback();
             }
             else if (numOfTries >= 3) {
@@ -82,8 +88,10 @@ export abstract class Arena {
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
         });
+
+        clearInterval(this.chronometerTimer);
         
-        this.gm.persistPoints(pts);
+        this.gm.persistPoints(pts, this.chronometerTimer / ONE_SEC, this.type);
         this.gm.deleteArena(this.arenaId);
     }
 
@@ -167,6 +175,13 @@ export abstract class Arena {
             ptsList.push({username: key, points: pts});
         });
         return ptsList;
+    }
+
+    private startChronometer(): void {
+        this.chronometerTimer = 0;
+        this.chronometerInterval = setInterval(() => {
+            this.chronometerTimer += ONE_SEC;
+        }, ONE_SEC)
     }
 
 }

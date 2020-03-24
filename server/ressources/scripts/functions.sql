@@ -160,3 +160,92 @@ RETURNS TABLE (out_channel VARCHAR(20), sub TEXT) AS $$
         AND id LIKE in_word;
     END
 $$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.registerGame(in_gamemode VARCHAR(20), in_date VARCHAR(30), in_elapsedTime INT, in_winner VARCHAR(20), in_userPts json) RETURNS VOID AS $$
+    DECLARE
+        winner_id INT;
+        game_id INT;
+        i json;
+        user_id_loop INT;
+    BEGIN
+        SELECT account.id FROM log3900.account WHERE username = in_winner INTO winner_id;
+
+        INSERT INTO Log3900.game VALUES(DEFAULt, in_gamemode, in_date, in_elapsedTime, winner_id) RETURNING game.id INTO game_id;
+
+        FOR i IN SELECT * FROM json_array_elements(in_userPts)
+        LOOP
+            SELECT account.id FROM log3900.account WHERE username = i->>'username' INTO user_id_loop;
+            INSERT INTO Log3900.accountgame VALUES(user_id_loop, game_id, CAST(i->>'point' AS INT));
+        END LOOP;
+    END
+$$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getProfileStats(in_username VARCHAR(20))
+    RETURNS TABLE  (out_nbrGame INT, out_winRate NUMERIC ,out_best INT, out_elapsedTime INT, out_timeGame NUMERIC) AS $$
+    DECLARE
+        totalGame INT; wonGame INT; bestscore INT; totalTime INT; winRatio FLOAT; avgGame FLOAT;
+    BEGIN
+        SELECT COUNT(*)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        and a.username = in_username
+        INTO totalGame;
+
+        SELECT COUNT(*)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        AND g.winner = a.id
+        and a.username = in_username
+        INTO wonGame;
+
+        SELECT MAX(ag.score)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        AND g.gamemode = 'SOLO'
+        and a.username = in_username
+        INTO bestscore;
+
+        SELECT SUM(g.elapsedtime)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        and a.username = in_username
+        INTO totalTime;
+
+        winRatio = wonGame/totalGame::decimal;
+        avgGame = totalTime/totalGame::decimal;
+
+        RETURN QUERY SELECT totalGame, round(CAST(winRatio as numeric), 2), bestscore, totalTime, round(CAST(avgGame as numeric), 2);
+
+    END;
+$$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getGameIds(in_username VARCHAR(20))
+    RETURNS TABLE  (out_gamesid INT, out_date VARCHAR) AS $$
+    BEGIN
+        RETURN QUERY
+            SELECT ag.game_id, g.date
+            FROM log3900.accountgame as ag, log3900.account as a, log3900.game as g
+            WHERE a.id = ag.account_id
+            AND g.id = ag.account_id
+            AND a.username = in_username;
+    END;
+$$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getGameInfo(in_gameid INT)
+    RETURNS TABLE  (out_obj json) AS $$
+    DECLARE
+        json_obj json;
+    BEGIN
+        SELECT json_agg(g) INTO json_obj FROM (
+            SELECT a.username, ag.score
+            FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+            WHERE g.id = in_gameid
+            AND g.id = ag.game_id
+            AND ag.account_id = a.id) as g;
+        RETURN QUERY SELECT json_obj;
+    END;
+$$LANGUAGE plpgsql;
