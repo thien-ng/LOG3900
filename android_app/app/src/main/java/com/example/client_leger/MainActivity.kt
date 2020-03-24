@@ -8,18 +8,33 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private var chatFragment = ChatFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationListener)
-        supportFragmentManager.beginTransaction().replace(R.id.container_view_left, ChatFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.container_view_left, chatFragment).commit()
         bottomNavigationView.selectedItemId = R.id.action_game
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         SocketIO.disconnect()
+
+        var fragment = supportFragmentManager.findFragmentById(R.id.container_view_left)
+
+        if (fragment != null) {
+            supportFragmentManager.beginTransaction().remove(fragment).commit()
+        }
+
+        fragment = supportFragmentManager.findFragmentById(R.id.container_view_right)
+
+        if (fragment != null) {
+            supportFragmentManager.beginTransaction().remove(fragment).commit()
+        }
+
+        super.onBackPressed()
     }
 
     private val onNavigationListener = BottomNavigationView.OnNavigationItemSelectedListener  {menuItem ->
