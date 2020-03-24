@@ -44,4 +44,14 @@ export class AccountDbService extends DatabaseService {
         return this.pool.query(`SELECT (LOG3900.getProfileStats(
                                     CAST('${username}' AS VARCHAR))).*;`);
     }
+
+    public async getGameIds(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getGameIds(
+                                    CAST('${username}' AS VARCHAR))).*;`);
+    }
+
+    public async getGameInfo(gameId: number): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.getGameInfo(
+                                    CAST('${gameId}' AS INT));`);
+    }
 }

@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IRegistration, IStatus, ILogin, IInfoUser, IConnection, IStats } from "../interfaces/communication";
+import { IRegistration, IStatus, ILogin, IInfoUser, IConnection, IStats, IGame, IPlayer } from "../interfaces/communication";
 import { AccountDbService } from "../database/account-db.service";
 import * as pg from "pg";
 import Types from '../types';
@@ -86,13 +86,36 @@ export class AccountService {
         }).catch((e) => {
             return e;
         });
-        return Promise.all([noms, connections, profileStats]).then((res) => {
-            console.log(res);
-            
-            return { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1], stats: res[2] };
+
+        return Promise.all([noms, connections, profileStats]).then(async (res) => {
+            const games = await this.getGameInfos(username);
+            return { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1], stats: res[2], games: games };
         }).catch((e) => {
             return e;
         });
+    }
+
+    private async getGameInfos(username: string): Promise<IGame[]> {
+        const mapDate           = new Map<number, string>();
+        const idList: number[]  = [];
+        const gameList: IGame[] = [];
+
+        (await this.database.getGameIds(username)).rows.forEach(u => {
+            mapDate.set(u.out_gamesid, u.out_date);
+            idList.push(u.out_gamesid);
+        });
+
+        for await (const id of idList) {
+            const info = (await this.database.getGameInfo(id)).rows[0];
+
+            const list: IPlayer[] = [];
+            info.getgameinfo.forEach((p: IPlayer) => { list.push(p) });
+
+            const date = mapDate.get(id) as string;
+            gameList.push({date: date, players: list});
+        }
+
+        return gameList;
     }
 
 }

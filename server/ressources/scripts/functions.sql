@@ -222,3 +222,30 @@ CREATE OR REPLACE FUNCTION LOG3900.getProfileStats(in_username VARCHAR(20))
 
     END;
 $$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getGameIds(in_username VARCHAR(20))
+    RETURNS TABLE  (out_gamesid INT, out_date VARCHAR) AS $$
+    BEGIN
+        RETURN QUERY
+            SELECT ag.game_id, g.date
+            FROM log3900.accountgame as ag, log3900.account as a, log3900.game as g
+            WHERE a.id = ag.account_id
+            AND g.id = ag.account_id
+            AND a.username = in_username;
+    END;
+$$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getGameInfo(in_gameid INT)
+    RETURNS TABLE  (out_obj json) AS $$
+    DECLARE
+        json_obj json;
+    BEGIN
+        SELECT json_agg(g) INTO json_obj FROM (
+            SELECT a.username, ag.score
+            FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+            WHERE g.id = in_gameid
+            AND g.id = ag.game_id
+            AND ag.account_id = a.id) as g;
+        RETURN QUERY SELECT json_obj;
+    END;
+$$LANGUAGE plpgsql;
