@@ -150,6 +150,10 @@ namespace PolyPaint.Modeles
             {
                 Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
             }
+            else 
+            {
+                MessageBox.Show("Wrong password, try again.");
+            }
         }
         #endregion
 
@@ -182,15 +186,7 @@ namespace PolyPaint.Modeles
             {
                 return _sendPasswordCommand ?? (_sendPasswordCommand = new RelayCommand(x =>
                 {
-                    try
-                    {
-                        joinPrivateLobby();
-                    }
-                    catch
-                    {
-
-                        MessageBox.Show("Wrong password, try again.");
-                    }
+                    joinPrivateLobby();
                 }));
             }
         }
