@@ -39,4 +39,9 @@ export class AccountDbService extends DatabaseService {
         return this.pool.query(`SELECT (LOG3900.getAccountConnectionsByUsername(
                                     CAST('${username}' AS VARCHAR))).*;`);
     }
+
+    public async getProfileStats(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getProfileStats(
+                                    CAST('${username}' AS VARCHAR))).*;`);
+    }
 }

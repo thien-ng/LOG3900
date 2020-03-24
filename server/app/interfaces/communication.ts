@@ -1,5 +1,3 @@
-import { GameMode } from "./game";
-
 export interface IRegistration {
     username: string,
     password: string,
@@ -19,10 +17,11 @@ export interface IStatus {
 }
 
 export interface IInfoUser {
-    username: string,
-    firstName: string,
-    lastName: string,
+    username:    string,
+    firstName:   string,
+    lastName:    string,
     connections: IConnection[],
+    stats:       IStats,
     //avatar: Uint8Array,
     //games: Igame[],
 }
@@ -36,6 +35,14 @@ export interface IConnection {
 export interface Igame {
     time: string,
     players: { username: string, score: number }[],
+}
+
+export interface IStats {
+    totalGame:     number,
+    winRate:       number,
+    bestScore:     number,
+    totalPlayTime: number,
+    avgGameTime:   number, 
 }
 
 export interface IInvitationChannel {

@@ -14,3 +14,6 @@ INSERT INTO log3900.accountChannel VALUES(2, 'pute');
 INSERT INTO log3900.accountChannel VALUES(2, 'channel');
 
 SELECT LOG3900.registerGame('FFA', '23/03/2020 16:32:35', 40, 'username', '[{"username": "username", "point":50}, {"username": "asd", "point":69}]');
+SELECT LOG3900.registerGame('SOLO', '23/03/2020 16:32:35', 23, 'username', '[{"username": "username", "point":87}]');
+SELECT LOG3900.registerGame('SOLO', '23/03/2020 16:32:35', 45, 'asd', '[{"username": "asd", "point":420}]');
+SELECT LOG3900.registerGame('SOLO', '23/03/2020 16:32:35', 45, 'asd', '[{"username": "asd", "point":23}]');

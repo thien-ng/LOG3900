@@ -179,3 +179,46 @@ CREATE OR REPLACE FUNCTION LOG3900.registerGame(in_gamemode VARCHAR(20), in_date
         END LOOP;
     END
 $$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getProfileStats(in_username VARCHAR(20))
+    RETURNS TABLE  (out_nbrGame INT, out_winRate NUMERIC ,out_best INT, out_elapsedTime INT, out_timeGame NUMERIC) AS $$
+    DECLARE
+        totalGame INT; wonGame INT; bestscore INT; totalTime INT; winRatio FLOAT; avgGame FLOAT;
+    BEGIN
+        SELECT COUNT(*)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        and a.username = in_username
+        INTO totalGame;
+
+        SELECT COUNT(*)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        AND g.winner = a.id
+        and a.username = in_username
+        INTO wonGame;
+
+        SELECT MAX(ag.score)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        AND g.gamemode = 'SOLO'
+        and a.username = in_username
+        INTO bestscore;
+
+        SELECT SUM(g.elapsedtime)
+        FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
+        WHERE g.id = ag.game_id
+        AND ag.account_id = a.id
+        and a.username = in_username
+        INTO totalTime;
+
+        winRatio = wonGame/totalGame::decimal;
+        avgGame = totalTime/totalGame::decimal;
+
+        RETURN QUERY SELECT totalGame, round(CAST(winRatio as numeric), 2), bestscore, totalTime, round(CAST(avgGame as numeric), 2);
+
+    END;
+$$LANGUAGE plpgsql;
