@@ -1,8 +1,8 @@
 import { IGameplayDraw, IDrawing } from "../interfaces/game";
-import { DisplayMode } from './taunts';
+import { DisplayMode } from '../interfaces/creator';
 import { Side } from '../utils/Side';
 
-export class Bot {
+export abstract class Bot {
 
     public length: number;
 
@@ -10,14 +10,15 @@ export class Bot {
     protected taunts: string[];
     protected username: string;
     protected nextStroke: number;
-    protected hint: string;
+    protected hint: string[];
+    protected nextHint: number;
     protected mode: DisplayMode;
     protected panoramicFirstSide: Side;
 
     constructor(image: IDrawing[],
         username: string = "BOT:bob",
-        hint: string = "no hint for you!",
-        mode: DisplayMode = DisplayMode.classic,
+        hint: string[] = [],
+        mode: DisplayMode = DisplayMode.CLASSIC,
         panoramicFirstSide: Side = Side.up) {
 
         this.username = username;
@@ -25,6 +26,7 @@ export class Bot {
         this.image = image;
         this.length = this.image.length;
         this.hint = hint;
+        this.nextHint = 0;
         this.panoramicFirstSide = panoramicFirstSide;
         this.nextStroke = 0;
         this.sort();
@@ -46,13 +48,13 @@ export class Bot {
 
     protected sort(): void {
         switch (this.mode) {
-            case DisplayMode.centered:
+            case DisplayMode.CENTERED:
                 this.sortCentered();
                 break;
-            case DisplayMode.rand:
+            case DisplayMode.RANDOM:
                 this.sortRand();
                 break;
-            case DisplayMode.panoramic:
+            case DisplayMode.PANORAMIC:
                 this.sortPanoramic();
                 break;
         }
@@ -127,15 +129,10 @@ export class Bot {
     }
 
     public getHint(): string {
-        return this.hint;
+        return (this.nextHint >= this.hint.length) ? "No more hint available" : this.hint[this.nextHint++];
     }
 
     public launchTaunt(): string {
         return this.taunts[Math.floor(Math.random() * this.taunts.length)]; //ceci ou la fonction qui envoie un message avec Username
     }
-    /*
-        protected randPersonality(): Personality {
-            return Math.floor(Math.random() * Personality.length);
-        }
-    */
 }

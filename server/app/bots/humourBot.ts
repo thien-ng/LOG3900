@@ -1,13 +1,14 @@
 import { IDrawing } from "../interfaces/game";
-import { Taunt, DisplayMode } from './taunts';
+import { DisplayMode } from '../interfaces/creator';
+import { Taunt } from './taunts';
 import { Side } from '../utils/Side';
 import { Bot } from "./bot";
 
-export class humourBot extends Bot {
+export class HumourBot extends Bot {
 
     constructor(image: IDrawing[],
         username: string | undefined,
-        hint: string | undefined,
+        hint: string[] | undefined,
         mode: DisplayMode | undefined,
         panoramicFirstSide: Side | undefined) {
 

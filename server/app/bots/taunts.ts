@@ -1,19 +1,4 @@
 
-export enum Personality {
-    kind,
-    humour,
-    mean,
-    length // this must be the last one
-}
-
-export enum DisplayMode {
-    classic,
-    rand,
-    panoramic,
-    centered
-}
-
-
 export class Taunt {
 
     public static kind: string[] = [
