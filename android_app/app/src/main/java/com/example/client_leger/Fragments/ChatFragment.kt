@@ -61,8 +61,6 @@ class ChatFragment: Fragment() {
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
         v.chat_message_editText.filters = fArray
 
-        controller.loadChatHistory(this)
-
         setChannel(channelId)
 
         v.searchView_channelSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
