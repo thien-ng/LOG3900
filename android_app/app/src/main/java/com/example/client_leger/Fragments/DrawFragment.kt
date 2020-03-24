@@ -128,6 +128,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var currentStartX = 0f
     private var currentStartY = 0f
     private val segments = ArrayList<Segment>()
+    private var strokeJustEnded = false
 
     init {
         paintLine.isAntiAlias = true
@@ -156,6 +157,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStartY = event.y
         } else if (action == MotionEvent.ACTION_MOVE){
             touchMoved(event)
+        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
+            strokeJustEnded = true
         }
 
         invalidate()
@@ -226,13 +229,14 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         //TODO: Can be even more precise by bisecting the line from currentStart the MotionEvent position
         newSegment.lineTo(event.x, event.y)
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
-        if (segments.size - 2 >= 0) {
+        if (segments.size - 2 >= 0 && !strokeJustEnded) {
             // segments.size - 1 is the index of the segment we just added,
             // segments.size - 2 is the index of the segment just before it.
             segments[segments.size - 1].previousSegment = segments[segments.size - 2]
             segments[segments.size - 2].nextSegment = segments[segments.size - 1]
         }
 
+        strokeJustEnded = false
         currentStartX = event.x
         currentStartY = event.y
     }
