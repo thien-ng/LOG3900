@@ -102,8 +102,6 @@ class ChatFragment: Fragment() {
 
         v.disconnect_button.setOnClickListener {
             SocketIO.disconnect()
-            val intent = Intent(activity, LogPageActivity::class.java)
-            startActivity(intent)
 
             activity!!.finish()
         }
