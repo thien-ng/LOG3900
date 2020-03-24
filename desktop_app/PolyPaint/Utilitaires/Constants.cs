@@ -21,7 +21,7 @@ namespace PolyPaint.Utilitaires
         public const string START_GAME_PATH         = "/game/start/";
         public const string GAMECARDS_PATH          = "/card";
         public const string CREATOR_PATH            = "/creator";
-        public const string CARDSCREATOR_PATH       = CREATOR_PATH + "/game/new";
+        public const string GAMECREATOR_PATH        = CREATOR_PATH + "/game/new";
         public const string SUGGESTION_PATH         = CREATOR_PATH + "/game/suggestion";
         public const string GAME_JOIN_PATH          = "/game/lobby/join";
         public const string GAME_LEAVE_PATH         = "/game/lobby/leave";

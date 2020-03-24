@@ -17,7 +17,7 @@
     {
         Canvas,
         FileSelector,
-        CanvasFileselector,
+        Solution,
         Generator,
         GeneratedWord
     }

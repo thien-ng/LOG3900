@@ -59,7 +59,7 @@
                  wpf:HintAssist.Hint="Word or expression"
                  Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
                  Text="{Binding Solution}"
-                 Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=CanvasFileselector}"
+                 Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=Solution}"
                  Grid.ColumnSpan="2"
                  Margin="0 6 0 10"
                  FontSize="18"/>
@@ -69,7 +69,7 @@
                 Command="{Binding GenerateNewQuickDrawCommand}"
                 IsEnabled="{Binding IsReqActive}"
                 Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=Generator}">
-            GENERATE
+            GENERATE IMAGE
         </Button>
 
         <TextBlock  Text="{Binding ObjectName}" 
@@ -170,6 +170,29 @@
                 Margin="20,15,0,0">
 
             <Image Source="{Binding Base64ImageData, Converter={converter:Base64ImageConverter}}"/>
+        </Border>
+
+        <Button Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Grid.Row="2"
+                HorizontalAlignment="Center"
+                Command="{Binding ChoseFileCommand}"
+                Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=FileSelector}"
+                Style="{DynamicResource MaterialDesignRaisedLightButton}">
+            Choose File
+        </Button>
+
+        <Border Grid.Column="1"
+                Grid.ColumnSpan="2"
+                Grid.Row="3"
+                Grid.RowSpan="2"
+                Visibility="{Binding SelectedCreationType, Converter={converter:CreationTypeToVisibilityConverter}, ConverterParameter=FileSelector}"
+                BorderBrush="{StaticResource SecondaryAccentBrush}"
+                BorderThickness="1.5"
+                Padding="2"
+                Margin="20,15,0,0">
+
+            <Image Source="{Binding SelectedImage}"/>
         </Border>
 
         <Grid Grid.Row="5"

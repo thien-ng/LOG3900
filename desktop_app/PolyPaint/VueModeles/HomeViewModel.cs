@@ -242,7 +242,13 @@ namespace PolyPaint.VueModeles
 
             if (channelId != _selectedChannel.ID)
             {
-                _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = false;
+                MessageChannel channel;
+
+                channel = _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID);
+
+                if (channel != null)
+                    channel.isSelected = false;
+
                 _selectedChannel = new ChatRoom((string)id, !IsNotInLobby);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
 

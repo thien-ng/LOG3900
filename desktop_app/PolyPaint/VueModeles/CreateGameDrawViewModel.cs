@@ -90,7 +90,7 @@ namespace PolyPaint.VueModeles
                                            new JProperty("y", point.Y)));
                 }
 
-                Strokes.Add(new JObject(new JProperty("color", trait.DrawingAttributes.Color),
+                Strokes.Add(new JObject(new JProperty("color", trait.DrawingAttributes.Color.ToString()),
                                         new JProperty("width", trait.DrawingAttributes.Width),
                                         new JProperty("points", points.ToArray())));
             }

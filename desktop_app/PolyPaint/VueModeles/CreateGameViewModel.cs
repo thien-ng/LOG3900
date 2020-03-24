@@ -1,5 +1,6 @@
 ﻿
 using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
@@ -7,13 +8,19 @@ using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace PolyPaint.VueModeles
 {
     class CreateGameViewModel: BaseViewModel
     {
+
+        private JArray GeneratedImageStrokes;
 
         public CreateGameViewModel()
         {
@@ -126,6 +133,67 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private BitmapImage _selectedImage;
+        public BitmapImage SelectedImage
+        {
+            get { return _selectedImage; }
+            set
+            {
+                if (_selectedImage == value) return;
+                _selectedImage = value;
+                ProprieteModifiee();
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        private async Task<HttpResponseMessage> CreateManual()
+        {
+            JArray drawing = DrawViewModel.GetDrawing();
+            List<string> clues = new List<string>();
+
+            foreach (var hint in Hints)
+                clues.Add(hint.Hint);
+
+            var newGame = new JObject(new JProperty("solution", Solution),
+                                       new JProperty("clues", clues.ToArray()),
+                                       new JProperty("difficulty", SelectedDifficulty.ToLower()),
+                                       new JProperty("drawing", drawing),
+                                       new JProperty("displayMode", SelectedDisplayMode));
+
+            var content = new StringContent(newGame.ToString(), Encoding.UTF8, "application/json");
+
+            return await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.GAMECREATOR_PATH, content);
+        }
+
+        private void CreateAssisted1()
+        {
+
+        }
+
+        private async Task<HttpResponseMessage> CreateAssisted2()
+        {
+            List<string> clues = new List<string>();
+
+            foreach (var hint in Hints)
+            {
+                if (hint.Hint.Length > 0)
+                clues.Add(hint.Hint);
+            }
+
+            var newGame = new JObject(new JProperty("solution", ObjectName),
+                                       new JProperty("clues", clues.ToArray()),
+                                       new JProperty("difficulty", SelectedDifficulty.ToLower()),
+                                       new JProperty("drawing", GeneratedImageStrokes),
+                                       new JProperty("displayMode", SelectedDisplayMode));
+
+            var content = new StringContent(newGame.ToString(), Encoding.UTF8, "application/json");
+
+            return await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.GAMECREATOR_PATH, content);
+        }
+
         #endregion
 
         #region Commands
@@ -135,21 +203,35 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _acceptCommand ?? (_acceptCommand = new RelayCommand(x =>
+                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    JArray drawing = DrawViewModel.GetDrawing();
-                    List<string> clues = new List<string>();
+                    HttpResponseMessage result;
+                    switch (SelectedCreationType)
+                    {
+                        case CreationType.Manual:
+                            result = await CreateManual();
 
-                    foreach (var hint in Hints)
-                        clues.Add(hint.Hint);
+                            if (!result.IsSuccessStatusCode)
+                            {
+                                MessageBox.Show("Invalid request");
+                                return;
+                            }
+                            break;
+                        case CreationType.Assisted1:
+                            CreateAssisted1();
+                            break;
+                        case CreationType.Assisted2:
+                            result = await CreateAssisted2();
 
-                    var newGame = new JObject( new JProperty("solution", Solution),
-                                               new JProperty("clues", clues.ToArray()), 
-                                               new JProperty("difficulty", SelectedDifficulty.ToLower()), 
-                                               new JProperty("drawing", drawing),
-                                               new JProperty("displayMode", SelectedDisplayMode)); 
-                    
-                    // Do post here //
+                            if (!result.IsSuccessStatusCode)
+                            {
+                                MessageBox.Show("Invalid request");
+                                return;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
 
                     JObject res = new JObject(new JProperty("IsAccept", true));
                     DialogHost.CloseDialogCommand.Execute(res, null);
@@ -262,10 +344,31 @@ namespace PolyPaint.VueModeles
                         return;
                     }
 
-                    // TODO garder en memoire drawpxl
+                    GeneratedImageStrokes = (JArray)responseJson.GetValue("drawPxl");
                     Base64ImageData = responseJson.GetValue("drawPng").ToString().Split(',')[1];
                     ObjectName = responseJson.GetValue("object").ToString();
                     IsReqActive = true;
+                }));
+            }
+        }
+
+        private ICommand _choseFileCommand;
+        public ICommand ChoseFileCommand
+        {
+            get
+            {
+                return _choseFileCommand ?? (_choseFileCommand = new RelayCommand(x =>
+                {
+                    OpenFileDialog op = new OpenFileDialog();
+                    op.Title = "Select a picture";
+                    op.Filter = "All supported graphics|*.bmp;*.jpg;*.png|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp";
+
+                    bool? result = op.ShowDialog();
+
+                    if (result == true)
+                    {
+                        SelectedImage = new BitmapImage(new Uri(op.FileName));
+                    }
                 }));
             }
         }
