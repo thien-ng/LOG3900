@@ -227,6 +227,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun checkForStrokesToErase(pointX: Float, pointY: Float) {
+        Log.w("draw", "erasing at point: $pointX $pointY")
         if (pointX > bitmap.width ||
             pointX < 0 ||
             pointY > bitmap.height ||
@@ -234,8 +235,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
             return
         }
-
-        //bitmapCanvas.drawPoint(pointX, pointY, paintLine)
 
         if (bitmap.getPixel(pointX.toInt(), pointY.toInt()) == Color.WHITE) {
             return
@@ -316,6 +315,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var firstStrokeReceived = true
 
     private fun strokeReceived(obj: JSONObject) {
+        Log.w("draw", "strokeReceived")
         when {
             obj.getString("type") == "ink" -> {
                 if (obj.getBoolean("isEnd")) {
@@ -350,19 +350,23 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
                 invalidate()
             }
-            obj.getString("type") == "estroke" -> {
-                isStrokeErasing = true
-                checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat())
-                isStrokeErasing = false
-            }
-            obj.getString("type") == "epoint" -> {
-                checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat())
+            obj.getString("type") == "eraser" -> {
+                if (obj.getString("eraser") == "stroke") {
+                    isStrokeErasing = true
+                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat())
+                    isStrokeErasing = false
+                } else {
+                    isNormalErasing = true
+                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat())
+                    isNormalErasing = false
+                }
             }
         }
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float, isEnd: Boolean) {
         val obj = JSONObject()
+        obj.put("type", "ink")
         obj.put("username", username)
         obj.put("startPosX", startPointX)
         obj.put("startPosY", startPointY)
@@ -377,20 +381,22 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun sendErasePoint(x: Float, y: Float) {
         val obj = JSONObject()
-        obj.put("type", "point")
+        obj.put("type", "eraser")
         obj.put("username", username)
         obj.put("x", x)
         obj.put("y", y)
+        obj.put("eraser", "point")
 
         SocketIO.sendMessage("gameplay", obj)
     }
 
     private fun sendEraseStroke(x: Float, y: Float) {
         val obj = JSONObject()
-        obj.put("type", "stroke")
+        obj.put("type", "eraser")
         obj.put("username", username)
         obj.put("x", x)
         obj.put("y", y)
+        obj.put("eraser", "stroke")
 
         SocketIO.sendMessage("gameplay", obj)
     }
