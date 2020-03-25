@@ -144,7 +144,7 @@ class ChatFragment: Fragment() {
             } else {
                 Toast.makeText(
                     this.context,
-                    "Channel names cannot exceed 20 characters.",
+                    "Channel names cannot exceed 20 characters or be empty.",
                     Toast.LENGTH_SHORT
                 ).show()
             }
