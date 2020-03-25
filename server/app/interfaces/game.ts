@@ -132,8 +132,7 @@ export enum Format {
 
 export enum Type {
     ink     = "ink",
-    estroke = "estroke",
-    epoint  = "epoint",
+    eraser  = "eraser",
 }
 
 /**
