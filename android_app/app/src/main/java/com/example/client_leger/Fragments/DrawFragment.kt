@@ -184,9 +184,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 currentStartY,
                 event.x,
                 event.y,
-                event.action == MotionEvent.ACTION_UP
+                false
             )
             if (action == MotionEvent.ACTION_UP) {
+                sendStroke(currentStartX, event.x, currentStartY, event.y, true)
                 strokeJustEnded = true
                 bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
                 currentStroke.reset()
@@ -281,7 +282,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newY = startY + directionY * paintLine.strokeWidth * i
 
             sendStroke(currentStartX, destX, currentStartY, destY, isEnd)
-            
+
             addSegment(newX, newY)
             currentStartX = newX
             currentStartY = newY
@@ -305,10 +306,17 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         strokeJustEnded = false
     }
 
-    var firstStrokeReceived = true
+    private var firstStrokeReceived = true
 
     private fun strokeReceived(obj: JSONObject) {
         Log.w("draw", "strokeReceived")
+
+        if (obj.getBoolean("isEnd")) {
+            Log.w("draw", "isEnd!!!")
+            firstStrokeReceived = true
+            redrawPathsToBitmap()
+            return
+        }
 
         paintLine.isAntiAlias = true
         paintLine.color = obj.getInt("color")
@@ -319,10 +327,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         currentStartX = obj.getInt("startPosX").toFloat()
         currentStartY = obj.getInt("startPosY").toFloat()
 
-        //addSegment(
-        //    obj.getInt("endPosX").toFloat(),
-        //    obj.getInt("endPosY").toFloat()
-        //)
+        addSegment(
+            obj.getInt("endPosX").toFloat(),
+            obj.getInt("endPosY").toFloat()
+        )
 
         if (firstStrokeReceived) {
             firstStrokeReceived = false
@@ -331,13 +339,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
         } else {
             currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
-        }
-
-        if (obj.getBoolean("isEnd")) {
-            Log.w("draw", "isEnd!!!")
-            redrawPathsToBitmap()
-            currentStroke.reset()
-            firstStrokeReceived = true
         }
 
         invalidate()
