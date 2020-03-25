@@ -281,7 +281,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newX = startX + directionX * paintLine.strokeWidth * i
             val newY = startY + directionY * paintLine.strokeWidth * i
 
-            sendStroke(currentStartX, destX, currentStartY, destY, isEnd)
+            sendStroke(currentStartX, newX, currentStartY, newY, isEnd)
 
             addSegment(newX, newY)
             currentStartX = newX
