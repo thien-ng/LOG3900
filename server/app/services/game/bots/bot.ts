@@ -1,6 +1,6 @@
-import { IGameplayDraw, IDrawing } from "../interfaces/game";
-import { DisplayMode } from '../interfaces/creator';
-import { Side } from '../utils/Side';
+import { IGameplayDraw, IDrawing } from "../../../interfaces/game";
+import { DisplayMode } from '../../../interfaces/creator';
+import { Side } from '../../../utils/Side';
 
 export abstract class Bot {
 

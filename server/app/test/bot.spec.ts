@@ -1,11 +1,11 @@
 import * as chai from "chai";
 import * as spies from "chai-spies";
 import { container } from "../inversify.config";
-import { Bot } from "../bots/bot";
-import { KindBot } from "../bots/kindBot";
-import { MeanBot } from "../bots/meanBot";
-import { HumourBot } from "../bots/humourBot";
-import { Taunt } from "../bots/taunts";
+import { Bot } from "../services/game/bots/bot";
+import { KindBot } from "../services/game/bots/kindBot";
+import { MeanBot } from "../services/game/bots/meanBot";
+import { HumourBot } from "../services/game/bots/humourBot";
+import { Taunt } from "../services/game/bots/taunts";
 import { IDrawing, IGameplayDraw, Format, Type } from "../interfaces/game";
 import { DisplayMode } from "../interfaces/creator";
 import { Side } from "../utils/Side";
