@@ -40,8 +40,10 @@ class GameplayMenuFragment: Fragment() {
                 if (res.getString("username") == username) {
                     v.role.setText("drawer")
                     v.item.setText(res.getString("object"))
-                } else
+                } else {
                     v.role.setText("guesser")
+                    v.item.setText("")
+                }
             }
         }
 
