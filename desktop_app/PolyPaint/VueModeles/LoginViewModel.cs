@@ -24,6 +24,7 @@ namespace PolyPaint.VueModeles
         public LoginViewModel()
         {
             _loginIsRunning = false;
+            fetchProfile();
         }
 
         #region Public Attributes
