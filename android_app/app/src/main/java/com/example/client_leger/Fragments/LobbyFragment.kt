@@ -10,6 +10,7 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Controller.GameController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
+import io.reactivex.rxjava3.disposables.Disposable
 import org.json.JSONArray
 
 
@@ -19,6 +20,8 @@ class LobbyFragment : Fragment(),
     private lateinit var username: String
     private lateinit var lobbyName:String
     private var usernames: ArrayList<String> = arrayListOf()
+
+    lateinit var startListener: Disposable;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_lobby, container, false)
@@ -30,12 +33,17 @@ class LobbyFragment : Fragment(),
         }
         gameController.getUsers(this, lobbyName)
 
-        Communication.getGameStartListener().subscribe{res ->
+        startListener = Communication.getGameStartListener().subscribe{res ->
             activity!!.runOnUiThread {
                 replaceFragment(GameplayFragment())
             }
         }
         return  v
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        startListener.dispose()
     }
 
     private fun startGame(lobbyName: String){
