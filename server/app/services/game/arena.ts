@@ -103,7 +103,7 @@ export abstract class Arena {
                 y: draw.y,
                 width: draw.width,
                 eraser: draw.eraser,
-            }
+            };
         return {
             startPosX:  draw.startPosX,
             startPosY:  draw.startPosY,
@@ -114,7 +114,7 @@ export abstract class Arena {
             isEnd:      draw.isEnd,
             format:     draw.format,
             type:       draw.type,
-        }
+        };
     }
 
     private isEraser(draw: IGameplayDraw | IGameplayEraser): draw is IGameplayEraser {
