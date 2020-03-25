@@ -147,6 +147,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
+
+        //TODO: dispose du subscribe à la fin
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -206,6 +208,18 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun checkForStrokesToErase(event: MotionEvent) {
+        if (event.x > bitmap.width ||
+            event.x < 0 ||
+            event.y > bitmap.height ||
+            event.y < 0) {
+
+            return
+        }
+
+        if (bitmap.getPixel(event.x.toInt(), event.y.toInt()) == Color.WHITE) {
+            return
+        }
+
         var strokeFound = false
 
         for (segment in segments) {
