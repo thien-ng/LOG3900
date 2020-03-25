@@ -50,6 +50,9 @@ export class AccountService {
         if (regis.username.length < 1 || regis.username.length > 20) {
             throw new Error("username length should be between 1 and 20");
         }
+        if (!/^[a-zA-Z0-9]+$/.test(regis.username)) {
+            throw new Error("username must be alphanumeric");
+        }
         if (regis.password.length < 1 || regis.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
         }
@@ -64,6 +67,9 @@ export class AccountService {
     private verifyLogin(login: ILogin): void {
         if (login.username.length < 1 || login.username.length > 20) {
             throw new Error("username length should be between 1 and 20");
+        }
+        if (!/^[a-zA-Z0-9]+$/.test(login.username)) {
+            throw new Error("username must be alphanumeric");
         }
         if (login.password.length < 1 || login.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
