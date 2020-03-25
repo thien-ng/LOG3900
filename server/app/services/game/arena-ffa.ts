@@ -70,8 +70,8 @@ export class ArenaFfa extends Arena {
     }
 
     private resetSubGame(): void {
-        this.attributeRoles();
         this.chooseRandomRule();
+        this.attributeRoles();
         this.userWithCorrectAns = [];
         this.isEveryoneHasRightAnswer = false;
     }
@@ -134,7 +134,7 @@ export class ArenaFfa extends Arena {
     private attributeRoles(): void {
         let user = this.users[this.drawPtr++];
 
-        while (this.checkIfUserIsDC(user.username)) {
+        while (this.isUserDc(user.username)) {
 
             // if player is disconnect, increment drawer pointer
             if (this.drawPtr++ >= this.users.length) {
@@ -147,15 +147,21 @@ export class ArenaFfa extends Arena {
         this.updateDrawerRole(user);
     }
     
-    private updateDrawerRole(user: IUser): void {
-        this.socketServer.to(this.room).emit("game-drawer", {username: user.username});
+    private updateDrawerRole(drawer: IUser): void {
+        this.socketServer.to(this.room).emit("game-drawer", {username: drawer.username});
+
+        this.users.forEach(u => {
+            if (!this.isUserDc(u.username) && u.username !== drawer.username)
+                this.socketServer.to(u.socketId).emit("game-drawer", {username: drawer.username});
+        });
+        this.socketServer.to(drawer.socketId).emit("game-drawer", {username: drawer.username, object: this.curRule.solution});    
     }
 
     private sendToChat(obj: IGameplayAnnouncement): void {
         this.socketServer.to(this.room).emit("game-chat", obj);
     }
 
-    private checkIfUserIsDC(username: string): boolean {
+    private isUserDc(username: string): boolean {
         return this.dcPlayer.includes(username);
     }
 
