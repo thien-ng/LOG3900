@@ -16,6 +16,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
@@ -135,6 +136,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var currentStartY = 0f
     private val segments = ArrayList<Segment>()
     private var strokeJustEnded = false
+    private var drawListener: Disposable
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
 
@@ -144,11 +146,15 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 16.0F
         paintLine.strokeCap = Paint.Cap.ROUND
-        Communication.getDrawListener().subscribe{ obj ->
+
+        drawListener = Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
+    }
 
-        //TODO: dispose du subscribe à la fin
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        drawListener.dispose()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
