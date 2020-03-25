@@ -70,6 +70,9 @@ export class LobbyManagerService {
         if (lobby) {
             
             // Join lobby            
+            if (lobby.users.length > lobby.size - 1) {
+                throw new Error("Maximum size of user in lobby reached");
+            }       
             if (this.isUserInLobbyAlready(lobby.users, user.username))
                 throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
 
