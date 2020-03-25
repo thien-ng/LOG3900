@@ -112,15 +112,18 @@ export interface IDrawing {
 
 export interface IGameplayDraw extends IDrawing{
     username:       string,
-    // TODO add others
 }
 
 export interface IEraser {
-    type:       EraserType,
-    username:   string,
+    type:       Type,
     x:          number,
     y:          number,
     width?:     number,
+    eraser:     EraserType,
+}
+
+export interface IGameplayEraser extends IEraser {
+    username:   string,
 }
 
 export enum EraserType {
