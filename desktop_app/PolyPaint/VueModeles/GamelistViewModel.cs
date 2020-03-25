@@ -26,6 +26,7 @@ namespace PolyPaint.VueModeles
             getLobbies();
             Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             SelectedMode = "FFA";
+            IsPrivate = false;
         }
 
         #region Public Attributes
