@@ -1,5 +1,5 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
@@ -44,7 +44,7 @@ export abstract class Arena {
     }
     
     public abstract start(): void;
-    public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void;
+    public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void;
 
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
@@ -95,7 +95,15 @@ export abstract class Arena {
         this.gm.deleteArena(this.arenaId);
     }
 
-    protected mapToDrawing(draw: IGameplayDraw): IDrawing {
+    protected mapToDrawing(draw: IGameplayDraw | IGameplayEraser): IDrawing | IEraser {
+        if (this.isEraser(draw))
+            return {
+                type: draw.type,
+                x: draw.x,
+                y: draw.y,
+                width: draw.width,
+                eraser: draw.eraser,
+            }
         return {
             startPosX:  draw.startPosX,
             startPosY:  draw.startPosY,
@@ -106,12 +114,15 @@ export abstract class Arena {
             isEnd:      draw.isEnd,
             format:     draw.format,
             type:       draw.type,
-
         }
     }
 
-    protected isDraw(mes: IGameplayChat | IGameplayDraw | IGameplayReady): mes is IGameplayDraw {
-        return "startPosX" in mes;
+    private isEraser(draw: IGameplayDraw | IGameplayEraser): draw is IGameplayEraser {
+        return "eraser" in draw;
+    }
+
+    protected isDraw(mes: IGameplayChat | IGameplayDraw | IGameplayReady | IEraser): mes is IGameplayDraw {
+        return "type" in mes;
     }
 
     protected isChat(mes: IGameplayChat | IGameplayReady): mes is IGameplayChat {
