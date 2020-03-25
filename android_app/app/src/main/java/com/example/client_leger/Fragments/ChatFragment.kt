@@ -13,6 +13,7 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import kotlinx.android.synthetic.main.popup_create_channel.view.*
 import kotlinx.android.synthetic.main.fragment_chat.view.textView_channelName
@@ -32,6 +33,9 @@ class ChatFragment: Fragment() {
     lateinit var notSubChannelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
+
+    lateinit var chatListener: Disposable
+    lateinit var channelListener: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_chat, container, false)
@@ -60,8 +64,6 @@ class ChatFragment: Fragment() {
         val fArray = arrayOfNulls<InputFilter>(1)
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
         v.chat_message_editText.filters = fArray
-
-        controller.loadChatHistory(this)
 
         setChannel(channelId)
 
@@ -100,24 +102,30 @@ class ChatFragment: Fragment() {
 
         v.disconnect_button.setOnClickListener {
             SocketIO.disconnect()
-            val intent = Intent(activity, LogPageActivity::class.java)
-            startActivity(intent)
+
+            activity!!.finish()
         }
 
-        Communication.getChatMessageListener().subscribe{receptMes ->
+        chatListener = Communication.getChatMessageListener().subscribe{receptMes ->
             val messages = JSONArray()
             messages.put(receptMes)
             receiveMessages(messageAdapter, username, messages)
             v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
-        Communication.getChannelUpdateListener().subscribe{ channel ->
+        channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
             notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
         }
 
         v.recyclerView_chat_log.adapter = messageAdapter
 
         return v
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        chatListener.dispose()
+        channelListener.dispose()
     }
 
     private fun onButtonShowPopupWindowClick(inflater: LayoutInflater, view: View?) {
