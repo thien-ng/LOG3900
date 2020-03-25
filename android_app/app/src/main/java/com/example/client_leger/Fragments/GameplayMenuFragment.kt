@@ -37,9 +37,10 @@ class GameplayMenuFragment: Fragment() {
 
         drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
             activity!!.runOnUiThread {
-                if (res.getString("username") == username)
+                if (res.getString("username") == username) {
                     v.role.setText("drawer")
-                else
+                    v.item.setText(res.getString("object"))
+                } else
                     v.role.setText("guesser")
             }
         }

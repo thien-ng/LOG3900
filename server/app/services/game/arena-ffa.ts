@@ -148,8 +148,6 @@ export class ArenaFfa extends Arena {
     }
     
     private updateDrawerRole(drawer: IUser): void {
-        this.socketServer.to(this.room).emit("game-drawer", {username: drawer.username});
-
         this.users.forEach(u => {
             if (!this.isUserDc(u.username) && u.username !== drawer.username)
                 this.socketServer.to(u.socketId).emit("game-drawer", {username: drawer.username});
