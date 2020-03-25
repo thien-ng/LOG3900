@@ -135,8 +135,19 @@ class ChatFragment: Fragment() {
         }
 
         popupView.create_channel_button.setOnClickListener {
-            controller.createChannel(this, popupView.textInput_channelNameToCreate.text.toString().trim())
-            popupWindow.dismiss()
+            var name = popupView.textInput_channelNameToCreate.text.toString()
+            name = name.trim()
+
+            if ( name.length <= 20 && channelId.isNotEmpty() ) {
+                controller.createChannel(this, name)
+                popupWindow.dismiss()
+            } else {
+                Toast.makeText(
+                    this.context,
+                    "Channel names cannot exceed 20 characters.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
