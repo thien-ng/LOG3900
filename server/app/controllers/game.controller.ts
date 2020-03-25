@@ -12,7 +12,7 @@ export class GameController {
 
     public constructor(
         @inject(Types.LobbyManagerService) private lobbyServ: LobbyManagerService,
-        @inject(Types.GameManagerService)  private gameMan:   GameManagerService) {
+        @inject(Types.GameManagerService) private gameMan: GameManagerService) {
         this.configureRouter();
     }
 
@@ -22,6 +22,10 @@ export class GameController {
         this.router.post('/lobby/join', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.lobbyServ.join(req.body));
         });
+
+        this.router.post('/lobby/invite', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.lobbyServ.invite(req.body.lobbyName, req.body.username));
+        }); // need to verify identity (should be through socket ?)
 
         this.router.post('/lobby/leave', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.lobbyServ.leave(req.body));
