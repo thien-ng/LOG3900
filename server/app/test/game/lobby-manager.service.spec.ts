@@ -140,7 +140,7 @@ describe("LobbyManagerService", () => {
 
         //when
         //then
-        try {service.join(req)} catch(e) {chai.expect(e.message).to.equal("Max number of users in lobby name reached")};
+        try {service.join(req)} catch(e) {chai.expect(e.message).to.equal("Maximum size of user in lobby reached")};
     });
 
     it("Should fail to create a new loby when joining empty lobby if username is a bot", async () => {
