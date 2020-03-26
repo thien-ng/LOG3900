@@ -171,7 +171,7 @@ namespace PolyPaint.VueModeles
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();
             values.username = ServerService.instance.username;
-            values.Add("private", _isPrivate);
+            values.Add("isPrivate", _isPrivate);
             values.lobbyName = _lobbyName;
             values.size = _selectedSize;
             values.password = _password;
