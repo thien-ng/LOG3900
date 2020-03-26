@@ -160,7 +160,6 @@ namespace PolyPaint.VueModeles
                 }
                 foreach (var item in lobbies)
                 {
-                    Console.WriteLine("get lobbies" + item.isPrivate);
                     GameCard gameCard = new GameCard(item);
                     GameCards.Add(gameCard);
                 }
