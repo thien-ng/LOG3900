@@ -56,6 +56,8 @@ export class LobbyManagerService {
     }
 
     public invite(lobbyName: string, username: string): string {
+        this.verifyLobbyUsernameLength(username, lobbyName);
+
         const user = this.userServ.getUsersByName(username);
 
         if (!user) throw new Error(`${username} is not found in logged users`);
@@ -194,14 +196,19 @@ export class LobbyManagerService {
         return this.lobbies.get(lobbyName);
     }
 
+    private verifyLobbyUsernameLength(username: string, lobbyName: string): void {
+        if (!username) throw new Error(`username is undefined`);
+        if (!lobbyName) throw new Error(`lobby name is undefined`);
+
+        if (username.length < 1 || username.length > 20)
+            throw new Error("Username lenght must be between 1 and 20");
+        if (lobbyName.length < 1 || lobbyName.length > 20)
+            throw new Error("Lobby name must be between 1 and 20");
+    }
+
     private verifyRequest(req: IJoinLobby | ILeaveLobby): void {
         this.verifySocketConnection();
-
-        if (req.username.length < 1 || req.username.length > 20)
-            throw new Error("Username lenght must be between 1 and 20");
-        if (req.lobbyName.length < 1 || req.lobbyName.length > 20)
-            throw new Error("Lobby name must be between 1 and 20");
-
+        this.verifyLobbyUsernameLength(req.username, req.lobbyName);
         if (!this.isJoinLobby(req))
             return;
         if (req.size || req.size === 0)
