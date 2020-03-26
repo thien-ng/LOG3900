@@ -25,7 +25,11 @@ export class GameController {
 
         this.router.post('/lobby/invite', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.lobbyServ.invite(req.body.lobbyName, req.body.username));
-        }); // need to verify identity (should be through socket ?)
+        });
+
+        this.router.post('/lobby/invite/refuse', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.lobbyServ.removeWhitelist(req.body.lobbyName, req.body.username));
+        });
 
         this.router.post('/lobby/leave', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.lobbyServ.leave(req.body));

@@ -73,7 +73,26 @@ export class LobbyManagerService {
             lobby.whitelist = [user];
         }
         this.socketServer.to(user.socketId).emit("lobby-invitation", lobbyName)
-        return "user whitelisted.";
+        return `${username} added to whitelist`;
+    }
+
+    public removeWhitelist(lobbyName: string, username: string): string {
+        this.verifyLobbyUsernameLength(username, lobbyName);
+
+        const user = this.userServ.getUsersByName(username);
+
+        if (!user) throw new Error(`${username} is not found in logged users`);
+
+        const lobby = this.lobbyDoesExists(lobbyName);
+
+        if (!lobby) throw new Error(`lobby ${lobbyName} doesn't exist`);
+
+        if (lobby.whitelist) {
+            lobby.whitelist = lobby.whitelist.filter((user) => {
+                return user.username != username;
+            });
+        }
+        return `${username} removed from whitelist`;
     }
 
     private isUserWhitelisted(lobby: IActiveLobby, user: IUser): boolean {
@@ -197,8 +216,6 @@ export class LobbyManagerService {
     }
 
     private verifyLobbyUsernameLength(username: string, lobbyName: string): void {
-        if (!username) throw new Error(`username is undefined`);
-        if (!lobbyName) throw new Error(`lobby name is undefined`);
 
         if (username.length < 1 || username.length > 20)
             throw new Error("Username lenght must be between 1 and 20");
