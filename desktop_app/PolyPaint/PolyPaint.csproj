@@ -258,6 +258,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LobbyPasswordControl.xaml">
+    <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\HintInputControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
