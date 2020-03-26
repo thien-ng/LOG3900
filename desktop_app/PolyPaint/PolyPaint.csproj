@@ -140,6 +140,9 @@
     <Compile Include="Controls\CreateChannelControl.xaml.cs">
       <DependentUpon>CreateChannelControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CreateGameControl.xaml.cs">
+      <DependentUpon>CreateGameControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CreateLobbyControl.xaml.cs">
       <DependentUpon>CreateLobbyControl.xaml</DependentUpon>
     </Compile>
@@ -152,8 +155,14 @@
     <Compile Include="Controls\LobbyPasswordControl.xaml.cs">
       <DependentUpon>LobbyPasswordControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\HintInputControl.xaml.cs">
+      <DependentUpon>HintInputControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Convertisseurs\Base64ImageConverter.cs" />
     <Compile Include="Convertisseurs\BaseConverter.cs" />
     <Compile Include="Convertisseurs\Convertisseurs.cs" />
+    <Compile Include="Convertisseurs\CreationTypeToVisibilityConverter.cs" />
+    <Compile Include="Convertisseurs\IsFirstToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSelectedToOpacityConverter.cs" />
     <Compile Include="Convertisseurs\SearchBarVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSubbedToVisibilityConverter.cs" />
@@ -166,12 +175,14 @@
     <Compile Include="Modeles\GameCard.cs" />
     <Compile Include="Modeles\Lobby.cs" />
     <Compile Include="Modeles\MessageChannel.cs" />
+    <Compile Include="Modeles\HintModel.cs" />
     <Compile Include="Modeles\MessageChat.cs" />
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
+    <Compile Include="Utilitaires\Enums.cs" />
     <Compile Include="Utilitaires\Constants.cs" />
     <Compile Include="Utilitaires\EventRaiser.cs" />
     <Compile Include="Utilitaires\EventArgs.cs" />
@@ -180,9 +191,11 @@
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
     <Compile Include="VueModeles\BaseViewModel.cs" />
+    <Compile Include="VueModeles\CreateGameDrawViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\GamelistViewModel.cs" />
     <Compile Include="VueModeles\HomeViewModel.cs" />
+    <Compile Include="VueModeles\CreateGameViewModel.cs" />
     <Compile Include="VueModeles\LobbyViewModel.cs" />
     <Compile Include="VueModeles\ProfileViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />
@@ -228,6 +241,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\CreateGameControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\CreateLobbyControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -241,6 +258,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LobbyPasswordControl.xaml">
+    <Page Include="Controls\HintInputControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

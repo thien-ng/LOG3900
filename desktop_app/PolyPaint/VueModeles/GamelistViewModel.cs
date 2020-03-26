@@ -1,19 +1,18 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PolyPaint.Modeles;
 using PolyPaint.Controls;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.IO;
+using MaterialDesignThemes.Wpf;
+using System.Threading.Tasks;
+using System;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace PolyPaint.VueModeles
 {

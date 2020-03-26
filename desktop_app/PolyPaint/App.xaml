@@ -2,8 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:PolyPaint"
-             xmlns:localView="clr-namespace:PolyPaint.Vues"
-             xmlns:localViewModel="clr-namespace:PolyPaint.VueModeles"
+             xmlns:View="clr-namespace:PolyPaint.Vues"
+             xmlns:ViewModel="clr-namespace:PolyPaint.VueModeles"
+             xmlns:Controls="clr-namespace:PolyPaint.Controls"
              xmlns:chat="clr-namespace:PolyPaint.VueModeles">
     <Application.Resources>
         <ResourceDictionary>
@@ -20,17 +21,17 @@
             <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource MaterialDesignPasswordBox}">
                 <Setter Property="Margin" Value="0 8 0 8" />
             </Style>
-            <DataTemplate DataType="{x:Type localViewModel:DessinViewModel}">
-                <local:FenetreDessin/>
+            <DataTemplate DataType="{x:Type ViewModel:DessinViewModel}">
+                <Controls:FenetreDessin/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type localViewModel:LoginViewModel}">
-                <localView:Login/>
+            <DataTemplate DataType="{x:Type ViewModel:LoginViewModel}">
+                <View:Login/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type localViewModel:RegisterViewModel}">
-                <localView:Register/>
+            <DataTemplate DataType="{x:Type ViewModel:RegisterViewModel}">
+                <View:Register/>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type localViewModel:HomeViewModel}">
-                <localView:Home/>
+            <DataTemplate DataType="{x:Type ViewModel:HomeViewModel}">
+                <View:Home/>
             </DataTemplate>
             <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="#F25465"/>
             <!-- accent -->

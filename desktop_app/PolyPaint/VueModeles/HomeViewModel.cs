@@ -209,6 +209,7 @@ namespace PolyPaint.VueModeles
         {
             _subChannels.Clear();
             _notSubChannels.Clear();
+            
             var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             
@@ -243,8 +244,14 @@ namespace PolyPaint.VueModeles
 
             if (channelId != _selectedChannel.ID)
             {
-                if(_subChannels.Any(i => i.id == _selectedChannel.ID))
-                    _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = false;
+                //if(_subChannels.Any(i => i.id == _selectedChannel.ID))
+                MessageChannel channel;
+
+                channel = _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID);
+
+                if (channel != null)
+                    channel.isSelected = false;
+
                 _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
                 ProprieteModifiee("Messages");
@@ -447,6 +454,31 @@ namespace PolyPaint.VueModeles
                     IsCreateChannelDialogOpen = false;
                 }));
             }
+        }
+
+        private ICommand _createGameCommand;
+        public ICommand CreateGameCommand
+        {
+            get
+            {
+                return _createGameCommand ?? (_createGameCommand = new RelayCommand(async x =>
+                {
+                    var view = new CreateGameControl { DataContext = new CreateGameViewModel() };
+
+                    await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+                }));
+            }
+        }
+
+        private void ClosingEventHandler(object sender, DialogClosingEventArgs args)
+        {
+            if (args.Parameter == null) return;
+
+            JObject parameters = (JObject)args.Parameter;
+
+            if ((bool)parameters.SelectToken("IsAccept") == false) return;
+
+            //await getGameCards();
         }
 
 
