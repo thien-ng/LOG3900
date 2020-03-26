@@ -172,14 +172,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val action = event.actionMasked
 
         if (isStrokeErasing || isNormalErasing) {
+            checkForStrokesToErase(event.x, event.y, isStrokeErasing)
             if (isStrokeErasing)
                 sendEraseStroke(event.x, event.y)   //TODO: send only if is not white and stuff
             else
                 sendErasePoint(event.x, event.y)
-            checkForStrokesToErase(event.x, event.y)
-        } else if (isStrokeErasing) {
-            sendEraseStroke(event.x, event.y)
-            checkForStrokesToErase(event.x, event.y)
         } else if (action == MotionEvent.ACTION_DOWN) {
             currentStroke.moveTo(event.x, event.y)
             currentStartX = event.x
@@ -227,7 +224,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun checkForStrokesToErase(pointX: Float, pointY: Float) {
+    private fun checkForStrokesToErase(pointX: Float, pointY: Float, isStroke: Boolean) {
         if (pointX > bitmap.width ||
             pointX < 0 ||
             pointY > bitmap.height ||
@@ -258,7 +255,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             if (xOnLine <= pointX.toInt() + eraserHalfSize && xOnLine >= pointX.toInt() - eraserHalfSize) {
                 if (yOnLine <= pointY.toInt() + eraserHalfSize && yOnLine >= pointY.toInt() - eraserHalfSize) {
                     segment.paint.color = Color.TRANSPARENT
-                    if (isStrokeErasing) {
+                    if (isStroke) {
                         batchErase(segment)
                     }
 
@@ -324,6 +321,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 if (obj.getBoolean("isEnd")) {
                     strokeJustEnded = true
                     firstStrokeReceived = true
+					currentStroke.reset()
                     redrawPathsToBitmap()
                     return
                 }
@@ -354,15 +352,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 invalidate()
             }
             obj.getString("type") == "eraser" -> {
-                currentStroke.reset()
                 if (obj.getString("eraser") == "stroke") {
-                    isStrokeErasing = true
-                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat())
-                    isStrokeErasing = false
+                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat(), true)
                 } else {
-                    isNormalErasing = true
-                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat())
-                    isNormalErasing = false
+                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat(), false)
                 }
             }
         }
