@@ -106,15 +106,18 @@ export interface IDrawing {
 
 export interface IGameplayDraw extends IDrawing{
     username:       string,
-    // TODO add others
 }
 
 export interface IEraser {
-    type:       EraserType,
-    username:   string,
+    type:       Type,
     x:          number,
     y:          number,
     width?:     number,
+    eraser:     EraserType,
+}
+
+export interface IGameplayEraser extends IEraser {
+    username:   string,
 }
 
 export enum EraserType {
@@ -129,8 +132,7 @@ export enum Format {
 
 export enum Type {
     ink     = "ink",
-    estroke = "estroke",
-    epoint  = "epoint",
+    eraser  = "eraser",
 }
 
 /**
@@ -140,6 +142,23 @@ export interface IPoints {
     username: string,
     points:   number,
 }
+
+/**
+ * PERSISTANCE
+ */
+export interface IGameInfo {
+    type:   GameMode,
+    date:   string,
+    timer:  number,
+    winner: string,
+    users:  IUserPt[],
+}
+
+export interface IUserPt {
+    username: string,
+    point:    number,
+}
+
 
 /**
  *  OTHER

@@ -17,12 +17,13 @@ export interface IStatus {
 }
 
 export interface IInfoUser {
-    username: string,
-    firstName: string,
-    lastName: string,
+    username:    string,
+    firstName:   string,
+    lastName:    string,
     connections: IConnection[],
+    stats:       IStats,
+    games:       IGame[],
     //avatar: Uint8Array,
-    //games: Igame[],
 }
 
 export interface IConnection {
@@ -31,9 +32,22 @@ export interface IConnection {
     times: string,
 }
 
-export interface Igame {
-    time: string,
-    players: { username: string, score: number }[],
+export interface IGame {
+    date: string,
+    players: IPlayer[],
+}
+
+export interface IPlayer {
+    username: string,
+    score:    number
+}
+
+export interface IStats {
+    totalGame:     number,
+    winRate:       number,
+    bestScore:     number,
+    totalPlayTime: number,
+    avgGameTime:   number, 
 }
 
 export interface IInvitationChannel {

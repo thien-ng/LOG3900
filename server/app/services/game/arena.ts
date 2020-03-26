@@ -1,5 +1,5 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
@@ -7,6 +7,7 @@ import * as io from 'socket.io';
 
 const StringBuilder = require("string-builder");
 const CHECK_INTERVAL_TIME = 500;
+const ONE_SEC = 1000;
 
 export abstract class Arena {
 
@@ -21,10 +22,13 @@ export abstract class Arena {
     protected userMapPoints: Map<string, number>;
 
     protected userMapReady:  Map<string, boolean>;
+    protected type:          GameMode;
 
-    private arenaId: number;
+    private arenaId:             number;
+    public  chronometerInterval: NodeJS.Timeout;
+    private chronometerTimer:    number;
 
-    public constructor(arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
+    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
         this.room           = room;
         this.socketServer   = io;
@@ -33,13 +37,14 @@ export abstract class Arena {
         this.curRule        = this.rules[0];
         this.gm             = gm;
         this.arenaId        = arenaId;
+        this.type           = type;
 
         this.initReadyMap();
         this.setupPoints();
     }
     
     public abstract start(): void;
-    public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void;
+    public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void;
 
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
@@ -62,6 +67,7 @@ export abstract class Arena {
             
             if (this.checkIfEveryoneIsReady()) {
                 clearInterval(checkInterval);
+                this.startChronometer();
                 callback();
             }
             else if (numOfTries >= 3) {
@@ -82,12 +88,22 @@ export abstract class Arena {
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
         });
+
+        clearInterval(this.chronometerTimer);
         
-        this.gm.persistPoints(pts);
+        this.gm.persistPoints(pts, this.chronometerTimer / ONE_SEC, this.type);
         this.gm.deleteArena(this.arenaId);
     }
 
-    protected mapToDrawing(draw: IGameplayDraw): IDrawing {
+    protected mapToDrawing(draw: IGameplayDraw | IGameplayEraser): IDrawing | IEraser {
+        if (this.isEraser(draw))
+            return {
+                type: draw.type,
+                x: draw.x,
+                y: draw.y,
+                width: draw.width,
+                eraser: draw.eraser,
+            };
         return {
             startPosX:  draw.startPosX,
             startPosY:  draw.startPosY,
@@ -98,12 +114,15 @@ export abstract class Arena {
             isEnd:      draw.isEnd,
             format:     draw.format,
             type:       draw.type,
-
-        }
+        };
     }
 
-    protected isDraw(mes: IGameplayChat | IGameplayDraw | IGameplayReady): mes is IGameplayDraw {
-        return "startPosX" in mes;
+    private isEraser(draw: IGameplayDraw | IGameplayEraser): draw is IGameplayEraser {
+        return "eraser" in draw;
+    }
+
+    protected isDraw(mes: IGameplayChat | IGameplayDraw | IGameplayReady | IEraser): mes is IGameplayDraw {
+        return "type" in mes;
     }
 
     protected isChat(mes: IGameplayChat | IGameplayReady): mes is IGameplayChat {
@@ -167,6 +186,13 @@ export abstract class Arena {
             ptsList.push({username: key, points: pts});
         });
         return ptsList;
+    }
+
+    private startChronometer(): void {
+        this.chronometerTimer = 0;
+        this.chronometerInterval = setInterval(() => {
+            this.chronometerTimer += ONE_SEC;
+        }, ONE_SEC)
     }
 
 }

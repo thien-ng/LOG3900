@@ -1,8 +1,9 @@
 import { injectable } from "inversify";
 import { DatabaseService } from "../database/database";
 import { IRegistration, ILogin } from "../interfaces/communication";
-import * as pg from "pg";
 import { Time } from "../utils/date";
+
+import * as pg from "pg";
 
 @injectable()
 export class AccountDbService extends DatabaseService {
@@ -37,5 +38,20 @@ export class AccountDbService extends DatabaseService {
     public async getAccountConnectionsByUsername(username: string): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT (LOG3900.getAccountConnectionsByUsername(
                                     CAST('${username}' AS VARCHAR))).*;`);
+    }
+
+    public async getProfileStats(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getProfileStats(
+                                    CAST('${username}' AS VARCHAR))).*;`);
+    }
+
+    public async getGameIds(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT (LOG3900.getGameIds(
+                                    CAST('${username}' AS VARCHAR))).*;`);
+    }
+
+    public async getGameInfo(gameId: number): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.getGameInfo(
+                                    CAST('${gameId}' AS INT));`);
     }
 }

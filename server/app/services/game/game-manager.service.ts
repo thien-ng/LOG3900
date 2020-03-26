@@ -3,9 +3,11 @@ import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
 import { ArenaSolo } from "./arena-solo";
 import { ArenaCoop } from "./arena-coop";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
+import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
+import { Time } from "../../utils/date";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -21,7 +23,8 @@ export class GameManagerService {
     
     public constructor(
         @inject(Types.LobbyManagerService)  private lobServ: LobbyManagerService,
-        @inject(Types.RulesDbService)       private db: RulesDbService) {
+        @inject(Types.RulesDbService)       private rulesDb: RulesDbService,
+        @inject(Types.GameDbService)        private gameDb: GameDbService) {
 
         this.arenas = new Map<number, ArenaFfa | ArenaSolo | ArenaCoop>();
         this.userMapArenaId = new Map<string, number>();
@@ -53,16 +56,12 @@ export class GameManagerService {
         this.arenas.delete(arenaId);
     }
 
-    public persistPoints(pts: IPoints[]): void {
-        // TODO persist to db points
-    }
-
     private async setupArena(lobby: IActiveLobby): Promise<void> {
         const room = `arena${this.arenaId}`;
 
         this.addUsersToArena(lobby, room, this.arenaId);
 
-        const rules: IGameRule[] = await this.db.getRules();
+        const rules: IGameRule[] = await this.rulesDb.getRules();
         
         if (rules.length < lobby.users.length)
             throw new Error("Not enough drawings are in db");
@@ -82,11 +81,11 @@ export class GameManagerService {
     private createArenaAccordingToMode(arenaId: number, lobby: IActiveLobby, room: string, rules: IGameRule[]): ArenaFfa | ArenaSolo | ArenaCoop {
         switch(lobby.mode) {
             case GameMode.FFA:
-                return new ArenaFfa(arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaFfa(GameMode.FFA, arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.SOLO:
-                return new ArenaSolo(arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaSolo(GameMode.SOLO, arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.COOP:
-                return new ArenaCoop(arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaCoop(GameMode.COOP, arenaId, lobby.users, room, this.socketServer, rules, this);
         }
     }
 
@@ -96,6 +95,32 @@ export class GameManagerService {
 
         if (arena)
             arena.disconnectPlayer(username);
+    }
+
+    public persistPoints(pts: IPoints[], timer: number, type: GameMode): void {
+        const winner = this.determineWinner(pts);
+        const users = this.getPlayersInGame(pts);
+        const date = Time.today();
+        this.gameDb.registerGame({type: type, date: date, timer: timer, winner: winner, users: users});
+    }
+
+    private determineWinner(pts: IPoints[]): string {
+        let maxPts = -1;
+        let winner = "";
+        pts.forEach(p => {
+            if (p.points > maxPts) {
+                winner = p.username;
+                maxPts = p.points;
+            }
+        });
+        
+        return winner;
+    }
+
+    private getPlayersInGame(pts: IPoints[]): IUserPt[] {
+        const list: IUserPt[] = [];
+        pts.forEach(p => {list.push({username: p.username, point: p.points})});
+        return list;
     }
 
     private addUsersToArena(lobby: IActiveLobby, room: string, arenaID: number): void {        
