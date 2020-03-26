@@ -12,22 +12,24 @@ CREATE TABLE IF NOT EXISTS LOG3900.Account (
 );
 
 CREATE TABLE IF NOT EXISTS LOG3900.Game (
-    game_id     SERIAL PRIMARY KEY NOT NULL,
-    times       VARCHAR(30),
-    gamemode    VARCHAR(20)
-)
-
-CREATE TABLE IF NOT EXISTS LOG3900.Connection (
-    account_id  INT REFERENCES LOG3900.Account ON DELETE CASCADE,
-    is_login    BOOLEAN,
-    times       VARCHAR(30)
-)
+    id          SERIAL PRIMARY KEY NOT NULL,
+    gamemode    VARCHAR(20) NOT NULL,
+    date        VARCHAR(30) NOT NULL,
+    elapsedTime INT NOT NULL,
+    winner      INT NOT NULL REFERENCES LOG3900.Account
+);
 
 CREATE TABLE IF NOT EXISTS LOG3900.AccountGame (
     account_id  INT REFERENCES LOG3900.Account ON DELETE CASCADE,
     game_id     INT REFERENCES LOG3900.Game ON DELETE CASCADE,
     score       INT
-)
+);
+
+CREATE TABLE IF NOT EXISTS LOG3900.Connection (
+    account_id  INT REFERENCES LOG3900.Account ON DELETE CASCADE,
+    is_login    BOOLEAN,
+    times       VARCHAR(30)
+);
 
 CREATE TABLE IF NOT EXISTS LOG3900.Channel (
     id      VARCHAR(20) PRIMARY KEY NOT NULL,

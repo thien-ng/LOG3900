@@ -5,9 +5,10 @@ export interface ISuggestion {
 }
 
 interface ICreateGame {
-    solution:   string,
-    clues:      string[],
-    difficulty: Difficulty
+    solution:       string,
+    clues:          string[],
+    difficulty:     Difficulty,
+    displayMode:    DisplayMode,
 }
 
 export interface IManuel1 extends ICreateGame {
@@ -29,4 +30,11 @@ export enum Difficulty {
     EASY    = "easy",
     MEDIUM  = "medium",
     HARD    = "hard",
+}
+
+export enum DisplayMode {
+    CLASSIC     = "classic",
+    RANDOM      = "random",
+    PANORAMIC   = "panoramic",
+    CENTERED    = "centered",
 }

@@ -8,18 +8,21 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private var chatFragment = ChatFragment()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationListener)
-        supportFragmentManager.beginTransaction().replace(R.id.container_view_left, ChatFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.container_view_left, chatFragment).commit()
         bottomNavigationView.selectedItemId = R.id.action_game
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         SocketIO.disconnect()
+
+        finish()
     }
 
     private val onNavigationListener = BottomNavigationView.OnNavigationItemSelectedListener  {menuItem ->
@@ -33,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.action_draw -> {
-                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, DrawFragment()).commit()
+                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, GameplayFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
         }

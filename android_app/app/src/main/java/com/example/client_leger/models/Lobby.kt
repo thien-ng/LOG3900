@@ -10,7 +10,7 @@ import org.json.JSONObject
 class Lobby(jsonObject: JSONObject, context: Context) {
     var usernames = jsonArrayToStringArray(jsonObject.getJSONArray("usernames"))
 
-    var private: Boolean = jsonObject.getBoolean("private")
+    var private: Boolean = jsonObject.getBoolean("isPrivate")
     var size: Int = jsonObject.getInt("size")
     var lobbyName: String = jsonObject.getString("lobbyName")
     var gameMode: String = jsonObject.getString("mode")

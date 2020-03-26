@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { ISuggestion, IManuel1, Difficulty } from "../../interfaces/creator";
+import { ISuggestion, IManuel1, Difficulty, DisplayMode } from "../../interfaces/creator";
 import { IGameRule } from "../../interfaces/rule";
 import { RulesDbService } from "../../database/rules-db.service";
 import { CreationAssist2 } from "./utils/creation-assists";
@@ -19,10 +19,11 @@ export class GameCreatorService {
         this.verifyConfigs(configs)
 
         const rule: IGameRule = {
-            solution:   configs.solution,
-            clues:      configs.clues,
-            difficulty: configs.difficulty,
-            drawing:    configs.drawing
+            solution:       configs.solution,
+            clues:          configs.clues,
+            difficulty:     configs.difficulty,
+            displayMode:    configs.displayMode,
+            drawing:        configs.drawing
         }
         await this.db.addRule(rule);
     }
@@ -34,6 +35,8 @@ export class GameCreatorService {
             throw new Error("Some clues must be included in reuqest");            
         if (!configs.difficulty || !(configs.difficulty.toUpperCase() in Difficulty))
             throw new Error("Difficulty must be: easy, medium, or hard");
+        if (!configs.displayMode || !(configs.displayMode.toUpperCase() in DisplayMode))
+            throw new Error("Difficulty must be: classic, random, panoramic or centered");
         if (!configs.drawing || configs.drawing.length < 1)
             throw new Error("Drawings must be provided in the request");
     }

@@ -23,34 +23,43 @@
 
 ## Game
 
-| Description                     | type | path                         |
-| ------------------------------- | :--: | ------------------------     |
-| Join/Create lobby               | POST | /game/lobby/join             |
-| Leave/Delete lobby              | POST | /game/lobby/leave            |
-| Get active lobbies by mode      |  GET | /game/lobby/active/:mode     |
-| Get users in a lobby by name    | GET  | /game/lobby/users/:lobbyName |
-| Start game with lobby name      | GET  | /game/start/:lobbyName       |
+| Description                  | type | path                         |
+| ---------------------------- | :--: | ---------------------------- |
+| Join/Create lobby            | POST | /game/lobby/join             |
+| Leave/Delete lobby           | POST | /game/lobby/leave            |
+| invite a user in a lobby     | POST | /game/lobby/invite           |
+| Get active lobbies by mode   |  GET | /game/lobby/active/:mode     |
+| Get users in a lobby by name |  GET | /game/lobby/users/:lobbyName |
+| Start game with lobby name   |  GET | /game/start/:lobbyName       |
 
 ## Creator
-| Description                     | type | path                         |
-| ------------------------------- | :--: | ------------------------     |
-| Get game suggestion (assiste 2) |  GET | /creator/game/suggestion     |
-| Create new game                 | POST | /creator/game/new            |
+
+| Description                     | type | path                     |
+| ------------------------------- | :--: | ------------------------ |
+| Get game suggestion (assiste 2) |  GET | /creator/game/suggestion |
+| Create new game                 | POST | /creator/game/new        |
 
 # Socket
 
-| Event          | Description                                       | Object               |
-| -------------- | ------------------------------------------------- |-----------------     |
-| login          | emit when logged in                               |                      |
-| logout         | emit when logging out                             |                      |
-| chat           | emit when sending chat messages                   |                      |
-| channel-update | emit when a channel is created or deleted (depecrated)      |
-| channel-new    | emit when a new channel is created                |
-| lobby-chat     | emit when sending messages in lobby               |                      |
-| lobby-notif    | emit when sending notification about lobby update |                      |
-| game-start     | emit when game is started                         | N/A                  |
-| draw           | emit when sending drawings to clients             | {startPosX: number,startPosY :number,endPosX:number,endPosY:number,color:number,width:number}|
-| game-chat     | emit when sending to game chat                    | {username: string, content: string, isServer:  boolean}|
-| drawer-update | emit when changing roles of players in arena      | username: string      |
-| game-over     | emit when it's end of the game                    | [{username: string, points: number}, {...}, ...]
+## Lobby
 
+| Event       | Description                                                      | Object                                                                              |
+| ----------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| lobby-chat  | emit when sending messages in lobby                              |                                                                                     |
+| lobby-notif | emit when sending notification about lobby update when is join   | {type: join, lobbyName: string, user: string}                                       |
+| lobby-notif | emit when sending notification about lobby update when is leave  | {type: leave, lobbyName: string, user: string}                                      |
+| lobby-notif | emit when sending notification about lobby update when is create | {type: create, lobbyName: string, users: string\[], private: boolean, size: number} |
+| lobby-notif | emit when sending notification about lobby update when is delete | {type: delete, lobbyName: string}                                                   |
+
+| Event          | Description                                            | Object                                                                                        |
+| -------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| login          | emit when logged in                                    |                                                                                               |
+| logout         | emit when logging out                                  |                                                                                               |
+| chat           | emit when sending chat messages                        |                                                                                               |
+| channel-update | emit when a channel is created or deleted (depecrated) |                                                                                               |
+| channel-new    | emit when a new channel is created                     |                                                                                               |
+| game-start     | emit when game is started                              | N/A                                                                                           |
+| draw           | emit when sending drawings to clients                  | {startPosX: number,startPosY :number,endPosX:number,endPosY:number,color:number,width:number} |
+| game-chat      | emit when sending to game chat                         | {username: string, content: string, isServer:  boolean}                                       |
+| drawer-update  | emit when changing roles of players in arena           | username: string                                                                              |
+| game-over      | emit when it's end of the game                         | [{username: string, points: number}, {...}, ...]                                              |

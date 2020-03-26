@@ -5,7 +5,7 @@ import { IUser } from "./user-manager";
  */
 export interface IGetLobby {
     usernames:  string[]
-    private:    boolean,
+    isPrivate:  boolean,
     lobbyName:  string,
     size:       number,
     mode:       GameMode,
@@ -13,16 +13,17 @@ export interface IGetLobby {
 
 export interface IActiveLobby {
     users:      IUser[],
-    private:    boolean,
+    isPrivate:  boolean,
     password?:  string,
     lobbyName:  string,
     size:       number,
     mode:       GameMode,
+    whitelist?: IUser[],
 }
 
 export interface IJoinLobby {
     username:  string,
-    private:   boolean,
+    isPrivate: boolean,
     lobbyName: string,
     size?:     number,
     mode?:     GameMode,
@@ -40,6 +41,12 @@ export interface IReceptMesLob {
     content:   string,
 }
 
+export enum Bot {
+    humour = "bot:sebastien",
+    kind   = "bot:olivia",
+    mean   = "bot:olivier", 
+}
+
 export interface ILobEmitMes extends IReceptMesLob{
     time: string,
 }
@@ -48,30 +55,34 @@ export interface ILobEmitMes extends IReceptMesLob{
  * LOBBY NOTIFICATIONS
  */
 export interface INotify {
-    lobbyName: string,
     type:      LobbyNotif,
+    lobbyName: string,
 }
 
 export interface INotifyUpdateUser extends INotify{
-    user:      IUser;
+    user:      string;
 }
 
 export interface INotifyLobbyUpdate extends INotify {
-    users?:     IUser[],
-    private?:   boolean,
+    users?:     string[],
+    isPrivate?: boolean,
     size?:      number,
 }
 
 export enum LobbyNotif {
-    join,
-    leave,
-    create,
-    delete,
+    join   = "join",
+    leave  = "leave",
+    create = "create",
+    delete = "delete",
 }
 
 /**
  * GAMEPLAY
  */
+export interface IGameplayReady {
+    username: string,
+}
+
 export interface IGameplayChat {
     username:   string,
     content:    string,
@@ -81,6 +92,13 @@ export interface IGameplayAnnouncement extends IGameplayChat{
     isServer:   boolean,
 }
 
+
+export interface ICorrAns {
+    username:  string,
+    time:      number,
+    ratio:     number,
+}
+
 export interface IDrawing {
     startPosX:      number,
     startPosY:      number,
@@ -88,17 +106,40 @@ export interface IDrawing {
     endPosY:        number,
     color:          number,
     width:          number,
+    isEnd:          boolean,
+    format:         Format,
+    type:           Type,
 }
 
 export interface IGameplayDraw extends IDrawing{
     username:       string,
-    // TODO add others
 }
 
-export interface ICorrAns {
-    username:  string,
-    time:      number,
-    ratio:     number,
+export interface IEraser {
+    type:       Type,
+    x:          number,
+    y:          number,
+    width?:     number,
+    eraser:     EraserType,
+}
+
+export interface IGameplayEraser extends IEraser {
+    username:   string,
+}
+
+export enum EraserType {
+    point  = "point",
+    stroke = "stroke",
+}
+
+export enum Format {
+    circle = "circle",
+    square = "square",
+}
+
+export enum Type {
+    ink     = "ink",
+    eraser  = "eraser",
 }
 
 /**
@@ -108,6 +149,23 @@ export interface IPoints {
     username: string,
     points:   number,
 }
+
+/**
+ * PERSISTANCE
+ */
+export interface IGameInfo {
+    type:   GameMode,
+    date:   string,
+    timer:  number,
+    winner: string,
+    users:  IUserPt[],
+}
+
+export interface IUserPt {
+    username: string,
+    point:    number,
+}
+
 
 /**
  *  OTHER

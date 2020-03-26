@@ -1,8 +1,8 @@
 package com.example.client_leger.Fragments
 
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.*
+import android.graphics.Bitmap.createBitmap
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
@@ -16,9 +16,13 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 
 class DrawFragment: Fragment() {
 
@@ -79,7 +83,6 @@ class DrawFragment: Fragment() {
 
     private fun openWidthSelector(v: ViewGroup) {
         val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        val popup = AlertDialog.Builder(v.context)
         val view = layoutInflater.inflate(R.layout.popup_change_width, null)
         val popupWindow = PopupWindow(
             view,
@@ -109,6 +112,7 @@ class DrawFragment: Fragment() {
                 updateSeekBarThumbSize(seekBar)
             }
         })
+
     }
 
     private fun updateSeekBarThumbSize(seekBar: SeekBar) {
@@ -120,17 +124,21 @@ class DrawFragment: Fragment() {
     }
 }
 
-class Stroke(var path: Path, var paint: Paint)
+class Segment(var path: Path, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
-    var paintLineWhite: Paint
     var isStrokeErasing = false
     var isNormalErasing = false
-    private var currentPath = Path()
+    private var paintScreen = Paint()
+    private var currentStroke = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
-    private val strokes = ArrayList<Stroke>()
+    private val segments = ArrayList<Segment>()
+    private var strokeJustEnded = false
+    private var drawListener: Disposable
+    private lateinit var bitmap: Bitmap
+    private lateinit var bitmapCanvas: Canvas
 
     init {
         paintLine.isAntiAlias = true
@@ -138,142 +146,232 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 16.0F
         paintLine.strokeCap = Paint.Cap.ROUND
-        paintLineWhite = Paint(paintLine)
-        paintLineWhite.color = Color.WHITE
-        paintLineWhite.strokeWidth = 32.0F
-        Communication.getDrawListener().subscribe{ obj ->
+
+        drawListener = Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
     }
 
-    override fun onDraw(canvas: Canvas) {
-        canvas.drawColor(Color.WHITE)
-
-        repeat(strokes.count()) {
-            canvas.drawPath(strokes[it].path, strokes[it].paint)
-        }
-
-        val paint = if (isNormalErasing) paintLineWhite else paintLine
-        canvas.drawPath(currentPath, paint)
-
-        invalidate()
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        drawListener.dispose()
     }
 
-    private fun removeStroke(index: Int) {
-        //TODO: inform server of stroke removal
-        strokes.removeAt(index)
-        invalidate()
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmapCanvas = Canvas(bitmap)
+        bitmap.eraseColor(Color.WHITE)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
+        canvas.drawPath(currentStroke, paintLine)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
 
-        if (isStrokeErasing) {
-            checkForStrokesToErase(event)
-        } else if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
-            touchStarted(event.x, event.y)
-        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP){
-            touchEnded()
-        } else {
-            touchMoved(event)
+        if (isStrokeErasing || isNormalErasing) {
+            checkForStrokesToErase(event.x, event.y, isStrokeErasing)
+            sendErase(event.x, event.y, isStrokeErasing)
+        } else if (action == MotionEvent.ACTION_DOWN) {
+            currentStroke.moveTo(event.x, event.y)
+            currentStartX = event.x
+            currentStartY = event.y
+        } else if (action == MotionEvent.ACTION_MOVE) {
+            touchMoved(currentStartX, currentStartY, event.x, event.y)
+        } else if (action == MotionEvent.ACTION_UP){
+            sendStroke(currentStartX, event.x, currentStartY, event.y, true)
+            strokeJustEnded = true
+            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
+            currentStroke.reset()
         }
 
-        invalidate()
         return true
     }
 
-    private fun checkForStrokesToErase(event: MotionEvent) {
-        var strokeFound = false
-
-        for (i in 0 until strokes.size) {
-            if (strokes[i].paint.color == Color.WHITE) {
-                continue
-            }
-
-            val pm = PathMeasure(strokes[i].path, false)
-
-            val nbStep: Int = pm.length.toInt() / 20
-            val speed = pm.length / nbStep
-            val coordinates = FloatArray(2)
-
-            var distance = 0f
-            while (distance < pm.length) {
-                pm.getPosTan(distance, coordinates, null)
-                val eraserHalfSize = 16
-                val xOnLine = coordinates[0]
-                val yOnLine = coordinates[1]
-
-                if (xOnLine <= event.x.toInt() + eraserHalfSize && xOnLine >= event.x.toInt() - eraserHalfSize) {
-                    if (yOnLine <= event.y.toInt() + eraserHalfSize && yOnLine >= event.y.toInt() - eraserHalfSize) {
-                        removeStroke(i)
-                        strokeFound = true
-                        break
-                    }
-                }
-
-                distance += speed
-            }
-
-            if (strokeFound)
-                break
+    private fun redrawPathsToBitmap() {
+        bitmap.eraseColor(Color.WHITE)
+        for (segment in segments) {
+            bitmapCanvas.drawPath(segment.path, segment.paint)
         }
     }
 
-    private fun touchMoved(event: MotionEvent) {
-        sendStroke(currentStartX, event.x, currentStartY, event.y)
+    private fun batchErase(segment: Segment) {
+        // recursive breadth search
+        if (segment.nextSegment != null) {
+            if (segment.nextSegment!!.paint.color != Color.TRANSPARENT) {
+                segment.nextSegment!!.paint.color = Color.TRANSPARENT
+                batchErase(segment.nextSegment!!)
+            }
+        }
 
-        currentPath.quadTo(
-            currentStartX,
-            currentStartY,
-            (event.x + currentStartX) / 2,
-            (event.y + currentStartY) / 2
-        )
-
-        currentStartX = event.x
-        currentStartY = event.y
+        if (segment.previousSegment != null) {
+            if (segment.previousSegment!!.paint.color != Color.TRANSPARENT) {
+                segment.previousSegment!!.paint.color = Color.TRANSPARENT
+                batchErase(segment.previousSegment!!)
+            }
+        }
     }
+
+    private fun checkForStrokesToErase(pointX: Float, pointY: Float, isStroke: Boolean) {
+        if (pointX > bitmap.width ||
+            pointX < 0 ||
+            pointY > bitmap.height ||
+            pointY < 0) {
+
+            return
+        }
+
+        if (bitmap.getPixel(pointX.toInt(), pointY.toInt()) == Color.WHITE) {
+            return
+        }
+
+        var strokeFound = false
+
+        for (segment in segments) {
+            if (segment.paint.color == Color.TRANSPARENT) {
+                continue
+            }
+
+            val pm = PathMeasure(segment.path, false)
+            val coordinates = FloatArray(2)
+
+            pm.getPosTan(pm.length / 2.0f, coordinates, null)
+            val eraserHalfSize = segment.paint.strokeWidth / 2.0f
+            val xOnLine = coordinates[0]
+            val yOnLine = coordinates[1]
+
+            if (xOnLine <= pointX.toInt() + eraserHalfSize && xOnLine >= pointX.toInt() - eraserHalfSize) {
+                if (yOnLine <= pointY.toInt() + eraserHalfSize && yOnLine >= pointY.toInt() - eraserHalfSize) {
+                    segment.paint.color = Color.TRANSPARENT
+                    if (isStroke) {
+                        batchErase(segment)
+                    }
+
+                    strokeFound = true
+                }
+            }
+        }
+
+        if (strokeFound) {
+            redrawPathsToBitmap()
+            invalidate()
+        }
+    }
+
+    private fun touchMoved(startX: Float, startY: Float, destX: Float, destY: Float) {
+        val deltaX = (destX - currentStartX)
+        val deltaY = (destY - currentStartY)
+        val distance = sqrt(deltaX.pow(2.0F) + deltaY.pow(2.0F))
+
+        if (distance == 0.0F) {
+            return
+        }
+
+        val directionX = (destX - currentStartX) / distance
+        val directionY = (destY - currentStartY) / distance
+
+        for (i in 1..(distance / paintLine.strokeWidth).toInt()) {
+            val newX = startX + directionX * paintLine.strokeWidth * i
+            val newY = startY + directionY * paintLine.strokeWidth * i
+
+            sendStroke(currentStartX, newX, currentStartY, newY, false)
+
+            addSegment(newX, newY)
+            currentStartX = newX
+            currentStartY = newY
+        }
+
+        currentStroke.lineTo(currentStartX, currentStartY)
+
+        invalidate()
+    }
+
+    private fun addSegment(destX: Float, destY: Float) {
+        val newSegment = Path()
+        newSegment.moveTo(currentStartX, currentStartY)
+        newSegment.lineTo(destX, destY)
+        segments.add(Segment(newSegment, Paint(paintLine), null, null))
+        if (segments.size - 2 >= 0 && !strokeJustEnded) {
+            // segments.size - 1 is the index of the segment we just added,
+            // segments.size - 2 is the index of the segment just before it.
+            segments[segments.size - 1].previousSegment = segments[segments.size - 2]
+            segments[segments.size - 2].nextSegment = segments[segments.size - 1]
+        }
+
+        strokeJustEnded = false
+    }
+
+    private var firstStrokeReceived = true
 
     private fun strokeReceived(obj: JSONObject) {
-        val path = Path()
-        path.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
-        path.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
+        when {
+            obj.getString("type") == "ink" -> {
+                if (obj.getBoolean("isEnd")) {
+                    strokeJustEnded = true
+                    firstStrokeReceived = true
+					currentStroke.reset()
+                    redrawPathsToBitmap()
+                    return
+                }
 
-        val paint = Paint()
-        paint.isAntiAlias = true
-        paint.color = obj.getInt("color")
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = obj.getInt("width").toFloat()
-        paint.strokeCap = Paint.Cap.ROUND
+                paintLine.isAntiAlias = true
+                paintLine.color = obj.getInt("color")
+                paintLine.style = Paint.Style.STROKE
+                paintLine.strokeWidth = obj.getInt("width").toFloat()
+                paintLine.strokeCap = Paint.Cap.ROUND
 
-        strokes.add(Stroke(path, paint))
+                currentStartX = obj.getInt("startPosX").toFloat()
+                currentStartY = obj.getInt("startPosY").toFloat()
+
+                addSegment(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
+
+                if (firstStrokeReceived) {
+                    firstStrokeReceived = false
+                    currentStroke = Path()
+                    currentStroke.moveTo(currentStartX, currentStartY)
+                    currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
+                } else {
+                    currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
+                }
+
+                invalidate()
+            }
+            obj.getString("type") == "eraser" -> {
+                checkForStrokesToErase(
+                    obj.getInt("x").toFloat(),
+                    obj.getInt("y").toFloat(),
+                    obj.getString("eraser") == "stroke"
+                )
+            }
+        }
     }
 
-    private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float) {
+    private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float, isEnd: Boolean) {
         val obj = JSONObject()
+        obj.put("type", "ink")
         obj.put("username", username)
         obj.put("startPosX", startPointX)
         obj.put("startPosY", startPointY)
         obj.put("endPosX", finishPointX)
         obj.put("endPosY", finishPointY)
-        obj.put("color", if (isNormalErasing) Color.WHITE else paintLine.color)
-        obj.put("width", if (isNormalErasing) paintLineWhite.strokeWidth else paintLine.strokeWidth)
+        obj.put("color", paintLine.color)
+        obj.put("width", paintLine.strokeWidth)
+        obj.put("isEnd", isEnd)
 
         SocketIO.sendMessage("gameplay", obj)
     }
 
-    private fun touchEnded() {
-        if (!isStrokeErasing) {
-            val paint: Paint = if (isNormalErasing) Paint(paintLineWhite) else Paint(paintLine)
-            strokes.add(Stroke(Path(currentPath), paint))
-        }
+    private fun sendErase(x: Float, y: Float, isStroke: Boolean) {
+        val obj = JSONObject()
+        obj.put("type", "eraser")
+        obj.put("username", username)
+        obj.put("x", x)
+        obj.put("y", y)
+        obj.put("eraser", if (isStroke) "stroke" else "point")
 
-        currentPath.reset()
-    }
-
-    private fun touchStarted(x: Float, y: Float) {
-        currentStartX = x
-        currentStartY = y
-        currentPath.moveTo(x, y)
+        SocketIO.sendMessage("gameplay", obj)
     }
 }
 
