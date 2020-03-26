@@ -101,9 +101,6 @@ export class GameManagerService {
         const winner = this.determineWinner(pts);
         const users = this.getPlayersInGame(pts);
         const date = Time.today();
-        console.log(JSON.stringify(users));
-        
-
         this.gameDb.registerGame({type: type, date: date, timer: timer, winner: winner, users: users});
     }
 
