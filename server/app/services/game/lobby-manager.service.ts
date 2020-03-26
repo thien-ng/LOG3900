@@ -228,13 +228,13 @@ export class LobbyManagerService {
     }
 
     private verifyLobbyUsernameLength(username: string, lobbyName: string): void {
-        if (!this.isBot(req.username)) {
-            if (!req.username || (req.username.length < 1 || req.username.length > 20))
+        if (!this.isBot(username)) {
+            if (!username || (username.length < 1 || username.length > 20))
                 throw new Error("Username lenght must be between 1 and 20");
-            if (!/^[a-zA-Z0-9]+$/.test(req.username))
+            if (!/^[a-zA-Z0-9]+$/.test(username))
                 throw new Error("Username must be alphanumeric");
         }
-        if (!req.lobbyName ||req.lobbyName.length < 1 || req.lobbyName.length > 20)
+        if (!lobbyName || lobbyName.length < 1 || lobbyName.length > 20)
             throw new Error("Lobby name must be between 1 and 20");
     }
 
