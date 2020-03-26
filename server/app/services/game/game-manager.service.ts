@@ -49,16 +49,16 @@ export class GameManagerService {
         let minAmount: number = 0, maxAmount: number = 0;
         switch (lobby.mode) {
             case GameMode.FFA:
-                minAmount = 2;
+                minAmount = 9;
                 maxAmount = 12;
                 break;
             case GameMode.COOP:
-                minAmount = 2;
-                maxAmount = 4;
+                minAmount = 3;
+                maxAmount = 5;
                 break;
             case GameMode.SOLO:
-                minAmount = 1;
-                maxAmount = 1;
+                minAmount = 2;
+                maxAmount = 2;
                 break;
         }
         if (lobby.users.length < minAmount || lobby.users.length > maxAmount) {
