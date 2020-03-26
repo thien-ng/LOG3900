@@ -60,9 +60,6 @@ namespace PolyPaint.Convertisseurs
             throw new Exception("Type or object doesnt exist");
         }
 
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => DependencyProperty.UnsetValue;
     }
 }

@@ -11,9 +11,6 @@ namespace PolyPaint.Convertisseurs
             return (bool)value ? HorizontalAlignment.Right : HorizontalAlignment.Left;
         }
 
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => DependencyProperty.UnsetValue;
     }
 }

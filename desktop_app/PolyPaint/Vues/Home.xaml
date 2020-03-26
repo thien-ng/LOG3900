@@ -76,7 +76,7 @@
                 </Button>
                 <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
                     <materialDesign:PopupBox.ToggleContent>
-                        <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5,5,5,5" Foreground="White" />
+                        <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5" Foreground="White" />
                     </materialDesign:PopupBox.ToggleContent>
                     <StackPanel>
                         <Button ToolTip="{Binding SwitchViewButtonTooltip}" Command="{Binding SwitchViewCommand}" Content="{Binding SwitchViewButton}" ></Button>

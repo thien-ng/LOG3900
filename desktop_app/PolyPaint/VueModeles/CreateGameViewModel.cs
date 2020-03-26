@@ -168,6 +168,7 @@ namespace PolyPaint.VueModeles
             return await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.GAMECREATOR_PATH, content);
         }
 
+        // TODO 
         private void CreateAssisted1()
         {
 
@@ -194,6 +195,119 @@ namespace PolyPaint.VueModeles
             return await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.GAMECREATOR_PATH, content);
         }
 
+        private async Task Accept()
+        {
+            HttpResponseMessage result;
+            switch (SelectedCreationType)
+            {
+                case CreationType.Manual:
+                    result = await CreateManual();
+
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Invalid request");
+                        return;
+                    }
+                    break;
+                case CreationType.Assisted1:
+                    CreateAssisted1();
+                    break;
+                case CreationType.Assisted2:
+                    result = await CreateAssisted2();
+
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Invalid request");
+                        return;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            JObject res = new JObject(new JProperty("IsAccept", true));
+            DialogHost.CloseDialogCommand.Execute(res, null);
+        }
+
+        private void RemoveHint(object x)
+        {
+            Guid Uid = (Guid)x;
+            int indexToRemove = -1;
+
+            foreach (var hint in Hints)
+            {
+                if (hint.Uid == Uid)
+                {
+                    indexToRemove = Hints.IndexOf(hint);
+                    break;
+                }
+            }
+
+            if (indexToRemove != -1)
+                Hints.RemoveAt(indexToRemove);
+        }
+
+        private void SelectCreationType(object x)
+        {
+            string creationType = (string)x;
+
+            switch (creationType)
+            {
+                case "man":
+                    SelectedCreationType = CreationType.Manual;
+                    break;
+                case "ass1":
+                    SelectedCreationType = CreationType.Assisted1;
+                    break;
+                case "ass2":
+                    SelectedCreationType = CreationType.Assisted2;
+                    break;
+                default:
+                    SelectedCreationType = CreationType.Manual;
+                    break;
+            }
+        }
+
+        private async void GenerateQuickDraw(object x)
+        {
+            IsReqActive = false;
+            var requestPath = Constants.SERVER_PATH + Constants.SUGGESTION_PATH;
+            var response = await ServerService.instance.client.GetAsync(requestPath);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                MessageBox.Show("Error while joining channel");
+                return;
+            }
+
+            JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            if (!(responseJson.ContainsKey("drawPng") && responseJson.ContainsKey("drawPxl") && responseJson.ContainsKey("object")))
+            {
+                MessageBox.Show("Error parsing server response");
+                return;
+            }
+
+            GeneratedImageStrokes = (JArray)responseJson.GetValue("drawPxl");
+            Base64ImageData = responseJson.GetValue("drawPng").ToString().Split(',')[1];
+            ObjectName = responseJson.GetValue("object").ToString();
+            IsReqActive = true;
+        }
+
+        private void ChoseFile(object x)
+        {
+            OpenFileDialog op = new OpenFileDialog();
+            op.Title = "Select a picture";
+            op.Filter = "All supported graphics|*.bmp;*.jpg;*.png|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp";
+
+            bool? result = op.ShowDialog();
+
+            if (result == true)
+            {
+                SelectedImage = new BitmapImage(new Uri(op.FileName));
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -205,37 +319,7 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    HttpResponseMessage result;
-                    switch (SelectedCreationType)
-                    {
-                        case CreationType.Manual:
-                            result = await CreateManual();
-
-                            if (!result.IsSuccessStatusCode)
-                            {
-                                MessageBox.Show("Invalid request");
-                                return;
-                            }
-                            break;
-                        case CreationType.Assisted1:
-                            CreateAssisted1();
-                            break;
-                        case CreationType.Assisted2:
-                            result = await CreateAssisted2();
-
-                            if (!result.IsSuccessStatusCode)
-                            {
-                                MessageBox.Show("Invalid request");
-                                return;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    JObject res = new JObject(new JProperty("IsAccept", true));
-                    DialogHost.CloseDialogCommand.Execute(res, null);
-
+                    await Accept();
                 }));
             }
         }
@@ -271,23 +355,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _removeHintCommand ?? (_removeHintCommand = new RelayCommand(x =>
-                {
-                    Guid Uid = (Guid)x;
-                    int indexToRemove = -1;
-
-                    foreach (var hint in Hints)
-                    {
-                        if (hint.Uid == Uid)
-                        {
-                            indexToRemove = Hints.IndexOf(hint);
-                            break;
-                        }
-                    }
-
-                    if (indexToRemove != -1)
-                        Hints.RemoveAt(indexToRemove);
-                }));
+                return _removeHintCommand ?? (_removeHintCommand = new RelayCommand(RemoveHint));
             }
         }
 
@@ -296,26 +364,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _selectCreationTypeCommand ?? (_selectCreationTypeCommand = new RelayCommand(x =>
-                {
-                    string creationType = (string) x;
-
-                    switch (creationType)
-                    {
-                        case "man":
-                            SelectedCreationType = CreationType.Manual;
-                            break;
-                        case "ass1":
-                            SelectedCreationType = CreationType.Assisted1;
-                            break;
-                        case "ass2":
-                            SelectedCreationType = CreationType.Assisted2;
-                            break;
-                        default:
-                            SelectedCreationType = CreationType.Manual;
-                            break;
-                    }
-                }));
+                return _selectCreationTypeCommand ?? (_selectCreationTypeCommand = new RelayCommand(SelectCreationType));
             }
         }
 
@@ -324,31 +373,7 @@ namespace PolyPaint.VueModeles
         {
             get 
             {
-                return _generateNewQuickdrawCommand ?? (_generateNewQuickdrawCommand = new RelayCommand(async x =>
-                {
-                    IsReqActive = false;
-                    var requestPath = Constants.SERVER_PATH + Constants.SUGGESTION_PATH;
-                    var response = await ServerService.instance.client.GetAsync(requestPath);
-
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show("Error while joining channel");
-                        return;
-                    }
-
-                    JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-                    if (!(responseJson.ContainsKey("drawPng") && responseJson.ContainsKey("drawPxl") && responseJson.ContainsKey("object")))
-                    {
-                        MessageBox.Show("Error parsing server response");
-                        return;
-                    }
-
-                    GeneratedImageStrokes = (JArray)responseJson.GetValue("drawPxl");
-                    Base64ImageData = responseJson.GetValue("drawPng").ToString().Split(',')[1];
-                    ObjectName = responseJson.GetValue("object").ToString();
-                    IsReqActive = true;
-                }));
+                return _generateNewQuickdrawCommand ?? (_generateNewQuickdrawCommand = new RelayCommand(GenerateQuickDraw));
             }
         }
 
@@ -357,19 +382,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _choseFileCommand ?? (_choseFileCommand = new RelayCommand(x =>
-                {
-                    OpenFileDialog op = new OpenFileDialog();
-                    op.Title = "Select a picture";
-                    op.Filter = "All supported graphics|*.bmp;*.jpg;*.png|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|BMP Files (*.bmp)|*.bmp";
-
-                    bool? result = op.ShowDialog();
-
-                    if (result == true)
-                    {
-                        SelectedImage = new BitmapImage(new Uri(op.FileName));
-                    }
-                }));
+                return _choseFileCommand ?? (_choseFileCommand = new RelayCommand(ChoseFile));
             }
         }
         #endregion
