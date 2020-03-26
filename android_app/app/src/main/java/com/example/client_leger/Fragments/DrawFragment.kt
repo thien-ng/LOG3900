@@ -173,28 +173,18 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         if (isStrokeErasing || isNormalErasing) {
             checkForStrokesToErase(event.x, event.y, isStrokeErasing)
-            if (isStrokeErasing)
-                sendEraseStroke(event.x, event.y)   //TODO: send only if is not white and stuff
-            else
-                sendErasePoint(event.x, event.y)
+            sendErase(event.x, event.y, isStrokeErasing)
         } else if (action == MotionEvent.ACTION_DOWN) {
             currentStroke.moveTo(event.x, event.y)
             currentStartX = event.x
             currentStartY = event.y
-        } else if (action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_UP){
-            touchMoved(
-                currentStartX,
-                currentStartY,
-                event.x,
-                event.y,
-                false
-            )
-            if (action == MotionEvent.ACTION_UP) {
-                sendStroke(currentStartX, event.x, currentStartY, event.y, true)
-                strokeJustEnded = true
-                bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
-                currentStroke.reset()
-            }
+        } else if (action == MotionEvent.ACTION_MOVE) {
+            touchMoved(currentStartX, currentStartY, event.x, event.y)
+        } else if (action == MotionEvent.ACTION_UP){
+            sendStroke(currentStartX, event.x, currentStartY, event.y, true)
+            strokeJustEnded = true
+            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
+            currentStroke.reset()
         }
 
         return true
@@ -270,7 +260,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun touchMoved(startX: Float, startY: Float, destX: Float, destY: Float, isEnd: Boolean) {
+    private fun touchMoved(startX: Float, startY: Float, destX: Float, destY: Float) {
         val deltaX = (destX - currentStartX)
         val deltaY = (destY - currentStartY)
         val distance = sqrt(deltaX.pow(2.0F) + deltaY.pow(2.0F))
@@ -286,7 +276,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newX = startX + directionX * paintLine.strokeWidth * i
             val newY = startY + directionY * paintLine.strokeWidth * i
 
-            sendStroke(currentStartX, newX, currentStartY, newY, isEnd)
+            sendStroke(currentStartX, newX, currentStartY, newY, false)
 
             addSegment(newX, newY)
             currentStartX = newX
@@ -352,11 +342,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 invalidate()
             }
             obj.getString("type") == "eraser" -> {
-                if (obj.getString("eraser") == "stroke") {
-                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat(), true)
-                } else {
-                    checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat(), false)
-                }
+                checkForStrokesToErase(
+                    obj.getInt("x").toFloat(),
+                    obj.getInt("y").toFloat(),
+                    obj.getString("eraser") == "stroke"
+                )
             }
         }
     }
@@ -376,24 +366,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         SocketIO.sendMessage("gameplay", obj)
     }
 
-    private fun sendErasePoint(x: Float, y: Float) {
+    private fun sendErase(x: Float, y: Float, isStroke: Boolean) {
         val obj = JSONObject()
         obj.put("type", "eraser")
         obj.put("username", username)
         obj.put("x", x)
         obj.put("y", y)
-        obj.put("eraser", "point")
-
-        SocketIO.sendMessage("gameplay", obj)
-    }
-
-    private fun sendEraseStroke(x: Float, y: Float) {
-        val obj = JSONObject()
-        obj.put("type", "eraser")
-        obj.put("username", username)
-        obj.put("x", x)
-        obj.put("y", y)
-        obj.put("eraser", "stroke")
+        obj.put("eraser", if (isStroke) "stroke" else "point")
 
         SocketIO.sendMessage("gameplay", obj)
     }
