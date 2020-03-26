@@ -61,9 +61,8 @@ export class LobbyManagerService {
         if (!user) throw new Error(`${username} is not found in logged users`);
 
         const lobby = this.lobbyDoesExists(lobbyName);
-        if (!lobby) {
-            return "Lobby doesn't exist";
-        }
+
+        if (!lobby) throw new Error(`lobby ${lobbyName} doesn't exist`);
 
         if (lobby.whitelist) {
             lobby.whitelist.push(user);
@@ -75,7 +74,7 @@ export class LobbyManagerService {
         return "user whitelisted.";
     }
 
-    private isWhitelisted(lobby: IActiveLobby, user: IUser): boolean {
+    private isUserWhitelisted(lobby: IActiveLobby, user: IUser): boolean {
         return (lobby != undefined) && (lobby.whitelist != undefined) && (lobby.whitelist.find((item) => {
             item == user;
         }) == undefined);
@@ -96,7 +95,7 @@ export class LobbyManagerService {
             if (this.isUserInLobbyAlready(lobby.users, user.username))
                 throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
 
-            if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isWhitelisted(lobby, user))) {
+            if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user))) {
                 if ((lobby.users.length + 1) > lobby.size)
                     throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
 
