@@ -8,7 +8,6 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.PopupWindow
@@ -174,7 +173,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         if (isStrokeErasing || isNormalErasing) {
             if (isStrokeErasing)
-                sendEraseStroke(event.x, event.y)
+                sendEraseStroke(event.x, event.y)   //TODO: send only if is not white and stuff
             else
                 sendErasePoint(event.x, event.y)
             checkForStrokesToErase(event.x, event.y)
@@ -199,8 +198,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
                 currentStroke.reset()
             }
-
-            invalidate()
         }
 
         return true
@@ -300,6 +297,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
 
         currentStroke.lineTo(currentStartX, currentStartY)
+
+        invalidate()
     }
 
     private fun addSegment(destX: Float, destY: Float) {
@@ -320,7 +319,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var firstStrokeReceived = true
 
     private fun strokeReceived(obj: JSONObject) {
-        Log.w("draw", "strokeReceived")
         when {
             obj.getString("type") == "ink" -> {
                 if (obj.getBoolean("isEnd")) {
@@ -352,6 +350,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 } else {
                     currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
                 }
+
+                invalidate()
             }
             obj.getString("type") == "eraser" -> {
                 currentStroke.reset()
@@ -366,8 +366,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             }
         }
-
-        invalidate()
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float, isEnd: Boolean) {
