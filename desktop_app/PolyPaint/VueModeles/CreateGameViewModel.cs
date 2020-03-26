@@ -303,9 +303,7 @@ namespace PolyPaint.VueModeles
             bool? result = op.ShowDialog();
 
             if (result == true)
-            {
                 SelectedImage = new BitmapImage(new Uri(op.FileName));
-            }
         }
 
         #endregion
