@@ -129,8 +129,7 @@ export class LobbyManagerService {
                 lobby.users.push(user);
                 this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username } as INotifyUpdateUser);
             }
-            
-            else if (lobby.isPrivate == false){
+            else if (lobby.isPrivate == false) {
                 lobby.users.push(user);
                 this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username } as INotifyUpdateUser);
             }
@@ -146,10 +145,11 @@ export class LobbyManagerService {
             if (!req.mode || (req.mode && !(req.mode in GameMode))) {
                 throw new Error("Creating lobby must have correct mode");
             }
-            
-            this.lobbies.set(req.lobbyName, {users: [user], isPrivate: req.isPrivate, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode} as IActiveLobby);
-            this.sendMessages({lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size} as INotifyLobbyUpdate);          
-        }        
+
+
+            this.lobbies.set(req.lobbyName, { users: [user], isPrivate: req.isPrivate, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode } as IActiveLobby);
+            this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size } as INotifyLobbyUpdate);
+        }
 
         return `Successfully joined lobby ${req.lobbyName}`;
     }
@@ -227,14 +227,13 @@ export class LobbyManagerService {
     }
 
     private verifyLobbyUsernameLength(username: string, lobbyName: string): void {
-
-        if (!this.isBot(req.username)) {
-            if (!req.username || (req.username.length < 1 || req.username.length > 20))
+        if (!this.isBot(username)) {
+            if (!username || (username.length < 1 || username.length > 20))
                 throw new Error("Username lenght must be between 1 and 20");
-            if (!/^[a-zA-Z0-9]+$/.test(req.username))
+            if (!/^[a-zA-Z0-9]+$/.test(username))
                 throw new Error("Username must be alphanumeric");
         }
-        if (!req.lobbyName ||req.lobbyName.length < 1 || req.lobbyName.length > 20)
+        if (!lobbyName || lobbyName.length < 1 || lobbyName.length > 20)
             throw new Error("Lobby name must be between 1 and 20");
     }
 
@@ -243,6 +242,7 @@ export class LobbyManagerService {
         this.verifyLobbyUsernameLength(req.username, req.lobbyName);
         if (!this.isJoinLobby(req))
             return;
+
         const jointReq = req as IJoinLobby;
         
         if (jointReq.size || jointReq.size === 0) 
