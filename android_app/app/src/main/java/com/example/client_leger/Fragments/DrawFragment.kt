@@ -196,9 +196,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
                 currentStroke.reset()
             }
+
+            invalidate()
         }
 
-        invalidate()
         return true
     }
 
@@ -227,7 +228,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun checkForStrokesToErase(pointX: Float, pointY: Float) {
-        Log.w("draw", "erasing at point: $pointX $pointY")
+        Log.w("draw", "checking for strokes to erase")
         if (pointX > bitmap.width ||
             pointX < 0 ||
             pointY > bitmap.height ||
@@ -267,8 +268,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             }
         }
 
-        if (strokeFound)
+        if (strokeFound) {
+            Log.w("draw", "stroke was found, redrawing bitmap")
+
             redrawPathsToBitmap()
+            invalidate()
+        }
     }
 
     private fun touchMoved(startX: Float, startY: Float, destX: Float, destY: Float, isEnd: Boolean) {
@@ -320,6 +325,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             obj.getString("type") == "ink" -> {
                 if (obj.getBoolean("isEnd")) {
                     Log.w("draw", "isEnd!!!")
+                    strokeJustEnded = true
                     firstStrokeReceived = true
                     redrawPathsToBitmap()
                     return
@@ -347,10 +353,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 } else {
                     currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
                 }
-
-                invalidate()
             }
             obj.getString("type") == "eraser" -> {
+                currentStroke.reset()
                 if (obj.getString("eraser") == "stroke") {
                     isStrokeErasing = true
                     checkForStrokesToErase(obj.getInt("x").toFloat(), obj.getInt("y").toFloat())
@@ -362,6 +367,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             }
         }
+
+        invalidate()
     }
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float, isEnd: Boolean) {
