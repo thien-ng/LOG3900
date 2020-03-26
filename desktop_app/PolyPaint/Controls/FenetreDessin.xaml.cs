@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using PolyPaint.VueModeles;
 using System.Collections.Generic;
 
-namespace PolyPaint
+namespace PolyPaint.Controls
 {
     /// <summary>
     /// Logique d'interaction pour FenetreDessin.xaml

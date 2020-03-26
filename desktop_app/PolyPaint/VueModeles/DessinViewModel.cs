@@ -23,10 +23,13 @@ namespace PolyPaint.VueModeles
         /// sur lesquelles la vue se connectera.
         /// </summary>
         /// 
-        public DessinViewModel()
+        public DessinViewModel(int width = 600, int height = 500)
         {
+            Width = width;
+            Height = height;
+
             ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
-            // On écoute pour des changements sur le modèle. Lorsqu'il y en a, EditeurProprieteModifiee est appelée.
+            
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
             // On initialise les attributs de dessin avec les valeurs de départ du modèle.
@@ -80,6 +83,10 @@ namespace PolyPaint.VueModeles
             get { return _traits; }
             set { _traits = value; ProprieteModifiee(); }
         }
+
+        public int Width { get; set; }
+        
+        public int Height { get; set; }
 
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<string> ChoisirPointe { get; set; }
@@ -136,6 +143,7 @@ namespace PolyPaint.VueModeles
             AttributsDessin.Width = editeur.TailleTrait;
             AttributsDessin.Height = editeur.TailleTrait;
         }
+
         public void MouseMove(InkCanvas sender, MouseEventArgs e)
         {
             if (IsDrawing)
@@ -165,24 +173,25 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        public void OnDraw(JObject data)
+        public void OnDraw(JObject data) 
         {
-            double X1 = (double)data.GetValue("startPosX");
-            double X2 = (double)data.GetValue("endPosX");
-            double Y1 = (double)data.GetValue("startPosY");
-            double Y2 = (double)data.GetValue("endPosY");
+           double X1 = (double)data.GetValue("startPosX");
+           double X2 = (double)data.GetValue("endPosX");
+           double Y1 = (double)data.GetValue("startPosY");
+           double Y2 = (double)data.GetValue("endPosY");
 
-            StylusPointCollection coll = new StylusPointCollection();
-            coll.Add(new StylusPoint(X1, Y1));
-            coll.Add(new StylusPoint(X2, Y2));
+           StylusPointCollection coll = new StylusPointCollection();
+           coll.Add(new StylusPoint(X1, Y1));
+           coll.Add(new StylusPoint(X2, Y2));
 
-            Stroke str = new Stroke(coll);
+           Stroke str = new Stroke(coll);
 
-            App.Current.Dispatcher.Invoke(delegate
-            {
-                Traits.Add(str);
-            });
+           App.Current.Dispatcher.Invoke(delegate
+           {
+               Traits.Add(str);
+           });
         }
+        
         #endregion
 
         #region Commands
