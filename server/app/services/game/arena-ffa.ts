@@ -23,16 +23,20 @@ export class ArenaFfa extends Arena {
 
     private isEveryoneHasRightAnswer: boolean;
 
+    private isBotDrawing: boolean;
+
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
         
         this.drawPtr = 0;
         this.userWithCorrectAns = [];
         this.isEveryoneHasRightAnswer = false;
+        this.isBotDrawing = false;
     }
 
     public start(): void {
-        console.log("[Debug] Starting arena FFA", this.room);   
+        console.log("[Debug] Starting arena FFA", this.room);
+           
         try {
             this.checkArenaLoadingState(() => this.startSubGame());
         }  catch(e) {
@@ -47,6 +51,9 @@ export class ArenaFfa extends Arena {
             return;
         }
 
+        if (this.isBotDrawing)
+            this.startBotDrawing();
+
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
             console.log("[Debug] Timer is: ", timer);
@@ -58,7 +65,7 @@ export class ArenaFfa extends Arena {
                 clearInterval(this.curArenaInterval);
 
                 this.handlePoints()
-
+                
                 if (this.drawPtr >= this.users.length) {
                     // Handle end of game
                     this.end()
@@ -73,19 +80,21 @@ export class ArenaFfa extends Arena {
     }
 
     private resetSubGame(): void | boolean {
+        this.userWithCorrectAns = [];
+        this.isEveryoneHasRightAnswer = false;
+        this.isBotDrawing = false;
+        
         this.chooseRandomRule();
         if (this.attributeRoles())
             return true;
-        this.userWithCorrectAns = [];
-        this.isEveryoneHasRightAnswer = false;
     }
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
-        if (this.isDraw(mes)) {
+        if (this.isDraw(mes))
             this.handleGameplayDraw(socket, mes);
-        } else if (this.isChat(mes)) {
+        else if (this.isChat(mes))
             this.handleGameplayChat(mes);
-        } else 
+        else 
             this.handleGameplayReady(mes);
     }
 
@@ -156,7 +165,11 @@ export class ArenaFfa extends Arena {
             if (!this.isUserDc(u.username) && u.username !== drawer.username)
                 this.socketServer.to(u.socketId).emit("game-drawer", {username: drawer.username});
         });
-        this.socketServer.to(drawer.socketId).emit("game-drawer", {username: drawer.username, object: this.curRule.solution});    
+        
+        if (this.isBot(drawer.username))
+            this.isBotDrawing = true;
+        else
+            this.socketServer.to(drawer.socketId).emit("game-drawer", {username: drawer.username, object: this.curRule.solution});    
     }
 
     private sendToChat(obj: IGameplayAnnouncement): void {

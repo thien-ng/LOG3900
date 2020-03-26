@@ -1,5 +1,5 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser, Bot } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
@@ -85,8 +85,6 @@ export abstract class Arena {
         console.log("[Debug] end game points are: ", pts);
         console.log("[Debug] disconnected players: ", this.dcPlayer);
         
-        
-
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
         });
@@ -164,6 +162,22 @@ export abstract class Arena {
         });
     }
 
+    protected startBotDrawing(): void {
+        let timer = 0;
+        const interval = setInterval(() => {
+            if (timer <= 10) {
+                console.log("Bot Drawing");
+            } else {
+                clearInterval(interval);
+            }
+            timer++;
+        }, ONE_SEC);
+    }
+
+    protected isBot(username: string): boolean {
+        return username === Bot.humour || username === Bot.kind || username === Bot.mean
+    }
+
     private initReadyMap(): void {
         this.userMapReady = new Map<string, boolean>();
         this.users.forEach(u => { this.userMapReady.set(u.username, false); });
@@ -173,7 +187,7 @@ export abstract class Arena {
         let isEveryoneReady = true;
 
         this.userMapReady.forEach((state: boolean, key: string) => {
-            if (!this.dcPlayer.includes(key)) {
+            if (!this.dcPlayer.includes(key) && !this.isBot(key)) {
                 if (state == false)
                     isEveryoneReady = false;
             }
@@ -185,7 +199,8 @@ export abstract class Arena {
     private preparePtsToBePersisted(): IPoints[] {
         const ptsList: IPoints[] = [];
         this.userMapPoints.forEach((pts: number, key: string) => {
-            ptsList.push({username: key, points: pts});
+            if (!this.isBot(key))
+                ptsList.push({username: key, points: pts});
         });
         return ptsList;
     }

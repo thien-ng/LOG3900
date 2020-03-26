@@ -32,7 +32,7 @@ export abstract class Bot {
         this.sort();
     }
 
-    public GetNextStroke(): IGameplayDraw {
+    public getNextStroke(): IGameplayDraw {
         if (this.isDone()) {
             throw Error("image already drawn. \n the length is a public parameter");
         }
