@@ -18,6 +18,7 @@ export interface IActiveLobby {
     lobbyName:  string,
     size:       number,
     mode:       GameMode,
+    whitelist?: IUser[],
 }
 
 export interface IJoinLobby {
