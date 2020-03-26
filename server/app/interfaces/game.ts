@@ -18,6 +18,7 @@ export interface IActiveLobby {
     lobbyName:  string,
     size:       number,
     mode:       GameMode,
+    whitelist?: IUser[],
 }
 
 export interface IJoinLobby {
@@ -138,8 +139,7 @@ export enum Format {
 
 export enum Type {
     ink     = "ink",
-    estroke = "estroke",
-    epoint  = "epoint",
+    eraser  = "eraser",
 }
 
 /**
