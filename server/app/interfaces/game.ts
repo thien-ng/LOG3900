@@ -41,6 +41,12 @@ export interface IReceptMesLob {
     content:   string,
 }
 
+export enum Bot {
+    humour = "bot:sebastien",
+    kind   = "bot:olivia",
+    mean   = "bot:olivier", 
+}
+
 export interface ILobEmitMes extends IReceptMesLob{
     time: string,
 }

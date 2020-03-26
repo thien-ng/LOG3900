@@ -129,7 +129,7 @@ namespace PolyPaint.Modeles
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();
             values.username = ServerService.instance.username;
-            values.Add("private", _lobby.isPrivate);
+            values.Add("isPrivate", _lobby.isPrivate);
             values.lobbyName = _lobby.lobbyName;
             values.size = _lobby.size;
             values.password = _lobby.password;

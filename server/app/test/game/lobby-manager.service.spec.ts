@@ -4,7 +4,7 @@ import * as spies from "chai-spies";
 import Types from '../../types';
 import { container } from "../../inversify.config";
 import { LobbyManagerService } from "../../services/game/lobby-manager.service";
-import { IJoinLobby, IActiveLobby, ILeaveLobby, GameMode } from "../../interfaces/game";
+import { IJoinLobby, IActiveLobby, ILeaveLobby, GameMode, Bot } from "../../interfaces/game";
 
 chai.use(spies);
 
@@ -36,17 +36,30 @@ describe("LobbyManagerService", () => {
         chai.spy.on(service, "verifySocketConnection", () => {});
         const req1: IJoinLobby = {username:"", isPrivate: true, lobbyName: "name", password: "password", size: 2};
         const req2: IJoinLobby = {username:"LongerThan20Character", isPrivate: true, lobbyName: "name", password: "password", size: 2};
+        const req3: IJoinLobby = {username:"bot:Wrong", isPrivate: true, lobbyName: "name", password: "password", size: 2};
 
         //when
         //then
         try {service.join(req1)} catch(e) {chai.expect(e.message).to.equal("Username lenght must be between 1 and 20")};
         try {service.join(req2)} catch(e) {chai.expect(e.message).to.equal("Username lenght must be between 1 and 20")};
+        try {service.join(req3)} catch(e) {chai.expect(e.message).to.equal("Username must be alphanumeric")};
     });
 
     it("Should fail when joining private lobby without password", async () => {
         //given
         chai.spy.on(service, "verifySocketConnection", () => {});
         const req: IJoinLobby = {username:"aaa", isPrivate: true, lobbyName: "name", password: undefined, size: 2};
+
+        //when
+        //then
+        try {service.join(req)} 
+        catch(e) {chai.expect(e.message).to.equal("Private lobby must have password")};
+    });
+
+    it("Should fail when joining private lobby without password when using bot name", async () => {
+        //given
+        chai.spy.on(service, "verifySocketConnection", () => {});
+        const req: IJoinLobby = {username: Bot.mean, isPrivate: true, lobbyName: "name", password: undefined, size: 2};
 
         //when
         //then
@@ -127,7 +140,20 @@ describe("LobbyManagerService", () => {
 
         //when
         //then
-        try {service.join(req)} catch(e) {chai.expect(e.message).to.equal("Max number of users in lobby name reached")};
+        try {service.join(req)} catch(e) {chai.expect(e.message).to.equal("Maximum size of user in lobby reached")};
+    });
+
+    it("Should fail to create a new loby when joining empty lobby if username is a bot", async () => {
+        //given
+        chai.spy.on(service, "verifySocketConnection", () => {});
+        chai.spy.on(service, "sendMessages", () => {});
+
+        const req: IJoinLobby = {username: Bot.mean, isPrivate: true, lobbyName: "name", password: "password", size: 2, mode: GameMode.FFA};
+
+        //when
+        //then
+        try { service.join(req) }
+        catch(e) {chai.expect(e.message).to.equal("A bot cannot create a lobby") }
     });
 
     it("Should create a new loby when joining empty lobby", async () => {
