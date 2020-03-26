@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IRegistration, IStatus, ILogin, IInfoUser, IConnection } from "../interfaces/communication";
+import { IRegistration, IStatus, ILogin, IInfoUser, IConnection, IStats, IGame, IPlayer } from "../interfaces/communication";
 import { AccountDbService } from "../database/account-db.service";
 import * as pg from "pg";
 import Types from '../types';
@@ -50,6 +50,9 @@ export class AccountService {
         if (regis.username.length < 1 || regis.username.length > 20) {
             throw new Error("username length should be between 1 and 20");
         }
+        if (!/^[a-zA-Z0-9]+$/.test(regis.username)) {
+            throw new Error("username must be alphanumeric");
+        }
         if (regis.password.length < 1 || regis.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
         }
@@ -64,6 +67,9 @@ export class AccountService {
     private verifyLogin(login: ILogin): void {
         if (login.username.length < 1 || login.username.length > 20) {
             throw new Error("username length should be between 1 and 20");
+        }
+        if (!/^[a-zA-Z0-9]+$/.test(login.username)) {
+            throw new Error("username must be alphanumeric");
         }
         if (login.password.length < 1 || login.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
@@ -81,11 +87,41 @@ export class AccountService {
         }).catch((e) => {
             return e;
         });
-        return Promise.all([noms, connections]).then((res) => {
-            return { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1] };
+        const profileStats: Promise<IStats[]> = this.database.getProfileStats(username).then((result: pg.QueryResult) => {
+            return result.rows.map((row: any) => ({totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame}));
         }).catch((e) => {
             return e;
         });
+
+        return Promise.all([noms, connections, profileStats]).then(async (res) => {
+            const games = await this.getGameInfos(username);
+            return { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1], stats: res[2], games: games };
+        }).catch((e) => {
+            return e;
+        });
+    }
+
+    private async getGameInfos(username: string): Promise<IGame[]> {
+        const mapDate           = new Map<number, string>();
+        const idList: number[]  = [];
+        const gameList: IGame[] = [];
+
+        (await this.database.getGameIds(username)).rows.forEach(u => {
+            mapDate.set(u.out_gamesid, u.out_date);
+            idList.push(u.out_gamesid);
+        });
+
+        for await (const id of idList) {
+            const info = (await this.database.getGameInfo(id)).rows[0];
+
+            const list: IPlayer[] = [];
+            info.getgameinfo.forEach((p: IPlayer) => { list.push(p) });
+
+            const date = mapDate.get(id) as string;
+            gameList.push({date: date, players: list});
+        }
+
+        return gameList;
     }
 
 }

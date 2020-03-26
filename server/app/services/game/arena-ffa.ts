@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady, GameMode, IGameplayEraser } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 
@@ -23,8 +23,8 @@ export class ArenaFfa extends Arena {
 
     private isEveryoneHasRightAnswer: boolean;
 
-    public constructor(arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
-        super(arenaId, users, room, io, rules, gm)
+    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
+        super(type, arenaId, users, room, io, rules, gm)
         
         this.drawPtr = 0;
         this.userWithCorrectAns = [];
@@ -76,7 +76,7 @@ export class ArenaFfa extends Arena {
         this.isEveryoneHasRightAnswer = false;
     }
 
-    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
+    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
         if (this.isDraw(mes)) {
             this.handleGameplayDraw(socket, mes);
         } else if (this.isChat(mes)) {
@@ -86,7 +86,7 @@ export class ArenaFfa extends Arena {
     }
 
 
-    private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw): void {
+    private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
         this.users.forEach(u => {
             if (u.username != mes.username)
                 socket.to(this.room).emit("draw", this.mapToDrawing(mes))
