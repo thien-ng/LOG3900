@@ -42,7 +42,10 @@ export class ArenaFfa extends Arena {
 
     private startSubGame(): void {
         
-        this.resetSubGame();
+        if (this.resetSubGame()) {
+            this.end();
+            return;
+        }
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
@@ -69,9 +72,10 @@ export class ArenaFfa extends Arena {
         }, ONE_SEC);
     }
 
-    private resetSubGame(): void {
+    private resetSubGame(): void | boolean {
         this.chooseRandomRule();
-        this.attributeRoles();
+        if (this.attributeRoles())
+            return true;
         this.userWithCorrectAns = [];
         this.isEveryoneHasRightAnswer = false;
     }
@@ -131,7 +135,7 @@ export class ArenaFfa extends Arena {
         this.userMapPoints.set(drawName, drawNewPts + drawPts);
     }
 
-    private attributeRoles(): void {
+    private attributeRoles(): void | boolean {
         let user = this.users[this.drawPtr++];
 
         while (this.isUserDc(user.username)) {
@@ -139,7 +143,7 @@ export class ArenaFfa extends Arena {
             // if player is disconnect, increment drawer pointer
             if (this.drawPtr++ >= this.users.length) {
                 clearInterval(this.curArenaInterval);
-                throw new Error("Everyone has drawn once");
+                return true
             }
             user = this.users[this.drawPtr];
         }

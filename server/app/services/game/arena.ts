@@ -83,6 +83,8 @@ export abstract class Arena {
         console.log("[Debug] End routine");
         const pts = this.preparePtsToBePersisted();
         console.log("[Debug] end game points are: ", pts);
+        console.log("[Debug] disconnected players: ", this.dcPlayer);
+        
         
 
         this.users.forEach(u => {
