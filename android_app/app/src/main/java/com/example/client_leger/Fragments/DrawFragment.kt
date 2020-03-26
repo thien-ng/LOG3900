@@ -173,7 +173,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val action = event.actionMasked
 
         if (isStrokeErasing || isNormalErasing) {
-            sendErasePoint(event.x, event.y)
+            if (isStrokeErasing)
+                sendEraseStroke(event.x, event.y)
+            else
+                sendErasePoint(event.x, event.y)
             checkForStrokesToErase(event.x, event.y)
         } else if (isStrokeErasing) {
             sendEraseStroke(event.x, event.y)
@@ -228,7 +231,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun checkForStrokesToErase(pointX: Float, pointY: Float) {
-        Log.w("draw", "checking for strokes to erase")
         if (pointX > bitmap.width ||
             pointX < 0 ||
             pointY > bitmap.height ||
@@ -269,8 +271,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
 
         if (strokeFound) {
-            Log.w("draw", "stroke was found, redrawing bitmap")
-
             redrawPathsToBitmap()
             invalidate()
         }
@@ -324,7 +324,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         when {
             obj.getString("type") == "ink" -> {
                 if (obj.getBoolean("isEnd")) {
-                    Log.w("draw", "isEnd!!!")
                     strokeJustEnded = true
                     firstStrokeReceived = true
                     redrawPathsToBitmap()
