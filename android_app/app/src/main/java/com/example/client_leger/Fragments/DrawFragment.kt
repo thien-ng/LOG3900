@@ -325,10 +325,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 currentStartX = obj.getInt("startPosX").toFloat()
                 currentStartY = obj.getInt("startPosY").toFloat()
 
-                addSegment(
-                    obj.getInt("endPosX").toFloat(),
-                    obj.getInt("endPosY").toFloat()
-                )
+                addSegment(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
 
                 if (firstStrokeReceived) {
                     firstStrokeReceived = false
