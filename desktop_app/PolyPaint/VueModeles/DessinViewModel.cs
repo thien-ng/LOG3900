@@ -265,6 +265,20 @@ namespace PolyPaint.VueModeles
                 }));
             }
         }
+
+        private ICommand _loadedCommand;
+        public ICommand LoadedCommand
+        {
+            get
+            {
+                return _loadedCommand ?? (_loadedCommand = new RelayCommand(x =>
+                {
+                    JObject clientReady = new JObject(new JProperty("username", ServerService.instance.username));
+
+                    ServerService.instance.socket.Emit("gameplay", clientReady);
+                }));
+            }
+        }
         #endregion
     }
 }
