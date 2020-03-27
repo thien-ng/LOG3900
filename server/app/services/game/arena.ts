@@ -1,5 +1,5 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser, Bot } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser, Bot, IGameplayAnnouncement } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { MeanBot } from "./bots/meanBot";
@@ -28,8 +28,10 @@ export abstract class Arena {
     protected type:          GameMode;
 
     private arenaId:             number;
-    public  chronometerInterval: NodeJS.Timeout;
     private chronometerTimer:    number;
+    private hintPtr:             number;
+
+    public  chronometerInterval: NodeJS.Timeout;
     
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
@@ -41,6 +43,7 @@ export abstract class Arena {
         this.gm             = gm;
         this.arenaId        = arenaId;
         this.type           = type;
+        this.hintPtr        = 0;
         
         this.initReadyMap();
         this.setupPoints();
@@ -54,6 +57,17 @@ export abstract class Arena {
     protected abstract botAnnounceEndSubGane(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
+    
+    protected handleGameplayHint(): void {
+        const totalHint = this.curRule.clues.length;
+        const announcement: IGameplayAnnouncement = {
+            username: "Server",
+            content: `Hint: ${this.curRule.clues[this.hintPtr % totalHint]}`,
+            isServer: true,
+        };
+        this.socketServer.to(this.room).emit("game-hint", announcement);
+    }
+
     protected handleGameplayReady(mes: IGameplayReady): void {
         this.userMapReady.set(mes.username, true);
     }

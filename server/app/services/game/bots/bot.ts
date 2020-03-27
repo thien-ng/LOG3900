@@ -13,8 +13,6 @@ export abstract class Bot {
     protected taunts: string[];
     protected username: string;
     protected nextStroke: number;
-    protected hint: string[];
-    protected nextHint: number;
     protected mode: DisplayMode;
     protected panoramicFirstSide: Side;
 
@@ -22,15 +20,14 @@ export abstract class Bot {
 
     constructor(socket: io.Server, username: string) {
         this.username = username;
-        this.nextHint = 0;
         this.nextStroke = 0;
         this.socket = socket;
     }
 
     public abstract launchTauntStart(room: string): void;
 
-    public draw(room: string, arenaTime: number, drawings: IDrawing[], mode: DisplayMode, hint: string[], panoramicFirstSide: Side): NodeJS.Timeout {
-        this.setupOnDraw(drawings, mode, hint, panoramicFirstSide);
+    public draw(room: string, arenaTime: number, drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): NodeJS.Timeout {
+        this.setupOnDraw(drawings, mode, panoramicFirstSide);
 
         let count = 0;
         const interval = setInterval(() => {
@@ -49,11 +46,10 @@ export abstract class Bot {
         return interval;
     }
 
-    private setupOnDraw(drawings: IDrawing[], mode: DisplayMode, hint: string[], panoramicFirstSide: Side): void {
+    private setupOnDraw(drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): void {
         this.mode = mode;
         this.drawings = drawings;
         this.length = drawings.length;
-        this.hint = hint;
         this.panoramicFirstSide = panoramicFirstSide;
         this.sort();
     }
@@ -154,10 +150,6 @@ export abstract class Bot {
         const temp: IDrawing = this.drawings[b];
         this.drawings[b] = this.drawings[a];
         this.drawings[a] = temp;
-    }
-
-    public getHint(): string {
-        return (this.nextHint >= this.hint.length) ? "No more hint available" : this.hint[this.nextHint++];
     }
 
     public launchTaunt(room: string): void {
