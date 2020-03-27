@@ -1,19 +1,18 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using PolyPaint.Modeles;
 using PolyPaint.Controls;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.IO;
+using MaterialDesignThemes.Wpf;
+using System.Threading.Tasks;
+using System;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace PolyPaint.VueModeles
 {
@@ -172,7 +171,7 @@ namespace PolyPaint.VueModeles
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();
             values.username = ServerService.instance.username;
-            values.Add("private", _isPrivate);
+            values.Add("isPrivate", _isPrivate);
             values.lobbyName = _lobbyName;
             values.size = _selectedSize;
             values.password = _password;

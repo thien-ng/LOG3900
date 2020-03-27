@@ -27,7 +27,7 @@ import kotlin.math.sqrt
 
 class DrawFragment: Fragment() {
 
-    private val canvasViewChildPosition = 4
+    private val canvasViewChildPosition = 6
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
@@ -48,9 +48,31 @@ class DrawFragment: Fragment() {
             openWidthSelector(v)
         }
 
+        v.button_round.setOnClickListener {
+            switchDrawWithCircle(v)
+            v.button_square.isChecked = false
+            v.button_round.isChecked = true
+        }
+
+        v.button_square.setOnClickListener {
+            switchDrawWithSquare(v)
+            v.button_square.isChecked = true
+            v.button_round.isChecked = false
+        }
+
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
 
         return v
+    }
+
+    private fun switchDrawWithCircle(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        drawCanvasView.switchDrawWithCircle()
+    }
+
+    private fun switchDrawWithSquare(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        drawCanvasView.switchDrawWithSquare()
     }
 
     private fun switchStrokeEraser(v: ViewGroup) {
@@ -139,7 +161,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var currentStroke = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
-    private val segments = ArrayList<Segment>()
+    private var segments = ArrayList<Segment>()
     private var strokeJustEnded = true
     private var drawListener: Disposable
     private var lastErasePoint: PointFloat? = null
@@ -216,11 +238,27 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         return true
     }
 
+
     private fun distance(point1: PointFloat, point2: PointFloat): Float {
         val deltaX = (point2.x - point1.x)
         val deltaY = (point2.y - point1.y)
 
         return sqrt(deltaX.pow(2.0F) + deltaY.pow(2.0F))
+    }
+
+    fun switchDrawWithCircle() {
+        paintLine.strokeCap = Paint.Cap.ROUND
+    }
+
+    fun switchDrawWithSquare() {
+        paintLine.strokeCap = Paint.Cap.SQUARE
+    }
+
+    fun clearStrokes() {
+        segments = ArrayList()
+        currentStroke.reset()
+        bitmapNeedsToUpdate = true
+        postInvalidate()
     }
 
     private fun isValidErasePoint(x: Float, y: Float): Boolean {
@@ -318,9 +356,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStroke.moveTo(currentStartX, currentStartY)
             currentStroke.lineTo(newX, newY)
             sendStroke(currentStartX, newX, currentStartY, newY, strokeJustEnded)
-            addSegment(currentStartX, newX, currentStartY, newY)
+            addSegment(currentStartX, newX, currentStartY, newY, strokeJustEnded)
 
-            strokeJustEnded = false
             currentStartX = newX
             currentStartY = newY
         }
@@ -328,12 +365,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float) {
+
+    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float, isNew: Boolean) {
         val newSegment = Path()
         newSegment.moveTo(startX, startY)
         newSegment.lineTo(destX, destY)
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
-        if (segments.size - 2 >= 0 && !strokeJustEnded) {
+        if (segments.size - 2 >= 0 && !isNew) {
             // segments.size - 1 is the index of the segment we just added,
             // segments.size - 2 is the index of the segment just before it.
             segments[segments.size - 1].previousSegment = segments[segments.size - 2]
@@ -352,19 +390,24 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 paintLine.color = obj.getInt("color")
                 paintLine.style = Paint.Style.STROKE
                 paintLine.strokeWidth = obj.getInt("width").toFloat()
-                paintLine.strokeCap = Paint.Cap.ROUND
+
+                paintLine.strokeCap =
+                    if (obj.getString("format") == "circle")
+                        Paint.Cap.ROUND
+                    else
+                        Paint.Cap.SQUARE
 
                 addSegment(
                     obj.getInt("startPosX").toFloat(),
                     obj.getInt("endPosX").toFloat(),
                     obj.getInt("startPosY").toFloat(),
-                    obj.getInt("endPosY").toFloat()
+                    obj.getInt("endPosY").toFloat(),
+                    obj.getBoolean("isEnd")
                 )
 
                 if (obj.getBoolean("isEnd")) {
                     currentStroke.reset()
                     bitmapNeedsToUpdate = true
-                    strokeJustEnded = true
                 }
             }
             obj.getString("type") == "eraser" -> {
@@ -391,6 +434,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("color", paintLine.color)
         obj.put("width", paintLine.strokeWidth)
         obj.put("isEnd", isEnd)
+        obj.put("format", if (paintLine.strokeCap == Paint.Cap.ROUND) "circle" else "square")
 
         SocketIO.sendMessage("gameplay", obj)
     }
