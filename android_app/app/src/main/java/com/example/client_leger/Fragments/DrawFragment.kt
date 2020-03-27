@@ -167,8 +167,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var roleListener: Disposable
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
-
-    var matrix: Array<Array<ArrayList<Segment>>> = Array(0) { Array(0) { ArrayList<Segment>() } }
+    private lateinit var matrix: Array<Array<ArrayList<Segment>>>
 
     init {
         paintLine.isAntiAlias = true
@@ -181,7 +180,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             strokeReceived(obj)
         }
 
-        roleListener = Communication.getDrawerUpdateListener().subscribe{ obj ->
+        roleListener = Communication.getDrawerUpdateListener().subscribe{
             clearStrokes()
         }
     }
@@ -197,7 +196,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
         matrix = Array(h / 100) { Array(w / 100) { ArrayList<Segment>() } }
-
 
         //val testPath = Path()
         //testPath.moveTo(100.0F, 100.0F)
@@ -333,7 +331,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         var strokeFound = false
 
         synchronized(segments) {
-            for (segment in segments) {
+            for (segment in matrix[pointY / 100][pointX / 100]) {
                 if (segment.paint.color == Color.TRANSPARENT) {
                     continue
                 }
@@ -405,7 +403,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 segments[segments.size - 2].nextSegment = segments[segments.size - 1]
             }
 
-            //matrix[startY / 100] segments[segments.size - 1]
+            matrix[startY / 100][startX / 100].add(segments[segments.size - 1])
+            if (startY / 100 != destY / 100 || startX / 100 != destX / 100) {
+                matrix[destY / 100][destX / 100].add(segments[segments.size - 1])
+            }
         }
 
         strokeJustEnded = false
