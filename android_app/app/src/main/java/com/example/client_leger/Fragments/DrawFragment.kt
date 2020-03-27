@@ -217,22 +217,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if ((isStrokeErasing || isNormalErasing)) {
             if (event.actionMasked == MotionEvent.ACTION_MOVE) {
                 if (lastErasePoint != null) {
-                    val distance = distance(lastErasePoint!!, Point(x, y))
-                    val directionX = (x - lastErasePoint!!.x) / distance
-                    val directionY = (y - lastErasePoint!!.y) / distance
-                    val startX = lastErasePoint!!.x
-                    val startY = lastErasePoint!!.y
-
-                    for (i in 1..(distance / 15).toInt()) {
-                        val newX = (startX + directionX * 15 * i).toInt()
-                        val newY = (startY + directionY * 15 * i).toInt()
-                        if (isValidErasePoint(newX, newY)) {
-                            checkForStrokesToErase(newX, newY, isStrokeErasing)
-                            sendErase(newX, newY, isStrokeErasing)
-                        }
-                        lastErasePoint!!.x = newX
-                        lastErasePoint!!.y = newY
-                    }
+                    eraseInLine(x, y)
                 }
             } else {
                 lastErasePoint = Point(x, y)
@@ -255,6 +240,24 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         return true
     }
 
+    private fun eraseInLine(destX: Int, destY: Int) {
+        val distance = distance(lastErasePoint!!, Point(destX, destY))
+        val directionX = (x - lastErasePoint!!.x) / distance
+        val directionY = (y - lastErasePoint!!.y) / distance
+        val startX = lastErasePoint!!.x
+        val startY = lastErasePoint!!.y
+
+        for (i in 1..(distance / 15).toInt()) {
+            val newX = (startX + directionX * 15 * i).toInt()
+            val newY = (startY + directionY * 15 * i).toInt()
+            if (isValidErasePoint(newX, newY)) {
+                checkForStrokesToErase(newX, newY, isStrokeErasing)
+                sendErase(newX, newY, isStrokeErasing)
+            }
+            lastErasePoint!!.x = newX
+            lastErasePoint!!.y = newY
+        }
+    }
 
     private fun distance(point1: Point, point2: Point): Float {
         val deltaX = (point2.x - point1.x).toFloat()
