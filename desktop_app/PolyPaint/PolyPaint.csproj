@@ -182,6 +182,7 @@
     <Compile Include="Modeles\ChatRoom.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
+    <Compile Include="Utilitaires\CustomStroke.cs" />
     <Compile Include="Utilitaires\Enums.cs" />
     <Compile Include="Utilitaires\Constants.cs" />
     <Compile Include="Utilitaires\EventRaiser.cs" />
@@ -258,7 +259,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LobbyPasswordControl.xaml">
-    <SubType>Designer</SubType>
+      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\HintInputControl.xaml">
