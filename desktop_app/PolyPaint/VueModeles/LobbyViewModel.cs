@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PolyPaint.Controls;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
@@ -11,21 +12,25 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LobbyViewModel: BaseViewModel, IPageViewModel
+    class LobbyViewModel : BaseViewModel, IPageViewModel
     {
         public LobbyViewModel(string lobbyname)
         {
             Usernames = new ObservableCollection<string>();
             this.LobbyName = lobbyname;
             fetchUsername();
-            ServerService.instance.socket.On("lobby-notif", refreshUserList);
+            ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
+            Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
 
         #region Public Attributes
+
+        public static string[] BotList = { "bot:sebastien", "bot:olivia", "bot:olivier" };
         public string LobbyName { get; set; }
         private ObservableCollection<string> _usernames;
         public ObservableCollection<string> Usernames
@@ -33,6 +38,21 @@ namespace PolyPaint.VueModeles
             get { return _usernames; }
             set { _usernames = value; ProprieteModifiee(); }
         }
+
+        private ObservableCollection<string> _bots;
+        public ObservableCollection<string> Bots
+        {
+            get { return _bots; }
+            set { _bots = value; ProprieteModifiee(); }
+        }
+
+        private string _selectedBot;
+        public string SelectedBot
+        {
+            get { return _selectedBot; }
+            set { _selectedBot = value; ProprieteModifiee(); }
+        }
+
         private bool _isGameMaster;
         public bool IsGameMaster
         {
@@ -40,6 +60,30 @@ namespace PolyPaint.VueModeles
             set
             {
                 _isGameMaster = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isCreateBotDialogOpen;
+        public bool IsCreateBotDialogOpen
+        {
+            get { return _isCreateBotDialogOpen; }
+            set
+            {
+                if (_isCreateBotDialogOpen == value) return;
+                _isCreateBotDialogOpen = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private object _dialogContent;
+        public object DialogContent
+        {
+            get { return _dialogContent; }
+            set
+            {
+                if (_dialogContent == value) return;
+                _dialogContent = value;
                 ProprieteModifiee();
             }
         }
@@ -63,12 +107,33 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private void refreshUserList()
+        private async Task kickPlayer(string username)
         {
-            //if((string)lobbyName == this.LobbyName) TODO
-            //{
+            Console.WriteLine(username);
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
+            dynamic values = new JObject();
+            values.username = username;
+            values.lobbyName = LobbyName;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            {
+                MessageBox.Show("Player " + username + " kicked.");
+            }
+        }
+
+        private void refreshUserList(JObject data)
+        {
+            Console.WriteLine(data);
+            if((string)data.GetValue("lobbyName") == this.LobbyName && ((string)data.GetValue("type") == "join"|| (string)data.GetValue("type") == "leave"))
+            {
                 fetchUsername();
-            //}
+            }
+            if(!Usernames.Contains(ServerService.instance.username))
+                Mediator.Notify("LeaveLobby", "");
         }
         private async void fetchUsername()
         {
@@ -94,7 +159,27 @@ namespace PolyPaint.VueModeles
         private async Task startGame()
         {
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
-            Mediator.Notify("GoToDrawScreen");
+            if (response.IsSuccessStatusCode)
+            {
+                Mediator.Notify("GoToDrawScreen");
+            }
+        }
+
+        private async Task processBotRequest()
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+            dynamic values = new JObject();
+            values.username = SelectedBot;
+            values.Add("isPrivate", false);
+            values.lobbyName = this.LobbyName;
+            values.password = "";
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if(response.IsSuccessStatusCode)
+                Bots.Remove(SelectedBot);
         }
 
         #endregion
@@ -124,6 +209,58 @@ namespace PolyPaint.VueModeles
                 }));
             }
         }
+
+        private ICommand _openBotControlCommand;
+        public ICommand OpenBotControlCommand
+        {
+            get
+            {
+                return _openBotControlCommand ?? (_openBotControlCommand = new RelayCommand(async x =>
+                {
+                    DialogContent = new CreateBotControl();
+                    IsCreateBotDialogOpen = true;
+                }));
+            }
+        }
+
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(x =>
+                {
+                    IsCreateBotDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _acceptCommand;
+        public ICommand AcceptCommand
+        {
+            get
+            {
+                return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
+                {
+                    await processBotRequest();
+                    
+                    fetchUsername();
+                    IsCreateBotDialogOpen = false;
+                }));
+            }
+        }
+        private ICommand _removeUserCommand;
+        public ICommand RemoveUserCommand
+        {
+            get
+            {
+                return _removeUserCommand ?? (_removeUserCommand = new RelayCommand(async x => 
+                {
+                    await Task.Run(() => kickPlayer((string)x));
+                }));
+            }
+        }
+
         #endregion
     }
 }
