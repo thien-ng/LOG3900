@@ -50,10 +50,14 @@ class DrawFragment: Fragment() {
 
         v.button_round.setOnClickListener {
             switchDrawWithCircle(v)
+            v.button_square.isChecked = false
+            v.button_round.isChecked = true
         }
 
         v.button_square.setOnClickListener {
             switchDrawWithSquare(v)
+            v.button_square.isChecked = true
+            v.button_round.isChecked = false
         }
 
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
