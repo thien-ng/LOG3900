@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -109,7 +110,10 @@ namespace PolyPaint.VueModeles
                 {
                     await startGame().ContinueWith(x =>
                     {
-                        Mediator.Notify("GoToDrawScreen");
+                        if (x.Result.IsSuccessStatusCode)
+                            Mediator.Notify("GoToDrawScreen");
+                        else
+                            MessageBox.Show("Error starting game");
                     });
                 }));
             }

@@ -187,21 +187,24 @@ namespace PolyPaint.VueModeles
 
         public void OnDraw(JObject data) 
         {
-           double X1 = (double)data.GetValue("startPosX");
-           double X2 = (double)data.GetValue("endPosX");
-           double Y1 = (double)data.GetValue("startPosY");
-           double Y2 = (double)data.GetValue("endPosY");
 
-           StylusPointCollection coll = new StylusPointCollection();
-           coll.Add(new StylusPoint(X1, Y1));
-           coll.Add(new StylusPoint(X2, Y2));
+            Console.WriteLine(data);
+            
+           //double X1 = (double)data.GetValue("startPosX");
+           //double X2 = (double)data.GetValue("endPosX");
+           //double Y1 = (double)data.GetValue("startPosY");
+           //double Y2 = (double)data.GetValue("endPosY");
 
-           Stroke str = new Stroke(coll);
+           //StylusPointCollection coll = new StylusPointCollection();
+           //coll.Add(new StylusPoint(X1, Y1));
+           //coll.Add(new StylusPoint(X2, Y2));
 
-           App.Current.Dispatcher.Invoke(delegate
-           {
-               Traits.Add(str);
-           });
+           //Stroke str = new Stroke(coll);
+
+           //App.Current.Dispatcher.Invoke(delegate
+           //{
+           //    Traits.Add(str);
+           //});
         }
 
         private void DrawingPen(InkCanvas sender, MouseEventArgs e)
