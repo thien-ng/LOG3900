@@ -135,7 +135,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var currentStartX = 0f
     private var currentStartY = 0f
     private val segments = ArrayList<Segment>()
-    private var strokeJustEnded = false
+    private var strokeJustEnded = true
     private var drawListener: Disposable
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
@@ -184,7 +184,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             touchMoved(currentStartX, currentStartY, event.x, event.y)
         } else if (action == MotionEvent.ACTION_UP){
             strokeJustEnded = true
-            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine)) //TODO: needed?
+            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
             currentStroke.reset()
         }
 
@@ -282,7 +282,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newY = startY + directionY * paintLine.strokeWidth * i
 
             sendStroke(currentStartX, newX, currentStartY, newY, strokeJustEnded)
-            addSegment(currentStartX, newX, currentStartY, newY, strokeJustEnded)
+            addSegment(currentStartX, newX, currentStartY, newY)
 
             strokeJustEnded = false
             currentStartX = newX
@@ -294,17 +294,18 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         invalidate()
     }
 
-    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float, isFirst: Boolean) {
+    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float) {
         val newSegment = Path()
         newSegment.moveTo(startX, startY)
         newSegment.lineTo(destX, destY)
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
-        if (segments.size - 2 >= 0 && !isFirst) {
+        if (segments.size - 2 >= 0 && !strokeJustEnded) {
             // segments.size - 1 is the index of the segment we just added,
             // segments.size - 2 is the index of the segment just before it.
             segments[segments.size - 1].previousSegment = segments[segments.size - 2]
             segments[segments.size - 2].nextSegment = segments[segments.size - 1]
         }
+        strokeJustEnded = false
     }
 
     private fun strokeReceived(obj: JSONObject) {
@@ -323,19 +324,17 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     obj.getInt("startPosX").toFloat(),
                     obj.getInt("endPosX").toFloat(),
                     obj.getInt("startPosY").toFloat(),
-                    obj.getInt("endPosY").toFloat(),
-                    strokeJustEnded
+                    obj.getInt("endPosY").toFloat()
                 )
 
-                strokeJustEnded = false
-
                 if (obj.getBoolean("isEnd")) {
-                    bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
                     currentStroke.reset()
+                    redrawPathsToBitmap()
                     strokeJustEnded = true
                 }
             }
             obj.getString("type") == "eraser" -> {
+                currentStroke.reset()
                 checkForStrokesToErase(
                     obj.getInt("x").toFloat(),
                     obj.getInt("y").toFloat(),
