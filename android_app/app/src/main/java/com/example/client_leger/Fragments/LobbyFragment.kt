@@ -5,7 +5,9 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ListView
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Controller.GameController
 import com.example.client_leger.Interface.FragmentChangeListener
@@ -21,7 +23,8 @@ class LobbyFragment : Fragment(),
     private lateinit var username: String
     private lateinit var lobbyName:String
     private var usernames: ArrayList<String> = arrayListOf()
-
+    private lateinit var userListAdapter: ArrayAdapter<String>
+    private var userList = arrayListOf<String>()
     lateinit var startListener: Disposable;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,6 +37,13 @@ class LobbyFragment : Fragment(),
         }
         gameController.getUsers(this, lobbyName)
 
+        userListAdapter = ArrayAdapter<String>(
+            context,
+            android.R.layout.simple_list_item_1,
+            userList
+        )
+        var listview =  v.findViewById<ListView>(R.id.userlist)
+        listview.adapter= userListAdapter
         startListener = Communication.getGameStartListener().subscribe{res ->
             activity!!.runOnUiThread {
                 replaceFragment(GameplayFragment())
@@ -78,5 +88,7 @@ class LobbyFragment : Fragment(),
                 leaveButton.setOnClickListener { leaveGame(lobbyName) }
             }
         }
+        userListAdapter.clear()
+        userListAdapter.addAll(usernames)
     }
 }
