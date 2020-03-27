@@ -241,7 +241,7 @@ namespace PolyPaint.VueModeles
             JObject eraser = new JObject(new JProperty("username", ServerService.instance.username),
                                          new JProperty("type", "ink"),
                                          new JProperty("x", e.GetPosition(sender).X),
-                                         new JProperty("x", e.GetPosition(sender).Y),
+                                         new JProperty("y", e.GetPosition(sender).Y),
                                          new JProperty("eraser", eraserType));
 
             if (eraserWidth != null)
