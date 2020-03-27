@@ -294,11 +294,18 @@ namespace PolyPaint.VueModeles
                 }
             }
 
-            Traits.Remove(strokesToRemove);
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                Traits.Remove(strokesToRemove);
+            });
+
             CustomStroke fullStroke = new CustomStroke(points, attr);
             fullStroke.uid = currentStrokeId;
 
-            Traits.Add(fullStroke);
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                Traits.Add(fullStroke);
+            });
 
             currentStrokeId = Guid.NewGuid();
         }
