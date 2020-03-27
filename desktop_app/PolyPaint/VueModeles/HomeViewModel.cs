@@ -32,6 +32,7 @@ namespace PolyPaint.VueModeles
             Lobby
         }
 
+
         private ObservableCollection<MessageChannel> _subChannels;
         public ObservableCollection<MessageChannel> SubChannels
         {
@@ -193,6 +194,7 @@ namespace PolyPaint.VueModeles
 
         private void goToLobbyView(object lobbyname)
         {
+            IsNotInLobby = false;
             SwitchView = Views.Lobby;
             LobbyViewModel = new LobbyViewModel((string)lobbyname);
             this.Lobbyname = (string)lobbyname;
@@ -249,9 +251,8 @@ namespace PolyPaint.VueModeles
                 if (channel != null)
                     channel.isSelected = false;
 
-                _selectedChannel = new ChatRoom((string)id, !IsNotInLobby);
+                _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
-
                 ProprieteModifiee("Messages");
             }
         }
@@ -280,9 +281,8 @@ namespace PolyPaint.VueModeles
             {
                 Application.Current.Dispatcher.Invoke(delegate
                 {
-                    MessageChannel joinedChannel = new MessageChannel(channelId, true, false);
                     _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
-                    _subChannels.Add(joinedChannel);
+                    _subChannels.Add(new MessageChannel(channelId, true, false));
                 });
             }
             else

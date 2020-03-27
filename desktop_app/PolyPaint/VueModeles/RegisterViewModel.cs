@@ -24,6 +24,8 @@ namespace PolyPaint.VueModeles
         public RegisterViewModel()
         {
             _username = "";
+            _firstName = "";
+            _lastName = "";
         }
 
         #region Public Attributes
@@ -111,6 +113,8 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(Constants.SERVER_PATH + Constants.REGISTER_PATH, content);
 
             var responseString = await response.Content.ReadAsStringAsync();
+
+            fetchProfile();
 
             return JObject.Parse(responseString);
         }
