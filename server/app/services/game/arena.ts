@@ -17,15 +17,16 @@ export abstract class Arena {
     protected gm : GameManagerService;
 
     protected socketServer:  io.Server;
-    protected users:         IUser[];
     protected rules:         IGameRule[];
     protected room:          string;
-    protected dcPlayer:      string[];
     protected curRule:       IGameRule;
     protected userMapPoints: Map<string, number>;
-
-    protected userMapReady:  Map<string, boolean>;
     protected type:          GameMode;
+    
+    protected userMapReady:  Map<string, boolean>;
+    protected dcPlayer:      string[];
+    protected users:         IUser[];
+    protected isAllDc:       boolean;
 
     private arenaId:             number;
     private chronometerTimer:    number;
@@ -44,6 +45,7 @@ export abstract class Arena {
         this.arenaId        = arenaId;
         this.type           = type;
         this.hintPtr        = 0;
+        this.isAllDc        = false;
         
         this.initReadyMap();
         this.setupPoints();
@@ -79,6 +81,15 @@ export abstract class Arena {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
         }
+
+        let count = 0;
+        this.users.forEach(u => {
+            // count users who are not bots
+            if (!this.isBot(u.username))
+                count++;
+        });
+        if (count === 0)
+            this.isAllDc = true;
     }
 
     protected checkArenaLoadingState(callback: () => void): void {
@@ -117,11 +128,9 @@ export abstract class Arena {
 
     private cancelGame(): void {
         console.log("[Debug] Cancel routine");
-
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over");
         });
-
         this.gm.deleteArena(this.arenaId);
     }
 
@@ -186,7 +195,7 @@ export abstract class Arena {
 
 
     protected isBot(username: string): boolean {
-        return username === Bot.humour || username === Bot.kind || username === Bot.mean
+        return username === Bot.humour || username === Bot.kind || username === Bot.mean;
     }
 
     protected initBot(botName: string): MeanBot | KindBot | HumourBot {

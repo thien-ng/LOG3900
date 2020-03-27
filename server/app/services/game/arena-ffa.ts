@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
@@ -75,7 +75,7 @@ export class ArenaFfa extends Arena {
             this.socketServer.to(this.room).emit("game-timer", {time: (TOTAL_TIME - timer)/ONE_SEC});
             this.curTime = timer;
 
-            if (timer >= TOTAL_TIME || this.isEveryoneHasRightAnswer) {
+            if (timer >= TOTAL_TIME || this.isEveryoneHasRightAnswer || this.isAllDc) {
                 clearInterval(this.curArenaInterval);
 
                 this.handlePoints();
@@ -104,7 +104,7 @@ export class ArenaFfa extends Arena {
             return true;
     }
 
-    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
+    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser | IGameplayHint): void {
         switch(mes.event) {
             case EventType.draw:
                 this.handleGameplayDraw(socket, mes as IGameplayDraw | IGameplayEraser);
@@ -114,6 +114,10 @@ export class ArenaFfa extends Arena {
                 break;
             case EventType.ready:
                 this.handleGameplayReady(mes as IGameplayReady);
+                break;
+            case EventType.hint:
+                this.handleGameplayHint();
+                break;
         }
     }
 
@@ -149,7 +153,7 @@ export class ArenaFfa extends Arena {
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
-        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.clues, Side.up); // TODO handle sides
+        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, Side.up); // TODO handle sides
     }
 
     protected botAnnounceStart(): void {
