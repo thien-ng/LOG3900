@@ -53,7 +53,7 @@ class LobbyFragment : Fragment(),
     private fun leaveGame(lobbyName: String){
         var body = JSONObject()
         body.put("lobbyName", lobbyName)
-        body.put("userName", username)
+        body.put("username", username)
         gameController.leaveGame(this, body)
     }
     override fun replaceFragment(fragment: Fragment) {
