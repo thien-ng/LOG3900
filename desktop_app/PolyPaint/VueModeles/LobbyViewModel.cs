@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -24,6 +23,7 @@ namespace PolyPaint.VueModeles
             this.LobbyName = lobbyname;
             fetchUsername();
             ServerService.instance.socket.On("lobby-notif", refreshUserList);
+            ServerService.instance.socket.On("game-start", GoToDrawScreen);
         }
 
         #region Public Attributes
@@ -95,6 +95,11 @@ namespace PolyPaint.VueModeles
         private async Task<HttpResponseMessage> startGame()
         {
             return await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
+        }
+
+        private void GoToDrawScreen()
+        {
+            Mediator.Notify("GoToDrawScreen");
         }
 
         #endregion
