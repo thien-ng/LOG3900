@@ -137,6 +137,9 @@
     <Compile Include="Controls\Chat\MessageList.xaml.cs">
       <DependentUpon>MessageList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CreateBotControl.xaml.cs">
+      <DependentUpon>CreateBotControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CreateChannelControl.xaml.cs">
       <DependentUpon>CreateChannelControl.xaml</DependentUpon>
     </Compile>
@@ -231,6 +234,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Chat\MessageList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CreateBotControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
