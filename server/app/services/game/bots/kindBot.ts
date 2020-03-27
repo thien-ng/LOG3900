@@ -1,19 +1,23 @@
-import { IDrawing } from "../../../interfaces/game";
-import { DisplayMode } from '../../../interfaces/creator';
+import { IGameplayAnnouncement } from '../../../interfaces/game';
 import { Taunt } from './taunts';
-import { Side } from '../../../utils/Side';
 import { Bot } from "./bot";
+
+import * as io from 'socket.io';
 
 export class KindBot extends Bot {
 
-    constructor(image: IDrawing[],
-        username: string | undefined,
-        hint: string[] | undefined,
-        mode: DisplayMode | undefined,
-        panoramicFirstSide: Side | undefined) {
-
-        super(image, username, hint, mode, panoramicFirstSide);
+    constructor(socket: io.Server, username: string) {
+        super(socket, username);
         this.taunts = Taunt.kind;
+    }
+    
+    public launchTauntStart(room: string): void {
+        const announcement: IGameplayAnnouncement = {
+            username: this.username,
+            content: "Even if I'm going to win, let's try to have fun!",
+            isServer: false,
+        };
+        this.socket.to(room).emit("game-chat", announcement);
     }
 
 }

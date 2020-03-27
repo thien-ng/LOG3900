@@ -14,4 +14,10 @@ export class ArenaSolo extends Arena {
     protected handleGameplayChat(mes: IGameplayChat): void {}
 
     protected handlePoints(): void {}
+
+    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {return setInterval(() =>{}, 1)}
+
+    protected botAnnounceStart(): void {}
+    
+    protected botAnnounceEndSubGane(): void {}
 }
