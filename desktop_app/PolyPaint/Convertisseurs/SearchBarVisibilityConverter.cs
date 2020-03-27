@@ -11,9 +11,6 @@ namespace PolyPaint.Convertisseurs
             return ((string)value).Length > 0 ? Visibility.Hidden: Visibility.Visible;
         }
 
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => DependencyProperty.UnsetValue;
     }
 }

@@ -21,18 +21,18 @@ namespace PolyPaint.VueModeles
         }
         #region Public Attributes
 
-        String _username;
+        string _username;
         public string Username
         {
             get { return _username; }
         }
 
-        String _firstname;
+        string _firstname;
         public string Firstname
         {
             get { return _firstname; }
         }
-        String _lastname;
+        string _lastname;
         public string Lastname
         {
             get { return _lastname; }
