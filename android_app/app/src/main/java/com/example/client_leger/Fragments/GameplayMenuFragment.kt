@@ -27,7 +27,10 @@ class GameplayMenuFragment: Fragment() {
         username = activity!!.intent.getStringExtra("username")
 
         // Emit to tell server the view is ready
-        SocketIO.sendMessage("gameplay", JSONObject().put("username", username))
+        val readyState = JSONObject()
+        readyState.put("event", "ready")
+        readyState.put("username", username)
+        SocketIO.sendMessage("gameplay", readyState)
 
         timerSub = Communication.getTimerListener().subscribe{res ->
             activity!!.runOnUiThread {
