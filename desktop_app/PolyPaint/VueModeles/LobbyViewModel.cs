@@ -91,10 +91,9 @@ namespace PolyPaint.VueModeles
                 IsGameMaster = ServerService.instance.username == Usernames.First<string>();
             }
         }
-        private async Task startGame()
+        private async Task<HttpResponseMessage> startGame()
         {
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
-            Mediator.Notify("GoToDrawScreen");
+            return await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
         }
 
         #endregion
@@ -108,7 +107,10 @@ namespace PolyPaint.VueModeles
             {
                 return _startGameCommand ?? (_startGameCommand = new RelayCommand(async x =>
                 {
-                    await Task.Run(() => startGame());
+                    await startGame().ContinueWith(x =>
+                    {
+                        Mediator.Notify("GoToDrawScreen");
+                    });
                 }));
             }
         }    

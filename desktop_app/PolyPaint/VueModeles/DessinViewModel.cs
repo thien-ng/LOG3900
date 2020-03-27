@@ -23,30 +23,23 @@ namespace PolyPaint.VueModeles
         /// sur lesquelles la vue se connectera.
         /// </summary>
         /// 
-        public DessinViewModel(int width = 600, int height = 500)
+        public DessinViewModel()
+        {
+            Width = 1000;
+            Height = 800;
+
+            Setup();
+        }
+
+        public DessinViewModel(int width, int height)
         {
             Width = width;
             Height = height;
 
-            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
-            
-            editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
-
-            // On initialise les attributs de dessin avec les valeurs de départ du modèle.
-            AttributsDessin = new DrawingAttributes();
-            AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
-            AjusterPointe();
-
-            Traits = editeur.traits;
-
-            // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.
-            // Pour les commandes suivantes, il est toujours possible des les activer.
-            // Donc, aucune vérification de type Peut"Action" à faire.
-            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
-            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
-
-            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            Setup();
         }
+
+
 
         #region Public Attributes
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
@@ -105,6 +98,28 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
+        private void Setup()
+        {
+            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
+
+            editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
+
+            // On initialise les attributs de dessin avec les valeurs de départ du modèle.
+            AttributsDessin = new DrawingAttributes();
+            AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
+            AjusterPointe();
+
+            Traits = editeur.traits;
+
+            // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.
+            // Pour les commandes suivantes, il est toujours possible des les activer.
+            // Donc, aucune vérification de type Peut"Action" à faire.
+            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
+            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
+
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+        }
+
         /// <summary>
         /// Traite les évènements de modifications de propriétés qui ont été lancés à partir
         /// du modèle.
@@ -146,30 +161,27 @@ namespace PolyPaint.VueModeles
 
         public void MouseMove(InkCanvas sender, MouseEventArgs e)
         {
-            if (IsDrawing)
+            if (!IsDrawing) return;
+
+            if (previousPos["X"] == null || previousPos["Y"] == null)
             {
-                if (previousPos["X"] == null || previousPos["Y"] == null)
-                {
-                    previousPos["X"] = e.GetPosition(sender).X;
-                    previousPos["Y"] = e.GetPosition(sender).Y;
-
-                    return;
-                }
-
-                dynamic values = new JObject();
-
-                values.username = ServerService.instance.username;
-                values.startPosX = previousPos["X"];
-                values.startPosY = previousPos["Y"];
-                values.endPosX = e.GetPosition(sender).X;
-                values.endPosY = e.GetPosition(sender).Y;
-                values.color = editeur.CouleurSelectionnee;
-                values.width = editeur.TailleTrait;
-
                 previousPos["X"] = e.GetPosition(sender).X;
                 previousPos["Y"] = e.GetPosition(sender).Y;
 
-                ServerService.instance.socket.Emit("gameplay", values);
+                return;
+            }
+
+            switch (editeur.OutilSelectionne)
+            {
+                case "crayon":
+                    DrawingPen(sender, e);
+                    break;
+                case "efface_segment":
+                case "efface_trait":
+                    DrawingEraser(sender, e);
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -191,7 +203,50 @@ namespace PolyPaint.VueModeles
                Traits.Add(str);
            });
         }
-        
+
+        private void DrawingPen(InkCanvas sender, MouseEventArgs e)
+        {
+            string format = editeur.PointeSelectionnee == "cercle" ? "circle" : "square";
+
+            JObject drawing = new JObject(new JProperty("username", ServerService.instance.username),
+                                          new JProperty("startPosX", previousPos["X"]),
+                                          new JProperty("startPosY", previousPos["Y"]),
+                                          new JProperty("endPosX", e.GetPosition(sender).X),
+                                          new JProperty("endPosY", e.GetPosition(sender).Y),
+                                          new JProperty("color", editeur.CouleurSelectionnee),
+                                          new JProperty("width", editeur.TailleTrait),
+                                          new JProperty("isEnd", false),
+                                          new JProperty("format", format),
+                                          new JProperty("type", "ink"));
+
+            ServerService.instance.socket.Emit("gameplay", drawing);
+        }
+
+        private void DrawingEraser(InkCanvas sender, MouseEventArgs e)
+        {
+            string eraserType;
+            int? eraserWidth = null;
+
+            if (editeur.OutilSelectionne == "efface_segment")
+            {
+                eraserType = "point";
+                eraserWidth = editeur.TailleTrait;
+            }
+            else
+                eraserType = "stroke";
+
+            JObject eraser = new JObject(new JProperty("username", ServerService.instance.username),
+                                         new JProperty("type", "ink"),
+                                         new JProperty("x", e.GetPosition(sender).X),
+                                         new JProperty("x", e.GetPosition(sender).Y),
+                                         new JProperty("eraser", eraserType));
+
+            if (eraserWidth != null)
+                eraser.Add("width", eraserWidth);
+
+            ServerService.instance.socket.Emit("gameplay", eraser);
+        } 
+
         #endregion
 
         #region Commands
