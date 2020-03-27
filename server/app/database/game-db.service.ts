@@ -13,7 +13,7 @@ export class GameDbService extends DatabaseService {
                             CAST('${info.winner}'   AS VARCHAR),
                             CAST('${JSON.stringify(info.users)}'    AS JSON));`)
                             .then(() => {console.log("[DEBUG] added points to db successfully")})
-                            .catch((e) => {console.log("[DEBUG] " + e.message)});
+                            .catch((e) => {console.log("[DEBUG error] " + e.message)});
     }
 
 }
