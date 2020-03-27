@@ -1,6 +1,7 @@
 import { IDrawing } from "../../../interfaces/game";
 import { DisplayMode } from '../../../interfaces/creator';
 import { Side } from '../../../utils/Side';
+import { IGameplayAnnouncement } from '../../../interfaces/game';
 
 import * as io from 'socket.io';
 
@@ -17,7 +18,7 @@ export abstract class Bot {
     protected mode: DisplayMode;
     protected panoramicFirstSide: Side;
 
-    private socket: io.Server;
+    protected socket: io.Server;
 
     constructor(socket: io.Server, username: string) {
         this.username = username;
@@ -25,6 +26,8 @@ export abstract class Bot {
         this.nextStroke = 0;
         this.socket = socket;
     }
+
+    public abstract launchTauntStart(room: string): void;
 
     public draw(room: string, arenaTime: number, drawings: IDrawing[], mode: DisplayMode, hint: string[], panoramicFirstSide: Side): NodeJS.Timeout {
         this.setupOnDraw(drawings, mode, hint, panoramicFirstSide);
@@ -157,7 +160,13 @@ export abstract class Bot {
         return (this.nextHint >= this.hint.length) ? "No more hint available" : this.hint[this.nextHint++];
     }
 
-    public launchTaunt(): string {
-        return this.taunts[Math.floor(Math.random() * this.taunts.length)]; //ceci ou la fonction qui envoie un message avec Username
+    public launchTaunt(room: string): void {
+        const taunt = this.taunts[Math.floor(Math.random() * this.taunts.length)]; //ceci ou la fonction qui envoie un message avec Username
+        const announcement: IGameplayAnnouncement = {
+            username: this.username,
+            content: taunt,
+            isServer: false,
+        };
+        this.socket.to(room).emit("game-chat", announcement);
     }
 }

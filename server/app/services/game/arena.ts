@@ -50,6 +50,8 @@ export abstract class Arena {
     public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void;
     
     protected abstract startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout;
+    protected abstract botAnnounceStart(): void;
+    protected abstract botAnnounceEndSubGane(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
     protected handleGameplayReady(mes: IGameplayReady): void {
