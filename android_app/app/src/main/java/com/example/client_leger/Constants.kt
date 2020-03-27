@@ -15,7 +15,7 @@ class Constants {
         const val USER_INFO_ENDPOINT = "/account/user/info/"
         const val START_GAME_ENDPOINT = "/game/start/"
         const val USERS_LOBBY_ENDPOINT = "/game/lobby/users/"
-        const val LEAVE_LOBBY_ENDPOINT = "/game/leave/  "
+        const val LEAVE_LOBBY_ENDPOINT = "/game/lobby/leave"
         //char limits
         const val MAX_USERNAME_SiZE = 20
         const val MAX_PASSWORD_SiZE = 20
