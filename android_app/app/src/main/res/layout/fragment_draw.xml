@@ -21,9 +21,7 @@
             android:drawableTop="@drawable/ic_eraser_stroke"
             android:checked="false"
             android:gravity="center"
-            android:textOff=""
-            android:textOn=""
-            android:textSize="0dp"
+            android:textSize="0sp"
             app:layout_constraintStart_toEndOf="@+id/button_changeWidth"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,10 +32,30 @@
             android:drawableTop="@drawable/ic_eraser"
             android:checked="false"
             android:gravity="center"
-            android:textOff=""
-            android:textOn=""
-            android:textSize="0dp"
+            android:textSize="0sp"
             app:layout_constraintStart_toEndOf="@+id/button_strokeErase"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <ToggleButton
+            android:id="@+id/button_round"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_circle_24dp"
+            android:checked="true"
+            android:gravity="center"
+            android:textSize="0sp"
+            app:layout_constraintStart_toEndOf="@+id/button_normalErase"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <ToggleButton
+            android:id="@+id/button_square"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableTop="@drawable/ic_square_24dp"
+            android:checked="false"
+            android:gravity="center"
+            android:textSize="0sp"
+            app:layout_constraintStart_toEndOf="@+id/button_round"
             app:layout_constraintTop_toTopOf="parent" />
 
     <Button
