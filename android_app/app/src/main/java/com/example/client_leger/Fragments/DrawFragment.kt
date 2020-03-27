@@ -365,7 +365,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-
     private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float, isNew: Boolean) {
         val newSegment = Path()
         newSegment.moveTo(startX, startY)
@@ -377,6 +376,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             segments[segments.size - 1].previousSegment = segments[segments.size - 2]
             segments[segments.size - 2].nextSegment = segments[segments.size - 1]
         }
+
         strokeJustEnded = false
     }
 
@@ -390,7 +390,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 paintLine.color = obj.getInt("color")
                 paintLine.style = Paint.Style.STROKE
                 paintLine.strokeWidth = obj.getInt("width").toFloat()
-
                 paintLine.strokeCap =
                     if (obj.getString("format") == "circle")
                         Paint.Cap.ROUND
