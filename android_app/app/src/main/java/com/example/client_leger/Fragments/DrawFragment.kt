@@ -132,6 +132,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var paintLine: Paint = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
+    private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
     private var currentStroke = Path()
     private var currentStartX = 0f
@@ -166,6 +167,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onDraw(canvas: Canvas) {
+        if (bitmapNeedsToUpdate) {
+            redrawPathsToBitmap()
+        }
         canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
         canvas.drawPath(currentStroke, paintLine)
     }
@@ -208,9 +212,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun redrawPathsToBitmap() {
         bitmap.eraseColor(Color.WHITE)
-        for (segment in segments) {
-            bitmapCanvas.drawPath(segment.path, segment.paint)
+        for (i in 0 until segments.count()) {
+            bitmapCanvas.drawPath(segments[i].path, segments[i].paint)
         }
+
+        bitmapNeedsToUpdate = false
     }
 
     private fun batchErase(segment: Segment) {
@@ -233,24 +239,24 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun checkForStrokesToErase(pointX: Float, pointY: Float, isStroke: Boolean) {
         var strokeFound = false
 
-        for (segment in segments) {
-            if (segment.paint.color == Color.TRANSPARENT) {
+        for (i in 0 until segments.count()) {
+            if (segments[i].paint.color == Color.TRANSPARENT) {
                 continue
             }
 
-            val pm = PathMeasure(segment.path, false)
+            val pm = PathMeasure(segments[i].path, false)
             val coordinates = FloatArray(2)
 
             pm.getPosTan(pm.length / 2.0f, coordinates, null)
-            val eraserHalfSize = segment.paint.strokeWidth / 2.0f
+            val eraserHalfSize = segments[i].paint.strokeWidth / 2.0f
             val xOnLine = coordinates[0]
             val yOnLine = coordinates[1]
 
             if (xOnLine <= pointX.toInt() + eraserHalfSize && xOnLine >= pointX.toInt() - eraserHalfSize) {
                 if (yOnLine <= pointY.toInt() + eraserHalfSize && yOnLine >= pointY.toInt() - eraserHalfSize) {
-                    segment.paint.color = Color.TRANSPARENT
+                    segments[i].paint.color = Color.TRANSPARENT
                     if (isStroke) {
-                        batchErase(segment)
+                        batchErase(segments[i])
                     }
 
                     strokeFound = true
@@ -259,7 +265,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
 
         if (strokeFound) {
-            redrawPathsToBitmap()
+            bitmapNeedsToUpdate = true
             postInvalidate()
         }
     }
@@ -328,7 +334,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
                 if (obj.getBoolean("isEnd")) {
                     currentStroke.reset()
-                    redrawPathsToBitmap()
+                    bitmapNeedsToUpdate = true
                     strokeJustEnded = true
                 }
             }
