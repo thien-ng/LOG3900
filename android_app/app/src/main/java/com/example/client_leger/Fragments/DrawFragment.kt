@@ -137,7 +137,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var currentStroke = Path()
     private var currentStartX = 0f
     private var currentStartY = 0f
-    private val segments = ArrayList<Segment>()
+    private var segments = ArrayList<Segment>()
     private var strokeJustEnded = true
     private var drawListener: Disposable
     private lateinit var bitmap: Bitmap
@@ -192,6 +192,21 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
 
         return true
+    }
+
+    fun switchDrawWithCircle() {
+        paintLine.strokeCap = Paint.Cap.ROUND
+    }
+
+    fun switchDrawWithSquare() {
+        paintLine.strokeCap = Paint.Cap.SQUARE
+    }
+
+    fun clearStrokes() {
+        segments = ArrayList()
+        currentStroke.reset()
+        bitmapNeedsToUpdate = true
+        postInvalidate()
     }
 
     private fun isValidErasePoint(x: Float, y: Float): Boolean {
