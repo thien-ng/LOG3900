@@ -44,6 +44,7 @@ namespace PolyPaint.VueModeles
         #region Public Attributes
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         private Editeur editeur = new Editeur();
+        private Guid currentStrokeId = Guid.NewGuid();
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
         public string OutilSelectionne
@@ -94,13 +95,15 @@ namespace PolyPaint.VueModeles
 
         public Dictionary<string, double?> previousPos { get; set; }
 
+        public bool IsEndOfStroke { get; set; }
+
         #endregion
 
         #region Methods
 
         private void Setup()
         {
-            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
+            ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
 
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
@@ -172,7 +175,7 @@ namespace PolyPaint.VueModeles
             switch (editeur.OutilSelectionne)
             {
                 case "crayon":
-                    DrawingPen(sender, e);
+                    DrawingInk(sender, e);
                     break;
                 case "efface_segment":
                 case "efface_trait":
@@ -186,7 +189,7 @@ namespace PolyPaint.VueModeles
             previousPos["Y"] = e.GetPosition(sender).Y;
         }
 
-        public void OnDraw(JObject data) 
+        public void ReceiveDrawing(JObject data) 
         {
 
             Console.WriteLine(data);
@@ -196,14 +199,14 @@ namespace PolyPaint.VueModeles
             switch ((string)data.GetValue("type"))
             {
                 case "ink":
-                    InkDrawing(data);
+                    ReceiveDrawingInk(data);
                     break;
                 case "eraser":
                     break;
             }
         }
 
-        private void DrawingPen(InkCanvas sender, MouseEventArgs e)
+        private void DrawingInk(InkCanvas sender, MouseEventArgs e)
         {
             string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
@@ -215,7 +218,7 @@ namespace PolyPaint.VueModeles
                                           new JProperty("endPosY", e.GetPosition(sender).Y),
                                           new JProperty("color", editeur.CouleurSelectionnee),
                                           new JProperty("width", editeur.TailleTrait),
-                                          new JProperty("isEnd", false),
+                                          new JProperty("isEnd", IsEndOfStroke),
                                           new JProperty("format", format),
                                           new JProperty("type", "ink"));
 
@@ -248,7 +251,7 @@ namespace PolyPaint.VueModeles
             ServerService.instance.socket.Emit("gameplay", eraser);
         } 
 
-        private void InkDrawing(JObject data)
+        private void ReceiveDrawingInk(JObject data)
         {
             double X1 = (double)data.GetValue("startPosX");
             double X2 = (double)data.GetValue("endPosX");
@@ -265,12 +268,50 @@ namespace PolyPaint.VueModeles
             attr.Width = attr.Height;
             attr.StylusTip = (string)data.GetValue("format") == "circle" ? StylusTip.Ellipse : StylusTip.Rectangle;
 
-            Stroke str = new Stroke(coll, attr);
+            CustomStroke str = new CustomStroke(coll, attr);
+            str.uid = currentStrokeId;
 
             App.Current.Dispatcher.Invoke(delegate
             {
                 Traits.Add(str);
             });
+
+            if ((bool)data.GetValue("isEnd"))
+                MergeStrokes(attr);
+        }
+
+        private void MergeStrokes(DrawingAttributes attr)
+        {
+            StylusPointCollection points = new StylusPointCollection();
+            StrokeCollection strokesToRemove = new StrokeCollection();
+
+            foreach (CustomStroke trait in Traits)
+            {
+                if (trait.uid == currentStrokeId)
+                {
+                    points.Add(trait.StylusPoints);
+                    strokesToRemove.Add(trait);
+                }
+            }
+
+            Traits.Remove(strokesToRemove);
+            CustomStroke fullStroke = new CustomStroke(points, attr);
+            fullStroke.uid = currentStrokeId;
+
+            Traits.Add(fullStroke);
+
+            currentStrokeId = Guid.NewGuid();
+        }
+
+        public void OnEndOfStroke(InkCanvas sender, MouseEventArgs e)
+        {
+            IsEndOfStroke = true;
+
+            if (editeur.OutilSelectionne == "crayon")
+                DrawingInk(sender, e);
+
+            IsDrawing = false;
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
         #endregion

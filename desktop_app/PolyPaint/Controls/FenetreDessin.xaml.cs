@@ -47,12 +47,12 @@ namespace PolyPaint.Controls
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             ((DessinViewModel)DataContext).IsDrawing = true;
+            ((DessinViewModel)DataContext).IsEndOfStroke = false;
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            ((DessinViewModel)DataContext).IsDrawing = false;
-            ((DessinViewModel)DataContext).previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            ((DessinViewModel)DataContext).OnEndOfStroke(surfaceDessin, e);
         }
 
     }
