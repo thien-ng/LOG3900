@@ -196,14 +196,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
         matrix = Array(h / 100) { Array(w / 100) { ArrayList<Segment>() } }
-
-        //val testPath = Path()
-        //testPath.moveTo(100.0F, 100.0F)
-        //testPath.lineTo(150.0F, 150.0F)
-        //matrix[1][1].add(Segment(testPath, paintLine, null, null))
-        //testPath.moveTo(200.0F, 100.0F)
-        //testPath.lineTo(250.0F, 150.0F)
-        //matrix[1][2].add(Segment(testPath, paintLine, null, null))
     }
 
     override fun onDraw(canvas: Canvas) {
