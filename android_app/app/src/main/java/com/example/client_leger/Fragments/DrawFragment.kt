@@ -319,9 +319,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStroke.moveTo(currentStartX, currentStartY)
             currentStroke.lineTo(newX, newY)
             sendStroke(currentStartX, newX, currentStartY, newY, strokeJustEnded)
-            addSegment(currentStartX, newX, currentStartY, newY)
+            addSegment(currentStartX, newX, currentStartY, newY, strokeJustEnded)
 
-            strokeJustEnded = false
             currentStartX = newX
             currentStartY = newY
         }
@@ -329,17 +328,18 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float) {
+    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float, isNew: Boolean) {
         val newSegment = Path()
         newSegment.moveTo(startX, startY)
         newSegment.lineTo(destX, destY)
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
-        if (segments.size - 2 >= 0 && !strokeJustEnded) {
+        if (segments.size - 2 >= 0 && !isNew) {
             // segments.size - 1 is the index of the segment we just added,
             // segments.size - 2 is the index of the segment just before it.
             segments[segments.size - 1].previousSegment = segments[segments.size - 2]
             segments[segments.size - 2].nextSegment = segments[segments.size - 1]
         }
+
         strokeJustEnded = false
     }
 
@@ -363,13 +363,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     obj.getInt("startPosX").toFloat(),
                     obj.getInt("endPosX").toFloat(),
                     obj.getInt("startPosY").toFloat(),
-                    obj.getInt("endPosY").toFloat()
+                    obj.getInt("endPosY").toFloat(),
+                    obj.getBoolean("isEnd")
                 )
 
                 if (obj.getBoolean("isEnd")) {
                     currentStroke.reset()
                     bitmapNeedsToUpdate = true
-                    strokeJustEnded = true
                 }
             }
             obj.getString("type") == "eraser" -> {
