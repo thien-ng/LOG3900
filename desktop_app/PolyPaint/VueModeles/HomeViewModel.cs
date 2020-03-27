@@ -244,7 +244,6 @@ namespace PolyPaint.VueModeles
 
             if (channelId != _selectedChannel.ID)
             {
-                //if(_subChannels.Any(i => i.id == _selectedChannel.ID))
                 MessageChannel channel;
 
                 channel = _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID);
