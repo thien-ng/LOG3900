@@ -212,7 +212,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     for (i in 1..(distance / 15).toInt()) {
                         val newX = startX + directionX * 15 * i
                         val newY = startY + directionY * 15 * i
-                        checkForStrokesToErase(newX, newY, isStrokeErasing)
+                        if (isValidErasePoint(newX, newY)) {
+                            checkForStrokesToErase(newX, newY, isStrokeErasing)
+                        }
                         lastErasePoint!!.x = newX
                         lastErasePoint!!.y = newY
                     }
