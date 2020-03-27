@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
@@ -49,7 +49,10 @@ export class ArenaFfa extends Arena {
         this.initBots();
            
         try {
-            this.checkArenaLoadingState(() => this.startSubGame());
+            this.checkArenaLoadingState(() => {
+                this.botAnnounceStart();
+                this.startSubGame()
+            });
         }  catch(e) {
             this.end();
         }
@@ -75,11 +78,12 @@ export class ArenaFfa extends Arena {
             if (timer >= TOTAL_TIME || this.isEveryoneHasRightAnswer) {
                 clearInterval(this.curArenaInterval);
 
-                this.handlePoints()
+                this.handlePoints();
+                this.botAnnounceEndSubGane();
                 
                 if (this.drawPtr >= this.users.length) {
                     // Handle end of game
-                    this.end()
+                    this.end();
                 } else {
                     // Make next person to draw
                     this.startSubGame();
@@ -101,12 +105,16 @@ export class ArenaFfa extends Arena {
     }
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
-        if (this.isDraw(mes))
-            this.handleGameplayDraw(socket, mes);
-        else if (this.isChat(mes))
-            this.handleGameplayChat(mes);
-        else 
-            this.handleGameplayReady(mes);
+        switch(mes.event) {
+            case EventType.draw:
+                this.handleGameplayDraw(socket, mes as IGameplayDraw | IGameplayEraser);
+                break;
+            case EventType.chat:
+                this.handleGameplayChat(mes as IGameplayChat);
+                break;
+            case EventType.ready:
+                this.handleGameplayReady(mes as IGameplayReady);
+        }
     }
 
 
@@ -142,6 +150,18 @@ export class ArenaFfa extends Arena {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
         return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.clues, Side.up); // TODO handle sides
+    }
+
+    protected botAnnounceStart(): void {
+        this.botMap.forEach((bot: Bot, key: string) => {
+            bot.launchTauntStart(this.room);
+        });
+    }
+
+    protected botAnnounceEndSubGane(): void {
+        this.botMap.forEach((bot: Bot, key: string) => {
+            bot.launchTaunt(this.room);
+        });
     }
 
     protected handlePoints(): void {

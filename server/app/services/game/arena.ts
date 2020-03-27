@@ -137,14 +137,6 @@ export abstract class Arena {
         return "eraser" in draw;
     }
 
-    protected isDraw(mes: IGameplayChat | IGameplayDraw | IGameplayReady | IEraser): mes is IGameplayDraw {
-        return "type" in mes;
-    }
-
-    protected isChat(mes: IGameplayChat | IGameplayReady): mes is IGameplayChat {
-        return "content" in mes;
-    }
-
     protected chooseRandomRule(): void {
         // May fail if there is no rules in mongodb
         const index =  Math.floor(Math.random() * this.rules.length);
