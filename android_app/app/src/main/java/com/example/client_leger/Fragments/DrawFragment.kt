@@ -8,6 +8,7 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.PopupWindow
@@ -159,14 +160,16 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
     private var currentStroke = Path()
-    private var currentStartX = 0f
-    private var currentStartY = 0f
+    private var currentStartX = 0
+    private var currentStartY = 0
     private var segments = ArrayList<Segment>()
     private var strokeJustEnded = true
     private var drawListener: Disposable
     private var lastErasePoint: PointFloat? = null
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
+
+    var matrix: Array<Array<ArrayList<Segment>>> = Array(0) { Array(0) { ArrayList<Segment>() } }
 
     init {
         paintLine.isAntiAlias = true
@@ -186,9 +189,19 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
+        matrix = Array(h / 100) { Array(w / 100) { ArrayList<Segment>() } }
+
+
+        //val testPath = Path()
+        //testPath.moveTo(100.0F, 100.0F)
+        //testPath.lineTo(150.0F, 150.0F)
+        //matrix[1][1].add(Segment(testPath, paintLine, null, null))
+        //testPath.moveTo(200.0F, 100.0F)
+        //testPath.lineTo(250.0F, 150.0F)
+        //matrix[1][2].add(Segment(testPath, paintLine, null, null))
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -227,10 +240,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            currentStartX = event.x
-            currentStartY = event.y
+            currentStartX = event.x.toInt()
+            currentStartY = event.y.toInt()
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-            touchMoved(currentStartX, currentStartY, event.x, event.y)
+            touchMoved(currentStartX, currentStartY, event.x.toInt(), event.y.toInt())
         } else if (event.actionMasked == MotionEvent.ACTION_UP){
             strokeJustEnded = true
             bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
@@ -339,10 +352,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun touchMoved(startX: Float, startY: Float, destX: Float, destY: Float) {
+    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int) {
         val deltaX = (destX - currentStartX)
         val deltaY = (destY - currentStartY)
-        val distance = sqrt(deltaX.pow(2.0F) + deltaY.pow(2.0F))
+        val distance = sqrt(deltaX.toFloat().pow(2.0F) + deltaY.toFloat().pow(2.0F))
 
         if (distance == 0.0F) {
             return
@@ -352,11 +365,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val directionY = (destY - currentStartY) / distance
 
         for (i in 1..(distance / paintLine.strokeWidth).toInt()) {
-            val newX = startX + directionX * paintLine.strokeWidth * i
-            val newY = startY + directionY * paintLine.strokeWidth * i
+            val newX = startX + (directionX * paintLine.strokeWidth * i).toInt()
+            val newY = startY + (directionY * paintLine.strokeWidth * i).toInt()
 
-            currentStroke.moveTo(currentStartX, currentStartY)
-            currentStroke.lineTo(newX, newY)
+            currentStroke.moveTo(currentStartX.toFloat(), currentStartY.toFloat())
+            currentStroke.lineTo(newX.toFloat(), newY.toFloat())
             sendStroke(currentStartX, newX, currentStartY, newY, strokeJustEnded)
             addSegment(currentStartX, newX, currentStartY, newY, strokeJustEnded)
 
@@ -367,10 +380,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float, isNew: Boolean) {
+    private fun addSegment(startX: Int, destX: Int, startY: Int, destY: Int, isNew: Boolean) {
         val newSegment = Path()
-        newSegment.moveTo(startX, startY)
-        newSegment.lineTo(destX, destY)
+        newSegment.moveTo(startX.toFloat(), startY.toFloat())
+        newSegment.lineTo(destX.toFloat(), destY.toFloat())
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
         if (segments.size - 2 >= 0 && !isNew) {
             // segments.size - 1 is the index of the segment we just added,
@@ -378,6 +391,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             segments[segments.size - 1].previousSegment = segments[segments.size - 2]
             segments[segments.size - 2].nextSegment = segments[segments.size - 1]
         }
+
+        //matrix[startY / 100] segments[segments.size - 1]
 
         strokeJustEnded = false
     }
@@ -399,10 +414,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                         Paint.Cap.SQUARE
 
                 addSegment(
-                    obj.getInt("startPosX").toFloat(),
-                    obj.getInt("endPosX").toFloat(),
-                    obj.getInt("startPosY").toFloat(),
-                    obj.getInt("endPosY").toFloat(),
+                    obj.getInt("startPosX"),
+                    obj.getInt("endPosX"),
+                    obj.getInt("startPosY"),
+                    obj.getInt("endPosY"),
                     obj.getBoolean("isEnd")
                 )
 
@@ -424,7 +439,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float, isEnd: Boolean) {
+    private fun sendStroke(startPointX: Int, finishPointX: Int, startPointY: Int, finishPointY: Int, isEnd: Boolean) {
         val obj = JSONObject()
         obj.put("type", "ink")
         obj.put("username", username)
