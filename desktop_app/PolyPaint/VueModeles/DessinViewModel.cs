@@ -209,7 +209,7 @@ namespace PolyPaint.VueModeles
 
         private void DrawingPen(InkCanvas sender, MouseEventArgs e)
         {
-            string format = editeur.PointeSelectionnee == "cercle" ? "circle" : "square";
+            string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
             JObject drawing = new JObject(new JProperty("username", ServerService.instance.username),
                                           new JProperty("startPosX", previousPos["X"]),
@@ -239,7 +239,7 @@ namespace PolyPaint.VueModeles
                 eraserType = "stroke";
 
             JObject eraser = new JObject(new JProperty("username", ServerService.instance.username),
-                                         new JProperty("type", "ink"),
+                                         new JProperty("type", "eraser"),
                                          new JProperty("x", e.GetPosition(sender).X),
                                          new JProperty("y", e.GetPosition(sender).Y),
                                          new JProperty("eraser", eraserType));
