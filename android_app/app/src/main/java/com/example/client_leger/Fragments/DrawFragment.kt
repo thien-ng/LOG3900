@@ -160,8 +160,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
     private var currentStroke = Path()
-    private var currentStartX = 0
-    private var currentStartY = 0
+    private var currentStartX = 0f
+    private var currentStartY = 0f
     private var segments = ArrayList<Segment>()
     private var strokeJustEnded = true
     private var drawListener: Disposable
@@ -240,10 +240,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            currentStartX = event.x.toInt()
-            currentStartY = event.y.toInt()
+            currentStartX = event.x
+            currentStartY = event.y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-            touchMoved(currentStartX, currentStartY, event.x.toInt(), event.y.toInt())
+            touchMoved(currentStartX, currentStartY, event.x, event.y)
         } else if (event.actionMasked == MotionEvent.ACTION_UP){
             strokeJustEnded = true
             bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
@@ -352,10 +352,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int) {
+    private fun touchMoved(startX: Float, startY: Float, destX: Float, destY: Float) {
         val deltaX = (destX - currentStartX)
         val deltaY = (destY - currentStartY)
-        val distance = sqrt(deltaX.toFloat().pow(2.0F) + deltaY.toFloat().pow(2.0F))
+        val distance = sqrt(deltaX.pow(2.0F) + deltaY.pow(2.0F))
 
         if (distance == 0.0F) {
             return
@@ -365,11 +365,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val directionY = (destY - currentStartY) / distance
 
         for (i in 1..(distance / paintLine.strokeWidth).toInt()) {
-            val newX = startX + (directionX * paintLine.strokeWidth * i).toInt()
-            val newY = startY + (directionY * paintLine.strokeWidth * i).toInt()
+            val newX = startX + directionX * paintLine.strokeWidth * i
+            val newY = startY + directionY * paintLine.strokeWidth * i
 
-            currentStroke.moveTo(currentStartX.toFloat(), currentStartY.toFloat())
-            currentStroke.lineTo(newX.toFloat(), newY.toFloat())
+            currentStroke.moveTo(currentStartX, currentStartY)
+            currentStroke.lineTo(newX, newY)
             sendStroke(currentStartX, newX, currentStartY, newY, strokeJustEnded)
             addSegment(currentStartX, newX, currentStartY, newY, strokeJustEnded)
 
@@ -380,10 +380,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun addSegment(startX: Int, destX: Int, startY: Int, destY: Int, isNew: Boolean) {
+    private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float, isNew: Boolean) {
         val newSegment = Path()
-        newSegment.moveTo(startX.toFloat(), startY.toFloat())
-        newSegment.lineTo(destX.toFloat(), destY.toFloat())
+        newSegment.moveTo(startX, startY)
+        newSegment.lineTo(destX, destY)
         segments.add(Segment(newSegment, Paint(paintLine), null, null))
         if (segments.size - 2 >= 0 && !isNew) {
             // segments.size - 1 is the index of the segment we just added,
@@ -414,10 +414,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                         Paint.Cap.SQUARE
 
                 addSegment(
-                    obj.getInt("startPosX"),
-                    obj.getInt("endPosX"),
-                    obj.getInt("startPosY"),
-                    obj.getInt("endPosY"),
+                    obj.getInt("startPosX").toFloat(),
+                    obj.getInt("endPosX").toFloat(),
+                    obj.getInt("startPosY").toFloat(),
+                    obj.getInt("endPosY").toFloat(),
                     obj.getBoolean("isEnd")
                 )
 
@@ -439,7 +439,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun sendStroke(startPointX: Int, finishPointX: Int, startPointY: Int, finishPointY: Int, isEnd: Boolean) {
+    private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float, isEnd: Boolean) {
         val obj = JSONObject()
         obj.put("type", "ink")
         obj.put("username", username)
