@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_draw.view.*
 import org.json.JSONObject
 import yuku.ambilwarna.AmbilWarnaDialog
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -99,7 +100,8 @@ class DrawFragment: Fragment() {
         seekBar.progress = drawCanvasView.paintLine.strokeWidth.toInt()
 
         okButton.setOnClickListener {
-            drawCanvasView.paintLine.strokeWidth = seekBar.progress.toFloat()
+            val minStrokeSize = 5.0f
+            drawCanvasView.paintLine.strokeWidth = max(minStrokeSize, seekBar.progress.toFloat())
             popupWindow.dismiss()
         }
 
@@ -169,20 +171,17 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val action = event.actionMasked
-
         if ((isStrokeErasing || isNormalErasing)) {
             if (isValidErasePoint(event.x, event.y)) {
                 checkForStrokesToErase(event.x, event.y, isStrokeErasing)
                 sendErase(event.x, event.y, isStrokeErasing)
             }
-        } else if (action == MotionEvent.ACTION_DOWN) {
-            currentStroke.moveTo(event.x, event.y)
+        } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             currentStartX = event.x
             currentStartY = event.y
-        } else if (action == MotionEvent.ACTION_MOVE) {
+        } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
             touchMoved(currentStartX, currentStartY, event.x, event.y)
-        } else if (action == MotionEvent.ACTION_UP){
+        } else if (event.actionMasked == MotionEvent.ACTION_UP){
             strokeJustEnded = true
             bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
             currentStroke.reset()
@@ -261,7 +260,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         if (strokeFound) {
             redrawPathsToBitmap()
-            invalidate()
+            postInvalidate()
         }
     }
 
@@ -281,6 +280,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newX = startX + directionX * paintLine.strokeWidth * i
             val newY = startY + directionY * paintLine.strokeWidth * i
 
+            currentStroke.moveTo(currentStartX, currentStartY)
+            currentStroke.lineTo(newX, newY)
             sendStroke(currentStartX, newX, currentStartY, newY, strokeJustEnded)
             addSegment(currentStartX, newX, currentStartY, newY)
 
@@ -289,9 +290,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStartY = newY
         }
 
-        currentStroke.lineTo(currentStartX, currentStartY)
-
-        invalidate()
+        postInvalidate()
     }
 
     private fun addSegment(startX: Float, destX: Float,startY: Float, destY: Float) {
