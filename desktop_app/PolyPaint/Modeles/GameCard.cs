@@ -12,6 +12,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PolyPaint.Modeles
@@ -20,7 +22,6 @@ namespace PolyPaint.Modeles
     {
         public GameCard(Lobby lobby)
         {
-            _visibilityPrivate = "Hidden";
             _players = new ObservableCollection<string>();
             foreach (var item in lobby.usernames)
             {
@@ -30,10 +31,14 @@ namespace PolyPaint.Modeles
             _lobby = lobby;
             _mode = lobby.mode;
             _lobbyName = lobby.lobbyName;
+            IsPrivate = lobby.isPrivate;
+            _isPasswordDialogOpen = false;
         }
 
         #region Public Attributes
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public PasswordBox Password { private get; set; }
 
         private Lobby _lobby;
         public Lobby Lobby
@@ -64,18 +69,6 @@ namespace PolyPaint.Modeles
             }
         }
 
-        private string _password;
-        public string Password
-        {
-            get { return _password; }
-            set
-            {
-                if (_password == value) return;
-                _password = value;
-                ProprieteModifiee();
-            }
-        }
-
         private object _dialogContent;
         public object DialogContent
         {
@@ -94,29 +87,23 @@ namespace PolyPaint.Modeles
             get { return _isPrivate; }
             set
             {
-                _isPrivate = value; ProprieteModifiee();
-                if (_isPrivate)
-                    VisibilityPrivate = "Visible";
-                else
-                    VisibilityPrivate = "Hidden";
+                _isPrivate = value;
+                ProprieteModifiee();
             }
         }
 
-
-
-        private string _visibilityPrivate;
-        public string VisibilityPrivate
+        private bool _isPasswordDialogOpen;
+        public bool IsPasswordDialogOpen
         {
-            get { return _visibilityPrivate; }
-            set { _visibilityPrivate = value; ProprieteModifiee(); }
+            get { return _isPasswordDialogOpen; }
+            set
+            {
+                if (_isPasswordDialogOpen == value) return;
+                _isPasswordDialogOpen = value;
+                ProprieteModifiee();
+            }
         }
 
-        private string _selectedSize;
-        public string SelectedSize
-        {
-            get { return _selectedSize; }
-            set { _selectedSize = value; ProprieteModifiee(); }
-        }
         #endregion
 
         #region Methods
@@ -124,7 +111,7 @@ namespace PolyPaint.Modeles
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        private async void joinLobby()
+        private async void joinPublicLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();
@@ -132,7 +119,27 @@ namespace PolyPaint.Modeles
             values.Add("isPrivate", _lobby.isPrivate);
             values.lobbyName = _lobby.lobbyName;
             values.size = _lobby.size;
-            values.password = _lobby.password;
+            values.password = "";
+            values.mode = _lobby.mode;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            {
+               Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
+            }
+        }
+        private async void joinPrivateLobby()
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.Add("isPrivate", _lobby.isPrivate);
+            values.lobbyName = _lobby.lobbyName;
+            values.size = _lobby.size;
+            values.password = Password.Password;
             values.mode = _lobby.mode;
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
@@ -142,6 +149,10 @@ namespace PolyPaint.Modeles
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
                 Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
+            }
+            else 
+            {
+                MessageBox.Show("Wrong password, try again.");
             }
         }
         #endregion
@@ -155,10 +166,44 @@ namespace PolyPaint.Modeles
             {
                 return _joinLobbyCommand ?? (_joinLobbyCommand = new RelayCommand(x =>
                 {
-                    joinLobby();
+                    if (IsPrivate)
+                    {
+                        DialogContent = new LobbyPasswordControl();
+                        IsPasswordDialogOpen = true;
+                    }
+                    else
+                    {
+                        joinPublicLobby();
+                    }
                 }));
             }
         }
+
+        private ICommand _sendPasswordCommand;
+        public ICommand SendPasswordCommand
+        {
+            get
+            {
+                return _sendPasswordCommand ?? (_sendPasswordCommand = new RelayCommand(x =>
+                {
+                    joinPrivateLobby();
+                }));
+            }
+        }
+
+        private ICommand _cancelPasswordCommand;
+        public ICommand CancelPasswordCommand
+        {
+            get
+            {
+                return _cancelPasswordCommand ?? (_cancelPasswordCommand = new RelayCommand(x =>
+                {
+                    this.IsPasswordDialogOpen = false;
+                    Password.Password = "";
+                }));
+            }
+        }
+
         #endregion
     }
 }

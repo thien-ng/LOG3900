@@ -1,7 +1,10 @@
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser, Bot, IGameplayAnnouncement } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
+import { MeanBot } from "./bots/meanBot";
+import { KindBot } from "./bots/kindBot";
+import { HumourBot } from "./bots/humourBot";
 
 import * as io from 'socket.io';
 
@@ -14,20 +17,23 @@ export abstract class Arena {
     protected gm : GameManagerService;
 
     protected socketServer:  io.Server;
-    protected users:         IUser[];
     protected rules:         IGameRule[];
     protected room:          string;
-    protected dcPlayer:      string[];
     protected curRule:       IGameRule;
     protected userMapPoints: Map<string, number>;
-
-    protected userMapReady:  Map<string, boolean>;
     protected type:          GameMode;
+    
+    protected userMapReady:  Map<string, boolean>;
+    protected dcPlayer:      string[];
+    protected users:         IUser[];
+    protected isAllDc:       boolean;
 
     private arenaId:             number;
-    public  chronometerInterval: NodeJS.Timeout;
     private chronometerTimer:    number;
+    private hintPtr:             number;
 
+    public  chronometerInterval: NodeJS.Timeout;
+    
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
         this.room           = room;
@@ -38,16 +44,32 @@ export abstract class Arena {
         this.gm             = gm;
         this.arenaId        = arenaId;
         this.type           = type;
-
+        this.hintPtr        = 0;
+        this.isAllDc        = false;
+        
         this.initReadyMap();
         this.setupPoints();
     }
     
     public abstract start(): void;
     public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void;
-
+    
+    protected abstract startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout;
+    protected abstract botAnnounceStart(): void;
+    protected abstract botAnnounceEndSubGane(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
+    
+    protected handleGameplayHint(): void {
+        const totalHint = this.curRule.clues.length;
+        const announcement: IGameplayAnnouncement = {
+            username: "Server",
+            content: `Hint: ${this.curRule.clues[this.hintPtr % totalHint]}`,
+            isServer: true,
+        };
+        this.socketServer.to(this.room).emit("game-hint", announcement);
+    }
+
     protected handleGameplayReady(mes: IGameplayReady): void {
         this.userMapReady.set(mes.username, true);
     }
@@ -59,6 +81,15 @@ export abstract class Arena {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
         }
+
+        let count = 0;
+        this.users.forEach(u => {
+            // count users who are not bots
+            if (!this.isBot(u.username))
+                count++;
+        });
+        if (count === 0)
+            this.isAllDc = true;
     }
 
     protected checkArenaLoadingState(callback: () => void): void {
@@ -72,7 +103,7 @@ export abstract class Arena {
             }
             else if (numOfTries >= 3) {
                 clearInterval(checkInterval);
-                this.end(); // TODO should handle game which doesn't affect player's kdr
+                this.cancelGame(); // TODO should handle game which doesn't affect player's kdr
             }
             numOfTries++;
 
@@ -83,8 +114,8 @@ export abstract class Arena {
         console.log("[Debug] End routine");
         const pts = this.preparePtsToBePersisted();
         console.log("[Debug] end game points are: ", pts);
+        console.log("[Debug] disconnected players: ", this.dcPlayer);
         
-
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
         });
@@ -92,6 +123,14 @@ export abstract class Arena {
         clearInterval(this.chronometerTimer);
         
         this.gm.persistPoints(pts, this.chronometerTimer / ONE_SEC, this.type);
+        this.gm.deleteArena(this.arenaId);
+    }
+
+    private cancelGame(): void {
+        console.log("[Debug] Cancel routine");
+        this.users.forEach(u => {
+            this.socketServer.to(this.room).emit("game-over");
+        });
         this.gm.deleteArena(this.arenaId);
     }
 
@@ -119,14 +158,6 @@ export abstract class Arena {
 
     private isEraser(draw: IGameplayDraw | IGameplayEraser): draw is IGameplayEraser {
         return "eraser" in draw;
-    }
-
-    protected isDraw(mes: IGameplayChat | IGameplayDraw | IGameplayReady | IEraser): mes is IGameplayDraw {
-        return "type" in mes;
-    }
-
-    protected isChat(mes: IGameplayChat | IGameplayReady): mes is IGameplayChat {
-        return "content" in mes;
     }
 
     protected chooseRandomRule(): void {
@@ -162,6 +193,24 @@ export abstract class Arena {
         });
     }
 
+
+    protected isBot(username: string): boolean {
+        return username === Bot.humour || username === Bot.kind || username === Bot.mean;
+    }
+
+    protected initBot(botName: string): MeanBot | KindBot | HumourBot {
+        switch(botName) {
+            case Bot.mean:
+                return new MeanBot(this.socketServer, botName);
+            case Bot.humour:
+                return new HumourBot(this.socketServer, botName);
+            case Bot.kind:
+                return new KindBot(this.socketServer, botName);
+            default:
+                return new KindBot(this.socketServer, botName);
+        }
+    }
+
     private initReadyMap(): void {
         this.userMapReady = new Map<string, boolean>();
         this.users.forEach(u => { this.userMapReady.set(u.username, false); });
@@ -171,7 +220,7 @@ export abstract class Arena {
         let isEveryoneReady = true;
 
         this.userMapReady.forEach((state: boolean, key: string) => {
-            if (!this.dcPlayer.includes(key)) {
+            if (!this.dcPlayer.includes(key) && !this.isBot(key)) {
                 if (state == false)
                     isEveryoneReady = false;
             }
@@ -183,7 +232,8 @@ export abstract class Arena {
     private preparePtsToBePersisted(): IPoints[] {
         const ptsList: IPoints[] = [];
         this.userMapPoints.forEach((pts: number, key: string) => {
-            ptsList.push({username: key, points: pts});
+            if (!this.isBot(key))
+                ptsList.push({username: key, points: pts});
         });
         return ptsList;
     }

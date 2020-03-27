@@ -8,6 +8,13 @@ SELECT LOG3900.registerAccount('jeremy', 'password', 'Je', 'rem');
 SELECT LOG3900.registerAccount('asd', 'asd', 'alpha', 'bravo');
 SELECT LOG3900.registerAccount('a', 'a', 'fuck', 'you');
 SELECT LOG3900.registerAccount('b', 'b', 'fucka', 'youa');
+SELECT LOG3900.registerAccount('q', 'q', 'fucka', 'youa');
+SELECT LOG3900.registerAccount('w', 'w', 'fucka', 'youa');
+SELECT LOG3900.registerAccount('e', 'e', 'fucka', 'youa');
+SELECT LOG3900.registerAccount('r', 'r', 'fucka', 'youa');
+SELECT LOG3900.registerAccount('t', 't', 'fucka', 'youa');
+SELECT LOG3900.registerAccount('y', 'y', 'fucka', 'youa');
+
 
 INSERT INTO log3900.accountChannel VALUES(1, 'pute');
 INSERT INTO log3900.accountChannel VALUES(2, 'pute');

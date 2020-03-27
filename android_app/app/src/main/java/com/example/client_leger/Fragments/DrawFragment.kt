@@ -166,6 +166,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var strokeJustEnded = true
     private var drawListener: Disposable
     private var lastErasePoint: PointFloat? = null
+    private var roleListener: Disposable
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
 
@@ -181,11 +182,16 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         drawListener = Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
+
+        roleListener = Communication.getDrawerUpdateListener().subscribe{ obj ->
+            clearStrokes()
+        }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         drawListener.dispose()
+        roleListener.dispose()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -441,6 +447,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun sendStroke(startPointX: Float, finishPointX: Float, startPointY: Float, finishPointY: Float, isEnd: Boolean) {
         val obj = JSONObject()
+        obj.put("event", "draw")
         obj.put("type", "ink")
         obj.put("username", username)
         obj.put("startPosX", startPointX)
@@ -457,6 +464,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun sendErase(x: Float, y: Float, isStroke: Boolean) {
         val obj = JSONObject()
+        obj.put("event", "draw")
         obj.put("type", "eraser")
         obj.put("username", username)
         obj.put("x", x)
