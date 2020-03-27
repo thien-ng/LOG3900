@@ -14,9 +14,12 @@ namespace PolyPaint.VueModeles
         public ProfileViewModel()
         {
             _username = Services.ServerService.instance.username;
-            _firstname = Services.ServerService.instance.user._firstName;
-            _lastname = Services.ServerService.instance.user._lastName;
-            _connections = ServerService.instance.user._connections;
+            if(ServerService.instance.user != null)
+            {
+                _firstname = Services.ServerService.instance.user._firstName;
+                _lastname = Services.ServerService.instance.user._lastName;
+                _connections = ServerService.instance.user._connections;
+            }
 
         }
         #region Public Attributes

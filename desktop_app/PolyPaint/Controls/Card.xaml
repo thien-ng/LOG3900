@@ -16,7 +16,7 @@
     </UserControl.Resources>
     
     
-    <materialDesign:DialogHost IsOpen="{Binding IsCreateGameDialogOpen}"
+    <materialDesign:DialogHost IsOpen="{Binding IsPasswordDialogOpen}"
                                DialogContent="{Binding DialogContent}"
                                CloseOnClickAway="True">
         <materialDesign:Flipper Width="220" Style="{StaticResource MaterialDesignCardFlipper}" Margin="0" Padding="0">
@@ -29,8 +29,11 @@
             <materialDesign:ColorZone
                 Mode="PrimaryLight"
                 VerticalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Kind="Lock" Foreground="White" Width="25" Height="25" VerticalAlignment="Center" Visibility="{Binding IsPrivate, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LobbyName}" FontSize="25" Foreground="White" />
-            </materialDesign:ColorZone>
+                        </StackPanel>
+                    </materialDesign:ColorZone>
         <StackPanel
             Grid.Row="1"
             HorizontalAlignment="Center"

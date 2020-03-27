@@ -24,7 +24,8 @@ namespace PolyPaint.VueModeles
             _gameCards = new ObservableCollection<GameCard>();
             getLobbies();
             Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            _selectedMode = "FFA";
+            SelectedMode = "FFA";
+            IsPrivate = false;
         }
 
         #region Public Attributes
@@ -150,12 +151,10 @@ namespace PolyPaint.VueModeles
                 StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
                 String responseData = streamReader.ReadToEnd();
                 var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
-
                 foreach (var item in myData)
                 {
                     App.Current.Dispatcher.Invoke(delegate
                     {
-
                         lobbies.Add(item);
                     });
                 }
