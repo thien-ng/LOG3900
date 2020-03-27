@@ -2,7 +2,6 @@ import { IUser } from "../../interfaces/user-manager";
 import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser, Bot } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
-import { DrawingTools } from "./utils/drawing-tools";
 import { MeanBot } from "./bots/meanBot";
 import { KindBot } from "./bots/kindBot";
 import { HumourBot } from "./bots/humourBot";
@@ -78,7 +77,7 @@ export abstract class Arena {
             }
             else if (numOfTries >= 3) {
                 clearInterval(checkInterval);
-                this.end(); // TODO should handle game which doesn't affect player's kdr
+                this.cancelGame(); // TODO should handle game which doesn't affect player's kdr
             }
             numOfTries++;
 
@@ -98,6 +97,16 @@ export abstract class Arena {
         clearInterval(this.chronometerTimer);
         
         this.gm.persistPoints(pts, this.chronometerTimer / ONE_SEC, this.type);
+        this.gm.deleteArena(this.arenaId);
+    }
+
+    private cancelGame(): void {
+        console.log("[Debug] Cancel routine");
+
+        this.users.forEach(u => {
+            this.socketServer.to(this.room).emit("game-over");
+        });
+
         this.gm.deleteArena(this.arenaId);
     }
 

@@ -167,7 +167,7 @@ export class LobbyManagerService {
 
         if (lobby) {
             lobby.users = lobby.users.filter(u => { return u.username !== req.username });
-            if (lobby.users.length === 0) {
+            if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
                 this.lobbies.delete(req.lobbyName);
                 this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete });
@@ -208,6 +208,15 @@ export class LobbyManagerService {
             const message = { lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
             lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
         }
+    }
+
+    private checkUsersLeftExceptBot(lobby: IActiveLobby): boolean {
+        let count = 0;
+        lobby.users.forEach(u => {
+            if (!this.isBot(u.username))
+                count++;
+        });
+        return count === 0;
     }
 
     private isNotification(object: any): object is INotify {

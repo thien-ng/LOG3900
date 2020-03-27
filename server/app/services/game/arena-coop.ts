@@ -15,4 +15,6 @@ export class ArenaCoop extends Arena {
 
     protected handlePoints(): void {}
 
+    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {return setInterval(() =>{}, 1)}
+
 }
