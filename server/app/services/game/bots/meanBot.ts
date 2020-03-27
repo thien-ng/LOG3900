@@ -1,18 +1,12 @@
-import { IDrawing } from "../../../interfaces/game";
-import { DisplayMode } from '../../../interfaces/creator';
 import { Taunt } from './taunts';
-import { Side } from '../../../utils/Side';
 import { Bot } from "./bot";
+
+import * as io from 'socket.io';
 
 export class MeanBot extends Bot {
 
-    constructor(image: IDrawing[],
-        username: string,
-        hint: string[],
-        mode: DisplayMode,
-        panoramicFirstSide: Side | undefined) {
-
-        super(image, username, hint, mode, panoramicFirstSide);
+    constructor(socket: io.Server, username: string) {
+        super(socket, username);
         this.taunts = Taunt.mean;
     }
 

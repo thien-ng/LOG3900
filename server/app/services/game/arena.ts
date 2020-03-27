@@ -5,7 +5,6 @@ import { GameManagerService } from "./game-manager.service";
 import { MeanBot } from "./bots/meanBot";
 import { KindBot } from "./bots/kindBot";
 import { HumourBot } from "./bots/humourBot";
-import { Side } from "../../utils/Side";
 
 import * as io from 'socket.io';
 
@@ -182,16 +181,16 @@ export abstract class Arena {
         return username === Bot.humour || username === Bot.kind || username === Bot.mean
     }
 
-    protected initBot(botName: string, drawings: IDrawing[]): MeanBot | KindBot | HumourBot {
+    protected initBot(botName: string): MeanBot | KindBot | HumourBot {
         switch(botName) {
             case Bot.mean:
-                return new MeanBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up); // TODO handle real display
+                return new MeanBot(this.socketServer, botName);
             case Bot.humour:
-                return new HumourBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up);
+                return new HumourBot(this.socketServer, botName);
             case Bot.kind:
-                return new KindBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up);
+                return new KindBot(this.socketServer, botName);
             default:
-                return new KindBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up);
+                return new KindBot(this.socketServer, botName);
         }
     }
 

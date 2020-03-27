@@ -17,41 +17,42 @@ export abstract class Bot {
     protected mode: DisplayMode;
     protected panoramicFirstSide: Side;
 
-    constructor(drawings: IDrawing[],
-        username: string,
-        hint: string[],
-        mode: DisplayMode,
-        panoramicFirstSide: Side = Side.up) {
+    private socket: io.Server;
 
+    constructor(socket: io.Server, username: string) {
         this.username = username;
-        this.mode = mode;
-        this.drawings = drawings;
-        this.length = this.drawings.length;
-        this.hint = hint;
         this.nextHint = 0;
-        this.panoramicFirstSide = panoramicFirstSide;
         this.nextStroke = 0;
-        this.sort();
+        this.socket = socket;
     }
 
-    public draw(socket: io.Server, room: string, arenaTime: number): NodeJS.Timeout {
+    public draw(room: string, arenaTime: number, drawings: IDrawing[], mode: DisplayMode, hint: string[], panoramicFirstSide: Side): NodeJS.Timeout {
+        this.setupOnDraw(drawings, mode, hint, panoramicFirstSide);
 
         let count = 0;
         const interval = setInterval(() => {
 
-
             if (count <= this.drawings.length) {
                 const nextStroke = this.getNextStroke();
                 if (nextStroke)
-                    socket.to(room).emit("draw", nextStroke);
+                    this.socket.to(room).emit("draw", nextStroke);
             } else {
                 clearInterval(interval);
             }
             count++;
 
-
         }, this.calculateTimeToDrawingProportion(arenaTime));
+        
         return interval;
+    }
+
+    private setupOnDraw(drawings: IDrawing[], mode: DisplayMode, hint: string[], panoramicFirstSide: Side): void {
+        this.mode = mode;
+        this.drawings = drawings;
+        this.length = drawings.length;
+        this.hint = hint;
+        this.panoramicFirstSide = panoramicFirstSide;
+        this.sort();
     }
 
     private calculateTimeToDrawingProportion(arenaTime: number): number {

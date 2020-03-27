@@ -4,8 +4,13 @@ import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGamepla
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
+import { MeanBot } from "./bots/meanBot";
+import { KindBot } from "./bots/kindBot";
+import { HumourBot } from "./bots/humourBot";
+import { Side } from "../../utils/Side";
 
 import * as io from 'socket.io';
+import { Bot } from "./bots/bot";
 
 const format = require('string-format');
 
@@ -26,6 +31,8 @@ export class ArenaFfa extends Arena {
 
     private isBotDrawing: boolean;
 
+    private botMap: Map<string, MeanBot | KindBot | HumourBot>;
+
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
         
@@ -33,10 +40,13 @@ export class ArenaFfa extends Arena {
         this.userWithCorrectAns = [];
         this.isEveryoneHasRightAnswer = false;
         this.isBotDrawing = false;
+        this.botMap = new Map<string, MeanBot | KindBot | HumourBot>();
     }
 
     public start(): void {
         console.log("[Debug] Starting arena FFA", this.room);
+
+        this.initBots();
            
         try {
             this.checkArenaLoadingState(() => this.startSubGame());
@@ -129,11 +139,9 @@ export class ArenaFfa extends Arena {
     }
 
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
-        
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
-        const bot = this.initBot(botName, drawings);
-
-        return bot.draw(this.socketServer, this.room, arenaTime);
+        const bot = this.botMap.get(botName) as Bot;
+        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.clues, Side.up); // TODO handle sides
     }
 
     protected handlePoints(): void {
@@ -194,6 +202,15 @@ export class ArenaFfa extends Arena {
 
     private checkIfEveryoneHasRightAnswer(): boolean {
         return (this.users.length - this.dcPlayer.length) === this.userWithCorrectAns.length;
+    }
+
+    private initBots(): void {
+        this.users.forEach(u => {
+            if (this.isBot(u.username)) {
+                const bot = this.initBot(u.username);
+                this.botMap.set(u.username, bot);
+            }
+        });
     }
 
 }
