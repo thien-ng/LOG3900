@@ -12,6 +12,7 @@ import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
 import org.json.JSONArray
+import org.json.JSONObject
 
 
 class LobbyFragment : Fragment(),
@@ -49,7 +50,12 @@ class LobbyFragment : Fragment(),
     private fun startGame(lobbyName: String){
         gameController.startGame(this, lobbyName)
     }
-
+    private fun leaveGame(lobbyName: String){
+        var body = JSONObject()
+        body.put("lobbyName", lobbyName)
+        body.put("userName", username)
+        gameController.leaveGame(this, body)
+    }
     override fun replaceFragment(fragment: Fragment) {
         fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment)
             .addToBackStack(fragment.toString()).commit()
@@ -61,10 +67,15 @@ class LobbyFragment : Fragment(),
         }
         if(usernames.isNotEmpty()) {
             var startButton = view!!.findViewById<Button>(R.id.button_start)
+            var leaveButton = view!!.findViewById<Button>(R.id.button_leave)
             if(usernames[0] == username) {
                 startButton.visibility = View.VISIBLE
                 startButton.isEnabled = true
                 startButton.setOnClickListener { startGame(lobbyName) }
+            }else{
+                leaveButton.visibility = View.VISIBLE
+                leaveButton.isEnabled = true
+                leaveButton.setOnClickListener { leaveGame(lobbyName) }
             }
         }
     }
