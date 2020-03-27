@@ -94,7 +94,7 @@ namespace PolyPaint.VueModeles
             set { _isDrawing = value; ProprieteModifiee(); }
         }
 
-        public Point? previousPoint { get; set; }
+        public Dictionary<string, double?> previousPos { get; set; }
 
         public bool IsEndOfStroke { get; set; }
 
@@ -121,7 +121,7 @@ namespace PolyPaint.VueModeles
             ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
 
-            previousPoint = null;
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
         /// <summary>
@@ -167,14 +167,15 @@ namespace PolyPaint.VueModeles
         {
             if (!IsDrawing) return;
 
+            if (previousPos["X"] == null || previousPos["Y"] == null)
+            {
+                previousPos["X"] = e.GetPosition(sender).X;
+                previousPos["Y"] = e.GetPosition(sender).Y;
+            }
+
             switch (editeur.OutilSelectionne)
             {
                 case "crayon":
-                    if (previousPoint == null)
-                    {
-                        previousPoint = new Point(e.GetPosition(sender).X, e.GetPosition(sender).Y);
-                        return;
-                    }
                     DrawingInk(sender, e);
                     break;
                 case "efface_segment":
@@ -184,6 +185,9 @@ namespace PolyPaint.VueModeles
                 default:
                     break;
             }
+
+            previousPos["X"] = e.GetPosition(sender).X;
+            previousPos["Y"] = e.GetPosition(sender).Y;
         }
 
         public void ReceiveDrawing(JObject data) 
@@ -211,12 +215,10 @@ namespace PolyPaint.VueModeles
         {
             string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
-            if (!previousPoint.HasValue) return;
-
             JObject drawing = new JObject(new JProperty("event", "draw"),
                                           new JProperty("username", ServerService.instance.username),
-                                          new JProperty("startPosX", previousPoint.Value.X),
-                                          new JProperty("startPosY", previousPoint.Value.Y),
+                                          new JProperty("startPosX", previousPos["X"]),
+                                          new JProperty("startPosY", previousPos["Y"]),
                                           new JProperty("endPosX", e.GetPosition(sender).X),
                                           new JProperty("endPosY", e.GetPosition(sender).Y),
                                           new JProperty("color", editeur.CouleurSelectionnee),
@@ -226,8 +228,6 @@ namespace PolyPaint.VueModeles
                                           new JProperty("type", "ink"));
 
             ServerService.instance.socket.Emit("gameplay", drawing);
-
-            previousPoint = null;
         }
 
         private void DrawingEraser(InkCanvas sender, MouseEventArgs e)
@@ -303,7 +303,7 @@ namespace PolyPaint.VueModeles
             double x = (double)data.GetValue("x");
             double y = (double)data.GetValue("y");
 
-            StrokeCollection strokes = Traits.HitTest(new Point(x, y), 11);
+            StrokeCollection strokes = Traits.HitTest(new Point(x, y));
 
             foreach (var item in strokes)
             {
@@ -349,7 +349,7 @@ namespace PolyPaint.VueModeles
                 DrawingInk(sender, e);
 
             IsDrawing = false;
-            previousPoint = null;
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
         #endregion
