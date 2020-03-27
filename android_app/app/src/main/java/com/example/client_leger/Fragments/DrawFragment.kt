@@ -167,6 +167,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var roleListener: Disposable
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
+
+    private val matrixSquareSize = 100
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
 
     init {
@@ -195,7 +197,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
-        matrix = Array(h / 100) { Array(w / 100) { ArrayList<Segment>() } }
+        matrix = Array(h / matrixSquareSize) {
+            Array(w / matrixSquareSize) {
+                ArrayList<Segment>()
+            }
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -323,7 +329,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         var strokeFound = false
 
         synchronized(segments) {
-            for (segment in matrix[pointY / 100][pointX / 100]) {
+            for (segment in matrix[pointY / matrixSquareSize][pointX / matrixSquareSize]) {
                 if (segment.paint.color == Color.TRANSPARENT) {
                     continue
                 }
@@ -395,9 +401,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 segments[segments.size - 2].nextSegment = segments[segments.size - 1]
             }
 
-            matrix[startY / 100][startX / 100].add(segments[segments.size - 1])
-            if (startY / 100 != destY / 100 || startX / 100 != destX / 100) {
-                matrix[destY / 100][destX / 100].add(segments[segments.size - 1])
+            matrix[startY / matrixSquareSize][startX / matrixSquareSize].add(segments[segments.size - 1])
+            if (startY / matrixSquareSize != destY / matrixSquareSize ||
+                startX / matrixSquareSize != destX / matrixSquareSize) {
+                matrix[destY / matrixSquareSize][destX / matrixSquareSize].add(segments[segments.size - 1])
             }
         }
 
