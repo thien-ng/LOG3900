@@ -211,7 +211,8 @@ namespace PolyPaint.VueModeles
         {
             string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
-            JObject drawing = new JObject(new JProperty("username", ServerService.instance.username),
+            JObject drawing = new JObject(new JProperty("event", "draw"),
+                                          new JProperty("username", ServerService.instance.username),
                                           new JProperty("startPosX", previousPos["X"]),
                                           new JProperty("startPosY", previousPos["Y"]),
                                           new JProperty("endPosX", e.GetPosition(sender).X),
@@ -238,7 +239,8 @@ namespace PolyPaint.VueModeles
             else
                 eraserType = "stroke";
 
-            JObject eraser = new JObject(new JProperty("username", ServerService.instance.username),
+            JObject eraser = new JObject(new JProperty("event", "draw"),
+                                         new JProperty("username", ServerService.instance.username),
                                          new JProperty("type", "eraser"),
                                          new JProperty("x", e.GetPosition(sender).X),
                                          new JProperty("y", e.GetPosition(sender).Y),
@@ -273,7 +275,8 @@ namespace PolyPaint.VueModeles
             {
                 return _loadedCommand ?? (_loadedCommand = new RelayCommand(x =>
                 {
-                    JObject clientReady = new JObject(new JProperty("username", ServerService.instance.username));
+                    JObject clientReady = new JObject(new JProperty("username", ServerService.instance.username),
+                                                      new JProperty("event", "ready"));
 
                     ServerService.instance.socket.Emit("gameplay", clientReady);
                 }));
