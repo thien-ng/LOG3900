@@ -27,7 +27,7 @@ import kotlin.math.sqrt
 
 class DrawFragment: Fragment() {
 
-    private val canvasViewChildPosition = 4
+    private val canvasViewChildPosition = 6
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
@@ -48,9 +48,27 @@ class DrawFragment: Fragment() {
             openWidthSelector(v)
         }
 
+        v.button_round.setOnClickListener {
+            switchDrawWithCircle(v)
+        }
+
+        v.button_square.setOnClickListener {
+            switchDrawWithSquare(v)
+        }
+
         v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
 
         return v
+    }
+
+    private fun switchDrawWithCircle(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        drawCanvasView.switchDrawWithCircle()
+    }
+
+    private fun switchDrawWithSquare(v: ViewGroup) {
+        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+        drawCanvasView.switchDrawWithSquare()
     }
 
     private fun switchStrokeEraser(v: ViewGroup) {
@@ -190,6 +208,14 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         return true
     }
 
+    fun switchDrawWithCircle() {
+        paintLine.strokeCap = Paint.Cap.ROUND
+    }
+
+    fun switchDrawWithSquare() {
+        paintLine.strokeCap = Paint.Cap.SQUARE
+    }
+
     private fun isValidErasePoint(x: Float, y: Float): Boolean {
         if (x > bitmap.width ||
             x < 0 ||
@@ -317,7 +343,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 paintLine.color = obj.getInt("color")
                 paintLine.style = Paint.Style.STROKE
                 paintLine.strokeWidth = obj.getInt("width").toFloat()
-                paintLine.strokeCap = Paint.Cap.ROUND
+                paintLine.strokeCap =
+                    if (obj.getString("format") == "circle")
+                        Paint.Cap.ROUND
+                    else
+                        Paint.Cap.SQUARE
 
                 addSegment(
                     obj.getInt("startPosX").toFloat(),
@@ -356,6 +386,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("color", paintLine.color)
         obj.put("width", paintLine.strokeWidth)
         obj.put("isEnd", isEnd)
+        obj.put("format", if (paintLine.strokeCap == Paint.Cap.ROUND) "circle" else "square")
 
         SocketIO.sendMessage("gameplay", obj)
     }
