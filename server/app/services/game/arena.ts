@@ -2,6 +2,11 @@ import { IUser } from "../../interfaces/user-manager";
 import { IGameplayChat, IGameplayDraw, IDrawing, IPoints, IGameplayReady, GameMode, IGameplayEraser, IEraser, Bot } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
+import { DrawingTools } from "./utils/drawing-tools";
+import { MeanBot } from "./bots/meanBot";
+import { KindBot } from "./bots/kindBot";
+import { HumourBot } from "./bots/humourBot";
+import { Side } from "../../utils/Side";
 
 import * as io from 'socket.io';
 
@@ -27,7 +32,7 @@ export abstract class Arena {
     private arenaId:             number;
     public  chronometerInterval: NodeJS.Timeout;
     private chronometerTimer:    number;
-
+    
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
         this.room           = room;
@@ -38,14 +43,15 @@ export abstract class Arena {
         this.gm             = gm;
         this.arenaId        = arenaId;
         this.type           = type;
-
+        
         this.initReadyMap();
         this.setupPoints();
     }
     
     public abstract start(): void;
     public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void;
-
+    
+    protected abstract startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
     protected handleGameplayReady(mes: IGameplayReady): void {
@@ -162,20 +168,22 @@ export abstract class Arena {
         });
     }
 
-    protected startBotDrawing(): void {
-        let timer = 0;
-        const interval = setInterval(() => {
-            if (timer <= 10) {
-                console.log("Bot Drawing");
-            } else {
-                clearInterval(interval);
-            }
-            timer++;
-        }, ONE_SEC);
-    }
 
     protected isBot(username: string): boolean {
         return username === Bot.humour || username === Bot.kind || username === Bot.mean
+    }
+
+    protected initBot(botName: string, drawings: IDrawing[]): MeanBot | KindBot | HumourBot {
+        switch(botName) {
+            case Bot.mean:
+                return new MeanBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up); // TODO handle real display
+            case Bot.humour:
+                return new HumourBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up);
+            case Bot.kind:
+                return new KindBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up);
+            default:
+                return new KindBot(drawings, botName, this.curRule.clues, this.curRule.displayMode, Side.up);
+        }
     }
 
     private initReadyMap(): void {

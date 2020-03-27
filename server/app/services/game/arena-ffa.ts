@@ -52,7 +52,7 @@ export class ArenaFfa extends Arena {
         }
 
         if (this.isBotDrawing)
-            this.startBotDrawing();
+            this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
@@ -127,6 +127,14 @@ export class ArenaFfa extends Arena {
         }
     }
 
+    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
+        
+        const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
+        const bot = this.initBot(botName, drawings);
+
+        return bot.draw(this.socketServer, this.room, arenaTime);
+    }
+
     protected handlePoints(): void {
         // Give points to guesser
         // pts = time_left * (1 - ratio_found)
@@ -156,7 +164,6 @@ export class ArenaFfa extends Arena {
             }
             user = this.users[this.drawPtr];
         }
-
         this.updateDrawerRole(user);
     }
     

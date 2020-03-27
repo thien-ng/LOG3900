@@ -7,9 +7,9 @@ import { Bot } from "./bot";
 export class KindBot extends Bot {
 
     constructor(image: IDrawing[],
-        username: string | undefined,
-        hint: string[] | undefined,
-        mode: DisplayMode | undefined,
+        username: string,
+        hint: string[],
+        mode: DisplayMode,
         panoramicFirstSide: Side | undefined) {
 
         super(image, username, hint, mode, panoramicFirstSide);

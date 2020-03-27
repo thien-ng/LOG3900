@@ -1,12 +1,14 @@
-import { IGameplayDraw, IDrawing } from "../../../interfaces/game";
+import { IDrawing } from "../../../interfaces/game";
 import { DisplayMode } from '../../../interfaces/creator';
 import { Side } from '../../../utils/Side';
+
+import * as io from 'socket.io';
 
 export abstract class Bot {
 
     public length: number;
 
-    protected image: IDrawing[];
+    protected drawings: IDrawing[];
     protected taunts: string[];
     protected username: string;
     protected nextStroke: number;
@@ -15,16 +17,16 @@ export abstract class Bot {
     protected mode: DisplayMode;
     protected panoramicFirstSide: Side;
 
-    constructor(image: IDrawing[],
-        username: string = "BOT:bob",
-        hint: string[] = [],
-        mode: DisplayMode = DisplayMode.CLASSIC,
+    constructor(drawings: IDrawing[],
+        username: string,
+        hint: string[],
+        mode: DisplayMode,
         panoramicFirstSide: Side = Side.up) {
 
         this.username = username;
         this.mode = mode;
-        this.image = image;
-        this.length = this.image.length;
+        this.drawings = drawings;
+        this.length = this.drawings.length;
         this.hint = hint;
         this.nextHint = 0;
         this.panoramicFirstSide = panoramicFirstSide;
@@ -32,18 +34,40 @@ export abstract class Bot {
         this.sort();
     }
 
-    public getNextStroke(): IGameplayDraw {
+    public draw(socket: io.Server, room: string, arenaTime: number): NodeJS.Timeout {
+
+        let count = 0;
+        const interval = setInterval(() => {
+
+
+            if (count <= this.drawings.length) {
+                const nextStroke = this.getNextStroke();
+                if (nextStroke)
+                    socket.to(room).emit("draw", nextStroke);
+            } else {
+                clearInterval(interval);
+            }
+            count++;
+
+
+        }, this.calculateTimeToDrawingProportion(arenaTime));
+        return interval;
+    }
+
+    private calculateTimeToDrawingProportion(arenaTime: number): number {
+        const proportion = this.drawings.length / (arenaTime + 5) //+5 to finish drawings early
+        return 1 / proportion;
+    }
+
+    public getNextStroke(): IDrawing | undefined{
         if (this.isDone()) {
-            throw Error("image already drawn. \n the length is a public parameter");
+            return;
         }
-        const out: any = this.image[this.nextStroke++];         // whacky stuff here
-        out.username = this.username;                           // whacky stuff here
-        const res: IGameplayDraw = out;                         // whacky stuff here
-        return res;   // retourne true si il reste des traits a ajouter.
+        return this.drawings[this.nextStroke++];
     }
 
     protected isDone(): boolean {
-        return (this.nextStroke == this.image.length);
+        return (this.nextStroke == this.drawings.length);
     }
 
     protected sort(): void {
@@ -61,8 +85,8 @@ export abstract class Bot {
     }
 
     protected sortPanoramic(): void { //bubble sort
-        for (let i = 0; i < this.image.length - 1; i++) {
-            for (let j = 0; j < this.image.length - i - 1; j++) {
+        for (let i = 0; i < this.drawings.length - 1; i++) {
+            for (let j = 0; j < this.drawings.length - i - 1; j++) {
                 if (this.comparePanoramic(j, j + 1)) {
                     this.swapStroke(j, j + 1);
                 }
@@ -74,21 +98,21 @@ export abstract class Bot {
         // considering if b should come before a.
         switch (this.panoramicFirstSide) {
             case Side.up:
-                return Math.min(this.image[b].startPosY, this.image[b].endPosY) < Math.min(this.image[a].startPosY, this.image[a].endPosY);
+                return Math.min(this.drawings[b].startPosY, this.drawings[b].endPosY) < Math.min(this.drawings[a].startPosY, this.drawings[a].endPosY);
             case Side.down:
-                return Math.max(this.image[b].startPosY, this.image[b].endPosY) > Math.max(this.image[a].startPosY, this.image[a].endPosY);
+                return Math.max(this.drawings[b].startPosY, this.drawings[b].endPosY) > Math.max(this.drawings[a].startPosY, this.drawings[a].endPosY);
             case Side.left:
-                return Math.min(this.image[b].startPosX, this.image[b].endPosX) < Math.min(this.image[a].startPosX, this.image[a].endPosX);
+                return Math.min(this.drawings[b].startPosX, this.drawings[b].endPosX) < Math.min(this.drawings[a].startPosX, this.drawings[a].endPosX);
             case Side.right:
-                return Math.max(this.image[b].startPosX, this.image[b].endPosX) > Math.max(this.image[a].startPosX, this.image[a].endPosX);
+                return Math.max(this.drawings[b].startPosX, this.drawings[b].endPosX) > Math.max(this.drawings[a].startPosX, this.drawings[a].endPosX);
         }
         return false;
     }
 
     protected sortCentered(): void { // bubble sort
         const center = this.findCenter();
-        for (let i = 0; i < this.image.length - 1; i++) {
-            for (let j = 0; j < this.image.length - i - 1; j++) {
+        for (let i = 0; i < this.drawings.length - 1; i++) {
+            for (let j = 0; j < this.drawings.length - i - 1; j++) {
                 if (this.squaredDistance(j, center.x, center.x) > this.squaredDistance(j + 1, center.x, center.x)) {
                     this.swapStroke(j, j + 1);
                 }
@@ -101,31 +125,31 @@ export abstract class Bot {
         let bigY = 0;
         let smallX = Infinity;
         let smallY = Infinity;
-        for (let i = 0; i < this.image.length; i++) {
-            smallX = (this.image[i].startPosX < smallX) ? this.image[i].startPosX : smallX;
-            smallY = (this.image[i].startPosY < smallY) ? this.image[i].startPosY : smallX;
-            bigX = (this.image[i].startPosX > bigX) ? this.image[i].startPosX : smallX;
-            bigY = (this.image[i].startPosY > bigY) ? this.image[i].startPosY : smallX;
+        for (let i = 0; i < this.drawings.length; i++) {
+            smallX = (this.drawings[i].startPosX < smallX) ? this.drawings[i].startPosX : smallX;
+            smallY = (this.drawings[i].startPosY < smallY) ? this.drawings[i].startPosY : smallX;
+            bigX = (this.drawings[i].startPosX > bigX) ? this.drawings[i].startPosX : smallX;
+            bigY = (this.drawings[i].startPosY > bigY) ? this.drawings[i].startPosY : smallX;
         }
 
         return { x: (smallX + bigX) / 2, y: (smallY + bigY) / 2 };
     }
 
     protected squaredDistance(a: number, centerX: number, centerY: number): number {
-        return Math.pow(Math.min(Math.abs(this.image[a].startPosX - centerX), Math.abs(this.image[a].endPosX - centerX)), 2) +
-            Math.pow(Math.min(Math.abs(this.image[a].startPosY - centerY), Math.abs(this.image[a].endPosY - centerY)), 2);
+        return Math.pow(Math.min(Math.abs(this.drawings[a].startPosX - centerX), Math.abs(this.drawings[a].endPosX - centerX)), 2) +
+            Math.pow(Math.min(Math.abs(this.drawings[a].startPosY - centerY), Math.abs(this.drawings[a].endPosY - centerY)), 2);
     }
 
     protected sortRand(): void {
-        for (let i = 0; i < this.image.length - 1; i++) {
+        for (let i = 0; i < this.drawings.length - 1; i++) {
             this.swapStroke(i, i + Math.floor(Math.random() * (this.taunts.length - i)));
         }
     }
 
     protected swapStroke(a: number, b: number): void {
-        const temp: IDrawing = this.image[b];
-        this.image[b] = this.image[a];
-        this.image[a] = temp;
+        const temp: IDrawing = this.drawings[b];
+        this.drawings[b] = this.drawings[a];
+        this.drawings[a] = temp;
     }
 
     public getHint(): string {

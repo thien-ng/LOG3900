@@ -48,7 +48,7 @@ export class CreationAssist2 {
             }
             ctx.stroke();
 
-            drawings.push({color: "#00000000", width: 10, points: points });
+            drawings.push({color: "#FF000000", width: 10, points: points });
         }
 
         return {
