@@ -122,10 +122,7 @@ export class LobbyManagerService {
             if (this.isUserInLobbyAlready(lobby.users, user.username))
                 throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
 
-            if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user))) {
-                if ((lobby.users.length + 1) > lobby.size)
-                    throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
-
+            if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user)) || isBot) {
                 lobby.users.push(user);
                 this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username } as INotifyUpdateUser);
             }
