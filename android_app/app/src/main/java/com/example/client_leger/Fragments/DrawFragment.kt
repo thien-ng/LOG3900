@@ -8,7 +8,6 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.PopupWindow
@@ -165,11 +164,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var drawListener: Disposable
     private var lastErasePoint: Point? = null
     private var roleListener: Disposable
-    private lateinit var bitmap: Bitmap
-    private lateinit var bitmapCanvas: Canvas
-
     private val matrixSquareSize = 100
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
+    private lateinit var bitmap: Bitmap
+    private lateinit var bitmapCanvas: Canvas
 
     init {
         paintLine.isAntiAlias = true
