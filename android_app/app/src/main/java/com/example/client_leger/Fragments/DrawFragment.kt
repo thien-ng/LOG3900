@@ -162,6 +162,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var segments = ArrayList<Segment>()
     private var strokeJustEnded = true
     private var drawListener: Disposable
+    private var roleListener: Disposable
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
 
@@ -175,11 +176,16 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         drawListener = Communication.getDrawListener().subscribe{ obj ->
             strokeReceived(obj)
         }
+
+        roleListener = Communication.getDrawerUpdateListener().subscribe{ obj ->
+            clearStrokes()
+        }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         drawListener.dispose()
+        roleListener.dispose()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
