@@ -128,8 +128,8 @@ export abstract class Bot {
         for (let i = 0; i < this.drawings.length; i++) {
             smallX = (this.drawings[i].startPosX < smallX) ? this.drawings[i].startPosX : smallX;
             smallY = (this.drawings[i].startPosY < smallY) ? this.drawings[i].startPosY : smallX;
-            bigX = (this.drawings[i].startPosX > bigX) ? this.drawings[i].startPosX : smallX;
-            bigY = (this.drawings[i].startPosY > bigY) ? this.drawings[i].startPosY : smallX;
+            bigX = (this.drawings[i].startPosX > bigX) ? this.drawings[i].startPosX : bigX;
+            bigY = (this.drawings[i].startPosY > bigY) ? this.drawings[i].startPosY : bigY;
         }
 
         return { x: (smallX + bigX) / 2, y: (smallY + bigY) / 2 };
