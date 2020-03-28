@@ -215,6 +215,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val y = event.y.toInt()
 
         if (!isValidPoint(x, y)) {
+            strokeJustEnded = true
+            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
+            currentStroke.reset()
             return true
         }
 
