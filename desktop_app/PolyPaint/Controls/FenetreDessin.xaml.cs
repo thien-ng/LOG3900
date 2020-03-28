@@ -54,6 +54,5 @@ namespace PolyPaint.Controls
         {
             ((DessinViewModel)DataContext).OnEndOfStroke(surfaceDessin, e);
         }
-
     }
 }

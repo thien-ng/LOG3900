@@ -305,9 +305,23 @@ namespace PolyPaint.VueModeles
 
             StrokeCollection strokes = Traits.HitTest(new Point(x, y));
 
-            foreach (var item in strokes)
-            {
+            if (strokes.Count == 0) return;
 
+            foreach (var stroke in strokes)
+            {
+                Rect rect = new Rect(x - 5, y - 5, 10, 10);
+                StrokeCollection splitStroke = stroke.GetEraseResult(rect);
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    foreach (var item in splitStroke)
+                    {
+                        ((CustomStroke)item).uid = Guid.NewGuid();
+                        Traits.Add(item);
+                    }
+
+                    Traits.Remove(stroke);
+                });
             }
         }
 
