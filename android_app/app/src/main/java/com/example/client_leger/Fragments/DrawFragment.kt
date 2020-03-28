@@ -195,8 +195,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
-        matrix = Array(h / matrixSquareSize) {
-            Array(w / matrixSquareSize) {
+        matrix = Array((h / matrixSquareSize) + 1) {
+            Array((w / matrixSquareSize) + 1) {
                 ArrayList<Segment>()
             }
         }
@@ -214,6 +214,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val x = event.x.toInt()
         val y = event.y.toInt()
 
+        if (!isValidPoint(x, y)) {
+            strokeJustEnded = true
+            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
+            currentStroke.reset()
+            return true
+        }
+
         if ((isStrokeErasing || isNormalErasing)) {
             if (event.actionMasked == MotionEvent.ACTION_MOVE) {
                 if (lastErasePoint != null) {
@@ -221,7 +228,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             } else {
                 lastErasePoint = Point(x, y)
-                if (isValidErasePoint(x, y)) {
+                if (bitmap.getPixel(x, y) != Color.WHITE) {
                     checkForStrokesToErase(x, y, isStrokeErasing)
                     sendErase(x, y, isStrokeErasing)
                 }
@@ -242,15 +249,15 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun eraseInLine(destX: Int, destY: Int) {
         val distance = distance(lastErasePoint!!, Point(destX, destY))
-        val directionX = (x - lastErasePoint!!.x) / distance
-        val directionY = (y - lastErasePoint!!.y) / distance
+        val directionX = (destX - lastErasePoint!!.x) / distance
+        val directionY = (destY - lastErasePoint!!.y) / distance
         val startX = lastErasePoint!!.x
         val startY = lastErasePoint!!.y
 
         for (i in 1..(distance / 15).toInt()) {
             val newX = (startX + directionX * 15 * i).toInt()
             val newY = (startY + directionY * 15 * i).toInt()
-            if (isValidErasePoint(newX, newY)) {
+            if (bitmap.getPixel(destX, destY) != Color.WHITE) {
                 checkForStrokesToErase(newX, newY, isStrokeErasing)
                 sendErase(newX, newY, isStrokeErasing)
             }
@@ -283,20 +290,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun isValidErasePoint(x: Int, y: Int): Boolean {
-        if (x > bitmap.width ||
-            x < 0 ||
-            y > bitmap.height ||
-            y < 0) {
-
-            return false
-        }
-
-        if (bitmap.getPixel(x, y) == Color.WHITE) {
-            return false
-        }
-
-        return true
+    private fun isValidPoint(x: Int, y: Int): Boolean {
+        return !(x > bitmap.width || x < 0 || y > bitmap.height || y < 0)
     }
 
     private fun redrawPathsToBitmap() {
