@@ -15,13 +15,14 @@ import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.LogState
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import org.json.JSONObject
 
 class LoginFragment : Fragment(), FragmentChangeListener {
 
     private var controller = ConnexionController()
-
+    private lateinit var connexionListener: Disposable
     lateinit var username: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,7 +34,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
                 closeKeyboard()
                 v.login_button.isEnabled = false
 
-                var body = JSONObject( mapOf(
+                val body = JSONObject( mapOf(
                     "username" to v.login_editText_name.text.toString().trim(),
                     "password" to v.login_editText_password.text.toString().trim()
                 ))
@@ -51,7 +52,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
             replaceFragment(RegisterFragment())
         }
 
-        Communication.getConnectionListener().subscribe{mes ->
+        connexionListener = Communication.getConnectionListener().subscribe{mes ->
             handleConnection(mes)
         }
 
@@ -77,11 +78,14 @@ class LoginFragment : Fragment(), FragmentChangeListener {
         }
     }
 
-
     override fun replaceFragment(fragment: Fragment) {
          fragmentManager!!.beginTransaction().replace(R.id.container_view, fragment).addToBackStack(fragment.toString()).commit()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connexionListener.dispose()
+    }
 
     private fun connect(username: String) {
         val intent = Intent(activity, MainActivity::class.java)
@@ -103,6 +107,5 @@ class LoginFragment : Fragment(), FragmentChangeListener {
             }
             else -> true
         }
-
     }
 }
