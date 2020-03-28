@@ -101,9 +101,7 @@ class ChatFragment: Fragment() {
         }
 
         v.disconnect_button.setOnClickListener {
-            SocketIO.disconnect()
-
-            activity!!.finish()
+            activity!!.onBackPressed()
         }
 
         chatListener = Communication.getChatMessageListener().subscribe{receptMes ->

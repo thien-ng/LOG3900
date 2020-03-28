@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_registration.*
 import kotlinx.android.synthetic.main.fragment_registration.view.*
 import org.json.JSONObject
@@ -24,7 +24,7 @@ import java.io.FileNotFoundException
 class RegisterFragment : Fragment() {
 
     private var controller = ConnexionController()
-
+    private lateinit var connexionListener: Disposable
     lateinit var username: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,7 +42,7 @@ class RegisterFragment : Fragment() {
                 closeKeyboard()
                 v.register_button.isEnabled = false
 
-                var body = JSONObject(
+                val body = JSONObject(
                     mapOf(
                         "username" to v.register_editText_username.text.toString().trim(),
                         "password" to v.register_editText_password.text.toString().trim(),
@@ -59,7 +59,7 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        Communication.getConnectionListener().subscribe{ mes ->
+        connexionListener = Communication.getConnectionListener().subscribe{ mes ->
             handleConnection(mes)
         }
 
@@ -79,12 +79,16 @@ class RegisterFragment : Fragment() {
         }
     }
 
-    fun connect(username: String) {
+    private fun connect(username: String) {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connexionListener.dispose()
+    }
 
     private fun closeKeyboard() {
         if (activity!!.currentFocus != null) {
@@ -100,7 +104,6 @@ class RegisterFragment : Fragment() {
                 register_pickAvatar.setImageBitmap(this.context?.let { decodeUri(it, selectedImage, 50) })
             }
         }
-
     }
 
     @Throws(FileNotFoundException::class)
@@ -165,5 +168,4 @@ class RegisterFragment : Fragment() {
             else -> return true
         }
     }
-
 }
