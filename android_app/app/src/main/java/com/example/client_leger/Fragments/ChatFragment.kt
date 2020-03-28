@@ -101,9 +101,7 @@ class ChatFragment: Fragment() {
         }
 
         v.disconnect_button.setOnClickListener {
-            SocketIO.disconnect()
-
-            activity!!.finish()
+            activity!!.onBackPressed()
         }
 
         chatListener = Communication.getChatMessageListener().subscribe{receptMes ->
@@ -164,11 +162,13 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        loadChannels()
-        messageAdapter.clear()
-        channelId = newChannelId
-        controller.loadChatHistory(this)
-        textViewChannelName.text = channelId
+        if (channelId != newChannelId) {
+            loadChannels()
+            messageAdapter.clear()
+            channelId = newChannelId
+            controller.loadChatHistory(this)
+            textViewChannelName.text = channelId
+        }
     }
 
     private fun buildMessage(username: String, message: EditText, chan_id: String): JSONObject {
