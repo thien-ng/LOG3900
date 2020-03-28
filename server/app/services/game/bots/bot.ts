@@ -42,7 +42,7 @@ export abstract class Bot {
             count++;
 
         }, this.calculateTimeToDrawingProportion(arenaTime));
-        
+
         return interval;
     }
 
@@ -59,7 +59,7 @@ export abstract class Bot {
         return 1 / proportion;
     }
 
-    public getNextStroke(): IDrawing | undefined{
+    public getNextStroke(): IDrawing | undefined {
         if (this.isDone()) {
             return;
         }
@@ -113,7 +113,7 @@ export abstract class Bot {
         const center = this.findCenter();
         for (let i = 0; i < this.drawings.length - 1; i++) {
             for (let j = 0; j < this.drawings.length - i - 1; j++) {
-                if (this.squaredDistance(j, center.x, center.x) > this.squaredDistance(j + 1, center.x, center.x)) {
+                if (this.squaredDistance(j, center.x, center.y) > this.squaredDistance(j + 1, center.x, center.y)) {
                     this.swapStroke(j, j + 1);
                 }
             }
