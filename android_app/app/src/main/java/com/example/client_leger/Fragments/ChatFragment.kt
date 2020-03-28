@@ -162,11 +162,13 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        loadChannels()
-        messageAdapter.clear()
-        channelId = newChannelId
-        controller.loadChatHistory(this)
-        textViewChannelName.text = channelId
+        if (channelId != newChannelId) {
+            loadChannels()
+            messageAdapter.clear()
+            channelId = newChannelId
+            controller.loadChatHistory(this)
+            textViewChannelName.text = channelId
+        }
     }
 
     private fun buildMessage(username: String, message: EditText, chan_id: String): JSONObject {
