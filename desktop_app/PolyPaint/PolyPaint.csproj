@@ -164,6 +164,7 @@
     <Compile Include="Convertisseurs\CreationTypeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsFirstToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSelectedToOpacityConverter.cs" />
+    <Compile Include="Convertisseurs\PanoramicModeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SearchBarVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSubbedToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToVisibleConverter.cs" />
@@ -258,7 +259,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LobbyPasswordControl.xaml">
-    <SubType>Designer</SubType>
+      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\HintInputControl.xaml">
