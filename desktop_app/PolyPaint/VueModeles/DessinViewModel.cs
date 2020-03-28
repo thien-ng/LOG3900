@@ -215,13 +215,15 @@ namespace PolyPaint.VueModeles
         {
             string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
+            int color = int.Parse(editeur.CouleurSelectionnee.Remove(0,1), System.Globalization.NumberStyles.HexNumber);
+
             JObject drawing = new JObject(new JProperty("event", "draw"),
                                           new JProperty("username", ServerService.instance.username),
                                           new JProperty("startPosX", previousPos["X"]),
                                           new JProperty("startPosY", previousPos["Y"]),
                                           new JProperty("endPosX", e.GetPosition(sender).X),
                                           new JProperty("endPosY", e.GetPosition(sender).Y),
-                                          new JProperty("color", int.Parse(editeur.CouleurSelectionnee, System.Globalization.NumberStyles.HexNumber)),
+                                          new JProperty("color", color),
                                           new JProperty("width", editeur.TailleTrait),
                                           new JProperty("isEnd", IsEndOfStroke),
                                           new JProperty("format", format),
@@ -267,11 +269,12 @@ namespace PolyPaint.VueModeles
             coll.Add(new StylusPoint(X1, Y1));
             coll.Add(new StylusPoint(X2, Y2));
 
-            byte[] colors = BitConverter.GetBytes((int)data.GetValue("color"));
-            if (!BitConverter.IsLittleEndian) Array.Reverse(colors);
+            byte[] colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
+            if (!BitConverter.IsLittleEndian) Array.Reverse(colorBytes);
+            Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[0], colorBytes[1], colorBytes[2], colorBytes[3]) : (Color)ColorConverter.ConvertFromString("#FF000000");
 
             DrawingAttributes attr = new DrawingAttributes();
-            attr.Color = Color.FromArgb(colors[0], colors[1], colors[2], colors[3]);
+            attr.Color = color;
             attr.Height = (double)data.GetValue("width");
             attr.Width = attr.Height;
             attr.StylusTip = (string)data.GetValue("format") == "circle" ? StylusTip.Ellipse : StylusTip.Rectangle;
