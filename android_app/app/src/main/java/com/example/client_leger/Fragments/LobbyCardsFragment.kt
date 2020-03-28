@@ -120,10 +120,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun onJoinClick(view: View?, position: Int) {
+        view!!.findViewById<Button>(R.id.button_join).isEnabled = false
         var lobby = JSONObject()
         lobby.put("username", username)
         lobby.put("lobbyName", adapterLobbyCards.getItem(position).lobbyName)
         lobbyCardsController.joinLobby(this, lobby)
+        view!!.findViewById<Button>(R.id.button_join).isEnabled = true
+
     }
 
     override fun onUsersDropClick(view: View?, position: Int) {
