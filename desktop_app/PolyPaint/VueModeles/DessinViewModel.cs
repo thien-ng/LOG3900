@@ -221,7 +221,7 @@ namespace PolyPaint.VueModeles
                                           new JProperty("startPosY", previousPos["Y"]),
                                           new JProperty("endPosX", e.GetPosition(sender).X),
                                           new JProperty("endPosY", e.GetPosition(sender).Y),
-                                          new JProperty("color", editeur.CouleurSelectionnee),
+                                          new JProperty("color", int.Parse(editeur.CouleurSelectionnee, System.Globalization.NumberStyles.HexNumber)),
                                           new JProperty("width", editeur.TailleTrait),
                                           new JProperty("isEnd", IsEndOfStroke),
                                           new JProperty("format", format),
@@ -267,8 +267,11 @@ namespace PolyPaint.VueModeles
             coll.Add(new StylusPoint(X1, Y1));
             coll.Add(new StylusPoint(X2, Y2));
 
+            byte[] colors = BitConverter.GetBytes((int)data.GetValue("color"));
+            if (!BitConverter.IsLittleEndian) Array.Reverse(colors);
+
             DrawingAttributes attr = new DrawingAttributes();
-            attr.Color = (Color)ColorConverter.ConvertFromString((string) data.GetValue("color"));
+            attr.Color = Color.FromArgb(colors[0], colors[1], colors[2], colors[3]);
             attr.Height = (double)data.GetValue("width");
             attr.Width = attr.Height;
             attr.StylusTip = (string)data.GetValue("format") == "circle" ? StylusTip.Ellipse : StylusTip.Rectangle;
