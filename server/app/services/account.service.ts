@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IRegistration, IStatus, ILogin, IInfoUser, IConnection, IStats, IGame, IPlayer } from "../interfaces/communication";
+import { IRegistration, IStatus, ILogin, IInfoUser, IConnection, IStats, IGame, IPlayer, IModeDate } from "../interfaces/communication";
 import { AccountDbService } from "../database/account-db.service";
 import * as pg from "pg";
 import Types from '../types';
@@ -87,8 +87,8 @@ export class AccountService {
         }).catch((e) => {
             return e;
         });
-        const profileStats: Promise<IStats[]> = this.database.getProfileStats(username).then((result: pg.QueryResult) => {
-            return result.rows.map((row: any) => ({totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame}));
+        const profileStats: Promise<IStats> = this.database.getProfileStats(username).then((result: pg.QueryResult) => {
+            return result.rows.map((row: any) => ({totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame}))[0];
         }).catch((e) => {
             return e;
         });
@@ -102,12 +102,12 @@ export class AccountService {
     }
 
     private async getGameInfos(username: string): Promise<IGame[]> {
-        const mapDate           = new Map<number, string>();
+        const mapDate           = new Map<number, IModeDate>();
         const idList: number[]  = [];
         const gameList: IGame[] = [];
 
         (await this.database.getGameIds(username)).rows.forEach(u => {
-            mapDate.set(u.out_gamesid, u.out_date);
+            mapDate.set(u.out_gamesid, {mode: u.out_mode, date: u.out_date});
             idList.push(u.out_gamesid);
         });
 
@@ -117,8 +117,8 @@ export class AccountService {
             const list: IPlayer[] = [];
             info.getgameinfo.forEach((p: IPlayer) => { list.push(p) });
 
-            const date = mapDate.get(id) as string;
-            gameList.push({date: date, players: list});
+            const obj = mapDate.get(id) as IModeDate;
+            gameList.push({mode: obj.mode, date: obj.date, players: list});
         }
 
         return gameList;

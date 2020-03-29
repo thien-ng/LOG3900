@@ -59,13 +59,13 @@ class ChatFragment: Fragment() {
         recyclerViewNotSubChannels.layoutManager = managerNotSub
         recyclerViewNotSubChannels.adapter = notSubChannelAdapter
 
-        loadChannels()
-
         val fArray = arrayOfNulls<InputFilter>(1)
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
         v.chat_message_editText.filters = fArray
 
-        setChannel(channelId)
+        loadChannels()
+        controller.loadChatHistory(this)
+        textViewChannelName.text = channelId
 
         v.searchView_channelSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
