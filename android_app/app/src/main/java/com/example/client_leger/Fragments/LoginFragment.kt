@@ -122,3 +122,13 @@ class LoginFragment : Fragment(), FragmentChangeListener {
         }
     }
 }
+
+private fun isStringAlphanumeric(string: String) : Boolean {
+    for (character in string) {
+        if (!Character.isLetterOrDigit(character)) {
+            return false
+        }
+    }
+
+    return true
+}
