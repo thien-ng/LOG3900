@@ -1,3 +1,5 @@
+import { Side } from "../utils/Side";
+
 export interface ISuggestion {
     drawPng: string,
     drawPxl: IDrawingCreator[];
@@ -9,6 +11,7 @@ interface ICreateGame {
     clues:          string[],
     difficulty:     Difficulty,
     displayMode:    DisplayMode,
+    side:           Side,
 }
 
 export interface IManuel1 extends ICreateGame {
