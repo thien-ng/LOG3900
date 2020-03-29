@@ -22,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_registration.*
 import kotlinx.android.synthetic.main.fragment_registration.view.*
 import org.json.JSONObject
 import java.io.FileNotFoundException
+import java.util.*
 
 class RegisterFragment : Fragment() {
 
@@ -47,10 +48,10 @@ class RegisterFragment : Fragment() {
 
                 val body = JSONObject(
                     mapOf(
-                        "username" to v.register_editText_username.text.toString().trim(),
-                        "password" to v.register_editText_password.text.toString().trim(),
-                        "firstName" to v.register_editText_fName.text.toString().trim(),
-                        "lastName" to v.register_editText_lName.text.toString().trim()
+                        "username" to v.register_editText_username.text.toString().trim().toLowerCase(Locale.ROOT),
+                        "password" to v.register_editText_password.text.toString().trim().toLowerCase(Locale.ROOT),
+                        "firstName" to v.register_editText_fName.text.toString().trim().toLowerCase(Locale.ROOT),
+                        "lastName" to v.register_editText_lName.text.toString().trim().toLowerCase(Locale.ROOT)
                     )
                 )
 

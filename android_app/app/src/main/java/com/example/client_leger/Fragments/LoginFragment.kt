@@ -18,6 +18,7 @@ import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import org.json.JSONObject
+import java.util.*
 
 
 class LoginFragment : Fragment(), FragmentChangeListener {
@@ -36,8 +37,8 @@ class LoginFragment : Fragment(), FragmentChangeListener {
                 v.login_button.isEnabled = false
 
                 val body = JSONObject( mapOf(
-                    "username" to v.login_editText_name.text.toString().trim(),
-                    "password" to v.login_editText_password.text.toString().trim()
+                    "username" to v.login_editText_name.text.toString().trim().toLowerCase(Locale.ROOT),
+                    "password" to v.login_editText_password.text.toString().trim().toLowerCase(Locale.ROOT)
                 ))
 
                 username = v.login_editText_name.text.toString().trim()
@@ -75,7 +76,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     private fun closeKeyboard(){
         if ( activity!!.currentFocus != null){
             val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(activity!!.currentFocus.windowToken, 0)
+            imm.hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken, 0)
         }
     }
 
@@ -126,11 +127,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 }
 
 fun isStringAlphanumeric(string: String) : Boolean {
-    for (character in string) {
-        if (!Character.isLetterOrDigit(character)) {
-            return false
-        }
-    }
+    val regex = Regex("^[a-zA-Z0-9]*$")
 
-    return true
+    return regex.matches(string)
 }
