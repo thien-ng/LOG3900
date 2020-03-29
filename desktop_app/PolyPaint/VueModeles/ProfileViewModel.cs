@@ -19,6 +19,8 @@ namespace PolyPaint.VueModeles
                 _firstname = Services.ServerService.instance.user._firstName;
                 _lastname = Services.ServerService.instance.user._lastName;
                 _connections = ServerService.instance.user._connections;
+                _stats = ServerService.instance.user._stats;
+                _games = ServerService.instance.user._games;
             }
 
         }
@@ -47,5 +49,17 @@ namespace PolyPaint.VueModeles
             get { return _connections; }
         }
         #endregion
+
+        public Stats _stats;
+        public Stats Stats 
+        {
+            get { return _stats; }
+        }
+
+        public Game[] _games;
+        public Game[] Games 
+        {
+            get { return _games; }
+        }
     }
 }
