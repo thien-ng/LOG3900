@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import kotlinx.android.synthetic.main.fragment_registration.view.*
 import org.json.JSONObject
@@ -134,36 +135,36 @@ class RegisterFragment : Fragment() {
     }
 
     private fun validRegisterFields(v: View): Boolean {
-        when {
+        return when {
             v.register_editText_fName.text.isBlank() -> {
-                v.register_editText_fName.error = "Enter a valid first name"
+                v.register_editText_fName.error = "Enter a valid first name."
                 v.register_editText_fName.requestFocus()
-                return false
+                false
             }
             v.register_editText_lName.text.isBlank() -> {
-                v.register_editText_lName.error = "Enter a valid last name"
+                v.register_editText_lName.error = "Enter a valid last name."
                 v.register_editText_lName.requestFocus()
-                return false
+                false
             }
             v.register_editText_username.text.isBlank() || v.register_editText_username.text.length > Constants.MAX_USERNAME_SiZE  -> {
-                v.register_editText_username.error = "Enter a valid username"
+                v.register_editText_username.error = "Enter a valid username."
                 v.register_editText_username.requestFocus()
-                return false
+                false
             }
             v.register_editText_password.text.isBlank() || v.register_editText_password.text.length > Constants.MAX_PASSWORD_SiZE -> {
-                v.register_editText_password.error = "Enter a valid password"
+                v.register_editText_password.error = "Enter a valid password."
                 v.register_editText_password.requestFocus()
-                return false
+                false
             }
             v.register_editText_confirmPassword.text.isBlank() -> {
-                v.register_editText_confirmPassword.error = "You need to confirm the password"
+                v.register_editText_confirmPassword.error = "You need to confirm the password."
                 v.register_editText_confirmPassword.requestFocus()
-                return false
+                false
             }
             v.register_editText_confirmPassword.text.toString() != v.register_editText_password.text.toString() -> {
-                v.register_editText_confirmPassword.error = "Password doesn't match"
+                v.register_editText_confirmPassword.error = "Password doesn't match."
                 v.register_editText_confirmPassword.requestFocus()
-                return false
+                false
             }
             else -> return true
         }
