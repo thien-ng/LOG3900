@@ -59,13 +59,13 @@ class ChatFragment: Fragment() {
         recyclerViewNotSubChannels.layoutManager = managerNotSub
         recyclerViewNotSubChannels.adapter = notSubChannelAdapter
 
-        loadChannels()
-
         val fArray = arrayOfNulls<InputFilter>(1)
         fArray[0] = InputFilter.LengthFilter(Constants.MESSAGE_MAX_LENGTH)
         v.chat_message_editText.filters = fArray
 
-        setChannel(channelId)
+        loadChannels()
+        controller.loadChatHistory(this)
+        textViewChannelName.text = channelId
 
         v.searchView_channelSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -101,9 +101,7 @@ class ChatFragment: Fragment() {
         }
 
         v.disconnect_button.setOnClickListener {
-            SocketIO.disconnect()
-
-            activity!!.finish()
+            activity!!.onBackPressed()
         }
 
         chatListener = Communication.getChatMessageListener().subscribe{receptMes ->
@@ -164,11 +162,13 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        loadChannels()
-        messageAdapter.clear()
-        channelId = newChannelId
-        controller.loadChatHistory(this)
-        textViewChannelName.text = channelId
+        if (channelId != newChannelId) {
+            loadChannels()
+            messageAdapter.clear()
+            channelId = newChannelId
+            controller.loadChatHistory(this)
+            textViewChannelName.text = channelId
+        }
     }
 
     private fun buildMessage(username: String, message: EditText, chan_id: String): JSONObject {

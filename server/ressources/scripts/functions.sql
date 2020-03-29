@@ -224,13 +224,13 @@ CREATE OR REPLACE FUNCTION LOG3900.getProfileStats(in_username VARCHAR(20))
 $$LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION LOG3900.getGameIds(in_username VARCHAR(20))
-    RETURNS TABLE  (out_gamesid INT, out_date VARCHAR) AS $$
+    RETURNS TABLE  (out_gamesid INT, out_mode VARCHAR, out_date VARCHAR) AS $$
     BEGIN
         RETURN QUERY
-            SELECT ag.game_id, g.date
+            SELECT ag.game_id, g.gamemode, g.date
             FROM log3900.accountgame as ag, log3900.account as a, log3900.game as g
             WHERE a.id = ag.account_id
-            AND g.id = ag.account_id
+            AND g.id = ag.game_id
             AND a.username = in_username;
     END;
 $$LANGUAGE plpgsql;
