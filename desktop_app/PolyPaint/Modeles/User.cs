@@ -13,12 +13,17 @@ namespace PolyPaint.Modeles
         public string _firstName;
         public string _lastName;
         public Connection[] _connections;
-        public User(string username, string firstname, string lastname, Connection[] connections)
+        public Stats _stats;
+        public Game _game;
+
+        public User(string username, string firstname, string lastname, Connection[] connections, Stats stats, Game game)
         {
             _username = username;
             _firstName = firstname;
             _lastName = lastname;
             _connections = connections;
+            _stats = stats;
+            _game = game;
         }
     }
 }
