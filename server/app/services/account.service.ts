@@ -87,8 +87,8 @@ export class AccountService {
         }).catch((e) => {
             return e;
         });
-        const profileStats: Promise<IStats[]> = this.database.getProfileStats(username).then((result: pg.QueryResult) => {
-            return result.rows.map((row: any) => ({totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame}));
+        const profileStats: Promise<IStats> = this.database.getProfileStats(username).then((result: pg.QueryResult) => {
+            return result.rows.map((row: any) => ({totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame}))[0];
         }).catch((e) => {
             return e;
         });
