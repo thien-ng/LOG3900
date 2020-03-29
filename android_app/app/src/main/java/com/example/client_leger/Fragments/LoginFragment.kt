@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.InputFilter
+import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +20,7 @@ import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import org.json.JSONObject
+
 
 class LoginFragment : Fragment(), FragmentChangeListener {
 
@@ -96,12 +99,22 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     private fun validateLoginFields(v: View):Boolean{
         return when{
             v.login_editText_name.text.isBlank() -> {
-                v.login_editText_name.error = "Enter a username"
+                v.login_editText_name.error = "Enter a username."
+                v.login_editText_name.requestFocus()
+                false
+            }
+            !isStringAlphanumeric(v.login_editText_name.text.toString()) -> {
+                v.login_editText_name.error = "Only letters and numbers are accepted."
                 v.login_editText_name.requestFocus()
                 false
             }
             v.login_editText_password.text.isBlank() -> {
-                v.login_editText_password.error = "Enter a password"
+                v.login_editText_password.error = "Enter a password."
+                v.login_editText_password.requestFocus()
+                false
+            }
+            !isStringAlphanumeric(v.login_editText_password.text.toString()) -> {
+                v.login_editText_password.error = "Only letters and numbers are accepted."
                 v.login_editText_password.requestFocus()
                 false
             }
