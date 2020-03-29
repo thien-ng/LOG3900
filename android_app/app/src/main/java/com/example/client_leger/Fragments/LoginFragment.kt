@@ -103,21 +103,25 @@ class LoginFragment : Fragment(), FragmentChangeListener {
                 v.login_editText_name.requestFocus()
                 false
             }
+
             !isStringAlphanumeric(v.login_editText_name.text.toString()) -> {
                 v.login_editText_name.error = "Only letters and numbers are accepted."
                 v.login_editText_name.requestFocus()
                 false
             }
+
             v.login_editText_password.text.isBlank() -> {
                 v.login_editText_password.error = "Enter a password."
                 v.login_editText_password.requestFocus()
                 false
             }
+
             !isStringAlphanumeric(v.login_editText_password.text.toString()) -> {
                 v.login_editText_password.error = "Only letters and numbers are accepted."
                 v.login_editText_password.requestFocus()
                 false
             }
+
             else -> true
         }
     }

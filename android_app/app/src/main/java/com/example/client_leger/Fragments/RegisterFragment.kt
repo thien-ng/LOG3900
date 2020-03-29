@@ -141,31 +141,67 @@ class RegisterFragment : Fragment() {
                 v.register_editText_fName.requestFocus()
                 false
             }
+
+            !isStringAlphanumeric(v.register_editText_fName.text.toString()) -> {
+                v.register_editText_fName.error = "Only letters and numbers are accepted."
+                v.register_editText_fName.requestFocus()
+                false
+            }
+
             v.register_editText_lName.text.isBlank() -> {
                 v.register_editText_lName.error = "Enter a valid last name."
                 v.register_editText_lName.requestFocus()
                 false
             }
+
+            !isStringAlphanumeric(v.register_editText_lName.text.toString()) -> {
+                v.register_editText_lName.error = "Only letters and numbers are accepted."
+                v.register_editText_lName.requestFocus()
+                false
+            }
+
             v.register_editText_username.text.isBlank() || v.register_editText_username.text.length > Constants.MAX_USERNAME_SiZE  -> {
                 v.register_editText_username.error = "Enter a valid username."
                 v.register_editText_username.requestFocus()
                 false
             }
+
+            !isStringAlphanumeric(v.register_editText_username.text.toString()) -> {
+                v.register_editText_username.error = "Only letters and numbers are accepted."
+                v.register_editText_username.requestFocus()
+                false
+            }
+
             v.register_editText_password.text.isBlank() || v.register_editText_password.text.length > Constants.MAX_PASSWORD_SiZE -> {
                 v.register_editText_password.error = "Enter a valid password."
                 v.register_editText_password.requestFocus()
                 false
             }
+
+            !isStringAlphanumeric(v.register_editText_password.text.toString()) -> {
+                v.register_editText_password.error = "Only letters and numbers are accepted."
+                v.register_editText_password.requestFocus()
+                false
+            }
+
             v.register_editText_confirmPassword.text.isBlank() -> {
                 v.register_editText_confirmPassword.error = "You need to confirm the password."
                 v.register_editText_confirmPassword.requestFocus()
                 false
             }
+
+            !isStringAlphanumeric(v.register_editText_confirmPassword.text.toString()) -> {
+                v.register_editText_confirmPassword.error = "Only letters and numbers are accepted."
+                v.register_editText_confirmPassword.requestFocus()
+                false
+            }
+
             v.register_editText_confirmPassword.text.toString() != v.register_editText_password.text.toString() -> {
                 v.register_editText_confirmPassword.error = "Password doesn't match."
                 v.register_editText_confirmPassword.requestFocus()
                 false
             }
+
             else -> return true
         }
     }
