@@ -6,7 +6,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +18,6 @@ import android.widget.Toast
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import io.reactivex.rxjava3.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import kotlinx.android.synthetic.main.fragment_registration.view.*
 import org.json.JSONObject
@@ -28,6 +29,7 @@ class RegisterFragment : Fragment() {
     private lateinit var connexionListener: Disposable
     lateinit var username: String
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_registration, container, false)
 
@@ -94,12 +96,12 @@ class RegisterFragment : Fragment() {
     private fun closeKeyboard() {
         if (activity!!.currentFocus != null) {
             val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(activity!!.currentFocus.windowToken, 0)
+            imm.hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken, 0)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode === Activity.RESULT_OK) when (requestCode) {
+        if (resultCode == Activity.RESULT_OK) when (requestCode) {
             Constants.GALLERY_REQUEST_CODE -> {
                 val selectedImage: Uri = data?.data!!
                 register_pickAvatar.setImageBitmap(this.context?.let { decodeUri(it, selectedImage, 50) })
@@ -111,7 +113,7 @@ class RegisterFragment : Fragment() {
     fun decodeUri(c: Context, uri: Uri?, requiredSize: Int): Bitmap? {
         val o = BitmapFactory.Options()
         o.inJustDecodeBounds = true
-        BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri), null, o)
+        BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri!!), null, o)
         var widthTmp = o.outWidth
         var heightTmp = o.outHeight
         var scale = 1
@@ -126,6 +128,7 @@ class RegisterFragment : Fragment() {
         return BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri), null, o2)
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun pickFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
