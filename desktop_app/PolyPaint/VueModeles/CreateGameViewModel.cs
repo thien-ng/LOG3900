@@ -41,7 +41,7 @@ namespace PolyPaint.VueModeles
 
         public ObservableCollection<string> Difficulty { get; set; }
         public ObservableCollection<string> DisplayMode { get; set; }
-        public ObservableCollection<string> PanoramicMode { get; set; }
+        public ObservableCollection<string> PanoramicMode { get; }
         public CreateGameDrawViewModel DrawViewModel { get; set; }
 
         private ObservableCollection<HintModel> _hints;
