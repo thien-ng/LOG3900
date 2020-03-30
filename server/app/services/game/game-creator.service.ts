@@ -23,7 +23,8 @@ export class GameCreatorService {
             clues:          configs.clues,
             difficulty:     configs.difficulty,
             displayMode:    configs.displayMode,
-            drawing:        configs.drawing
+            side:           configs.side,
+            drawing:        configs.drawing,
         }
         await this.db.addRule(rule);
     }

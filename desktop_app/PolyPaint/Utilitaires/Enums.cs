@@ -21,4 +21,12 @@
         Generator,
         GeneratedWord
     }
+
+    enum DisplayMode 
+    {
+        Classic,
+        Random,
+        Panoramic,
+        Centered
+    }
 }

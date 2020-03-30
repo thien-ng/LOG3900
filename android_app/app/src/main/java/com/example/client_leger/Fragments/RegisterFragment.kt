@@ -6,7 +6,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +22,7 @@ import kotlinx.android.synthetic.main.fragment_registration.*
 import kotlinx.android.synthetic.main.fragment_registration.view.*
 import org.json.JSONObject
 import java.io.FileNotFoundException
+import java.util.*
 
 class RegisterFragment : Fragment() {
 
@@ -27,6 +30,7 @@ class RegisterFragment : Fragment() {
     private lateinit var connexionListener: Disposable
     lateinit var username: String
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_registration, container, false)
 
@@ -44,10 +48,10 @@ class RegisterFragment : Fragment() {
 
                 val body = JSONObject(
                     mapOf(
-                        "username" to v.register_editText_username.text.toString().trim(),
-                        "password" to v.register_editText_password.text.toString().trim(),
-                        "firstName" to v.register_editText_fName.text.toString().trim(),
-                        "lastName" to v.register_editText_lName.text.toString().trim()
+                        "username" to v.register_editText_username.text.toString().trim().toLowerCase(Locale.ROOT),
+                        "password" to v.register_editText_password.text.toString().trim().toLowerCase(Locale.ROOT),
+                        "firstName" to v.register_editText_fName.text.toString().trim().toLowerCase(Locale.ROOT),
+                        "lastName" to v.register_editText_lName.text.toString().trim().toLowerCase(Locale.ROOT)
                     )
                 )
 
@@ -93,12 +97,12 @@ class RegisterFragment : Fragment() {
     private fun closeKeyboard() {
         if (activity!!.currentFocus != null) {
             val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(activity!!.currentFocus.windowToken, 0)
+            imm.hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken, 0)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode === Activity.RESULT_OK) when (requestCode) {
+        if (resultCode == Activity.RESULT_OK) when (requestCode) {
             Constants.GALLERY_REQUEST_CODE -> {
                 val selectedImage: Uri = data?.data!!
                 register_pickAvatar.setImageBitmap(this.context?.let { decodeUri(it, selectedImage, 50) })
@@ -110,7 +114,7 @@ class RegisterFragment : Fragment() {
     fun decodeUri(c: Context, uri: Uri?, requiredSize: Int): Bitmap? {
         val o = BitmapFactory.Options()
         o.inJustDecodeBounds = true
-        BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri), null, o)
+        BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri!!), null, o)
         var widthTmp = o.outWidth
         var heightTmp = o.outHeight
         var scale = 1
@@ -125,6 +129,7 @@ class RegisterFragment : Fragment() {
         return BitmapFactory.decodeStream(c.contentResolver.openInputStream(uri), null, o2)
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun pickFromGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -134,37 +139,73 @@ class RegisterFragment : Fragment() {
     }
 
     private fun validRegisterFields(v: View): Boolean {
-        when {
+        return when {
             v.register_editText_fName.text.isBlank() -> {
-                v.register_editText_fName.error = "Enter a valid first name"
+                v.register_editText_fName.error = "Enter a valid first name."
                 v.register_editText_fName.requestFocus()
-                return false
+                false
             }
+
+            !isStringAlphanumeric(v.register_editText_fName.text.toString()) -> {
+                v.register_editText_fName.error = "Only letters and numbers are accepted."
+                v.register_editText_fName.requestFocus()
+                false
+            }
+
             v.register_editText_lName.text.isBlank() -> {
-                v.register_editText_lName.error = "Enter a valid last name"
+                v.register_editText_lName.error = "Enter a valid last name."
                 v.register_editText_lName.requestFocus()
-                return false
+                false
             }
+
+            !isStringAlphanumeric(v.register_editText_lName.text.toString()) -> {
+                v.register_editText_lName.error = "Only letters and numbers are accepted."
+                v.register_editText_lName.requestFocus()
+                false
+            }
+
             v.register_editText_username.text.isBlank() || v.register_editText_username.text.length > Constants.MAX_USERNAME_SiZE  -> {
-                v.register_editText_username.error = "Enter a valid username"
+                v.register_editText_username.error = "Enter a valid username."
                 v.register_editText_username.requestFocus()
-                return false
+                false
             }
+
+            !isStringAlphanumeric(v.register_editText_username.text.toString()) -> {
+                v.register_editText_username.error = "Only letters and numbers are accepted."
+                v.register_editText_username.requestFocus()
+                false
+            }
+
             v.register_editText_password.text.isBlank() || v.register_editText_password.text.length > Constants.MAX_PASSWORD_SiZE -> {
-                v.register_editText_password.error = "Enter a valid password"
+                v.register_editText_password.error = "Enter a valid password."
                 v.register_editText_password.requestFocus()
-                return false
+                false
             }
+
+            !isStringAlphanumeric(v.register_editText_password.text.toString()) -> {
+                v.register_editText_password.error = "Only letters and numbers are accepted."
+                v.register_editText_password.requestFocus()
+                false
+            }
+
             v.register_editText_confirmPassword.text.isBlank() -> {
-                v.register_editText_confirmPassword.error = "You need to confirm the password"
+                v.register_editText_confirmPassword.error = "You need to confirm the password."
                 v.register_editText_confirmPassword.requestFocus()
-                return false
+                false
             }
+
+            !isStringAlphanumeric(v.register_editText_confirmPassword.text.toString()) -> {
+                v.register_editText_confirmPassword.error = "Only letters and numbers are accepted."
+                v.register_editText_confirmPassword.requestFocus()
+                false
+            }
+
             v.register_editText_confirmPassword.text.toString() != v.register_editText_password.text.toString() -> {
-                v.register_editText_confirmPassword.error = "Password doesn't match"
+                v.register_editText_confirmPassword.error = "Password doesn't match."
                 v.register_editText_confirmPassword.requestFocus()
-                return false
+                false
             }
+
             else -> return true
         }
     }
