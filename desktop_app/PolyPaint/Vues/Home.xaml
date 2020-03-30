@@ -27,6 +27,10 @@
             <DataTemplate x:Key="Lobby" DataType="{x:Type model:LobbyViewModel}">
                 <local:Lobby DataContext="{Binding LobbyViewModel}"/>
             </DataTemplate>
+
+            <DataTemplate x:Key="Game" DataType="{x:Type model:GameViewModel}">
+                <local:Game DataContext="{Binding GameViewModel}"/>
+            </DataTemplate>
         </ResourceDictionary>
         
     </Page.Resources>
@@ -52,6 +56,9 @@
                             </DataTrigger>
                             <DataTrigger Binding="{Binding SwitchView}" Value="2">
                                 <Setter Property="ContentTemplate" Value="{StaticResource Lobby}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SwitchView}" Value="3">
+                                <Setter Property="ContentTemplate" Value="{StaticResource Game}" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
