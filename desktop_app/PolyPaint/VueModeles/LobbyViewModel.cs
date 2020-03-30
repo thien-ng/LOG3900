@@ -161,7 +161,7 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
             if (response.IsSuccessStatusCode)
             {
-                Mediator.Notify("GoToDrawScreen");
+                Mediator.Notify("GoToGameScreen");
             }
         }
 
