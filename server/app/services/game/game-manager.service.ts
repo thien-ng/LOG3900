@@ -53,12 +53,12 @@ export class GameManagerService {
                 maxAmount = 9;
                 break;
             case GameMode.COOP:
-                minAmount = 3;
-                maxAmount = 5;
+                minAmount = 2;
+                maxAmount = 4;
                 break;
             case GameMode.SOLO:
-                minAmount = 2;
-                maxAmount = 2;
+                minAmount = 1;
+                maxAmount = 1;
                 break;
         }
         if (lobby.users.length < minAmount || lobby.users.length > maxAmount) {
