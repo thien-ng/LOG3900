@@ -8,6 +8,7 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.PopupWindow
@@ -208,6 +209,15 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
         canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
         canvas.drawPath(currentStroke, paintLine)
+
+        val testPaint = Paint(paintLine)
+        testPaint.strokeWidth = 3.0f
+        testPaint.color = Color.RED
+
+        //for (i in 0..5) {
+        //    canvas.drawLine(matrixSquareSize.toFloat() * i, 0.0f, matrixSquareSize.toFloat() * i, height.toFloat(), testPaint)
+        //    canvas.drawLine(0.0f, matrixSquareSize.toFloat() * i, width.toFloat(), matrixSquareSize.toFloat() * i, testPaint)
+        //}
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -228,12 +238,14 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             } else {
                 lastErasePoint = Point(x, y)
-                if (bitmap.getPixel(x, y) != Color.WHITE) {
-                    checkForStrokesToErase(x, y, isStrokeErasing)
-                    sendErase(x, y, isStrokeErasing)
-                }
+            }
+
+            if (bitmap.getPixel(x, y) != Color.WHITE) {
+                checkForStrokesToErase(x, y, isStrokeErasing)
+                sendErase(x, y, isStrokeErasing)
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            addSegment(Point(x,y)) //todo: remove
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
@@ -255,7 +267,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val startX = lastErasePoint!!.x
         val startY = lastErasePoint!!.y
 
-        for (i in 1..(distance / 15).toInt()) {
+        for (i in 0..(distance / 15).toInt()) {
             val newX = (startX + directionX * 15 * i).toInt()
             val newY = (startY + directionY * 15 * i).toInt()
             if (bitmap.getPixel(destX, destY) != Color.WHITE) {
@@ -331,29 +343,19 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     continue
                 }
 
+                val eraserHalfSize = segment.paint.strokeWidth / 2.0f
 
-
-
-                val eraserHalfSize = segment.paint.strokeWidth
-
-                if (segment.point.x + eraserHalfSize >= pointX && segment.point.x - eraserHalfSize <= pointX ) {
-                    if (segment.point.y + eraserHalfSize >= pointY && segment.point.y - eraserHalfSize <= pointY ) {
-                        segment.paint.color = Color.TRANSPARENT
-                        if (isStroke) {
-                            batchErase(segment)
-                        }
-
-                        strokeFound = true
+                if (segment.point.x + eraserHalfSize >= pointX &&
+                    segment.point.x - eraserHalfSize <= pointX &&
+                    segment.point.y + eraserHalfSize >= pointY &&
+                    segment.point.y - eraserHalfSize <= pointY ) {
+                    segment.paint.color = Color.TRANSPARENT
+                    if (isStroke) {
+                        batchErase(segment)
                     }
+
+                    strokeFound = true
                 }
-
-
-
-
-
-
-
-
             }
         }
 
@@ -373,9 +375,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val directionX = (destX - currentStartX) / distance
         val directionY = (destY - currentStartY) / distance
 
-        for (i in 1..(distance / (paintLine.strokeWidth)).toInt()) {
-            val newX = (startX + directionX * paintLine.strokeWidth * i).toInt()
-            val newY = (startY + directionY * paintLine.strokeWidth * i).toInt()
+        for (i in 1..distance.toInt()) {
+            val newX = (startX + directionX * i).toInt()
+            val newY = (startY + directionY * i).toInt()
 
             currentStroke.moveTo(currentStartX.toFloat(), currentStartY.toFloat())
             currentStroke.lineTo(newX.toFloat(), newY.toFloat())
@@ -390,8 +392,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun addSegment(point: Point) {
-        val newSegment = Path()
-
         synchronized(segments) {
             segments.add(Segment(point, Paint(paintLine), null, null))
             if (segments.size - 2 >= 0 && !strokeJustEnded) {
@@ -401,7 +401,44 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 segments[segments.size - 2].nextSegment = segments[segments.size - 1]
             }
 
-            matrix[point.y / matrixSquareSize][point.x / matrixSquareSize].add(segments[segments.size - 1])
+            val middle      = Point(point.x / matrixSquareSize, point.y / matrixSquareSize)
+            val left        = Point((point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
+            val right       = Point((point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
+            val top         = Point(middle.x, (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+            val bottom      = Point(middle.x, (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+
+            matrix[middle.y][middle.x].add(segments[segments.size - 1])
+            if (top.y != middle.y) {
+                matrix[top.y][top.x].add(segments[segments.size - 1])
+                val topLeft     = Point((point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+                if (topLeft.x != middle.x) {
+                    matrix[topLeft.y][topLeft.x].add(segments[segments.size - 1])
+                }
+                val topRight    = Point((point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+                if (topRight.x != middle.x) {
+                    matrix[topRight.y][topRight.x].add(segments[segments.size - 1])
+                }
+            } else if (bottom.y != middle.y) {
+                matrix[bottom.y][bottom.x].add(segments[segments.size - 1])
+                val bottomLeft  = Point((point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+                if (bottomLeft.x != middle.x) {
+                    matrix[bottomLeft.y][bottomLeft.x].add(segments[segments.size - 1])
+                }
+                val bottomRight = Point((point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+                if (bottomRight.x != middle.x) {
+                    matrix[bottomRight.y][bottomRight.x].add(segments[segments.size - 1])
+                }
+            }
+            if (left.x != middle.x) {
+                matrix[left.y][left.x].add(segments[segments.size - 1])
+            }
+            if (right.x != middle.x) {
+                matrix[right.y][right.x].add(segments[segments.size - 1])
+            }
         }
 
         strokeJustEnded = false
@@ -433,12 +470,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     else
                         Paint.Cap.SQUARE
 
-                touchMoved(
-                    obj.getInt("startPosX"),
-                    obj.getInt("endPosX"),
-                    obj.getInt("startPosY"),
-                    obj.getInt("endPosY")
-                )
+                addSegment(Point(obj.getInt("startPosX"), obj.getInt("startPosY")))
             }
             obj.getString("type") == "eraser" -> {
                 currentStroke.reset()
@@ -482,5 +514,3 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         SocketIO.sendMessage("gameplay", obj)
     }
 }
-
-
