@@ -99,6 +99,10 @@
                     <materialDesign:PackIcon Kind="Star"  Width="30" Height="30" Foreground="White"/>
                     <TextBlock Text="{Binding Stats._bestSoloScore, StringFormat=Best solo score: {0}}" Foreground="White" FontSize="20"/>
                 </StackPanel>
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowSplitHorizontal"  Width="30" Height="30" Foreground="White"/>
+                    <TextBlock Text="{Binding Stats._winRate, StringFormat=Win/Lose ratio: {0}}" Foreground="White" FontSize="20"/>
+                </StackPanel>
             </StackPanel>
             <StackPanel VerticalAlignment="Bottom" Margin="20" Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                 <StackPanel Margin="10" Orientation="Horizontal">
