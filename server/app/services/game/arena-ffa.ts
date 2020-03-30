@@ -7,16 +7,15 @@ import { DrawingTools } from "./utils/drawing-tools";
 import { MeanBot } from "./bots/meanBot";
 import { KindBot } from "./bots/kindBot";
 import { HumourBot } from "./bots/humourBot";
-import { Side } from "../../utils/Side";
+import { Bot } from "./bots/bot";
 
 import * as io from 'socket.io';
-import { Bot } from "./bots/bot";
 
 const format = require('string-format');
 
 const ANNOUNCEMENT = "{0} has found the answer";
 const ONE_SEC = 1000;
-const TOTAL_TIME = 30000;
+const TOTAL_TIME = 120000;
 const INIT_DRAW_PTS = 20;
 
 export class ArenaFfa extends Arena {
@@ -153,7 +152,7 @@ export class ArenaFfa extends Arena {
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
-        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, Side.up); // TODO handle sides
+        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
     protected botAnnounceStart(): void {

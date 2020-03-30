@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:PolyPaint.Controls"
              mc:Ignorable="d" 
              Background="White"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="1000">
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -125,26 +125,44 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-
+        
         <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
             
-            <TextBlock Text="Drawing Type: "
-                       FontSize="15" 
-                       VerticalAlignment="Center" 
-                       Margin="0 0 5 0"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Drawing Type: "
+                    FontSize="15" 
+                    VerticalAlignment="Center" 
+                    Margin="0 0 5 0"/>
+                <ComboBox wpf:ComboBoxAssist.ClassicMode="True"
+                    FontSize="15"
+                    Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    Margin="0 8 0 8"
+                    ItemsSource="{Binding DisplayMode}"
+                    SelectedValue="{Binding SelectedDisplayMode}"/>
+            </StackPanel>
 
-            <ComboBox wpf:ComboBoxAssist.ClassicMode="True"
-                      FontSize="15"
-                      Grid.Column="1"
-                      HorizontalAlignment="Stretch"
-                      Margin="0 8 0 8"
-                      ItemsSource="{Binding DisplayMode}"
-                      SelectedValue="{Binding SelectedDisplayMode}"/>
+            <StackPanel Orientation="Horizontal"
+                        Visibility="{Binding SelectedDisplayMode, Converter={converter:PanoramicModeToVisibilityConverter}}"
+                        Grid.Row="1">
+                <TextBlock Text="Panoramic side: "
+                    FontSize="15" 
+                    VerticalAlignment="Center" 
+                    Margin="0 0 5 0"/>
+                <ComboBox wpf:ComboBoxAssist.ClassicMode="True"
+                    FontSize="15"
+                    Grid.Column="2"
+                    HorizontalAlignment="Stretch"
+                    Margin="0 8 0 8"
+                    ItemsSource="{Binding PanoramicMode}"
+                    SelectedValue="{Binding SelectedPanoramicMode}"/>
+            </StackPanel>
         </Grid>
+
 
         <Border Grid.Column="1"
                 Grid.ColumnSpan="2"
