@@ -157,7 +157,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var isNormalErasing = false
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
-    //private var currentStroke = Path()
     private var currentStartX = 0
     private var currentStartY = 0
     private var segments = ArrayList<Segment>()
@@ -207,17 +206,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (bitmapNeedsToUpdate) {
             redrawPathsToBitmap()
         }
+
         canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
-        //canvas.drawPath(currentStroke, paintLine)
-
-        val testPaint = Paint(paintLine)
-        testPaint.strokeWidth = 3.0f
-        testPaint.color = Color.RED
-
-        //for (i in 0..5) {
-        //    canvas.drawLine(matrixSquareSize.toFloat() * i, 0.0f, matrixSquareSize.toFloat() * i, height.toFloat(), testPaint)
-        //    canvas.drawLine(0.0f, matrixSquareSize.toFloat() * i, width.toFloat(), matrixSquareSize.toFloat() * i, testPaint)
-        //}
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -226,8 +216,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         if (!isValidPoint(x, y)) {
             strokeJustEnded = true
-            //bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
-            //currentStroke.reset()
+
             return true
         }
 
@@ -238,14 +227,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             } else {
                 lastErasePoint = Point(x, y)
-            }
-
-            if (bitmap.getPixel(x, y) != Color.WHITE) {
-                checkForStrokesToErase(x, y, isStrokeErasing)
-                sendErase(x, y, isStrokeErasing)
+                if (bitmap.getPixel(x, y) != Color.WHITE) {
+                    checkForStrokesToErase(x, y, isStrokeErasing)
+                    sendErase(x, y, isStrokeErasing)
+                }
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            addSegment(Point(x,y)) //todo: remove
+            addSegment(Point(x,y)) //todo test reception
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
@@ -255,32 +243,34 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         } else if (event.actionMasked == MotionEvent.ACTION_UP){
             strokeJustEnded = true
             sendStroke(x, y, x, y, true)
-            //bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
-            //currentStroke.reset()
+            redrawPathsToBitmap()
         }
-
-        redrawPathsToBitmap() //todo: remove
 
         return true
     }
 
     private fun eraseInLine(destX: Int, destY: Int) {
         val distance = distance(lastErasePoint!!, Point(destX, destY))
+
+        if (distance == 0.0F) {
+            return
+        }
+
         val directionX = (destX - lastErasePoint!!.x) / distance
         val directionY = (destY - lastErasePoint!!.y) / distance
-        val startX = lastErasePoint!!.x
-        val startY = lastErasePoint!!.y
 
-        for (i in 0..(distance / 15).toInt()) {
-            val newX = (startX + directionX * 15 * i).toInt()
-            val newY = (startY + directionY * 15 * i).toInt()
-            if (bitmap.getPixel(destX, destY) != Color.WHITE) {
+        for (i in 0..distance.toInt()) {
+            val newX = (lastErasePoint!!.x + directionX * i).toInt()
+            val newY = (lastErasePoint!!.y + directionY * i).toInt()
+
+            if (bitmap.getPixel(newX, newY) != Color.WHITE) {
                 checkForStrokesToErase(newX, newY, isStrokeErasing)
                 sendErase(newX, newY, isStrokeErasing)
             }
-            lastErasePoint!!.x = newX
-            lastErasePoint!!.y = newY
         }
+
+        lastErasePoint!!.x = destX
+        lastErasePoint!!.y = destY
     }
 
     private fun distance(point1: Point, point2: Point): Float {
@@ -302,7 +292,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         synchronized(segments) {
             segments = ArrayList()
         }
-        //currentStroke.reset()
+
         bitmapNeedsToUpdate = true
         postInvalidate()
     }
@@ -385,8 +375,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val directionX = (destX - startX) / distance
         val directionY = (destY - startY) / distance
 
-
-
         for (i in 0..distance.toInt()) {
             val newX = (startX + directionX * i).toInt()
             val newY = (startY + directionY * i).toInt()
@@ -456,12 +444,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
 
                 if (strokeJustEnded) {
-                    //.reset()
                     bitmapNeedsToUpdate = true
                 }
-
-                //currentStroke.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
-                //currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
 
                 paintLine.isAntiAlias = true
                 paintLine.color = obj.getInt("color")
@@ -481,7 +465,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 )
             }
             obj.getString("type") == "eraser" -> {
-                //currentStroke.reset()
                 checkForStrokesToErase(
                     obj.getInt("x"),
                     obj.getInt("y"),
