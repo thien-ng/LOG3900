@@ -271,7 +271,7 @@ namespace PolyPaint.VueModeles
 
             byte[] colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
             if (!BitConverter.IsLittleEndian) Array.Reverse(colorBytes);
-            Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[0], colorBytes[1], colorBytes[2], colorBytes[3]) : (Color)ColorConverter.ConvertFromString("#FF000000");
+            Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[3], colorBytes[2], colorBytes[1], colorBytes[0]) : (Color)ColorConverter.ConvertFromString("#FF000000");
 
             DrawingAttributes attr = new DrawingAttributes();
             attr.Color = color;
