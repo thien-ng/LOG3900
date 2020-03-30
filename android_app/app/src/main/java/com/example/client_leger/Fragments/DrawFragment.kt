@@ -148,7 +148,7 @@ class DrawFragment: Fragment() {
     }
 }
 
-class Segment(var path: Path, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
+class Segment(var point: Point, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
     var paintLine: Paint = Paint()
@@ -299,7 +299,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmap.eraseColor(Color.WHITE)
         synchronized(segments) {
             for (segment in segments) {
-                bitmapCanvas.drawPath(segment.path, segment.paint)
+                bitmapCanvas.drawPoint(segment.point.x.toFloat(), segment.point.y.toFloat(), segment.paint)
             }
         }
         bitmapNeedsToUpdate = false
@@ -331,20 +331,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     continue
                 }
 
-                val pm = PathMeasure(segment.path, false)
-                val coordinates = FloatArray(2)
 
 
 
+                val eraserHalfSize = segment.paint.strokeWidth
 
-
-                pm.getPosTan(0.0f, coordinates, null)
-                var eraserHalfSize = segment.paint.strokeWidth / 2.0f
-                var xOnLine = coordinates[0].toInt()
-                var yOnLine = coordinates[1].toInt()
-
-                if (xOnLine <= pointX + eraserHalfSize && xOnLine >= pointX - eraserHalfSize) {
-                    if (yOnLine <= pointY + eraserHalfSize && yOnLine >= pointY - eraserHalfSize) {
+                if (segment.point.x + eraserHalfSize >= pointX && segment.point.x - eraserHalfSize <= pointX ) {
+                    if (segment.point.y + eraserHalfSize >= pointY && segment.point.y - eraserHalfSize <= pointY ) {
                         segment.paint.color = Color.TRANSPARENT
                         if (isStroke) {
                             batchErase(segment)
@@ -353,39 +346,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                         strokeFound = true
                     }
                 }
-
-                pm.getPosTan(pm.length / 2.0f, coordinates, null)
-                eraserHalfSize = segment.paint.strokeWidth / 2.0f
-                xOnLine = coordinates[0].toInt()
-                yOnLine = coordinates[1].toInt()
-
-                if (xOnLine <= pointX + eraserHalfSize && xOnLine >= pointX - eraserHalfSize) {
-                    if (yOnLine <= pointY + eraserHalfSize && yOnLine >= pointY - eraserHalfSize) {
-                        segment.paint.color = Color.TRANSPARENT
-                        if (isStroke) {
-                            batchErase(segment)
-                        }
-
-                        strokeFound = true
-                    }
-                }
-
-                pm.getPosTan(pm.length, coordinates, null)
-                eraserHalfSize = segment.paint.strokeWidth / 2.0f
-                xOnLine = coordinates[0].toInt()
-                yOnLine = coordinates[1].toInt()
-
-                if (xOnLine <= pointX + eraserHalfSize && xOnLine >= pointX - eraserHalfSize) {
-                    if (yOnLine <= pointY + eraserHalfSize && yOnLine >= pointY - eraserHalfSize) {
-                        segment.paint.color = Color.TRANSPARENT
-                        if (isStroke) {
-                            batchErase(segment)
-                        }
-
-                        strokeFound = true
-                    }
-                }
-
 
 
 
@@ -420,7 +380,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStroke.moveTo(currentStartX.toFloat(), currentStartY.toFloat())
             currentStroke.lineTo(newX.toFloat(), newY.toFloat())
             sendStroke(currentStartX, newX, currentStartY, newY, false)
-            addSegment(currentStartX, newX, currentStartY, newY)
+            addSegment(Point(newX, newY))
 
             currentStartX = newX
             currentStartY = newY
@@ -429,13 +389,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun addSegment(startX: Int, destX: Int, startY: Int, destY: Int) {
+    private fun addSegment(point: Point) {
         val newSegment = Path()
-        newSegment.moveTo(startX.toFloat(), startY.toFloat())
-        newSegment.lineTo(destX.toFloat(), destY.toFloat())
 
         synchronized(segments) {
-            segments.add(Segment(newSegment, Paint(paintLine), null, null))
+            segments.add(Segment(point, Paint(paintLine), null, null))
             if (segments.size - 2 >= 0 && !strokeJustEnded) {
                 // segments.size - 1 is the index of the segment we just added,
                 // segments.size - 2 is the index of the segment just before it.
@@ -443,11 +401,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 segments[segments.size - 2].nextSegment = segments[segments.size - 1]
             }
 
-            matrix[startY / matrixSquareSize][startX / matrixSquareSize].add(segments[segments.size - 1])
-            if (startY / matrixSquareSize != destY / matrixSquareSize ||
-                startX / matrixSquareSize != destX / matrixSquareSize) {
-                matrix[destY / matrixSquareSize][destX / matrixSquareSize].add(segments[segments.size - 1])
-            }
+            matrix[point.y / matrixSquareSize][point.x / matrixSquareSize].add(segments[segments.size - 1])
         }
 
         strokeJustEnded = false
@@ -479,7 +433,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     else
                         Paint.Cap.SQUARE
 
-                addSegment(
+                touchMoved(
                     obj.getInt("startPosX"),
                     obj.getInt("endPosX"),
                     obj.getInt("startPosY"),
