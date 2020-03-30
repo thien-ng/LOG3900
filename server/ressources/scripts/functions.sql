@@ -208,6 +208,10 @@ CREATE OR REPLACE FUNCTION LOG3900.getProfileStats(in_username VARCHAR(20))
         and a.username = in_username
         INTO bestscore;
 
+        IF bestscore IS NULL THEN
+            bestscore = 0;
+        END IF;
+
         SELECT SUM(g.elapsedtime)
         FROM log3900.game as g, log3900.accountgame as ag, log3900.account as a
         WHERE g.id = ag.game_id
