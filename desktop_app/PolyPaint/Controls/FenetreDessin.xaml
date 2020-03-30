@@ -8,6 +8,8 @@
         xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"       
         xmlns:vues="clr-namespace:PolyPaint.Vues"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Width="{Binding Width}"
+        Height="{Binding Height}"
         mc:Ignorable="d">
     <Grid.Resources>
         <convertisseurs:ConvertisseurBordure x:Key="convertisseurBordure" />
@@ -106,14 +108,9 @@
 
         </Border>
 
-        <Border DockPanel.Dock="Bottom" Height="25" BorderThickness="0,0.75,0,0.75" BorderBrush="#77000000">
-            <StackPanel Orientation="Horizontal" Background="#FFF0F0F0">
-                <Image Source="/PolyPaint;component/Resources/position.png" Margin="5,5,5,5" VerticalAlignment="Center"/>
-                <TextBlock Name="textBlockPosition" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-            </StackPanel>
-        </Border>
 
-        <Grid DockPanel.Dock="Left" Margin="0,1,0,0">
+
+        <Grid DockPanel.Dock="Top" Margin="0,1,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Name="colonne" Width="{Binding Width}" />
                 <ColumnDefinition Width="6" />
@@ -127,7 +124,7 @@
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                            PreviewMouseLeftButtonDown="OnMouseDown"
                            PreviewMouseLeftButtonUp="OnMouseUp"
-                           MouseLeave="surfaceDessin_MouseLeave" MouseMove="surfaceDessin_MouseMove"                                              
+                           MouseMove="surfaceDessin_MouseMove"                                              
                            Strokes="{Binding Path=Traits, Mode=OneTime}" EditingMode="{Binding Path=OutilSelectionne, Converter={StaticResource convertisseurModeEdition}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
                            DefaultDrawingAttributes="{Binding Path=AttributsDessin, Mode=OneTime}"/>
                 <Border.Effect>
