@@ -74,9 +74,18 @@ namespace PolyPaint.VueModeles
             set { _traits = value; ProprieteModifiee(); }
         }
 
-        public int Width { get; set; }
-        
-        public int Height { get; set; }
+        private double _width;
+        public double Width { 
+            get { return _width; } 
+            set { _width = value; ProprieteModifiee(); } 
+        }
+
+        private double _height;
+        public double Height
+        {
+            get { return _height; }
+            set { _height = value; ProprieteModifiee(); }
+        }
 
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<string> ChoisirPointe { get; set; }
