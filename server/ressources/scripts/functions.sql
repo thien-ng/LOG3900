@@ -219,8 +219,15 @@ CREATE OR REPLACE FUNCTION LOG3900.getProfileStats(in_username VARCHAR(20))
         and a.username = in_username
         INTO totalTime;
 
-        winRatio = wonGame/totalGame::decimal;
-        avgGame = totalTime/totalGame::decimal;
+        IF totalGame != 0 THEN
+            winRatio = wonGame/totalGame::decimal;
+            avgGame = totalTime/totalGame::decimal;
+        ELSE
+            totalTime = 0;
+            totalGame = 0;
+            winRatio = 0;
+            avgGame = 0;
+        END IF;
 
         RETURN QUERY SELECT totalGame, round(CAST(winRatio as numeric), 2), bestscore, totalTime, round(CAST(avgGame as numeric), 2);
 
