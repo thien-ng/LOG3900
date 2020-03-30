@@ -44,13 +44,14 @@
 
 ## Lobby
 
-| Event       | Description                                                      | Object                                                                              |
-| ----------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| lobby-chat  | emit when sending messages in lobby                              |                                                                                     |
-| lobby-notif | emit when sending notification about lobby update when is join   | {type: join, lobbyName: string, user: string}                                       |
-| lobby-notif | emit when sending notification about lobby update when is leave  | {type: leave, lobbyName: string, user: string}                                      |
-| lobby-notif | emit when sending notification about lobby update when is create | {type: create, lobbyName: string, users: string\[], private: boolean, size: number} |
-| lobby-notif | emit when sending notification about lobby update when is delete | {type: delete, lobbyName: string}                                                   |
+| Event            | Description                                                      | Object                                                                              |
+| ---------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| lobby-chat       | emit when sending messages in lobby                              |                                                                                     |
+| lobby-notif      | emit when sending notification about lobby update when is join   | {type: join, lobbyName: string, user: string}                                       |
+| lobby-notif      | emit when sending notification about lobby update when is leave  | {type: leave, lobbyName: string, user: string}                                      |
+| lobby-notif      | emit when sending notification about lobby update when is create | {type: create, lobbyName: string, users: string\[], private: boolean, size: number} |
+| lobby-notif      | emit when sending notification about lobby update when is delete | {type: delete, lobbyName: string}                                                   |
+| lobby-invitation | emit when received an invitation to a lobby                      | {type: invitation, lobbyName: string}                                               |
 
 | Event          | Description                                            | Object                                                                                        |
 | -------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
