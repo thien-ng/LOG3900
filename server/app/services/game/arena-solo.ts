@@ -1,23 +1,154 @@
 import { Arena } from "./arena";
-import { IGameplayChat, IGameplayDraw, IGameplayReady } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, EventType, IDrawing } from "../../interfaces/game";
 
 import * as io from 'socket.io';
+import { Difficulty } from "../../interfaces/creator";
+import { IUser } from "../../interfaces/user-manager";
+import { IGameRule } from "../../interfaces/rule";
+import { GameManagerService } from "./game-manager.service";
+import { DrawingTools } from "./utils/drawing-tools";
+
+const ANNOUNCEMENT = "{0} has found the answer";
+const ONE_SEC = 1000;
+const format = require('string-format');
 
 export class ArenaSolo extends Arena {
 
-    // TODO implement solo
+    private timeRemaining: number;
+    private guessLeft: number;
+    private wordGuessedRight: number;
+    private guessPerImage: number;
+    private timePerImage: number;
 
-    public start(): void {}
+    private rulePtr: number;
+    private drawing: NodeJS.Timeout;
 
-    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {}
+    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
+        super(type, arenaId, users, room, io, rules, gm)
 
-    protected handleGameplayChat(mes: IGameplayChat): void {}
+        this.setDifficulty(rules[0].difficulty);
+        this.wordGuessedRight = 0;
+        this.rulePtr = 0;
+    }
 
-    protected handlePoints(): void {}
+    private assignRule(): void {
+        this.curRule = this.rules[this.rulePtr++];
+        if (this.rulePtr >= this.rules.length) {
+            //doit somehow avoir un nouveau set de rules
+        }
+    }
 
-    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {return setInterval(() =>{}, 1)}
+    public start(): void {
+        console.log("[Debug] Starting arena SOLO", this.room);
 
-    protected botAnnounceStart(): void {}
-    
-    protected botAnnounceEndSubGane(): void {}
+        try {
+            this.checkArenaLoadingState(() => {
+                this.botAnnounceStart();
+                this.startSubGame();
+            });
+        } catch (e) {
+            this.end();
+        }
+    }
+
+    public startSubGame(): void {
+
+        this.resetSubGame();
+        this.curArenaInterval = setInterval(() => {
+            console.log("[Debug] time remaining: ", this.timeRemaining);
+
+            this.socketServer.to(this.room).emit("game-timer", { time: this.timeRemaining / ONE_SEC });
+
+            if (this.timeRemaining <= 0) {
+                clearInterval(this.curArenaInterval);
+                this.end();
+            }
+            this.timeRemaining -= ONE_SEC;
+
+        }, ONE_SEC);
+
+    }
+
+    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
+        switch (mes.event) {
+            case EventType.chat:
+                this.handleGameplayChat(mes as IGameplayChat);
+                break;
+            case EventType.ready:
+                this.handleGameplayReady(mes as IGameplayReady);
+                break;
+            case EventType.hint:
+                this.handleGameplayHint();
+                break;
+        }
+    }
+
+    protected handleGameplayChat(mes: IGameplayChat): void {
+        this.sendToChat({ username: mes.username, content: mes.content, isServer: false });
+        if (this.isRightAnswer(mes.content)) {
+            //add time,
+            this.timeRemaining += this.timePerImage;
+
+            //anounce
+            this.sendToChat({
+                username: "Server",
+                content: format(ANNOUNCEMENT, mes.username),
+                isServer: true
+            });
+            //add to score
+            this.wordGuessedRight++;
+
+            this.resetSubGame();
+
+        } else {
+            this.guessLeft--;
+            this.socketServer.to(this.room).emit("game-guessLeft", { guessLeft: this.guessLeft });
+        }
+    }
+
+    private setDifficulty(diff: Difficulty): void {
+        switch (diff) {
+            case Difficulty.HARD:
+                this.guessPerImage = 2;
+                this.timePerImage = 3 * ONE_SEC;
+                this.timeRemaining = 20 * ONE_SEC;
+                break;
+            case Difficulty.MEDIUM:
+                this.guessPerImage = 3;
+                this.timePerImage = 7 * ONE_SEC;
+                this.timeRemaining = 30 * ONE_SEC;
+                break;
+            case Difficulty.EASY:
+            default:
+                this.guessPerImage = 4;
+                this.timePerImage = 10 * ONE_SEC;
+                this.timeRemaining = 40 * ONE_SEC;
+                break;
+        }
+    }
+
+    private resetSubGame(): void {
+        //show an image or build one.
+        clearInterval(this.drawing);
+        this.drawing = this.startBotDrawing("drawing-bot", this.timePerImage);
+
+        //reset guess left
+        this.guessLeft = this.guessPerImage;
+        this.socketServer.to(this.room).emit("game-guessLeft", { guessLeft: this.guessLeft });
+
+    }
+    protected handlePoints(): void {
+        this.userMapPoints.set(this.users[0].username, this.wordGuessedRight);
+    }
+
+    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
+        this.assignRule();
+        const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
+        const bot = this.initBot(botName);
+        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
+    }
+
+    protected botAnnounceStart(): void { }
+
+    protected botAnnounceEndSubGane(): void { }
 }
