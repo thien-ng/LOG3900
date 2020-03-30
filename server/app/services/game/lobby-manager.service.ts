@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser , INotifyLobbyUpdate, IGetLobby, GameMode, ILobEmitMes, Bot } from "../../interfaces/game";
+import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNotif, INotifyUpdateUser, INotifyLobbyUpdate, IGetLobby, GameMode, ILobEmitMes, Bot } from "../../interfaces/game";
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
 import { Time } from "../../utils/date";
@@ -72,7 +72,7 @@ export class LobbyManagerService {
         else {
             lobby.whitelist = [user];
         }
-        this.socketServer.to(user.socketId).emit("lobby-invitation", lobbyName)
+        this.socketServer.to(user.socketId).emit("lobby-invitation", { type: LobbyNotif.invitation, lobbyName: lobbyName })
         return `${username} added to whitelist`;
     }
 
@@ -104,7 +104,7 @@ export class LobbyManagerService {
     public join(req: IJoinLobby): string {
         this.verifyRequest(req);
 
-        let user: IUser | undefined = {username: req.username, socketId:""};
+        let user: IUser | undefined = { username: req.username, socketId: "" };
         const isBot: boolean = this.isBot(req.username)
         if (!isBot)
             user = this.userServ.getUsersByName(req.username);
@@ -114,19 +114,15 @@ export class LobbyManagerService {
         const lobby = this.lobbyDoesExists(req.lobbyName);
 
         if (lobby) {
-            
-            // Join lobby            
+
+            // Join lobby
             if (lobby.users.length > lobby.size - 1) {
                 throw new Error("Maximum size of user in lobby reached");
-            }       
-
+            }
             if (this.isUserInLobbyAlready(lobby.users, user.username))
                 throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
 
-            if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user))) {
-                if ((lobby.users.length + 1) > lobby.size)
-                    throw new Error(`Max number of users in lobby ${lobby.lobbyName} reached`);
-
+            if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user)) || isBot) {
                 lobby.users.push(user);
                 this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username } as INotifyUpdateUser);
             }
@@ -158,7 +154,7 @@ export class LobbyManagerService {
     public leave(req: ILeaveLobby): string {
         this.verifyRequest(req);
 
-        let user: IUser | undefined = {username: req.username, socketId:""};
+        let user: IUser | undefined = { username: req.username, socketId: "" };
         if (!this.isBot(req.username))
             user = this.userServ.getUsersByName(req.username);
 
@@ -168,7 +164,7 @@ export class LobbyManagerService {
 
         if (lobby) {
             lobby.users = lobby.users.filter(u => { return u.username !== req.username });
-            if (lobby.users.length === 0) {
+            if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
                 this.lobbies.delete(req.lobbyName);
                 this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete });
@@ -211,6 +207,15 @@ export class LobbyManagerService {
         }
     }
 
+    private checkUsersLeftExceptBot(lobby: IActiveLobby): boolean {
+        let count = 0;
+        lobby.users.forEach(u => {
+            if (!this.isBot(u.username))
+                count++;
+        });
+        return count === 0;
+    }
+
     private isNotification(object: any): object is INotify {
         return "type" in object;
     }
@@ -245,8 +250,8 @@ export class LobbyManagerService {
             return;
 
         const jointReq = req as IJoinLobby;
-        
-        if (jointReq.size || jointReq.size === 0) 
+
+        if (jointReq.size || jointReq.size === 0)
             if (jointReq.size < 1 || jointReq.size > 10)
                 throw new Error("Lobby size should be between 1 and 10");
         if ((jointReq.isPrivate == undefined) || typeof jointReq.isPrivate !== "boolean")

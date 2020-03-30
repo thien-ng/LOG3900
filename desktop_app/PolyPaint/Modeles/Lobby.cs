@@ -18,13 +18,12 @@ namespace PolyPaint.Modeles
         public string password { get; set; }
         public string mode { get; set; }
 
-        public Lobby(string lobbyName, string[] usernames, bool isPrivate, int size, string password, string mode)
+        public Lobby(string lobbyName, string[] usernames, bool isPrivate, int size, string mode)
         {
             this.lobbyName  = lobbyName;
             this.usernames  = usernames;
             this.isPrivate  = isPrivate;
             this.size       = size;
-            this.password   = password;
             this.mode       = mode;
         }
     }

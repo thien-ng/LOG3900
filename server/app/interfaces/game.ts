@@ -44,7 +44,7 @@ export interface IReceptMesLob {
 export enum Bot {
     humour = "bot:sebastien",
     kind   = "bot:olivia",
-    mean   = "bot:olivier", 
+    mean   = "bot:olivier",
 }
 
 export interface ILobEmitMes extends IReceptMesLob{
@@ -74,25 +74,12 @@ export enum LobbyNotif {
     leave  = "leave",
     create = "create",
     delete = "delete",
+    invitation = "invitation",
 }
 
 /**
  * GAMEPLAY
  */
-export interface IGameplayReady {
-    username: string,
-}
-
-export interface IGameplayChat {
-    username:   string,
-    content:    string,
-}
-
-export interface IGameplayAnnouncement extends IGameplayChat{
-    isServer:   boolean,
-}
-
-
 export interface ICorrAns {
     username:  string,
     time:      number,
@@ -111,10 +98,6 @@ export interface IDrawing {
     type:           Type,
 }
 
-export interface IGameplayDraw extends IDrawing{
-    username:       string,
-}
-
 export interface IEraser {
     type:       Type,
     x:          number,
@@ -124,7 +107,41 @@ export interface IEraser {
 }
 
 export interface IGameplayEraser extends IEraser {
-    username:   string,
+    event:    EventType,
+    username: string,
+}
+
+export interface IGameplayDraw extends IDrawing {
+    event:    EventType,
+    username: string,
+}
+
+export interface IGameplayReady {
+    event:    EventType,
+    username: string,
+}
+
+export interface IGameplayChat {
+    event:    EventType,
+    username: string,
+    content:  string,
+}
+
+export interface IGameplayHint {
+    event: EventType,
+}
+
+export interface IGameplayAnnouncement {
+    username: string,
+    content:  string,
+    isServer: boolean,
+}
+
+export enum EventType {
+    draw   = "draw",
+    chat   = "chat",
+    ready  = "ready",
+    hint   = "hint",
 }
 
 export enum EraserType {

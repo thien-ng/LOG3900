@@ -12,12 +12,12 @@ export class Taunt {
     ];
 
     public static humour: string[] = [
-        "q",
-        "w",
-        "e",
-        "r",
-        "t",
-        "y",
+        "Yo momma is so fat when she got on the scale it said, 'I need your weight not your phone number.'",
+        "Yo momma is so fat, I took a picture of her last Christmas and it's still printing.",
+        "Yo mamma is so ugly when she tried to join an ugly contest they said, 'Sorry, no professionals.'",
+        "Yo momma is so fat when she sat on WalMart, she lowered the prices.",
+        "Yo momma is so fat that Dora can't even explore her!",
+        "Yo momma is so ugly she made One Direction go another direction.",
     ];
 
     public static mean: string[] = [

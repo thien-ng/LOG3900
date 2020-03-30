@@ -23,8 +23,7 @@
             
             <TextBlock Text="Private: " VerticalAlignment="Center" FontSize="15"/>
             <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsPrivate}" />
-            <TextBlock Text="Password: " Margin="15,0,0,0" FontSize="15" VerticalAlignment="Center" Visibility="{Binding VisibilityPrivate, Mode=TwoWay}"/>
-            <TextBox wpf:HintAssist.Hint="Password" Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Text="{Binding Password}" Visibility="{Binding VisibilityPrivate, Mode=TwoWay}"/>
+            <TextBox Margin="10,2,2,2" VerticalAlignment="Top" wpf:HintAssist.Hint="Password" FontSize="16" Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Text="{Binding Password}" Visibility="{Binding VisibilityPrivate, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="2">
             <TextBlock Text="Player limit: " FontSize="15" VerticalAlignment="Center" />
