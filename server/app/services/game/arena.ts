@@ -16,24 +16,25 @@ export abstract class Arena {
 
     protected gm : GameManagerService;
 
-    protected socketServer:  io.Server;
-    protected rules:         IGameRule[];
-    protected room:          string;
-    protected curRule:       IGameRule;
-    protected userMapPoints: Map<string, number>;
-    protected type:          GameMode;
-    
-    protected userMapReady:  Map<string, boolean>;
-    protected dcPlayer:      string[];
-    protected users:         IUser[];
-    protected isAllDc:       boolean;
+    protected socketServer:        io.Server;
+    protected rules:               IGameRule[];
+    protected room:                string;
+    protected curRule:             IGameRule;
+    protected userMapPoints:       Map<string, number>;
+    protected type:                GameMode;
 
-    private arenaId:             number;
-    private chronometerTimer:    number;
-    private hintPtr:             number;
+    protected userMapReady:        Map<string, boolean>;
+    protected dcPlayer:            string[];
+    protected users:               IUser[];
+    protected isAllDc:             boolean;
 
-    public  chronometerInterval: NodeJS.Timeout;
-    
+    private arenaId:               number;
+    private chronometerTimer:      number;
+    private hintPtr:               number;
+
+    protected curArenaInterval:    NodeJS.Timeout;
+    public  chronometerInterval:   NodeJS.Timeout;
+
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
         this.room           = room;
@@ -46,20 +47,20 @@ export abstract class Arena {
         this.type           = type;
         this.hintPtr        = 0;
         this.isAllDc        = false;
-        
+
         this.initReadyMap();
         this.setupPoints();
     }
-    
+
     public abstract start(): void;
     public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void;
-    
+
     protected abstract startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout;
     protected abstract botAnnounceStart(): void;
     protected abstract botAnnounceEndSubGane(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract handlePoints(): void;
-    
+
     protected handleGameplayHint(): void {
         const totalHint = this.curRule.clues.length;
         const announcement: IGameplayAnnouncement = {
@@ -95,7 +96,7 @@ export abstract class Arena {
     protected checkArenaLoadingState(callback: () => void): void {
         let numOfTries = 0;
         const checkInterval = setInterval(() => {
-            
+
             if (this.checkIfEveryoneIsReady()) {
                 clearInterval(checkInterval);
                 this.startChronometer();
@@ -115,13 +116,13 @@ export abstract class Arena {
         const pts = this.preparePtsToBePersisted();
         console.log("[Debug] end game points are: ", pts);
         console.log("[Debug] disconnected players: ", this.dcPlayer);
-        
+
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
         });
 
         clearInterval(this.chronometerTimer);
-        
+
         this.gm.persistPoints(pts, this.chronometerTimer / ONE_SEC, this.type);
         this.gm.deleteArena(this.arenaId);
     }
@@ -225,7 +226,7 @@ export abstract class Arena {
                     isEveryoneReady = false;
             }
         });
-        
+
         return isEveryoneReady;
     }
 
@@ -243,6 +244,10 @@ export abstract class Arena {
         this.chronometerInterval = setInterval(() => {
             this.chronometerTimer += ONE_SEC;
         }, ONE_SEC)
+    }
+
+    protected sendToChat(obj: IGameplayAnnouncement): void {
+        this.socketServer.to(this.room).emit("game-chat", obj);
     }
 
 }
