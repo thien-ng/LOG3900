@@ -2,21 +2,21 @@
 {
     class User
     {
-        public string _username;
-        public string _firstName;
-        public string _lastName;
-        public Connection[] _connections;
-        public Stats _stats;
-        public Game[] _games;
+        public string username;
+        public string firstName;
+        public string lastName;
+        public Connection[] connections;
+        public Stats stats;
+        public Game[] games;
 
-        public User(string username, string firstname, string lastname, Connection[] connections, Stats stats, Game[] games)
+        public User(string username, string firstName, string lastName, Connection[] connections, Stats stats, Game[] games)
         {
-            _username = username;
-            _firstName = firstname;
-            _lastName = lastname;
-            _connections = connections;
-            _stats = stats;
-            _games = games;
+            this.username = username;
+            this.firstName = firstName;
+            this.lastName = lastName;
+            this.connections = connections;
+            this.stats = stats;
+            this.games = games;
         }
     }
 }

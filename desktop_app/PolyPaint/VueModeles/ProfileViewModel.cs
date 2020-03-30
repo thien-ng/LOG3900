@@ -16,13 +16,13 @@ namespace PolyPaint.VueModeles
             _username = Services.ServerService.instance.username;
             if(ServerService.instance.user != null)
             {
-                _firstname = Services.ServerService.instance.user._firstName;
-                _lastname = Services.ServerService.instance.user._lastName;
-                _connections = ServerService.instance.user._connections;
-                _stats = ServerService.instance.user._stats;
-                _games = ServerService.instance.user._games;
+                _firstname = Services.ServerService.instance.user.firstName;
+                _lastname = Services.ServerService.instance.user.lastName;
+                _connections = ServerService.instance.user.connections;
+                _stats = ServerService.instance.user.stats;
+                _games = ServerService.instance.user.games;
             }
-
+            Console.WriteLine(ServerService.instance.user);
         }
         #region Public Attributes
 
@@ -50,13 +50,13 @@ namespace PolyPaint.VueModeles
         }
         #endregion
 
-        public Stats _stats;
+        private Stats _stats;
         public Stats Stats 
         {
             get { return _stats; }
         }
 
-        public Game[] _games;
+        private Game[] _games;
         public Game[] Games 
         {
             get { return _games; }

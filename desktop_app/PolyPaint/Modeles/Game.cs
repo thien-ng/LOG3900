@@ -2,19 +2,17 @@
 {
     class Game
     {
-        public string _date { get; set; }
-        public string _mode { get; set; }
-        //public PlayerScore[] _players;
-        public string _playerScore { get; set; }
+        public string date { get; set; }
+        public string mode { get; set; }
+        public string playerScore { get; set; }
 
         public Game(string date, string mode, PlayerScore[] players) 
         {
-            _date = date;
-            _mode = mode;
-            //_players = players;
+            this.date = date;
+            this.mode = mode;
             foreach (PlayerScore player in players) 
             {
-                _playerScore += (player._username + ": " + player._score + ", ");
+                playerScore += (player.username + ": " + player.score + ", ");
             }
         }
     }
