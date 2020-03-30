@@ -28,6 +28,7 @@
 | Join/Create lobby            | POST | /game/lobby/join             |
 | Leave/Delete lobby           | POST | /game/lobby/leave            |
 | invite a user in a lobby     | POST | /game/lobby/invite           |
+| invite a user in a lobby     | POST | /game/lobby/invite/refuse    |
 | Get active lobbies by mode   |  GET | /game/lobby/active/:mode     |
 | Get users in a lobby by name |  GET | /game/lobby/users/:lobbyName |
 | Start game with lobby name   |  GET | /game/start/:lobbyName       |
