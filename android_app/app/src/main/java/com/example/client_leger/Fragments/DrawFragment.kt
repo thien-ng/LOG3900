@@ -162,9 +162,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var segments = ArrayList<Segment>()
     private var strokeJustEnded = true
     private var drawListener: Disposable
-    private var lastErasePoint: Point? = null
     private var roleListener: Disposable
     private val matrixSquareSize = 100
+    private var lastErasePoint: Point? = null
+    private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
@@ -317,6 +318,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.nextSegment != null) {
             if (segment.nextSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.nextSegment!!.paint.color = Color.TRANSPARENT
+                segmentsToBeRemoved.add(segment)
                 batchErase(segment.nextSegment!!)
             }
         }
@@ -324,7 +326,110 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.previousSegment != null) {
             if (segment.previousSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.previousSegment!!.paint.color = Color.TRANSPARENT
+                segmentsToBeRemoved.add(segment)
                 batchErase(segment.previousSegment!!)
+            }
+        }
+    }
+
+    private fun removeSegmentFromMatrix(segment: Segment) {
+        val middle      = Point(segment.point.x / matrixSquareSize, segment.point.y / matrixSquareSize)
+        val left        = Point((segment.point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
+        val right       = Point((segment.point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
+        val top         = Point(middle.x, (segment.point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+        val bottom      = Point(middle.x, (segment.point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+
+        synchronized(matrix) {
+            matrix[middle.y][middle.x].remove(segments[segments.size - 1])
+            if (top.y != middle.y) {
+                matrix[top.y][top.x].remove(segments[segments.size - 1])
+                val topLeft = Point(
+                    (segment.point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (topLeft.x != middle.x) {
+                    matrix[topLeft.y][topLeft.x].remove(segments[segments.size - 1])
+                }
+                val topRight = Point(
+                    (segment.point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (topRight.x != middle.x) {
+                    matrix[topRight.y][topRight.x].remove(segments[segments.size - 1])
+                }
+            } else if (bottom.y != middle.y) {
+                matrix[bottom.y][bottom.x].remove(segments[segments.size - 1])
+                val bottomLeft = Point(
+                    (segment.point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (bottomLeft.x != middle.x) {
+                    matrix[bottomLeft.y][bottomLeft.x].remove(segments[segments.size - 1])
+                }
+                val bottomRight = Point(
+                    (segment.point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (bottomRight.x != middle.x) {
+                    matrix[bottomRight.y][bottomRight.x].remove(segments[segments.size - 1])
+                }
+            }
+            if (left.x != middle.x) {
+                matrix[left.y][left.x].remove(segments[segments.size - 1])
+            }
+            if (right.x != middle.x) {
+                matrix[right.y][right.x].remove(segments[segments.size - 1])
+            }
+        }
+    }
+
+    private fun removeSegmentFromMatrix(segment: Segment) {
+        val middle      = Point(segment.point.x / matrixSquareSize, segment.point.y / matrixSquareSize)
+        val left        = Point((segment.point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
+        val right       = Point((segment.point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
+        val top         = Point(middle.x, (segment.point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+        val bottom      = Point(middle.x, (segment.point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+
+        synchronized(matrix) {
+            matrix[middle.y][middle.x].remove(segments[segments.size - 1])
+            if (top.y != middle.y) {
+                matrix[top.y][top.x].remove(segments[segments.size - 1])
+                val topLeft = Point(
+                    (segment.point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (topLeft.x != middle.x) {
+                    matrix[topLeft.y][topLeft.x].remove(segments[segments.size - 1])
+                }
+                val topRight = Point(
+                    (segment.point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (topRight.x != middle.x) {
+                    matrix[topRight.y][topRight.x].remove(segments[segments.size - 1])
+                }
+            } else if (bottom.y != middle.y) {
+                matrix[bottom.y][bottom.x].remove(segments[segments.size - 1])
+                val bottomLeft = Point(
+                    (segment.point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (bottomLeft.x != middle.x) {
+                    matrix[bottomLeft.y][bottomLeft.x].remove(segments[segments.size - 1])
+                }
+                val bottomRight = Point(
+                    (segment.point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    (segment.point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                if (bottomRight.x != middle.x) {
+                    matrix[bottomRight.y][bottomRight.x].remove(segments[segments.size - 1])
+                }
+            }
+            if (left.x != middle.x) {
+                matrix[left.y][left.x].remove(segments[segments.size - 1])
+            }
+            if (right.x != middle.x) {
+                matrix[right.y][right.x].remove(segments[segments.size - 1])
             }
         }
     }
@@ -332,7 +437,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun checkForStrokesToErase(pointX: Int, pointY: Int, isStroke: Boolean) {
         var strokeFound = false
 
-        synchronized(segments) {
+        synchronized(matrix) {
             for (segment in matrix[pointY / matrixSquareSize][pointX / matrixSquareSize]) {
                 if (segment.paint.color == Color.TRANSPARENT) {
                     continue
@@ -347,6 +452,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     segment.paint.color = Color.TRANSPARENT
                     if (isStroke) {
                         batchErase(segment)
+                    } else {
+                        segmentsToBeRemoved.add(segment)
+
                     }
 
                     strokeFound = true
@@ -356,6 +464,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         if (strokeFound) {
             bitmapNeedsToUpdate = true
+            for (segment in segmentsToBeRemoved) {
+                removeSegmentFromMatrix(segment)
+            }
+            segmentsToBeRemoved = ArrayList<Segment>()
             postInvalidate()
         }
     }
@@ -396,43 +508,65 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 segments[segments.size - 2].nextSegment = segments[segments.size - 1]
             }
 
-            val middle      = Point(point.x / matrixSquareSize, point.y / matrixSquareSize)
-            val left        = Point((point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
-            val right       = Point((point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize, middle.y)
-            val top         = Point(middle.x, (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
-            val bottom      = Point(middle.x, (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
+            synchronized(matrix) {
+                val middle = Point(point.x / matrixSquareSize, point.y / matrixSquareSize)
+                val left = Point(
+                    (point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    middle.y
+                )
+                val right = Point(
+                    (point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                    middle.y
+                )
+                val top = Point(
+                    middle.x,
+                    (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
+                val bottom = Point(
+                    middle.x,
+                    (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                )
 
-            matrix[middle.y][middle.x].add(segments[segments.size - 1])
-            if (top.y != middle.y) {
-                matrix[top.y][top.x].add(segments[segments.size - 1])
-                val topLeft     = Point((point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
-                    (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
-                if (topLeft.x != middle.x) {
-                    matrix[topLeft.y][topLeft.x].add(segments[segments.size - 1])
+                matrix[middle.y][middle.x].add(segments[segments.size - 1])
+                if (top.y != middle.y) {
+                    matrix[top.y][top.x].add(segments[segments.size - 1])
+                    val topLeft = Point(
+                        (point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                        (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                    )
+                    if (topLeft.x != middle.x) {
+                        matrix[topLeft.y][topLeft.x].add(segments[segments.size - 1])
+                    }
+                    val topRight = Point(
+                        (point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                        (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                    )
+                    if (topRight.x != middle.x) {
+                        matrix[topRight.y][topRight.x].add(segments[segments.size - 1])
+                    }
+                } else if (bottom.y != middle.y) {
+                    matrix[bottom.y][bottom.x].add(segments[segments.size - 1])
+                    val bottomLeft = Point(
+                        (point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                        (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                    )
+                    if (bottomLeft.x != middle.x) {
+                        matrix[bottomLeft.y][bottomLeft.x].add(segments[segments.size - 1])
+                    }
+                    val bottomRight = Point(
+                        (point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
+                        (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize
+                    )
+                    if (bottomRight.x != middle.x) {
+                        matrix[bottomRight.y][bottomRight.x].add(segments[segments.size - 1])
+                    }
                 }
-                val topRight    = Point((point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
-                    (point.y + paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
-                if (topRight.x != middle.x) {
-                    matrix[topRight.y][topRight.x].add(segments[segments.size - 1])
+                if (left.x != middle.x) {
+                    matrix[left.y][left.x].add(segments[segments.size - 1])
                 }
-            } else if (bottom.y != middle.y) {
-                matrix[bottom.y][bottom.x].add(segments[segments.size - 1])
-                val bottomLeft  = Point((point.x - paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
-                    (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
-                if (bottomLeft.x != middle.x) {
-                    matrix[bottomLeft.y][bottomLeft.x].add(segments[segments.size - 1])
+                if (right.x != middle.x) {
+                    matrix[right.y][right.x].add(segments[segments.size - 1])
                 }
-                val bottomRight = Point((point.x + paintLine.strokeWidth / 2).toInt() / matrixSquareSize,
-                    (point.y - paintLine.strokeWidth / 2).toInt() / matrixSquareSize)
-                if (bottomRight.x != middle.x) {
-                    matrix[bottomRight.y][bottomRight.x].add(segments[segments.size - 1])
-                }
-            }
-            if (left.x != middle.x) {
-                matrix[left.y][left.x].add(segments[segments.size - 1])
-            }
-            if (right.x != middle.x) {
-                matrix[right.y][right.x].add(segments[segments.size - 1])
             }
         }
 
