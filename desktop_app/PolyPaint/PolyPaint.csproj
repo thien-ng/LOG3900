@@ -197,6 +197,7 @@
     <Compile Include="VueModeles\CreateGameDrawViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\GamelistViewModel.cs" />
+    <Compile Include="VueModeles\GameViewModel.cs" />
     <Compile Include="VueModeles\HomeViewModel.cs" />
     <Compile Include="VueModeles\CreateGameViewModel.cs" />
     <Compile Include="VueModeles\LobbyViewModel.cs" />
@@ -206,6 +207,9 @@
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="Vues\Chat.xaml.cs">
       <DependentUpon>Chat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Game.xaml.cs">
+      <DependentUpon>Game.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\GameList.xaml.cs">
       <DependentUpon>GameList.xaml</DependentUpon>
@@ -265,7 +269,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\LobbyPasswordControl.xaml">
-    <SubType>Designer</SubType>
+      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\HintInputControl.xaml">
@@ -284,6 +288,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Vues\Game.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Vues\GameList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
