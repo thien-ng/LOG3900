@@ -233,7 +233,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            addSegment(Point(x,y)) //todo test reception
+            addSegment(Point(x,y))
+            sendStroke(x, y, x, y, false)
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
@@ -369,6 +370,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val distance = distance(Point(startX, startY), Point(destX, destY))
 
         if (distance == 0.0F) {
+            addSegment(Point(startX, startY))
+
             return
         }
 
@@ -379,6 +382,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newX = (startX + directionX * i).toInt()
             val newY = (startY + directionY * i).toInt()
             addSegment(Point(newX, newY))
+            bitmapCanvas.drawPoint(newX.toFloat(), newY.toFloat(), paintLine)
         }
     }
 
