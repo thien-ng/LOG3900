@@ -17,6 +17,8 @@ namespace PolyPaint.VueModeles
     class HomeViewModel : BaseViewModel, IPageViewModel
     { 
         public LobbyViewModel LobbyViewModel { get; private set; }
+
+        public GameViewModel GameViewModel { get; private set; }
         public string Lobbyname { get; set; }
         public HomeViewModel()
         {
@@ -29,7 +31,8 @@ namespace PolyPaint.VueModeles
         {
             Gamelist,
             Profile,
-            Lobby
+            Lobby,
+            Game
         }
 
 
@@ -163,6 +166,7 @@ namespace PolyPaint.VueModeles
             Mediator.Subscribe("SubToChannel", SubToChannel);
             Mediator.Subscribe("UnsubChannel", UnsubChannel);
             Mediator.Subscribe("GoToLobbyScreen", goToLobbyView);
+            Mediator.Subscribe("GoToGameScreen", goToGameView);
             Mediator.Subscribe("LeaveLobby", goToGameListView);
 
             _subChannels = new ObservableCollection<MessageChannel>();
@@ -191,6 +195,14 @@ namespace PolyPaint.VueModeles
                 FetchChannels();
             });
         }
+        private void goToGameView(object obj)
+        {
+            Console.WriteLine("switchView");
+            SwitchView = Views.Game;
+            GameViewModel = new GameViewModel();
+            
+        }
+
 
         private void goToLobbyView(object lobbyname)
         {
