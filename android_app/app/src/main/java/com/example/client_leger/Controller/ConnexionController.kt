@@ -107,7 +107,6 @@ class ConnexionController {
             Constants.SERVER_URL + "/chat/messages/" + activity.channelId,
             null,
             Response.Listener<JSONArray>{ response ->
-                //response.put
                 activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
             },Response.ErrorListener{
