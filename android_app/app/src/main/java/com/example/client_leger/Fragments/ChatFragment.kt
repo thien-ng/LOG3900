@@ -1,6 +1,5 @@
 package com.example.client_leger.Fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -182,9 +181,18 @@ class ChatFragment: Fragment() {
         return obj
     }
 
-    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
+    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
+
+            if (channel != null) {
+                if (channel != channelId) {
+                    continue
+                }
+            } else if (message.getString("channel_id") != channelId) {
+                continue
+            }
+
             val username = message.getString("username")
             val content = message.getString("content")
             val time = message.getString("time")
