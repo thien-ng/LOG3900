@@ -36,6 +36,7 @@ class ChatFragment: Fragment() {
 
     lateinit var chatListener: Disposable
     lateinit var channelListener: Disposable
+    lateinit var startGameSub: Disposable;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_chat, container, false)
@@ -111,6 +112,10 @@ class ChatFragment: Fragment() {
             v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
+        startGameSub = Communication.getGameStartListener().subscribe{ res ->
+            addGameChannel()
+        }
+
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
             notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
         }
@@ -124,6 +129,11 @@ class ChatFragment: Fragment() {
         super.onDestroy()
         chatListener.dispose()
         channelListener.dispose()
+        startGameSub.dispose()
+    }
+
+    fun addGameChannel() {
+        channelAdapter.add(ChannelItem("", true, controller, this))
     }
 
     private fun onButtonShowPopupWindowClick(inflater: LayoutInflater, view: View?) {
@@ -162,7 +172,10 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        if (channelId != newChannelId) {
+        if (newChannelId == "") {
+            messageAdapter.clear()
+            textViewChannelName.text = "Game channel"
+        } else if (channelId != newChannelId) {
             loadChannels()
             messageAdapter.clear()
             channelId = newChannelId
