@@ -195,6 +195,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         super.onDetachedFromWindow()
         drawListener.dispose()
         roleListener.dispose()
+        drawerSub.dispose()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
