@@ -65,3 +65,4 @@
 | game-chat      | emit when sending to game chat                         | {username: string, content: string, isServer:  boolean}                                       |
 | drawer-update  | emit when changing roles of players in arena           | username: string                                                                              |
 | game-over      | emit when it's end of the game                         | [{username: string, points: number}, {...}, ...]                                              |
+| game-guessLeft | emit when sending amount of guess left in sprints      | {guessLeft: number}                                                                           |
