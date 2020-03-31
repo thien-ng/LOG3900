@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
+import android.util.Log
 import android.view.*
 import android.widget.*
 import com.example.client_leger.*
@@ -146,6 +147,7 @@ class ChatFragment: Fragment() {
         }
 
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
+            Log.w("channel", "new game chat! channelId: $channelId")
             if (channelId == GAME_CHANNEL_ID) {
                 val messages = JSONArray()
                 messages.put(mes)
@@ -212,16 +214,13 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        if (newChannelId == GAME_CHANNEL_ID) {
-            messageAdapter.clear()
-            channelId = GAME_CHANNEL_ID
-            textViewChannelName.text = GAME_CHANNEL_ID
-        } else if (channelId != newChannelId) {
-            loadChannels()
-            messageAdapter.clear()
-            channelId = newChannelId
+        loadChannels()
+        messageAdapter.clear()
+        channelId = newChannelId
+        textViewChannelName.text = channelId
+
+        if (newChannelId != GAME_CHANNEL_ID) {
             controller.loadChatHistory(this)
-            textViewChannelName.text = channelId
         }
     }
 
