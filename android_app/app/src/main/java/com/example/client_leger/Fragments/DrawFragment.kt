@@ -163,7 +163,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var strokeJustEnded = true
     private var drawListener: Disposable
     private var roleListener: Disposable
-    private val matrixSquareSize = 100
+    private val matrixSquareSize = 100  //todo: test with smaller size
     private var lastErasePoint: Point? = null
     private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
@@ -228,10 +228,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             } else {
                 lastErasePoint = Point(x, y)
-                if (bitmap.getPixel(x, y) != Color.WHITE) {
+                //if (bitmap.getPixel(x, y) != Color.WHITE) {
                     checkForStrokesToErase(x, y, isStrokeErasing)
                     sendErase(x, y, isStrokeErasing)
-                }
+                //}
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             addSegment(Point(x,y))
@@ -265,10 +265,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newX = (lastErasePoint!!.x + directionX * i).toInt()
             val newY = (lastErasePoint!!.y + directionY * i).toInt()
 
-            if (bitmap.getPixel(newX, newY) != Color.WHITE) {
+            //if (bitmap.getPixel(newX, newY) != Color.WHITE) {
                 checkForStrokesToErase(newX, newY, isStrokeErasing)
                 sendErase(newX, newY, isStrokeErasing)
-            }
+            //}
         }
 
         lastErasePoint!!.x = destX
