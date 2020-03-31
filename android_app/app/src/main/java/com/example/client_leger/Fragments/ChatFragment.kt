@@ -33,9 +33,10 @@ class ChatFragment: Fragment() {
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
 
-    lateinit var chatListener: Disposable
-    lateinit var channelListener: Disposable
-    lateinit var startGameSub: Disposable;
+    private lateinit var chatListener: Disposable
+    private lateinit var channelListener: Disposable
+    private lateinit var startGameSub: Disposable
+    private lateinit var gameChatSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_chat, container, false)
@@ -82,7 +83,12 @@ class ChatFragment: Fragment() {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if (v.chat_message_editText.text.trim().isNotEmpty()) {
                     val message = buildMessage(username, v.chat_message_editText, channelId)
-                    SocketIO.sendMessage("chat", message)
+
+                    if(channelId.isNotEmpty()) {
+                        SocketIO.sendMessage("chat", message)
+                    } else {
+                        SocketIO.sendMessage("game-chat", message)
+                    }
                 }
                 return@OnKeyListener true
             }
@@ -92,7 +98,12 @@ class ChatFragment: Fragment() {
         v.chat_send_button.setOnClickListener {
             if (v.chat_message_editText.text.trim().isNotEmpty()) {
                 val message = buildMessage(username, v.chat_message_editText, channelId)
-                SocketIO.sendMessage("chat", message)
+
+                if(channelId.isNotEmpty()) {
+                    SocketIO.sendMessage("chat", message)
+                } else {
+                    SocketIO.sendMessage("game-chat", message)
+                }
             }
         }
 
@@ -104,15 +115,24 @@ class ChatFragment: Fragment() {
             activity!!.onBackPressed()
         }
 
-        chatListener = Communication.getChatMessageListener().subscribe{receptMes ->
+        chatListener = Communication.getChatMessageListener().subscribe{ receptMes ->
             val messages = JSONArray()
             messages.put(receptMes)
             receiveMessages(messageAdapter, username, messages)
             v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
-        startGameSub = Communication.getGameStartListener().subscribe{ res ->
+        startGameSub = Communication.getGameStartListener().subscribe{
             addGameChannel()
+        }
+
+        gameChatSub = Communication.getGameChatListener().subscribe { mes ->
+            if (channelId == "") {
+                val messages = JSONArray()
+                messages.put(mes)
+                receiveMessages(messageAdapter, username, messages)
+                v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+            }
         }
 
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
@@ -129,9 +149,10 @@ class ChatFragment: Fragment() {
         chatListener.dispose()
         channelListener.dispose()
         startGameSub.dispose()
+        gameChatSub.dispose()
     }
 
-    fun addGameChannel() {
+    private fun addGameChannel() {
         channelAdapter.add(ChannelItem("", true, controller, this))
     }
 
