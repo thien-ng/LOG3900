@@ -18,7 +18,7 @@
             android:textSize="18dp"
             android:layout_alignParentRight="true"
             android:text="Test message"
-            />
+            android:layout_alignParentEnd="true" />
 
     <TextView
             android:id="@+id/my_message_time"
@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/my_message_body"
             android:layout_alignParentRight="true"
-            android:text="TextView" />
+            android:text=""
+            android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
