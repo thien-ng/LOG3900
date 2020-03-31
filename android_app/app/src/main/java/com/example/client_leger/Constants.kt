@@ -5,8 +5,8 @@ class Constants {
         const val SERVER_URL = "https://log3000-app.herokuapp.com"
         const val MESSAGE_MAX_LENGTH = 144
         const val GALLERY_REQUEST_CODE = 1
-        const val DEFAULT_CHANNEL_ID = "general"
-        const val GAME_CHANNEL_ID = ""
+        const val DEFAULT_CHANNEL_ID = "General"
+        const val GAME_CHANNEL_ID = "Game Channel"
 
         //ENDPOINTS
         const val LOGIN_ENDPOINT = "/account/login"
