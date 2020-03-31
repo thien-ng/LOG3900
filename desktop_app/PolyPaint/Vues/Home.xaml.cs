@@ -38,7 +38,7 @@ namespace PolyPaint.Vues
         {
             e.Cancel = true;
             _window.Hide();
-            chatColumn.Width = new GridLength(2.5, GridUnitType.Star);
+            chatColumn.Width = new GridLength(2, GridUnitType.Star);
             chatHome.Visibility = Visibility.Visible;
 
             _isOpen = false;
@@ -55,7 +55,7 @@ namespace PolyPaint.Vues
             else
             {
                 _window.Hide();
-                chatColumn.Width = new GridLength(2.5, GridUnitType.Star);
+                chatColumn.Width = new GridLength(2, GridUnitType.Star);
                 chatHome.Visibility = Visibility.Visible;
                 _isOpen = false;
             }
