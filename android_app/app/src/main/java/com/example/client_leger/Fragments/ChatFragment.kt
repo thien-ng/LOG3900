@@ -5,11 +5,13 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
+import android.util.Log
 import android.view.*
 import android.widget.*
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
+import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
@@ -128,22 +130,26 @@ class ChatFragment: Fragment() {
             inGame = true
             addGameChannel()
             activity!!.runOnUiThread {
-                setChannel("")
+                setChannel(GAME_CHANNEL_ID)
             }
         }
 
         endGameSub = Communication.getEndGameListener().subscribe{
             inGame = false
 
-            if (channelId == "") {
+            Log.w("channel", "channelId is: " + channelId)
+
+            if (channelId == GAME_CHANNEL_ID) {
+                Log.w("channel", "channelId was game channel")
                 setChannel(DEFAULT_CHANNEL_ID)
             } else {
+                Log.w("channel", "channelId was not game channel")
                 loadChannels()
             }
         }
 
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
-            if (channelId == "") {
+            if (channelId == GAME_CHANNEL_ID) {
                 val messages = JSONArray()
                 messages.put(mes)
                 receiveMessages(messageAdapter, username, messages)
@@ -170,7 +176,7 @@ class ChatFragment: Fragment() {
     }
 
     private fun addGameChannel() {
-        channelAdapter.add(ChannelItem("", true, controller, this))
+        channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
     }
 
     private fun onButtonShowPopupWindowClick(inflater: LayoutInflater, view: View?) {
@@ -191,13 +197,13 @@ class ChatFragment: Fragment() {
             var name = popupView.textInput_channelNameToCreate.text.toString()
             name = name.trim()
 
-            if ( name.length <= 20 && channelId.isNotEmpty() ) {
+            if ( name.length <= 20 && name.isNotEmpty() && name != GAME_CHANNEL_ID) {
                 controller.createChannel(this, name)
                 popupWindow.dismiss()
             } else {
                 Toast.makeText(
                     this.context,
-                    "Channel names cannot exceed 20 characters or be empty.",
+                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -209,9 +215,10 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        if (newChannelId == "") {
+        Log.w("channel", "setting channel to: " + newChannelId)
+        if (newChannelId == GAME_CHANNEL_ID) {
             messageAdapter.clear()
-            textViewChannelName.text = "Game channel"
+            textViewChannelName.text = GAME_CHANNEL_ID
         } else if (channelId != newChannelId) {
             loadChannels()
             messageAdapter.clear()
