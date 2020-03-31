@@ -21,11 +21,7 @@ class ChannelItem(private val channelId: String, private val isSub: Boolean, pri
             viewHolder.itemView.imageButton_leaveChannel.visibility = View.GONE
         }
 
-        var string = if (channelId.isNotEmpty()) {
-            channelId.substring(0, 1).toUpperCase()
-        } else {
-            "G"
-        }
+        var string: String = channelId.substring(0, 1).toUpperCase()
         if (channelId.length >= 2) {
             string += channelId.substring(1, 2)
         }

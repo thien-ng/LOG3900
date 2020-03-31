@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
-import android.util.Log
 import android.view.*
 import android.widget.*
 import com.example.client_leger.*
@@ -88,7 +87,7 @@ class ChatFragment: Fragment() {
                 if (v.chat_message_editText.text.trim().isNotEmpty()) {
                     val message = buildMessage(username, v.chat_message_editText, channelId)
 
-                    if(channelId.isNotEmpty()) {
+                    if(channelId != GAME_CHANNEL_ID) {
                         SocketIO.sendMessage("chat", message)
                     } else {
                         SocketIO.sendMessage("game-chat", message)
@@ -103,7 +102,7 @@ class ChatFragment: Fragment() {
             if (v.chat_message_editText.text.trim().isNotEmpty()) {
                 val message = buildMessage(username, v.chat_message_editText, channelId)
 
-                if(channelId.isNotEmpty()) {
+                if(channelId != GAME_CHANNEL_ID) {
                     SocketIO.sendMessage("chat", message)
                 } else {
                     SocketIO.sendMessage("game-chat", message)
@@ -137,14 +136,12 @@ class ChatFragment: Fragment() {
         endGameSub = Communication.getEndGameListener().subscribe{
             inGame = false
 
-            Log.w("channel", "channelId is: " + channelId)
-
-            if (channelId == GAME_CHANNEL_ID) {
-                Log.w("channel", "channelId was game channel")
-                setChannel(DEFAULT_CHANNEL_ID)
-            } else {
-                Log.w("channel", "channelId was not game channel")
-                loadChannels()
+            activity!!.runOnUiThread {
+                if (channelId == GAME_CHANNEL_ID) {
+                    setChannel(DEFAULT_CHANNEL_ID)
+                } else {
+                    loadChannels()
+                }
             }
         }
 
@@ -215,9 +212,9 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        Log.w("channel", "setting channel to: " + newChannelId)
         if (newChannelId == GAME_CHANNEL_ID) {
             messageAdapter.clear()
+            channelId = GAME_CHANNEL_ID
             textViewChannelName.text = GAME_CHANNEL_ID
         } else if (channelId != newChannelId) {
             loadChannels()
