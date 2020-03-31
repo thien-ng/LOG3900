@@ -2,7 +2,6 @@ package com.example.client_leger.Fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_gameplay_menu.view.*
 import org.json.JSONObject
 
