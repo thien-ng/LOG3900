@@ -130,7 +130,7 @@
                 <RowDefinition Height="6" />
             </Grid.RowDefinitions>
             <Border BorderThickness="5,5,0,0">
-                <InkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" Name="surfaceDessin" 
+                <InkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" Name="surfaceDessin"
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                            PreviewMouseLeftButtonDown="OnMouseDown"
                            PreviewMouseLeftButtonUp="OnMouseUp"

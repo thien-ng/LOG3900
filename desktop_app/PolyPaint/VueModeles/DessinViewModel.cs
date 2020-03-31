@@ -46,6 +46,7 @@ namespace PolyPaint.VueModeles
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         private Editeur editeur = new Editeur();
         private Guid currentStrokeId = Guid.NewGuid();
+        private int eraserDiameter;
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
         public string OutilSelectionne
@@ -122,6 +123,7 @@ namespace PolyPaint.VueModeles
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
 
             previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            eraserDiameter = 8;
         }
 
         /// <summary>
@@ -296,7 +298,7 @@ namespace PolyPaint.VueModeles
             double x = (double)data.GetValue("x");
             double y = (double)data.GetValue("y");
 
-            StrokeCollection coll = Traits.HitTest(new Point(x, y));
+            StrokeCollection coll = Traits.HitTest(new Point(x, y), eraserDiameter);
 
             App.Current.Dispatcher.Invoke(delegate
             {
@@ -306,29 +308,41 @@ namespace PolyPaint.VueModeles
 
         private void ReceiveErasePoint(JObject data)
         {
-            double x = (double)data.GetValue("x");
-            double y = (double)data.GetValue("y");
-
-            StrokeCollection strokes = Traits.HitTest(new Point(x, y));
-
-            if (strokes.Count == 0) return;
-
-            foreach (var stroke in strokes)
+            try
             {
-                Rect rect = new Rect(x - 5, y - 5, 10, 10);
-                StrokeCollection splitStroke = stroke.GetEraseResult(rect);
+                double x = (double)data.GetValue("x");
+                double y = (double)data.GetValue("y");
 
-                App.Current.Dispatcher.Invoke(delegate
+
+                StrokeCollection strokes = Traits.HitTest(new Point(x, y), eraserDiameter);
+
+                if (strokes.Count == 0) return;
+
+                Rect rect = new Rect(x - (eraserDiameter / 2),
+                                     y - (eraserDiameter / 2),
+                                     eraserDiameter,
+                                     eraserDiameter);
+
+                foreach (var stroke in strokes)
                 {
-                    foreach (var item in splitStroke)
+                    int strokeIndex = Traits.IndexOf(stroke);
+                    
+                    StrokeCollection splitStroke = stroke.GetEraseResult(rect);
+                    
+                    App.Current.Dispatcher.Invoke(delegate
                     {
-                        ((CustomStroke)item).uid = Guid.NewGuid();
-                        Traits.Add(item);
-                    }
+                        foreach (var item in splitStroke)
+                        {
+                            ((CustomStroke)item).uid = Guid.NewGuid();
 
-                    Traits.Remove(stroke);
-                });
+                            Traits.Insert(strokeIndex, item);
+                        }
+
+                        Traits.Remove(stroke);
+                    });
+                }
             }
+            catch { /*fail silently*/ }
         }
 
         private void MergeStrokes(DrawingAttributes attr)
@@ -345,17 +359,13 @@ namespace PolyPaint.VueModeles
                 }
             }
 
-            App.Current.Dispatcher.Invoke(delegate
-            {
-                Traits.Remove(strokesToRemove);
-            });
-
             CustomStroke fullStroke = new CustomStroke(points, attr);
             fullStroke.uid = currentStrokeId;
 
             App.Current.Dispatcher.Invoke(delegate
             {
                 Traits.Add(fullStroke);
+                Traits.Remove(strokesToRemove);
             });
 
             currentStrokeId = Guid.NewGuid();
