@@ -131,6 +131,9 @@
     <Compile Include="Controls\Chat\Channel.xaml.cs">
       <DependentUpon>Channel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Chat\MessageGameItem.xaml.cs">
+      <DependentUpon>MessageGameItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Chat\MessageItem.xaml.cs">
       <DependentUpon>MessageItem.xaml</DependentUpon>
     </Compile>
@@ -173,6 +176,10 @@
     <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerAlignementConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerToBorderRadiusConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerToColorConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerToVisibleConverter.cs" />
     <Compile Include="Modeles\Connection.cs" />
     <Compile Include="Modeles\Editeur.cs" />
     <Compile Include="Modeles\GameCard.cs" />
@@ -180,6 +187,7 @@
     <Compile Include="Modeles\MessageChannel.cs" />
     <Compile Include="Modeles\HintModel.cs" />
     <Compile Include="Modeles\MessageChat.cs" />
+    <Compile Include="Modeles\MessageGame.cs" />
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
@@ -233,6 +241,10 @@
       <DependentUpon>Register.xaml</DependentUpon>
     </Compile>
     <Page Include="Controls\Chat\Channel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Chat\MessageGameItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
