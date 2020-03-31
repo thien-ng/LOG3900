@@ -25,6 +25,8 @@ namespace PolyPaint.VueModeles
             this.LobbyName = lobbyname;
             fetchUsername();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
+            ServerService.instance.socket.On("game-start", joingame);
+
             Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
 
@@ -163,6 +165,12 @@ namespace PolyPaint.VueModeles
             {
                 Mediator.Notify("GoToGameScreen");
             }
+        }
+
+        private void joingame()
+        {
+            if(!IsGameMaster)
+            Mediator.Notify("GoToGameScreen");
         }
 
         private async Task processBotRequest()
