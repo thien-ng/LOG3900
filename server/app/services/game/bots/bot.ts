@@ -8,10 +8,10 @@ import * as io from 'socket.io';
 export abstract class Bot {
 
     public length: number;
+    public username: string;
 
     protected drawings: IDrawing[];
     protected taunts: string[];
-    protected username: string;
     protected nextStroke: number;
     protected mode: DisplayMode;
     protected panoramicFirstSide: Side;
