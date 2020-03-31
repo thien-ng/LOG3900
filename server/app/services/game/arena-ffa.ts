@@ -210,10 +210,6 @@ export class ArenaFfa extends Arena {
             this.socketServer.to(drawer.socketId).emit("game-drawer", {username: drawer.username, object: this.curRule.solution});
     }
 
-    private isUserDc(username: string): boolean {
-        return this.dcPlayer.includes(username);
-    }
-
     private calculateRatio(): number {
         return Math.floor(this.userWithCorrectAns.length / this.users.length);
     }

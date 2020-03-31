@@ -13,7 +13,7 @@ const ANNOUNCEMENT = "{0} has found the answer";
 const ONE_SEC = 1000;
 const format = require('string-format');
 
-export class ArenaSolo extends Arena {
+export class ArenaSprint extends Arena {
 
     private timeRemaining: number;
     private guessLeft: number;
@@ -118,20 +118,20 @@ export class ArenaSolo extends Arena {
                 this.guessPerImage = 2;
                 this.timePerImage = 3 * ONE_SEC;
                 this.timeRemaining = 20 * ONE_SEC;
-                this.pointsMult = 1.4;
+                this.pointsMult = 14;
                 break;
             case Difficulty.MEDIUM:
                 this.guessPerImage = 3;
                 this.timePerImage = 7 * ONE_SEC;
                 this.timeRemaining = 30 * ONE_SEC;
-                this.pointsMult = 1;
+                this.pointsMult = 10;
                 break;
             case Difficulty.EASY:
             default:
                 this.guessPerImage = 4;
                 this.timePerImage = 10 * ONE_SEC;
                 this.timeRemaining = 40 * ONE_SEC;
-                this.pointsMult = 0.6;
+                this.pointsMult = 6;
                 break;
         }
     }
@@ -147,7 +147,10 @@ export class ArenaSolo extends Arena {
 
     }
     protected handlePoints(): void {
-        this.userMapPoints.set(this.users[0].username, this.wordGuessedRight * this.pointsMult);
+        this.users.forEach(u => {
+            if (!this.isUserDc(u.username)) // give points to all connected users
+                this.userMapPoints.set(u.username, this.wordGuessedRight * this.pointsMult)
+        });
     }
 
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
