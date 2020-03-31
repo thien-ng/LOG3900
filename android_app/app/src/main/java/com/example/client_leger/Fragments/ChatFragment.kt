@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
-import android.util.Log
 import android.view.*
 import android.widget.*
 import com.example.client_leger.*
@@ -85,37 +84,14 @@ class ChatFragment: Fragment() {
 
         v.chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                if (v.chat_message_editText.text.trim().isNotEmpty()) {
-                    val message = buildMessage(username, v.chat_message_editText, channelId)
-
-                    if(channelId != GAME_CHANNEL_ID) {
-                        SocketIO.sendMessage("chat", message)
-                    } else {
-                        SocketIO.sendMessage("gameplay", message)
-                        messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString()))
-                    }
-                }
+                sendInput(v)
                 return@OnKeyListener true
             }
             false
         })
 
         v.chat_send_button.setOnClickListener {
-            if (v.chat_message_editText.text.trim().isNotEmpty()) {
-                if(channelId != GAME_CHANNEL_ID) {
-                    Log.w("message", "sending to NOT game channel: " + v.chat_message_editText.text.toString())
-                    val message = buildMessage(username, v.chat_message_editText, channelId)
-                    SocketIO.sendMessage("chat", message)
-                } else {
-                    Log.w("message", "sending to game channel: " + v.chat_message_editText.text.toString())
-                    val obj = JSONObject()
-                    obj.put("event", "chat")
-                    obj.put("username", username)
-                    obj.put("content", v.chat_message_editText.text.toString())
-                    SocketIO.sendMessage("gameplay", obj)
-                    messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString()))
-                }
-            }
+            sendInput(v)
         }
 
         v.imageButton_createChannel.setOnClickListener {
@@ -179,6 +155,24 @@ class ChatFragment: Fragment() {
         channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
     }
 
+    private fun sendInput(v: View) {
+        if (v.chat_message_editText.text.trim().isNotEmpty()) {
+            if(channelId != GAME_CHANNEL_ID) {
+                val message = buildMessage(username, v.chat_message_editText, channelId)
+                SocketIO.sendMessage("chat", message)
+            } else {
+                val obj = JSONObject()
+                obj.put("event", "chat")
+                obj.put("username", username)
+                obj.put("content", v.chat_message_editText.text.toString())
+                SocketIO.sendMessage("gameplay", obj)
+                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString()))
+            }
+
+            v.chat_message_editText.text.clear()
+        }
+    }
+
     private fun onButtonShowPopupWindowClick(inflater: LayoutInflater, view: View?) {
         val popupView = inflater.inflate(R.layout.popup_create_channel, null)
         val width = LinearLayout.LayoutParams.WRAP_CONTENT
@@ -231,13 +225,10 @@ class ChatFragment: Fragment() {
         obj.put("channel_id", chan_id)
         obj.put("content", message.text.toString())
 
-        message.text.clear()
-
         return obj
     }
 
     private fun receiveGameMessage(mes: JSONObject) {
-        Log.w("message", "receiveGameMessage!!!!!")
         val user = mes.getString("username")
         val content = mes.getString("content")
         val isServer = mes.getBoolean("isServer")
@@ -254,7 +245,6 @@ class ChatFragment: Fragment() {
     }
 
     fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
-        Log.w("message", "receiveMessages!!!!!")
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
 
