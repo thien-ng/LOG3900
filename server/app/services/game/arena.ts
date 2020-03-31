@@ -249,4 +249,8 @@ export abstract class Arena {
         this.socketServer.to(this.room).emit("game-chat", obj);
     }
 
+    protected isUserDc(username: string): boolean {
+        return this.dcPlayer.includes(username);
+    }
+
 }
