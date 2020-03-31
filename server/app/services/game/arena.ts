@@ -119,6 +119,9 @@ export abstract class Arena {
 
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
+            
+            if (u.socket)
+                u.socket.leave(this.room);
         });
 
         clearInterval(this.chronometerTimer);
@@ -131,6 +134,9 @@ export abstract class Arena {
         console.log("[Debug] Cancel routine");
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over");
+            
+            if (u.socket)
+                u.socket.leave(this.room);
         });
         this.gm.deleteArena(this.arenaId);
     }
