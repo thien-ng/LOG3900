@@ -124,7 +124,9 @@ class ChatFragment: Fragment() {
 
         startGameSub = Communication.getGameStartListener().subscribe{
             addGameChannel()
-            setChannel("")
+            activity!!.runOnUiThread {
+                setChannel("")
+            }
         }
 
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
