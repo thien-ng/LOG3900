@@ -239,12 +239,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-            touchMoved(currentStartX, currentStartY, x, y)
+            touchMoved(currentStartX, currentStartY, x, y, false)
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_UP){
-            strokeJustEnded = true
             sendStroke(x, y, x, y, true)
+            strokeJustEnded = true
             redrawPathsToBitmap()
         }
 
@@ -436,7 +436,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun checkForStrokesToErase(pointX: Int, pointY: Int, isStroke: Boolean) {
+    private fun checkPointForErase(pointX: Int, pointY: Int, isStroke: Boolean): Boolean {
         var strokeFound = false
 
         synchronized(matrix) {
@@ -450,19 +450,32 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 if (segment.point.x + eraserHalfSize >= pointX &&
                     segment.point.x - eraserHalfSize <= pointX &&
                     segment.point.y + eraserHalfSize >= pointY &&
-                    segment.point.y - eraserHalfSize <= pointY ) {
+                    segment.point.y - eraserHalfSize <= pointY
+                ) {
                     segment.paint.color = Color.TRANSPARENT
                     if (isStroke) {
                         batchErase(segment)
                     } else {
                         segmentsToBeRemoved.add(segment)
-
                     }
 
                     strokeFound = true
                 }
             }
         }
+
+        return strokeFound
+    }
+
+    private fun checkForStrokesToErase(pointX: Int, pointY: Int, isStroke: Boolean) {
+        val eraserHalfSize = 4
+
+        val strokeFound = (
+            checkPointForErase(pointX, pointY, isStroke) ||
+            checkPointForErase(pointX + eraserHalfSize, pointY, isStroke) ||
+            checkPointForErase(pointX - eraserHalfSize, pointY, isStroke) ||
+            checkPointForErase(pointX, pointY + eraserHalfSize, isStroke) ||
+            checkPointForErase(pointX, pointY - eraserHalfSize, isStroke))
 
         if (strokeFound) {
             bitmapNeedsToUpdate = true
@@ -474,8 +487,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int) {
-        sendStroke(startX, startY, destX, destY, false)
+    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int, isEnd: Boolean) {
+        sendStroke(startX, startY, destX, destY, isEnd)
         divideAndAddSegment(startX, startY, destX, destY)
         postInvalidate()
     }
