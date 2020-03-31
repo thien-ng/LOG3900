@@ -18,8 +18,8 @@ class GameplayMenuFragment: Fragment() {
 
     lateinit var username:  String
 
-    lateinit var timerSub:  Disposable;
-    lateinit var drawerSub: Disposable;
+    private lateinit var timerSub:  Disposable
+    private lateinit var drawerSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay_menu, container, false)
@@ -34,18 +34,18 @@ class GameplayMenuFragment: Fragment() {
 
         timerSub = Communication.getTimerListener().subscribe{res ->
             activity!!.runOnUiThread {
-                v.timer.setText(res.getString("time"))
+                v.timer.text = res.getString("time")
             }
         }
 
         drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
             activity!!.runOnUiThread {
                 if (res.getString("username") == username) {
-                    v.role.setText("drawer")
-                    v.item.setText(res.getString("object"))
+                    v.role.text = "drawer"
+                    v.item.text = res.getString("object")
                 } else {
-                    v.role.setText("guesser")
-                    v.item.setText("")
+                    v.role.text = "guesser"
+                    v.item.text = ""
                 }
             }
         }
