@@ -32,6 +32,7 @@ class ChatFragment: Fragment() {
     lateinit var notSubChannelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
+    var inGame: Boolean = false
 
     private lateinit var chatListener: Disposable
     private lateinit var channelListener: Disposable
@@ -124,6 +125,7 @@ class ChatFragment: Fragment() {
         }
 
         startGameSub = Communication.getGameStartListener().subscribe{
+            inGame = true
             addGameChannel()
             activity!!.runOnUiThread {
                 setChannel("")
@@ -131,20 +133,12 @@ class ChatFragment: Fragment() {
         }
 
         endGameSub = Communication.getEndGameListener().subscribe{
-            activity!!.runOnUiThread {
-                if (channelId == "") {  //todo constant
-                    setChannel(DEFAULT_CHANNEL_ID)
-                }
+            inGame = false
 
-                val channelToRemove = GroupAdapter<ViewHolder>()
-                for ( view in 0 until channelAdapter.itemCount) {
-                    if (channelAdapter.getItem(view).toString() != "") {
-                        channelToRemove.add(channelAdapter.getItem(view))
-                        break
-                    }
-                }
-
-                channelAdapter.remove(channelToRemove.getItem(0))
+            if (channelId == "") {
+                setChannel(DEFAULT_CHANNEL_ID)
+            } else {
+                loadChannels()
             }
         }
 

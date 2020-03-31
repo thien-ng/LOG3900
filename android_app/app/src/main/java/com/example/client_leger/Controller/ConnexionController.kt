@@ -176,17 +176,20 @@ class ConnexionController {
                 null,
                 Response.Listener<JSONArray>{response ->
 
-                    val channelsToRemove = GroupAdapter<ViewHolder>()
-                    for ( view in 0 until activity.channelAdapter.itemCount) {
-                        if (activity.channelAdapter.getItem(view).toString() != "") {
-                            channelsToRemove.add(activity.channelAdapter.getItem(view))
+                    if (activity.inGame) {
+                        val channelsToRemove = GroupAdapter<ViewHolder>()
+                        for ( view in 0 until activity.channelAdapter.itemCount) {
+                            if (activity.channelAdapter.getItem(view).toString() != "") {
+                                channelsToRemove.add(activity.channelAdapter.getItem(view))
+                            }
                         }
-                    }
-                    for (view in 0 until channelsToRemove.itemCount) {
-                        activity.channelAdapter.remove(channelsToRemove.getItem(view))
+                        for (view in 0 until channelsToRemove.itemCount) {
+                            activity.channelAdapter.remove(channelsToRemove.getItem(view))
+                        }
+                    } else {
+                        activity.channelAdapter.clear()
                     }
 
-                    //activity.channelAdapter.clear() //todo: remove everything except game channel and general
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)
                         activity.channelAdapter.add(ChannelItem(channelId.getString("id"), true, this, activity))
