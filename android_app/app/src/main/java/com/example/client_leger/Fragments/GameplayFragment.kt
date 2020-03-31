@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 
 class GameplayFragment: Fragment(), FragmentChangeListener {
 
-    lateinit var endGameSub: Disposable;
+    private lateinit var endGameSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay, container, false)
