@@ -154,6 +154,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var paintLine: Paint = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
+    var isDrawer = false
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
     private var currentStartX = 0
@@ -162,6 +163,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var strokeJustEnded = true
     private var drawListener: Disposable
     private var roleListener: Disposable
+    private var drawerSub: Disposable
     private val matrixSquareSize = 100  //todo: test with smaller size
     private var lastErasePoint: Point? = null
     private var segmentsToBeRemoved = ArrayList<Segment>()
@@ -182,6 +184,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         roleListener = Communication.getDrawerUpdateListener().subscribe{
             clearStrokes()
+        }
+
+        drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
+            isDrawer = res.getString("username") == username
         }
     }
 
@@ -211,6 +217,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isDrawer) {
+            return true
+        }
+
         val x = event.x.toInt()
         val y = event.y.toInt()
 
