@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,8 +14,11 @@ namespace PolyPaint.Modeles
         public ChatRoom(string id, bool isLobbyChat)
         {
             _messages = new ObservableCollection<MessageChat>();
+            _messagesGame = new ObservableCollection<MessageGame>();
             ID = id;
             IsLobbyChat = isLobbyChat;
+            _isInGameChat = false;
+            if(id == Constants.GAME_CHANNEL) { SetupGameChat(); return; }
             if (isLobbyChat) { SetupLobbyChat(); }
             else { Setup(); }
         }
@@ -26,6 +30,13 @@ namespace PolyPaint.Modeles
 
         public bool IsLobbyChat { get; set; }
 
+        private bool _isInGameChat;
+
+        public bool IsInGameChat {
+            get { return _isInGameChat; } 
+            set { _isInGameChat = value; ProprieteModifiee(); Console.WriteLine(_isInGameChat); }
+        }
+
         private ObservableCollection<MessageChat> _messages;
         public ObservableCollection<MessageChat> Messages
         {
@@ -33,17 +44,32 @@ namespace PolyPaint.Modeles
             set { _messages = value; ProprieteModifiee(nameof(Messages)); }
         }
 
+        private ObservableCollection<MessageGame> _messagesGame;
+        public ObservableCollection<MessageGame> MessagesGame
+        {
+            get { return _messagesGame; }
+            set { _messagesGame = value; ProprieteModifiee(nameof(MessagesGame)); }
+        }
+
         #endregion
 
         #region Methods
 
+        private void SetupGameChat()
+        {
+            IsInGameChat = true;
+            ServerService.instance.socket.On("game-chat", data => ReceiveGameMessage((JObject)data));
+        }
+
         private void SetupLobbyChat()
         {
+            IsInGameChat = false;
             ServerService.instance.socket.On("lobby-chat", data => ReceiveMessage((JObject)data));
         }
 
         private void Setup()
         {
+            IsInGameChat = false;
             LoadMessages();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
         }
@@ -52,7 +78,13 @@ namespace PolyPaint.Modeles
             if (string.IsNullOrWhiteSpace(message))
                 return;
 
-
+            if (IsInGameChat)
+            {
+                var newMessage = new JObject(new JProperty("event", "chat"),
+                                             new JProperty("username", ServerService.instance.username),
+                                             new JProperty("content", message));
+                ServerService.instance.socket.Emit("gameplay", newMessage);
+            }
             if (IsLobbyChat)
             {
                 var newMessage = new JObject(new JProperty("lobbyName", ID),
@@ -77,6 +109,18 @@ namespace PolyPaint.Modeles
             {
                 Messages.Add(new MessageChat(message.username, message.content, isSentByMe, message.time));
             });
+        }
+
+        private void ReceiveGameMessage(JToken jsonMessage)
+        {
+            MessageGame message = jsonMessage.ToObject<MessageGame>();
+            Console.WriteLine(message.content);
+
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessagesGame.Add(new MessageGame(message.username, message.content, message.isServer));
+            });
+            Console.WriteLine(MessagesGame.Count);
         }
 
         private async void LoadMessages()
