@@ -40,7 +40,7 @@
         
         <Grid x:Name="displayGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Name="chatColumn" Width="2.5*"/>
+                <ColumnDefinition Name="chatColumn" Width="2*"/>
                 <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
