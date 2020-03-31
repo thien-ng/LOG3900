@@ -91,7 +91,7 @@ class ChatFragment: Fragment() {
                     if(channelId != GAME_CHANNEL_ID) {
                         SocketIO.sendMessage("chat", message)
                     } else {
-                        SocketIO.sendMessage("game-chat", message)
+                        SocketIO.sendMessage("gameplay", message)
                     }
                 }
                 return@OnKeyListener true
@@ -101,12 +101,15 @@ class ChatFragment: Fragment() {
 
         v.chat_send_button.setOnClickListener {
             if (v.chat_message_editText.text.trim().isNotEmpty()) {
-                val message = buildMessage(username, v.chat_message_editText, channelId)
-
                 if(channelId != GAME_CHANNEL_ID) {
+                    val message = buildMessage(username, v.chat_message_editText, channelId)
                     SocketIO.sendMessage("chat", message)
                 } else {
-                    SocketIO.sendMessage("game-chat", message)
+                    val obj = JSONObject()
+                    obj.put("event", "chat")
+                    obj.put("username", username)
+                    obj.put("content", v.chat_message_editText.text.toString())
+                    SocketIO.sendMessage("gameplay", obj)
                 }
             }
         }
@@ -147,13 +150,7 @@ class ChatFragment: Fragment() {
         }
 
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
-            Log.w("channel", "new game chat! channelId: $channelId")
-            if (channelId == GAME_CHANNEL_ID) {
-                val messages = JSONArray()
-                messages.put(mes)
-                receiveMessages(messageAdapter, username, messages)
-                v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
-            }
+            receiveGameMessage(mes)
         }
 
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
@@ -235,15 +232,32 @@ class ChatFragment: Fragment() {
         return obj
     }
 
-    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
+    private fun receiveGameMessage(mes: JSONObject) {
+        val user = mes.getString("username")
+        val content = mes.getString("content")
+        val isServer = mes.getBoolean("isServer")
+
+        activity!!.runOnUiThread {
+            if (channelId == GAME_CHANNEL_ID) {
+                if (!isServer) {
+                    if (user == username) {
+                        messageAdapter.add(GameChatItemSent(content))
+                    } else {
+                        messageAdapter.add(GameChatItemReceived(content, username))
+                    }
+
+                } else {
+                    //todo: handle server messages
+                }
+            }
+        }
+    }
+
+    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
 
-            if (channel != null) {
-                if (channel != channelId) {
-                    continue
-                }
-            } else if (message.getString("channel_id") != channelId) {
+            if (message.getString("channel_id") != channelId) {
                 continue
             }
 
