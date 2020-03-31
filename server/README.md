@@ -28,6 +28,7 @@
 | Join/Create lobby            | POST | /game/lobby/join             |
 | Leave/Delete lobby           | POST | /game/lobby/leave            |
 | invite a user in a lobby     | POST | /game/lobby/invite           |
+| invite a user in a lobby     | POST | /game/lobby/invite/refuse    |
 | Get active lobbies by mode   |  GET | /game/lobby/active/:mode     |
 | Get users in a lobby by name |  GET | /game/lobby/users/:lobbyName |
 | Start game with lobby name   |  GET | /game/start/:lobbyName       |
@@ -43,13 +44,14 @@
 
 ## Lobby
 
-| Event       | Description                                                      | Object                                                                              |
-| ----------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| lobby-chat  | emit when sending messages in lobby                              |                                                                                     |
-| lobby-notif | emit when sending notification about lobby update when is join   | {type: join, lobbyName: string, user: string}                                       |
-| lobby-notif | emit when sending notification about lobby update when is leave  | {type: leave, lobbyName: string, user: string}                                      |
-| lobby-notif | emit when sending notification about lobby update when is create | {type: create, lobbyName: string, users: string\[], private: boolean, size: number} |
-| lobby-notif | emit when sending notification about lobby update when is delete | {type: delete, lobbyName: string}                                                   |
+| Event            | Description                                                      | Object                                                                              |
+| ---------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| lobby-chat       | emit when sending messages in lobby                              |                                                                                     |
+| lobby-notif      | emit when sending notification about lobby update when is join   | {type: join, lobbyName: string, user: string}                                       |
+| lobby-notif      | emit when sending notification about lobby update when is leave  | {type: leave, lobbyName: string, user: string}                                      |
+| lobby-notif      | emit when sending notification about lobby update when is create | {type: create, lobbyName: string, users: string\[], private: boolean, size: number} |
+| lobby-notif      | emit when sending notification about lobby update when is delete | {type: delete, lobbyName: string}                                                   |
+| lobby-invitation | emit when received an invitation to a lobby                      | {type: invitation, lobbyName: string}                                               |
 
 | Event          | Description                                            | Object                                                                                        |
 | -------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
@@ -63,3 +65,4 @@
 | game-chat      | emit when sending to game chat                         | {username: string, content: string, isServer:  boolean}                                       |
 | drawer-update  | emit when changing roles of players in arena           | username: string                                                                              |
 | game-over      | emit when it's end of the game                         | [{username: string, points: number}, {...}, ...]                                              |
+| game-guessLeft | emit when sending amount of guess left in sprints      | {guessLeft: number}                                                                           |

@@ -1,16 +1,15 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayAnnouncement, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
 import { MeanBot } from "./bots/meanBot";
 import { KindBot } from "./bots/kindBot";
 import { HumourBot } from "./bots/humourBot";
-import { Side } from "../../utils/Side";
+import { Bot } from "./bots/bot";
 
 import * as io from 'socket.io';
-import { Bot } from "./bots/bot";
 
 const format = require('string-format');
 
@@ -22,7 +21,6 @@ const INIT_DRAW_PTS = 20;
 export class ArenaFfa extends Arena {
 
     private drawPtr: number;
-    private curArenaInterval: NodeJS.Timeout;
 
     private curTime: number;
     private userWithCorrectAns: ICorrAns[];
@@ -35,7 +33,7 @@ export class ArenaFfa extends Arena {
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
-        
+
         this.drawPtr = 0;
         this.userWithCorrectAns = [];
         this.isEveryoneHasRightAnswer = false;
@@ -47,7 +45,7 @@ export class ArenaFfa extends Arena {
         console.log("[Debug] Starting arena FFA", this.room);
 
         this.initBots();
-           
+
         try {
             this.checkArenaLoadingState(() => {
                 this.botAnnounceStart();
@@ -59,7 +57,7 @@ export class ArenaFfa extends Arena {
     }
 
     private startSubGame(): void {
-        
+
         if (this.resetSubGame()) {
             this.end();
             return;
@@ -71,7 +69,7 @@ export class ArenaFfa extends Arena {
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
             console.log("[Debug] Timer is: ", timer);
-            
+
             this.socketServer.to(this.room).emit("game-timer", {time: (TOTAL_TIME - timer)/ONE_SEC});
             this.curTime = timer;
 
@@ -80,7 +78,7 @@ export class ArenaFfa extends Arena {
 
                 this.handlePoints();
                 this.botAnnounceEndSubGane();
-                
+
                 if (this.drawPtr >= this.users.length) {
                     // Handle end of game
                     this.end();
@@ -98,7 +96,7 @@ export class ArenaFfa extends Arena {
         this.userWithCorrectAns = [];
         this.isEveryoneHasRightAnswer = false;
         this.isBotDrawing = false;
-        
+
         this.chooseRandomRule();
         if (this.attributeRoles())
             return true;
@@ -153,7 +151,7 @@ export class ArenaFfa extends Arena {
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
-        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, Side.up); // TODO handle sides
+        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
     protected botAnnounceStart(): void {
@@ -199,25 +197,17 @@ export class ArenaFfa extends Arena {
         }
         this.updateDrawerRole(user);
     }
-    
+
     private updateDrawerRole(drawer: IUser): void {
         this.users.forEach(u => {
             if (!this.isUserDc(u.username) && u.username !== drawer.username)
                 this.socketServer.to(u.socketId).emit("game-drawer", {username: drawer.username});
         });
-        
+
         if (this.isBot(drawer.username))
             this.isBotDrawing = true;
         else
-            this.socketServer.to(drawer.socketId).emit("game-drawer", {username: drawer.username, object: this.curRule.solution});    
-    }
-
-    private sendToChat(obj: IGameplayAnnouncement): void {
-        this.socketServer.to(this.room).emit("game-chat", obj);
-    }
-
-    private isUserDc(username: string): boolean {
-        return this.dcPlayer.includes(username);
+            this.socketServer.to(drawer.socketId).emit("game-drawer", {username: drawer.username, object: this.curRule.solution});
     }
 
     private calculateRatio(): number {

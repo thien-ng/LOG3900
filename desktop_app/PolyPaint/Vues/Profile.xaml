@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1200"
              Background="AliceBlue">
-    
+
     <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
@@ -26,8 +26,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-        <materialDesign:PackIcon VerticalAlignment="Center" Kind="User" Foreground="White" Width="50" Height="50"/>
-        <TextBlock Text="Profile" FontSize="30" VerticalAlignment="Center" Foreground="White"/>
+            <materialDesign:PackIcon VerticalAlignment="Center" Kind="User" Foreground="White" Width="50" Height="50"/>
+            <TextBlock Text="Profile" FontSize="30" VerticalAlignment="Center" Foreground="White"/>
         </StackPanel>
         <Border Grid.Row="1" BorderBrush="White" BorderThickness="0,0,0,1" Grid.ColumnSpan="3"/>
         <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="2" Margin="0,5,0,0">
@@ -39,37 +39,35 @@
             <TextBlock Text="{Binding Username}" FontSize="25" Foreground="White" VerticalAlignment="Bottom" />
             <materialDesign:PackIcon Kind="EditOutline" VerticalAlignment="Bottom" Height="30" Width="30" Foreground="White" />
         </StackPanel>
+
         <StackPanel Margin="15" Orientation="Vertical" Grid.Row="3" Grid.ColumnSpan="3">
-            <Grid Margin="0,15,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="Free for all on 12/02/2020 - 13h54" FontSize="15" Foreground="White"/>
-                <TextBlock Text="1st place" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White"/>
-                <TextBlock Grid.Row="1" Text="Player1, Player2, Player3" FontSize="10" Foreground="{StaticResource SecondaryAccentBrush}"/>
-            </Grid>
-            <Grid Margin="0,15,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="Free for all on 12/02/2020 - 13h54" FontSize="15" Foreground="White"/>
-                <TextBlock Text="1st place" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White"/>
-                <TextBlock Grid.Row="1" Text="Player1, Player2, Player3" FontSize="10" Foreground="{StaticResource SecondaryAccentBrush}"/>
-            </Grid>
-
-
-            <Grid Margin="0,15,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="Free for all on 12/02/2020 - 13h54" FontSize="15" Foreground="White"/>
-                <TextBlock Text="1st place" HorizontalAlignment="Right" VerticalAlignment="Bottom" Foreground="White"/>
-                <TextBlock Grid.Row="1" Text="Player1, Player2, Player3" FontSize="10" Foreground="{StaticResource SecondaryAccentBrush}"/>
-            </Grid>
+            <ScrollViewer Margin="15" Grid.Row="3" Grid.ColumnSpan="3" MinHeight="150" MaxHeight="350" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Games}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,15,0" Orientation="Horizontal">
+                                <Grid Margin="0,15,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock FontSize="15" Foreground="White">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} {1}">
+                                                <Binding Path="mode"/>
+                                                <Binding Path="date"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                    <TextBlock Grid.Row="1" Text="{Binding playerScore}" FontSize="13" Foreground="{StaticResource SecondaryAccentBrush}"/>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </StackPanel>
+
         <Border Grid.Row="3" Grid.ColumnSpan="3" BorderThickness="0,0,0,2" BorderBrush="White"/>
         <Grid  Margin="0,15,0,0" Grid.Row="4" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
@@ -85,15 +83,23 @@
             <StackPanel VerticalAlignment="Bottom" Orientation="Vertical" Grid.Row="0" Grid.Column="1">
                 <StackPanel Margin="10" Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="ClockFast"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="Average game length: 10min 30sec" Foreground="White" FontSize="20"/>
+                    <TextBlock Text="{Binding Stats.avgGameTime, StringFormat=Average game length: {0} seconds}" Foreground="White" FontSize="20"/>
                 </StackPanel>
                 <StackPanel Margin="10" Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Games"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="Total game played: 20" Foreground="White" FontSize="20"/>
+                    <TextBlock Text="{Binding Stats.totalGame, StringFormat=Total game played: {0}}" Foreground="White" FontSize="20"/>
                 </StackPanel>
                 <StackPanel Margin="10" Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Infinity"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="Total time played: 3h50min" Foreground="White" FontSize="20"/>
+                    <TextBlock Text="{Binding Stats.totalPlayTime, StringFormat=Total time played: {0} seconds}" Foreground="White" FontSize="20"/>
+                </StackPanel>
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Star"  Width="30" Height="30" Foreground="White"/>
+                    <TextBlock Text="{Binding Stats.bestSoloScore, StringFormat=Best solo score: {0}}" Foreground="White" FontSize="20"/>
+                </StackPanel>
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ArrowSplitHorizontal"  Width="30" Height="30" Foreground="White"/>
+                    <TextBlock Text="{Binding Stats.winRate, StringFormat=Win/Lose ratio: {0}}" Foreground="White" FontSize="20"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel VerticalAlignment="Bottom" Margin="20" Orientation="Horizontal" Grid.Row="1" Grid.Column="1">

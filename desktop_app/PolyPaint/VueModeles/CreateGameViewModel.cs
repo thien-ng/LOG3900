@@ -26,11 +26,13 @@ namespace PolyPaint.VueModeles
         {
             Difficulty = new ObservableCollection<string> { "Easy", "Medium", "Hard" };
             DisplayMode = new ObservableCollection<string> { "Classic", "Random", "Panoramic", "Centered" };
+            PanoramicMode = new ObservableCollection<string> { "Up", "Down", "Right", "Left" };
             Hints = new ObservableCollection<HintModel> { new HintModel(true) };
             DrawViewModel = new CreateGameDrawViewModel();
             SelectedCreationType = CreationType.Manual;
             SelectedDisplayMode = DisplayMode[0];
             SelectedDifficulty = Difficulty[1];
+            SelectedPanoramicMode = PanoramicMode[0];
             IsReqActive = true;
         }
 
@@ -39,6 +41,7 @@ namespace PolyPaint.VueModeles
 
         public ObservableCollection<string> Difficulty { get; set; }
         public ObservableCollection<string> DisplayMode { get; set; }
+        public ObservableCollection<string> PanoramicMode { get; }
         public CreateGameDrawViewModel DrawViewModel { get; set; }
 
         private ObservableCollection<HintModel> _hints;
@@ -133,6 +136,18 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private string _selectedPanoramicMode;
+        public string SelectedPanoramicMode
+        {
+            get { return _selectedPanoramicMode; }
+            set
+            {
+                if (_selectedPanoramicMode == value) return;
+                _selectedPanoramicMode = value;
+                ProprieteModifiee();
+            }
+        }
+
         private BitmapImage _selectedImage;
         public BitmapImage SelectedImage
         {
@@ -157,11 +172,12 @@ namespace PolyPaint.VueModeles
             foreach (var hint in Hints)
                 clues.Add(hint.Hint);
 
-            var newGame = new JObject(new JProperty("solution", Solution),
+            var newGame = new JObject( new JProperty("solution", Solution),
                                        new JProperty("clues", clues.ToArray()),
                                        new JProperty("difficulty", SelectedDifficulty.ToLower()),
                                        new JProperty("drawing", drawing),
-                                       new JProperty("displayMode", SelectedDisplayMode));
+                                       new JProperty("displayMode", SelectedDisplayMode.ToLower()),
+                                       new JProperty("side", SelectedPanoramicMode.ToLower()));
 
             var content = new StringContent(newGame.ToString(), Encoding.UTF8, "application/json");
 

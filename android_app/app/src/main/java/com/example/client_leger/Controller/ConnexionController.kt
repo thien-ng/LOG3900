@@ -9,7 +9,10 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.example.client_leger.Fragments.*
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONArray
@@ -107,7 +110,7 @@ class ConnexionController {
             Constants.SERVER_URL + "/chat/messages/" + activity.channelId,
             null,
             Response.Listener<JSONArray>{ response ->
-                activity.receiveMessages(activity.messageAdapter, activity.username, response)
+                activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
             },Response.ErrorListener{
                     error ->
@@ -173,7 +176,21 @@ class ConnexionController {
                 Constants.SERVER_URL + "/chat/channels/sub/" + activity.username ,
                 null,
                 Response.Listener<JSONArray>{response ->
-                    activity.channelAdapter.clear()
+
+                    if (activity.inGame) {
+                        val channelsToRemove = GroupAdapter<ViewHolder>()
+                        for ( view in 0 until activity.channelAdapter.itemCount) {
+                            if (activity.channelAdapter.getItem(view).toString() != GAME_CHANNEL_ID) {
+                                channelsToRemove.add(activity.channelAdapter.getItem(view))
+                            }
+                        }
+                        for (view in 0 until channelsToRemove.itemCount) {
+                            activity.channelAdapter.remove(channelsToRemove.getItem(view))
+                        }
+                    } else {
+                        activity.channelAdapter.clear()
+                    }
+
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)
                         activity.channelAdapter.add(ChannelItem(channelId.getString("id"), true, this, activity))
