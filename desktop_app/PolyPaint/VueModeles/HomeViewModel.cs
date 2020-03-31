@@ -197,10 +197,14 @@ namespace PolyPaint.VueModeles
         }
         private void goToGameView(object obj)
         {
-            Console.WriteLine("switchView");
             SwitchView = Views.Game;
             GameViewModel = new GameViewModel();
-            
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                _subChannels.Remove(_subChannels.SingleOrDefault(i => i.id == Lobbyname));
+                _subChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+            });
+            ChangeChannel(Constants.GAME_CHANNEL);
         }
 
 
