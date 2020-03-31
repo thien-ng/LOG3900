@@ -36,6 +36,7 @@ class ChatFragment: Fragment() {
     private lateinit var chatListener: Disposable
     private lateinit var channelListener: Disposable
     private lateinit var startGameSub: Disposable
+    private lateinit var endGameSub: Disposable
     private lateinit var gameChatSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -129,6 +130,24 @@ class ChatFragment: Fragment() {
             }
         }
 
+        endGameSub = Communication.getEndGameListener().subscribe{
+            activity!!.runOnUiThread {
+                if (channelId == "") {  //todo constant
+                    setChannel(DEFAULT_CHANNEL_ID)
+                }
+
+                val channelToRemove = GroupAdapter<ViewHolder>()
+                for ( view in 0 until channelAdapter.itemCount) {
+                    if (channelAdapter.getItem(view).toString() != "") {
+                        channelToRemove.add(channelAdapter.getItem(view))
+                        break
+                    }
+                }
+
+                channelAdapter.remove(channelToRemove.getItem(0))
+            }
+        }
+
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
             if (channelId == "") {
                 val messages = JSONArray()
@@ -153,6 +172,7 @@ class ChatFragment: Fragment() {
         channelListener.dispose()
         startGameSub.dispose()
         gameChatSub.dispose()
+        endGameSub.dispose()
     }
 
     private fun addGameChannel() {
