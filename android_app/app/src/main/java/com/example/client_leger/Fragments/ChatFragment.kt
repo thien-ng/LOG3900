@@ -92,6 +92,7 @@ class ChatFragment: Fragment() {
                         SocketIO.sendMessage("chat", message)
                     } else {
                         SocketIO.sendMessage("gameplay", message)
+                        messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString()))
                     }
                 }
                 return@OnKeyListener true
@@ -102,14 +103,17 @@ class ChatFragment: Fragment() {
         v.chat_send_button.setOnClickListener {
             if (v.chat_message_editText.text.trim().isNotEmpty()) {
                 if(channelId != GAME_CHANNEL_ID) {
+                    Log.w("message", "sending to NOT game channel: " + v.chat_message_editText.text.toString())
                     val message = buildMessage(username, v.chat_message_editText, channelId)
                     SocketIO.sendMessage("chat", message)
                 } else {
+                    Log.w("message", "sending to game channel: " + v.chat_message_editText.text.toString())
                     val obj = JSONObject()
                     obj.put("event", "chat")
                     obj.put("username", username)
                     obj.put("content", v.chat_message_editText.text.toString())
                     SocketIO.sendMessage("gameplay", obj)
+                    messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString()))
                 }
             }
         }
@@ -233,19 +237,15 @@ class ChatFragment: Fragment() {
     }
 
     private fun receiveGameMessage(mes: JSONObject) {
+        Log.w("message", "receiveGameMessage!!!!!")
         val user = mes.getString("username")
         val content = mes.getString("content")
         val isServer = mes.getBoolean("isServer")
 
         activity!!.runOnUiThread {
-            if (channelId == GAME_CHANNEL_ID) {
+            if (channelId == GAME_CHANNEL_ID && user != username) {
                 if (!isServer) {
-                    if (user == username) {
-                        messageAdapter.add(GameChatItemSent(content))
-                    } else {
-                        messageAdapter.add(GameChatItemReceived(content, username))
-                    }
-
+                    messageAdapter.add(GameChatItemReceived(content, username))
                 } else {
                     //todo: handle server messages
                 }
@@ -253,11 +253,16 @@ class ChatFragment: Fragment() {
         }
     }
 
-    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
+    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
+        Log.w("message", "receiveMessages!!!!!")
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
 
-            if (message.getString("channel_id") != channelId) {
+            if (channel != null) {
+                if (channel != channelId) {
+                    continue
+                }
+            } else if (message.getString("channel_id") != channelId) {
                 continue
             }
 
