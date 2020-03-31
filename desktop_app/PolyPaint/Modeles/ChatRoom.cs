@@ -115,7 +115,6 @@ namespace PolyPaint.Modeles
         private void ReceiveGameMessage(JToken jsonMessage)
         {
             MessageGame message = jsonMessage.ToObject<MessageGame>();
-            Console.WriteLine(message.content);
 
             App.Current.Dispatcher.Invoke(delegate
             {

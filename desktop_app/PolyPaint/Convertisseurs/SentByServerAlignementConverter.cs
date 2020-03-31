@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace PolyPaint.Convertisseurs
 {
-    class SentByServerAlignementConverter : BaseConverter<SentByMeToAlignementConverter>
+    class SentByServerAlignementConverter : BaseConverter<SentByServerAlignementConverter>
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

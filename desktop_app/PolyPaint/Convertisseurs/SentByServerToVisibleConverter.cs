@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PolyPaint.Convertisseurs
 {
-    class SentByServerToVisibleConverter : BaseConverter<SentByMeToVisibleConverter>
+    class SentByServerToVisibleConverter : BaseConverter<SentByServerToVisibleConverter>
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

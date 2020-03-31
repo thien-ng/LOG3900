@@ -56,6 +56,11 @@ namespace PolyPaint.VueModeles
             get { return _selectedChannel.Messages; }
         }
 
+        public ObservableCollection<MessageGame> MessagesGame
+        {
+            get { return _selectedChannel.MessagesGame; }
+        }
+
         private string _pendingMessage;
         public string PendingMessage
         {
@@ -270,6 +275,8 @@ namespace PolyPaint.VueModeles
                 _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
                 ProprieteModifiee("Messages");
+                ProprieteModifiee("MessagesGame");
+
             }
         }
 

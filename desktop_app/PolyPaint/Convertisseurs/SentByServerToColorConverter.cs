@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PolyPaint.Convertisseurs
 {
-    class SentByServerToColorConverter : BaseConverter<SentByMeToColorConverter>
+    class SentByServerToColorConverter : BaseConverter<SentByServerToColorConverter>
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

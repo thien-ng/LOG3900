@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace PolyPaint.Convertisseurs
 {
-    class SentByServerToBorderRadiusConverter : BaseConverter<SentByMeToBorderRadiusConverter>
+    class SentByServerToBorderRadiusConverter : BaseConverter<SentByServerToBorderRadiusConverter>
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
