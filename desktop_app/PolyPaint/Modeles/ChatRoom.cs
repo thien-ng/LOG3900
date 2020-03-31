@@ -84,6 +84,7 @@ namespace PolyPaint.Modeles
                                              new JProperty("username", ServerService.instance.username),
                                              new JProperty("content", message));
                 ServerService.instance.socket.Emit("gameplay", newMessage);
+                return;
             }
             if (IsLobbyChat)
             {
