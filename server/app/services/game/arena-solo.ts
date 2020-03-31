@@ -7,6 +7,7 @@ import { IUser } from "../../interfaces/user-manager";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
+import { Bot } from "./bots/bot";
 
 const ANNOUNCEMENT = "{0} has found the answer";
 const ONE_SEC = 1000;
@@ -137,7 +138,7 @@ export class ArenaSolo extends Arena {
     private resetSubGame(): void {
         //show an image or build one.
         clearInterval(this.drawing);
-        this.drawing = this.startBotDrawing(this.drawer_bot.botName, this.timePerImage);
+        this.drawing = this.startBotDrawing(this.drawer_bot.username, this.timePerImage);
 
         //reset guess left
         this.guessLeft = this.guessPerImage;
