@@ -65,6 +65,7 @@ export class ArenaSolo extends Arena {
 
             if (this.timeRemaining <= 0) {
                 clearInterval(this.curArenaInterval);
+                this.handlePoints();
                 this.end();
             }
             this.timeRemaining -= ONE_SEC;
