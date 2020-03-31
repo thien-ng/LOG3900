@@ -41,7 +41,7 @@ class ChatItemSent(val text: String, private val time: String): Item<ViewHolder>
 
 class GameChatItemSent(val message: String): Item<ViewHolder>(){
     override fun bind(viewHolder: ViewHolder, position: Int){
-        viewHolder.itemView.their_message_body.text = message
+        viewHolder.itemView.my_message_body.text = message
     }
 
     override fun getLayout(): Int {
