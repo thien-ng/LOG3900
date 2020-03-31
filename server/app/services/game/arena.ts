@@ -194,7 +194,6 @@ export abstract class Arena {
         });
     }
 
-
     protected isBot(username: string): boolean {
         return username === Bot.humour || username === Bot.kind || username === Bot.mean;
     }

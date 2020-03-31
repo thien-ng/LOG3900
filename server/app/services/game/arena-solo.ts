@@ -19,9 +19,11 @@ export class ArenaSolo extends Arena {
     private wordGuessedRight: number;
     private guessPerImage: number;
     private timePerImage: number;
+    private pointsMult: number;
 
     private rulePtr: number;
     private drawing: NodeJS.Timeout;
+    private drawer_bot: Bot;
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
@@ -34,12 +36,13 @@ export class ArenaSolo extends Arena {
     private assignRule(): void {
         this.curRule = this.rules[this.rulePtr++];
         if (this.rulePtr >= this.rules.length) {
-            //doit somehow avoir un nouveau set de rules
+            this.rulePtr = 0;
         }
     }
 
     public start(): void {
         console.log("[Debug] Starting arena SOLO", this.room);
+        this.drawer_bot = this.initBot("drawing-bot");
 
         try {
             this.checkArenaLoadingState(() => {
@@ -97,6 +100,7 @@ export class ArenaSolo extends Arena {
             });
             //add to score
             this.wordGuessedRight++;
+            this.botAnnounceEndSubGane();
 
             this.resetSubGame();
 
@@ -112,17 +116,20 @@ export class ArenaSolo extends Arena {
                 this.guessPerImage = 2;
                 this.timePerImage = 3 * ONE_SEC;
                 this.timeRemaining = 20 * ONE_SEC;
+                this.pointsMult = 1.4;
                 break;
             case Difficulty.MEDIUM:
                 this.guessPerImage = 3;
                 this.timePerImage = 7 * ONE_SEC;
                 this.timeRemaining = 30 * ONE_SEC;
+                this.pointsMult = 1;
                 break;
             case Difficulty.EASY:
             default:
                 this.guessPerImage = 4;
                 this.timePerImage = 10 * ONE_SEC;
                 this.timeRemaining = 40 * ONE_SEC;
+                this.pointsMult = 0.6;
                 break;
         }
     }
@@ -130,7 +137,7 @@ export class ArenaSolo extends Arena {
     private resetSubGame(): void {
         //show an image or build one.
         clearInterval(this.drawing);
-        this.drawing = this.startBotDrawing("drawing-bot", this.timePerImage);
+        this.drawing = this.startBotDrawing(this.drawer_bot.botName, this.timePerImage);
 
         //reset guess left
         this.guessLeft = this.guessPerImage;
@@ -138,17 +145,20 @@ export class ArenaSolo extends Arena {
 
     }
     protected handlePoints(): void {
-        this.userMapPoints.set(this.users[0].username, this.wordGuessedRight);
+        this.userMapPoints.set(this.users[0].username, this.wordGuessedRight * this.pointsMult);
     }
 
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
         this.assignRule();
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
-        const bot = this.initBot(botName);
-        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
+        return this.drawer_bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
-    protected botAnnounceStart(): void { }
+    protected botAnnounceStart(): void {
+        this.drawer_bot.launchTauntStart(this.room);
+    }
 
-    protected botAnnounceEndSubGane(): void { }
+    protected botAnnounceEndSubGane(): void {
+        this.drawer_bot.launchTaunt(this.room);
+    }
 }
