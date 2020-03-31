@@ -35,10 +35,12 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
     override fun replaceFragment(fragment: Fragment) {
         val menu = fragmentManager!!.findFragmentByTag("menu")
         val draw = fragmentManager!!.findFragmentByTag("draw")
-        fragmentManager!!.beginTransaction()
-            .remove(menu!!)
-            .remove(draw!!)
-            .replace(R.id.container_view_right, fragment).commit()
+        if (menu != null && draw != null) {
+            fragmentManager!!.beginTransaction()
+                .remove(menu)
+                .remove(draw)
+                .replace(R.id.container_view_right, fragment).commit()
+        }
     }
 
     override fun onDestroy() {
