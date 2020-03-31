@@ -33,8 +33,14 @@ export interface IConnection {
 }
 
 export interface IGame {
+    mode: string,
     date: string,
     players: IPlayer[],
+}
+
+export interface IModeDate {
+    mode: string,
+    date: string,
 }
 
 export interface IPlayer {

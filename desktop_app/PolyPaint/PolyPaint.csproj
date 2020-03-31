@@ -164,6 +164,7 @@
     <Compile Include="Convertisseurs\CreationTypeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsFirstToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSelectedToOpacityConverter.cs" />
+    <Compile Include="Convertisseurs\PanoramicModeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SearchBarVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSubbedToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToVisibleConverter.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Connection.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Modeles\Game.cs" />
     <Compile Include="Modeles\GameCard.cs" />
     <Compile Include="Modeles\Lobby.cs" />
     <Compile Include="Modeles\MessageChannel.cs" />
@@ -180,6 +182,8 @@
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
+    <Compile Include="Modeles\PlayerScore.cs" />
+    <Compile Include="Modeles\Stats.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Utilitaires\CustomStroke.cs" />

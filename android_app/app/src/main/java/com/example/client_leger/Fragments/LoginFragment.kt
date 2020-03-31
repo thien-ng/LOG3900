@@ -15,13 +15,16 @@ import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.LogState
 import com.example.client_leger.MainActivity
 import com.example.client_leger.R
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import org.json.JSONObject
+import java.util.*
+
 
 class LoginFragment : Fragment(), FragmentChangeListener {
 
     private var controller = ConnexionController()
-
+    private lateinit var connexionListener: Disposable
     lateinit var username: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,9 +36,9 @@ class LoginFragment : Fragment(), FragmentChangeListener {
                 closeKeyboard()
                 v.login_button.isEnabled = false
 
-                var body = JSONObject( mapOf(
-                    "username" to v.login_editText_name.text.toString().trim(),
-                    "password" to v.login_editText_password.text.toString().trim()
+                val body = JSONObject( mapOf(
+                    "username" to v.login_editText_name.text.toString().trim().toLowerCase(Locale.ROOT),
+                    "password" to v.login_editText_password.text.toString().trim().toLowerCase(Locale.ROOT)
                 ))
 
                 username = v.login_editText_name.text.toString().trim()
@@ -51,7 +54,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
             replaceFragment(RegisterFragment())
         }
 
-        Communication.getConnectionListener().subscribe{mes ->
+        connexionListener = Communication.getConnectionListener().subscribe{mes ->
             handleConnection(mes)
         }
 
@@ -73,15 +76,18 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     private fun closeKeyboard(){
         if ( activity!!.currentFocus != null){
             val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(activity!!.currentFocus.windowToken, 0)
+            imm.hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken, 0)
         }
     }
-
 
     override fun replaceFragment(fragment: Fragment) {
          fragmentManager!!.beginTransaction().replace(R.id.container_view, fragment).addToBackStack(fragment.toString()).commit()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        connexionListener.dispose()
+    }
 
     private fun connect(username: String) {
         val intent = Intent(activity, MainActivity::class.java)
@@ -92,17 +98,36 @@ class LoginFragment : Fragment(), FragmentChangeListener {
     private fun validateLoginFields(v: View):Boolean{
         return when{
             v.login_editText_name.text.isBlank() -> {
-                v.login_editText_name.error = "Enter a username"
+                v.login_editText_name.error = "Enter a username."
                 v.login_editText_name.requestFocus()
                 false
             }
+
+            !isStringAlphanumeric(v.login_editText_name.text.toString()) -> {
+                v.login_editText_name.error = "Only letters and numbers are accepted."
+                v.login_editText_name.requestFocus()
+                false
+            }
+
             v.login_editText_password.text.isBlank() -> {
-                v.login_editText_password.error = "Enter a password"
+                v.login_editText_password.error = "Enter a password."
                 v.login_editText_password.requestFocus()
                 false
             }
+
+            !isStringAlphanumeric(v.login_editText_password.text.toString()) -> {
+                v.login_editText_password.error = "Only letters and numbers are accepted."
+                v.login_editText_password.requestFocus()
+                false
+            }
+
             else -> true
         }
-
     }
+}
+
+fun isStringAlphanumeric(string: String) : Boolean {
+    val regex = Regex("^[a-zA-Z0-9]*$")
+
+    return regex.matches(string)
 }
