@@ -44,7 +44,7 @@ export interface IReceptMesLob {
 export enum Bot {
     humour = "bot:sebastien",
     kind   = "bot:olivia",
-    mean   = "bot:olivier", 
+    mean   = "bot:olivier",
 }
 
 export interface ILobEmitMes extends IReceptMesLob{
@@ -74,6 +74,7 @@ export enum LobbyNotif {
     leave  = "leave",
     create = "create",
     delete = "delete",
+    invitation = "invitation",
 }
 
 /**

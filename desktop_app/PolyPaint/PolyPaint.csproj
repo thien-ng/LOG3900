@@ -173,6 +173,7 @@
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
     <Compile Include="Modeles\Connection.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Modeles\Game.cs" />
     <Compile Include="Modeles\GameCard.cs" />
     <Compile Include="Modeles\Lobby.cs" />
     <Compile Include="Modeles\MessageChannel.cs" />
@@ -181,6 +182,8 @@
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
+    <Compile Include="Modeles\PlayerScore.cs" />
+    <Compile Include="Modeles\Stats.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Utilitaires\Enums.cs" />
