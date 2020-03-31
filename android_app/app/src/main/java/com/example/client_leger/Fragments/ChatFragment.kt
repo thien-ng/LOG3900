@@ -164,9 +164,9 @@ class ChatFragment: Fragment() {
                 val obj = JSONObject()
                 obj.put("event", "chat")
                 obj.put("username", username)
-                obj.put("content", v.chat_message_editText.text.toString())
+                obj.put("content", v.chat_message_editText.text.toString().trim())
                 SocketIO.sendMessage("gameplay", obj)
-                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString()))
+                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
             }
 
             v.chat_message_editText.text.clear()
