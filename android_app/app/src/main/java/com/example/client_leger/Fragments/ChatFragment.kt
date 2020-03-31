@@ -161,10 +161,7 @@ class ChatFragment: Fragment() {
                 val message = buildMessage(username, v.chat_message_editText, channelId)
                 SocketIO.sendMessage("chat", message)
             } else {
-                val obj = JSONObject()
-                obj.put("event", "chat")
-                obj.put("username", username)
-                obj.put("content", v.chat_message_editText.text.toString().trim())
+                val obj = buildGameplayMessage(username, v.chat_message_editText)
                 SocketIO.sendMessage("gameplay", obj)
                 messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
             }
@@ -224,6 +221,15 @@ class ChatFragment: Fragment() {
         obj.put("username", username)
         obj.put("channel_id", chan_id)
         obj.put("content", message.text.toString())
+
+        return obj
+    }
+
+    private fun buildGameplayMessage(username: String, message: EditText): JSONObject {
+        val obj = JSONObject()
+        obj.put("event", "chat")
+        obj.put("username", username)
+        obj.put("content", message.text.toString().trim())
 
         return obj
     }
