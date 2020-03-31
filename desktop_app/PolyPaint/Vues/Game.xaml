@@ -59,7 +59,7 @@
                        FontSize="25"/>
         </StackPanel>
         
-        <TextBlock Text="TIMER POS"
+        <TextBlock Text="{Binding Timer}"
                    FontSize="25"
                    Foreground="White"
                    HorizontalAlignment="Right"
