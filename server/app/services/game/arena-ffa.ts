@@ -15,7 +15,7 @@ const format = require('string-format');
 
 const ANNOUNCEMENT = "{0} has found the answer";
 const ONE_SEC = 1000;
-const TOTAL_TIME = 120000;
+const TOTAL_TIME = 30000;
 const INIT_DRAW_PTS = 20;
 
 export class ArenaFfa extends Arena {
