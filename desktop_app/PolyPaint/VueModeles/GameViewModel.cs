@@ -1,9 +1,11 @@
-﻿using PolyPaint.Utilitaires;
+﻿using PolyPaint.Services;
+using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
@@ -11,7 +13,6 @@ namespace PolyPaint.VueModeles
     {
         public GameViewModel()
         {
-            Console.WriteLine("GameViewModel");
             DrawViewModel = new DessinViewModel(800,800);
         }
 
@@ -24,7 +25,17 @@ namespace PolyPaint.VueModeles
         #endregion
 
         #region Commands
-
+        private ICommand _loadedCommand;
+        public ICommand LoadedCommand
+        {
+            get
+            {
+                return _loadedCommand ?? (_loadedCommand = new RelayCommand(x =>
+                {
+                    ServerService.instance.socket.Emit("game-start");
+                }));
+            }
+        }
         #endregion
     }
 }
