@@ -185,6 +185,11 @@ class ChatFragment: Fragment() {
     fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
+
+            if (message.getString("channel_id") != channelId) {
+                continue
+            }
+
             val username = message.getString("username")
             val content = message.getString("content")
             val time = message.getString("time")
