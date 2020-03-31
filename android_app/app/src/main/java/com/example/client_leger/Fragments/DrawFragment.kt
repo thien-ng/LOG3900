@@ -228,10 +228,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             } else {
                 lastErasePoint = Point(x, y)
-                //if (bitmap.getPixel(x, y) != Color.WHITE) {
-                    checkForStrokesToErase(x, y, isStrokeErasing)
-                    sendErase(x, y, isStrokeErasing)
-                //}
+                checkForStrokesToErase(x, y, isStrokeErasing)
+                sendErase(x, y, isStrokeErasing)
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             addSegment(Point(x,y))
@@ -265,10 +263,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             val newX = (lastErasePoint!!.x + directionX * i).toInt()
             val newY = (lastErasePoint!!.y + directionY * i).toInt()
 
-            //if (bitmap.getPixel(newX, newY) != Color.WHITE) {
-                checkForStrokesToErase(newX, newY, isStrokeErasing)
-                sendErase(newX, newY, isStrokeErasing)
-            //}
+            checkForStrokesToErase(newX, newY, isStrokeErasing)
+            sendErase(newX, newY, isStrokeErasing)
         }
 
         lastErasePoint!!.x = destX
