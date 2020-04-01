@@ -111,7 +111,6 @@ namespace PolyPaint.VueModeles
 
         private async Task kickPlayer(string username)
         {
-            Console.WriteLine(username);
             string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
             dynamic values = new JObject();
             values.username = username;
@@ -129,7 +128,6 @@ namespace PolyPaint.VueModeles
 
         private void refreshUserList(JObject data)
         {
-            Console.WriteLine(data);
             if((string)data.GetValue("lobbyName") == this.LobbyName && ((string)data.GetValue("type") == "join"|| (string)data.GetValue("type") == "leave"))
             {
                 fetchUsername();

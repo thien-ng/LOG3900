@@ -22,7 +22,6 @@ namespace PolyPaint.VueModeles
                 _stats = ServerService.instance.user.stats;
                 _games = ServerService.instance.user.games;
             }
-            Console.WriteLine(ServerService.instance.user);
         }
         #region Public Attributes
 

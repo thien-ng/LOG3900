@@ -34,7 +34,7 @@ namespace PolyPaint.Modeles
 
         public bool IsInGameChat {
             get { return _isInGameChat; } 
-            set { _isInGameChat = value; ProprieteModifiee(); Console.WriteLine(_isInGameChat); }
+            set { _isInGameChat = value; ProprieteModifiee(); }
         }
 
         private ObservableCollection<MessageChat> _messages;
@@ -136,7 +136,6 @@ namespace PolyPaint.Modeles
             {
                 MessagesGame.Add(new MessageGame(message.username, message.content, sender));
             });
-            Console.WriteLine(MessagesGame.Count);
         }
 
         private async void LoadMessages()
