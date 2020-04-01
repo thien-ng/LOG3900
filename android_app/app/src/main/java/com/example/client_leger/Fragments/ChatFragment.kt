@@ -244,7 +244,7 @@ class ChatFragment: Fragment() {
                 if (!isServer) {
                     messageAdapter.add(GameChatItemReceived(content, username))
                 } else {
-                    //todo: handle server messages
+                    messageAdapter.add(GameServerChatItemReceived(content))
                 }
             }
         }
