@@ -46,6 +46,9 @@ namespace PolyPaint.Utilitaires
         public const string MODE_SOLO               = "SOLO";
         public const string MODE_COOP               = "COOP";
 
+        public const string ROLE_DRAWER             = "Drawer";
+        public const string ROLE_GUESSER            = "Guesser";
+
 
         //SOCKET
         public const string LOGIN_EVENT    = "login";

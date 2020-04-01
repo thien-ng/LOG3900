@@ -15,6 +15,9 @@ namespace PolyPaint.VueModeles
         public GameViewModel()
         {
             DrawViewModel = new DessinViewModel();
+            ServerService.instance.socket.On("game-drawer", data => processRole((JObject)data));
+            ServerService.instance.socket.On("game-timer", data => processTime((JObject)data));
+            ServerService.instance.socket.On("game-over", data => processEndGame((JObject)data));
         }
 
         #region Public Attributes
@@ -45,9 +48,6 @@ namespace PolyPaint.VueModeles
         #region Methods
         private void setupGame()
         {
-            ServerService.instance.socket.On("game-drawer", data => processRole((JObject)data));
-            ServerService.instance.socket.On("game-timer", data => processTime((JObject)data));
-            ServerService.instance.socket.On("game-over", data => processEndGame((JObject)data));
             var gameReady = new JObject(
                 new JProperty("event", "ready"),
                 new JProperty("username", ServerService.instance.username));
@@ -58,11 +58,11 @@ namespace PolyPaint.VueModeles
         {
             if (role.GetValue("username").ToString() == ServerService.instance.username)
             {
-                Role = "Drawer";
+                Role = Constants.ROLE_DRAWER;
                 ObjectToDraw = role.GetValue("object").ToString();
             } else
             {
-                Role = "Guesser";
+                Role = Constants.ROLE_GUESSER;
                 ObjectToDraw = "";
             }
         }

@@ -34,31 +34,34 @@
             <RowDefinition x:Name="RowDraw" Height="*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        
         <StackPanel Orientation="Horizontal"
                     Grid.Row="0"
                     Grid.Column="1"
                     HorizontalAlignment="Center"
                     Margin="0,0,0,40">
+
             <TextBlock Text="Role: " 
                        FontSize="25"
                        Foreground="White"/>
+
             <TextBlock Text="{Binding Role}" 
                        FontSize="25" 
                        Foreground="White"/>
+
         </StackPanel>
-        
         <StackPanel Orientation="Horizontal"
                     Grid.Row="1"
                     Grid.Column="1">
+
             <TextBlock Text="Draw :"
                        Foreground="White"
                        FontSize="25"/>
+
             <TextBlock Text="{Binding ObjectToDraw}"
                        Foreground="White"
                        FontSize="25"/>
+
         </StackPanel>
-        
         <TextBlock Text="{Binding Timer}"
                    FontSize="25"
                    Foreground="White"
@@ -69,5 +72,6 @@
         <control:FenetreDessin  DataContext="{Binding DrawViewModel}"
                                 Grid.Column="1"
                                 Grid.Row="2"/>
+        
     </Grid>
 </UserControl>
