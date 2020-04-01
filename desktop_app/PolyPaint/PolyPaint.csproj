@@ -152,6 +152,9 @@
     <Compile Include="Controls\CreateLobbyControl.xaml.cs">
       <DependentUpon>CreateLobbyControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\EndGameControl.xaml.cs">
+      <DependentUpon>EndGameControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FenetreDessin.xaml.cs">
       <DependentUpon>FenetreDessin.xaml</DependentUpon>
     </Compile>
@@ -195,6 +198,7 @@
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
     <Compile Include="Modeles\PlayerScore.cs" />
+    <Compile Include="Modeles\Points.cs" />
     <Compile Include="Modeles\Stats.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
@@ -274,6 +278,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CreateLobbyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\EndGameControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

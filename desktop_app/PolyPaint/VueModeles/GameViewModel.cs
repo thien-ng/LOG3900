@@ -1,8 +1,11 @@
 ﻿using Newtonsoft.Json.Linq;
+using PolyPaint.Controls;
+using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +18,7 @@ namespace PolyPaint.VueModeles
         public GameViewModel()
         {
             DrawViewModel = new DessinViewModel();
+            _points = new ObservableCollection<Points>();
             ServerService.instance.socket.On("game-drawer", data => processRole((JObject)data));
             ServerService.instance.socket.On("game-timer", data => processTime((JObject)data));
             ServerService.instance.socket.On("game-over", data => processEndGame((JObject)data));
@@ -42,6 +46,37 @@ namespace PolyPaint.VueModeles
         {
             get { return _objectToDraw; }
             set { _objectToDraw = value; ProprieteModifiee(); }
+        }
+
+        private ObservableCollection<Points> _points;
+        public ObservableCollection<Points> Points
+        {
+            get { return _points; }
+            set { _points = value; ProprieteModifiee(); }
+        }
+
+        private object _dialogContent;
+        public object DialogContent
+        {
+            get { return _dialogContent; }
+            set
+            {
+                if (_dialogContent == value) return;
+                _dialogContent = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isEndGameDialogOpen;
+        public bool IsEndGameDialogOpen
+        {
+            get { return _isEndGameDialogOpen; }
+            set
+            {
+                if (_isEndGameDialogOpen == value) return;
+                _isEndGameDialogOpen = value;
+                ProprieteModifiee();
+            }
         }
         #endregion
 
@@ -76,18 +111,22 @@ namespace PolyPaint.VueModeles
             Timer = time.GetValue("time").ToString();
         }
 
-        private void processEndGame(JObject points)
+        private void processEndGame(JObject pointsReceived)
         {
-            Console.WriteLine("ProcessEndGame");
-            try
+
+            JArray a = (JArray)pointsReceived["points"];
+
+            IList<Points> points = a.ToObject<IList<Points>>();
+            foreach (var item in points)
             {
-                if (points.ContainsKey("username"))
-                    Console.WriteLine(points.GetValue("points").ToString());
+                Points.Add(item);
             }
-            catch (Exception)
+            App.Current.Dispatcher.Invoke(delegate
             {
-                Mediator.Notify("goToGameListView");
-            }
+                DialogContent = new EndGameControl();
+                IsEndGameDialogOpen = true;
+            });
+
         }
         #endregion
 
@@ -100,6 +139,19 @@ namespace PolyPaint.VueModeles
                 return _loadedCommand ?? (_loadedCommand = new RelayCommand(x =>
                 {
                     setupGame();
+                }));
+            }
+        }
+
+        private ICommand _okCommand;
+        public ICommand OkCommand
+        {
+            get
+            {
+                return _okCommand ?? (_okCommand = new RelayCommand(x =>
+                {
+                    IsEndGameDialogOpen = false;
+                    Mediator.Notify("goToGameListView");
                 }));
             }
         }
