@@ -131,6 +131,7 @@ class ChatFragment: Fragment() {
 
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
             receiveGameMessage(mes)
+            v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
