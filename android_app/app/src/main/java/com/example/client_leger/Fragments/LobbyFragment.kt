@@ -5,9 +5,9 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
+import com.example.client_leger.Adapters.UserListViewAdapter
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Controller.GameController
 import com.example.client_leger.Interface.FragmentChangeListener
@@ -21,10 +21,9 @@ class LobbyFragment : Fragment(),
     FragmentChangeListener {
     private var gameController: GameController = GameController()
     private lateinit var username: String
-    private lateinit var lobbyName:String
+    private lateinit var lobbyName: String
     private var usernames: ArrayList<String> = arrayListOf()
-    private lateinit var userListAdapter: ArrayAdapter<String>
-    private var userList = arrayListOf<String>()
+    lateinit var userListAdapter: UserListViewAdapter
     lateinit var startListener: Disposable;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -37,19 +36,18 @@ class LobbyFragment : Fragment(),
         }
         gameController.getUsers(this, lobbyName)
 
-        userListAdapter = ArrayAdapter<String>(
-            context,
-            android.R.layout.simple_list_item_1,
-            userList
-        )
-        var listview =  v.findViewById<ListView>(R.id.userlist)
-        listview.adapter= userListAdapter
-        startListener = Communication.getGameStartListener().subscribe{res ->
+        userListAdapter = UserListViewAdapter(this)
+        var listview = v.findViewById<ListView>(R.id.userlist)
+        listview.adapter = userListAdapter
+
+
+
+        startListener = Communication.getGameStartListener().subscribe { res ->
             activity!!.runOnUiThread {
                 replaceFragment(GameplayFragment())
             }
         }
-        return  v
+        return v
     }
 
     override fun onDestroy() {
@@ -57,38 +55,60 @@ class LobbyFragment : Fragment(),
         startListener.dispose()
     }
 
-    private fun startGame(lobbyName: String){
+    private fun startGame(lobbyName: String) {
         gameController.startGame(this, lobbyName)
     }
-    private fun leaveGame(lobbyName: String){
+
+    private fun leaveGame(lobbyName: String) {
         var body = JSONObject()
         body.put("lobbyName", lobbyName)
         body.put("username", username)
         gameController.leaveGame(this, body)
     }
+
     override fun replaceFragment(fragment: Fragment) {
         fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment)
             .addToBackStack(fragment.toString()).commit()
     }
 
     fun loadUsers(userJsonArray: JSONArray) {
-        for (i in 0 until userJsonArray.length()){
+        for (i in 0 until userJsonArray.length()) {
             usernames.add(userJsonArray.get(i).toString())
         }
-        if(usernames.isNotEmpty()) {
+        if (usernames.isNotEmpty()) {
             var startButton = view!!.findViewById<Button>(R.id.button_start)
             var leaveButton = view!!.findViewById<Button>(R.id.button_leave)
-            if(usernames[0] == username) {
+            var addBotButton = view!!.findViewById<Button>(R.id.button_addBot)
+            if (usernames[0] == username) {
                 startButton.visibility = View.VISIBLE
                 startButton.isEnabled = true
                 startButton.setOnClickListener { startGame(lobbyName) }
-            }else{
+
+                addBotButton.visibility = View.VISIBLE
+                addBotButton.isEnabled = true
+                addBotButton.setOnClickListener { addBot("bot:olivier") }
+            } else {
                 leaveButton.visibility = View.VISIBLE
                 leaveButton.isEnabled = true
                 leaveButton.setOnClickListener { leaveGame(lobbyName) }
             }
         }
-        userListAdapter.clear()
-        userListAdapter.addAll(usernames)
+        userListAdapter.addUsers(usernames)
     }
+
+    private fun addBot(botName: String){
+        var lobby = JSONObject()
+        lobby.put("username", botName)
+        lobby.put("lobbyName", lobbyName)
+        gameController.addBot(this, lobby)
+
+    }
+
+    fun removeBot(botName: String) {
+        var lobby = JSONObject()
+        lobby.put("username", botName)
+        lobby.put("lobbyName", lobbyName)
+        gameController.removeBot(this, lobby)
+    }
+
 }

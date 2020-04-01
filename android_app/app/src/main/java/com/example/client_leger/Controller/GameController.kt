@@ -79,4 +79,52 @@ class GameController {
         }
         mRequestQueue!!.add(mJsonObjectRequest)
     }
+
+    fun addBot(fragment: LobbyFragment, body: JSONObject) {
+        val mRequestQueue = Volley.newRequestQueue(fragment.context)
+
+        val mJsonObjectRequest = object : StringRequest(
+            Method.POST,
+            Constants.SERVER_URL + Constants.LOBBY_JOIN_ENDPOINT,
+            Response.Listener {
+                fragment!!.userListAdapter.addBot(body.getString("username"))
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()
+            }) {
+            override fun getBodyContentType(): String {
+                return "application/json"
+            }
+
+            @Throws(AuthFailureError::class)
+            override fun getBody(): ByteArray {
+                return body.toString().toByteArray()
+            }
+        }
+        mRequestQueue!!.add(mJsonObjectRequest)
+    }
+
+
+    fun removeBot(fragment: LobbyFragment, body: JSONObject) {
+        val mRequestQueue = Volley.newRequestQueue(fragment.context)
+
+        val mJsonObjectRequest = object : StringRequest(
+            Method.POST,
+            Constants.SERVER_URL + Constants.LEAVE_LOBBY_ENDPOINT,
+            Response.Listener {
+            },
+            Response.ErrorListener { error ->
+                Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()
+            }) {
+            override fun getBodyContentType(): String {
+                return "application/json"
+            }
+
+            @Throws(AuthFailureError::class)
+            override fun getBody(): ByteArray {
+                return body.toString().toByteArray()
+            }
+        }
+        mRequestQueue!!.add(mJsonObjectRequest)
+    }
 }

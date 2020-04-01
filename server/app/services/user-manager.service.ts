@@ -26,13 +26,16 @@ export class UserManagerService {
         this.users = this.users.filter((user: IUser) => user.username !== username);
     }
 
-    public checkIfUserIsOnline(user: string): boolean {        
-        return this.users.some((el) => {return el.username === user});
+    public checkIfUserIsOnline(user: string): boolean {
+        return this.users.some((el) => { return el.username === user });
     }
 
-    public getOnlineUsers(): String[] {
+    public getOnlineUsers(word: string = ""): String[] {
         const users: String[] = []
-        this.users.forEach(u => {users.push(u.username)})
+        this.users.forEach(u => {
+            if (u.username.substring(0, word.length) == word)
+                users.push(u.username);
+        })
         return users
     }
 
