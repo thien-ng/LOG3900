@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:PolyPaint.Vues"
              xmlns:control="clr-namespace:PolyPaint.Controls"
              xmlns:VueModel="clr-namespace:PolyPaint.VueModeles"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -19,7 +20,11 @@
             <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid SizeChanged="Grid_SizeChanged">
+
+    <materialDesign:DialogHost IsOpen="{Binding IsEndGameDialogOpen}"
+                               DialogContent="{Binding DialogContent}"
+                               CloseOnClickAway="True">
+        <Grid SizeChanged="Grid_SizeChanged">
         <Grid.Background>
             <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
         </Grid.Background>
@@ -34,7 +39,7 @@
             <RowDefinition x:Name="RowDraw" Height="*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal"
+            <StackPanel Orientation="Horizontal"
                     Grid.Row="0"
                     Grid.Column="1"
                     HorizontalAlignment="Center"
@@ -74,4 +79,5 @@
                                 Grid.Row="2"/>
         
     </Grid>
+    </materialDesign:DialogHost>
 </UserControl>
