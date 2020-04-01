@@ -60,11 +60,15 @@ namespace PolyPaint.VueModeles
             {
                 Role = Constants.ROLE_DRAWER;
                 ObjectToDraw = role.GetValue("object").ToString();
-            } else
+                Mediator.Notify("updateRole", true);
+            }
+            else
             {
                 Role = Constants.ROLE_GUESSER;
                 ObjectToDraw = "";
+                Mediator.Notify("updateRole", false);
             }
+            Mediator.Notify("clearDraw");
         }
 
         private void processTime(JObject time)

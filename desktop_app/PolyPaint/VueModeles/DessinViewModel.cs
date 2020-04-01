@@ -27,20 +27,26 @@ namespace PolyPaint.VueModeles
         {
             Width = 1000;
             Height = 500;
-
             setup();
         }
         public DessinViewModel(int width, int height)
         {
             Width = width;
             Height = height;
-
             setup();
         }
 
         #region Public Attributes
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         private Editeur editeur = new Editeur();
+
+        private bool _isDrawer;
+        public bool IsDrawer
+        {
+            get { return _isDrawer; }
+            set{ _isDrawer = value; ProprieteModifiee(); } 
+        }
+
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
         public string OutilSelectionne
@@ -131,8 +137,25 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private void updateRole(object obj)
+        {
+            IsDrawer = (bool)obj;
+        }
+
         private void setup()
         {
+            IsDrawer = false;
+
+            Mediator.Subscribe("updateRole", updateRole);
+
+            Mediator.Subscribe("clearDraw",(x) => 
+                {
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        Traits.Clear();
+                    });
+                });
+
             ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
 
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
