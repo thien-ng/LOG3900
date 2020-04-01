@@ -137,24 +137,19 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private void updateRole(object obj)
-        {
-            IsDrawer = (bool)obj;
-        }
-
         private void setup()
         {
             IsDrawer = false;
 
-            Mediator.Subscribe("updateRole", updateRole);
+            Mediator.Subscribe("updateRole", (x) => { IsDrawer = (bool)x; });
 
-            Mediator.Subscribe("clearDraw",(x) => 
+            Mediator.Subscribe("clearDraw", (x) => 
+            {
+                App.Current.Dispatcher.Invoke(delegate
                 {
-                    App.Current.Dispatcher.Invoke(delegate
-                    {
-                        Traits.Clear();
-                    });
+                    Traits.Clear();
                 });
+            });
 
             ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
 
