@@ -21,14 +21,19 @@ namespace PolyPaint.VueModeles
         public GamelistViewModel()
         {
             _gameCards = new ObservableCollection<GameCard>();
-            Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            _selectedMode = "FFA";
+            _numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            SelectedMode = "FFA";
             getLobbies();
             IsPrivate = false;
         }
 
         #region Public Attributes
-        public ObservableCollection<int> Numbers { get; }
+        private ObservableCollection<int> _numbers;
+        public ObservableCollection<int> Numbers 
+        {
+            get { return _numbers; }
+            set { _numbers = value; ProprieteModifiee(); } 
+        }
 
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
@@ -54,7 +59,31 @@ namespace PolyPaint.VueModeles
         public string SelectedMode
         {
             get { return _selectedMode; }
-            set { _selectedMode = value; ProprieteModifiee(); getLobbies(); }
+            set 
+            { 
+                _selectedMode = value; 
+                ProprieteModifiee(); 
+                getLobbies();
+                Numbers.Clear();
+                switch (_selectedMode)
+                {
+                    case Constants.MODE_FFA:
+                        fillArray(2, 9);
+                        break;
+
+                    case Constants.MODE_COOP:
+                        fillArray(3, 5);
+                        break;
+
+                    case Constants.MODE_SOLO:
+                        fillArray(2, 2);
+                        break;
+
+                    default:
+                        fillArray(1, 9);
+                        break;
+                }
+            }
         }
 
         private bool _isPrivate;
@@ -139,6 +168,13 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
+        private void fillArray(int min, int max) 
+        {
+            for (int i = min; i <= max; i++)
+            {
+                Numbers.Add(i);
+            }
+        }
         private async void getLobbies()
         {
             if (_selectedMode == "FFA" || _selectedMode == "SOLO" || _selectedMode == "COOP")

@@ -42,6 +42,10 @@ namespace PolyPaint.Utilitaires
         public const string SENDER_SERVER           = "server";
         public const string SENDER_ME               = "me";
 
+        public const string MODE_FFA                = "FFA";
+        public const string MODE_SOLO               = "SOLO";
+        public const string MODE_COOP               = "COOP";
+
 
         //SOCKET
         public const string LOGIN_EVENT    = "login";
