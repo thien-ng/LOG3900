@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.Utilitaires;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,7 +12,17 @@ namespace PolyPaint.Convertisseurs
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? "LightGray" : "LightGreen";
+            switch ((string)value)
+            {
+                case Constants.SENDER_SERVER:
+                    return "White";
+
+                case Constants.SENDER_ME:
+                    return "LightGreen";
+
+                default:
+                    return "LightGray";
+            }
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => System.Windows.DependencyProperty.UnsetValue;

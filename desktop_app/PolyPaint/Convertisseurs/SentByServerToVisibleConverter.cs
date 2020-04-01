@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.Utilitaires;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,7 +12,17 @@ namespace PolyPaint.Convertisseurs
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? "Hidden" : "Visible";
+            switch ((string)value)
+            {
+                case Constants.SENDER_SERVER:
+                    return "Hidden";
+
+                case Constants.SENDER_ME:
+                    return "Hidden";
+
+                default:
+                    return "Visible";
+            }
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => System.Windows.DependencyProperty.UnsetValue;

@@ -8,7 +8,7 @@ namespace PolyPaint.Convertisseurs
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? "LightGray" : "LightGreen";
+            return (bool)value ? "LightGreen" : "LightGray";
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => System.Windows.DependencyProperty.UnsetValue;

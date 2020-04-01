@@ -8,13 +8,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Border Padding="8" >
-        <Grid HorizontalAlignment="{Binding isServer, Converter={converter:SentByServerAlignementConverter}}">
+        <Grid HorizontalAlignment="{Binding sender, Converter={converter:SentByServerAlignementConverter}}">
 
             <StackPanel>
                 <!-- Chat bubble -->
-                <Border CornerRadius="{Binding isServer, Converter={converter:SentByServerToBorderRadiusConverter}}"
+                <Border CornerRadius="{Binding sender, Converter={converter:SentByServerToBorderRadiusConverter}}"
                     Padding="10"
-                    Background="{Binding isServer, Converter={converter:SentByServerToColorConverter}}">
+                    Background="{Binding sender, Converter={converter:SentByServerToColorConverter}}">
 
                     <!-- Message text -->
                     <TextBlock VerticalAlignment="Center"
@@ -30,7 +30,7 @@
                                Foreground="DarkGray"
                                Padding="5,0,0,0"
                                Margin="0,0,20,0"
-                               Visibility="{Binding isServer, Converter={converter:SentByServerToVisibleConverter}}"
+                               Visibility="{Binding sender, Converter={converter:SentByServerToVisibleConverter}}"
                                HorizontalAlignment="Left"/>
                 </DockPanel>
 

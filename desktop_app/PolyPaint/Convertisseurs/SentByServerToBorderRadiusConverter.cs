@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.Utilitaires;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,7 +13,17 @@ namespace PolyPaint.Convertisseurs
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? "0,0,0,0" : "0,10,10,10";
+            switch ((string)value)
+            {
+                case Constants.SENDER_SERVER:
+                    return "0,0,0,0";
+
+                case Constants.SENDER_ME:
+                    return "10,0,10,10";
+
+                default:
+                    return "0,10,10,10";
+            }
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => DependencyProperty.UnsetValue;

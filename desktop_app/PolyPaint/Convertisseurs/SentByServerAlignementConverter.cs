@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PolyPaint.Utilitaires;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,7 +13,17 @@ namespace PolyPaint.Convertisseurs
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? HorizontalAlignment.Center : HorizontalAlignment.Right;
+            switch ((string)value)
+            {
+                case Constants.SENDER_SERVER: 
+                    return HorizontalAlignment.Center;
+
+                case Constants.SENDER_ME: 
+                    return HorizontalAlignment.Right;
+
+                default:  
+                    return HorizontalAlignment.Left;
+            }
         }
 
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => DependencyProperty.UnsetValue;
