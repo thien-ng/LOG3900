@@ -131,6 +131,7 @@ class ChatFragment: Fragment() {
 
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
             receiveGameMessage(mes)
+            v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
@@ -242,9 +243,9 @@ class ChatFragment: Fragment() {
         activity!!.runOnUiThread {
             if (channelId == GAME_CHANNEL_ID && user != username) {
                 if (!isServer) {
-                    messageAdapter.add(GameChatItemReceived(content, username))
+                    messageAdapter.add(GameChatItemReceived(content, user))
                 } else {
-                    //todo: handle server messages
+                    messageAdapter.add(GameServerChatItemReceived(content))
                 }
             }
         }
