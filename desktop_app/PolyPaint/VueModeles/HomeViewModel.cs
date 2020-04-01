@@ -216,9 +216,9 @@ namespace PolyPaint.VueModeles
         private void goToLobbyView(object lobbyname)
         {
             IsNotInLobby = false;
-            SwitchView = Views.Lobby;
             LobbyViewModel = new LobbyViewModel((string)lobbyname);
             this.Lobbyname = (string)lobbyname;
+            SwitchView = Views.Lobby;
             Application.Current.Dispatcher.Invoke(delegate
             {
                _subChannels.Add(new MessageChannel(this.Lobbyname, true, true));

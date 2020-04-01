@@ -190,6 +190,7 @@
     <Compile Include="Modeles\HintModel.cs" />
     <Compile Include="Modeles\MessageChat.cs" />
     <Compile Include="Modeles\MessageGame.cs" />
+    <Compile Include="Modeles\MessageGameReception.cs" />
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
