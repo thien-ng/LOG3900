@@ -1,21 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PolyPaint.Modeles
 {
-    public class MessageGame
+    class MessageGameReception
     {
         public string username { get; set; }
-        public string sender { get; set; }
+        public bool isServer { get; set; }
         public string content { get; set; }
 
-        public MessageGame(string username, string content, string sender)
+        public MessageGameReception(string username, string content, bool isServer)
         {
             this.username = username;
             this.content = content;
-            this.sender = sender;
+            this.isServer = isServer;
         }
     }
 }
+

@@ -36,8 +36,12 @@ namespace PolyPaint.Utilitaires
         public const int    PWD_MIN_LENGTH          = 1; //TODO
         public const int    USR_MIN_LENGTH          = 1; //TODO
 
-        public const string DEFAULT_CHANNEL = "general";
-        public const string GAME_CHANNEL    = "Game Channel";
+        public const string DEFAULT_CHANNEL         = "general";
+        public const string GAME_CHANNEL            = "Game Channel";
+
+        public const string SENDER_SERVER           = "server";
+        public const string SENDER_ME               = "me";
+
 
         //SOCKET
         public const string LOGIN_EVENT    = "login";

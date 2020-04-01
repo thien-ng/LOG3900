@@ -114,11 +114,27 @@ namespace PolyPaint.Modeles
 
         private void ReceiveGameMessage(JToken jsonMessage)
         {
-            MessageGame message = jsonMessage.ToObject<MessageGame>();
+            MessageGameReception message = jsonMessage.ToObject<MessageGameReception>();
+            string sender;
+            if (message.isServer)
+            {
+                sender = Constants.SENDER_SERVER;
+            }
+            else
+            {
+                if(message.username == ServerService.instance.username)
+                {
+                    sender = Constants.SENDER_ME;
+                }
+                else
+                {
+                    sender = message.username;
+                }
+            }
 
             App.Current.Dispatcher.Invoke(delegate
             {
-                MessagesGame.Add(new MessageGame(message.username, message.content, message.isServer));
+                MessagesGame.Add(new MessageGame(message.username, message.content, sender));
             });
             Console.WriteLine(MessagesGame.Count);
         }
