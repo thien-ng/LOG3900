@@ -2,12 +2,12 @@
 
 ## Account
 
-| Description          | type | path                         |
-| -------------------- | :--: | ---------------------------- |
-| Register account     | POST | /account/register            |
-| Login account        | POST | /account/login               |
-| Get all users online |  GET | /account/users/online        |
-| Get user information |  GET | /account/user/info/:username |
+| Description                                          | type | path                         |
+| ---------------------------------------------------- | :--: | ---------------------------- |
+| Register account                                     | POST | /account/register            |
+| Login account                                        | POST | /account/login               |
+| Get users whose username starts with word (optional) |  GET | /account/users/online/:word? |
+| Get user information                                 |  GET | /account/user/info/:username |
 
 ## Chat
 
