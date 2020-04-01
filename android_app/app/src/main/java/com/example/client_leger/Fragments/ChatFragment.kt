@@ -1,6 +1,5 @@
 package com.example.client_leger.Fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -11,6 +10,7 @@ import android.widget.*
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
+import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
@@ -33,9 +33,13 @@ class ChatFragment: Fragment() {
     lateinit var notSubChannelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
+    var inGame: Boolean = false
 
-    lateinit var chatListener: Disposable
-    lateinit var channelListener: Disposable
+    private lateinit var chatListener: Disposable
+    private lateinit var channelListener: Disposable
+    private lateinit var startGameSub: Disposable
+    private lateinit var endGameSub: Disposable
+    private lateinit var gameChatSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_chat, container, false)
@@ -80,20 +84,14 @@ class ChatFragment: Fragment() {
 
         v.chat_message_editText.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-                if (v.chat_message_editText.text.trim().isNotEmpty()) {
-                    val message = buildMessage(username, v.chat_message_editText, channelId)
-                    SocketIO.sendMessage("chat", message)
-                }
+                sendInput(v)
                 return@OnKeyListener true
             }
             false
         })
 
         v.chat_send_button.setOnClickListener {
-            if (v.chat_message_editText.text.trim().isNotEmpty()) {
-                val message = buildMessage(username, v.chat_message_editText, channelId)
-                SocketIO.sendMessage("chat", message)
-            }
+            sendInput(v)
         }
 
         v.imageButton_createChannel.setOnClickListener {
@@ -104,10 +102,35 @@ class ChatFragment: Fragment() {
             activity!!.onBackPressed()
         }
 
-        chatListener = Communication.getChatMessageListener().subscribe{receptMes ->
+        chatListener = Communication.getChatMessageListener().subscribe{ receptMes ->
             val messages = JSONArray()
             messages.put(receptMes)
             receiveMessages(messageAdapter, username, messages)
+            v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+        }
+
+        startGameSub = Communication.getGameStartListener().subscribe{
+            inGame = true
+            addGameChannel()
+            activity!!.runOnUiThread {
+                setChannel(GAME_CHANNEL_ID)
+            }
+        }
+
+        endGameSub = Communication.getEndGameListener().subscribe{
+            inGame = false
+
+            activity!!.runOnUiThread {
+                if (channelId == GAME_CHANNEL_ID) {
+                    setChannel(DEFAULT_CHANNEL_ID)
+                } else {
+                    loadChannels()
+                }
+            }
+        }
+
+        gameChatSub = Communication.getGameChatListener().subscribe { mes ->
+            receiveGameMessage(mes)
             v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
@@ -124,6 +147,28 @@ class ChatFragment: Fragment() {
         super.onDestroy()
         chatListener.dispose()
         channelListener.dispose()
+        startGameSub.dispose()
+        gameChatSub.dispose()
+        endGameSub.dispose()
+    }
+
+    private fun addGameChannel() {
+        channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
+    }
+
+    private fun sendInput(v: View) {
+        if (v.chat_message_editText.text.trim().isNotEmpty()) {
+            if(channelId != GAME_CHANNEL_ID) {
+                val message = buildMessage(username, v.chat_message_editText, channelId)
+                SocketIO.sendMessage("chat", message)
+            } else {
+                val obj = buildGameplayMessage(username, v.chat_message_editText)
+                SocketIO.sendMessage("gameplay", obj)
+                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
+            }
+
+            v.chat_message_editText.text.clear()
+        }
     }
 
     private fun onButtonShowPopupWindowClick(inflater: LayoutInflater, view: View?) {
@@ -144,13 +189,13 @@ class ChatFragment: Fragment() {
             var name = popupView.textInput_channelNameToCreate.text.toString()
             name = name.trim()
 
-            if ( name.length <= 20 && channelId.isNotEmpty() ) {
+            if ( name.length <= 20 && name.isNotEmpty() && name != GAME_CHANNEL_ID) {
                 controller.createChannel(this, name)
                 popupWindow.dismiss()
             } else {
                 Toast.makeText(
                     this.context,
-                    "Channel names cannot exceed 20 characters or be empty.",
+                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -162,12 +207,13 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        if (channelId != newChannelId) {
-            loadChannels()
-            messageAdapter.clear()
-            channelId = newChannelId
+        loadChannels()
+        messageAdapter.clear()
+        channelId = newChannelId
+        textViewChannelName.text = channelId
+
+        if (newChannelId != GAME_CHANNEL_ID) {
             controller.loadChatHistory(this)
-            textViewChannelName.text = channelId
         }
     }
 
@@ -177,14 +223,46 @@ class ChatFragment: Fragment() {
         obj.put("channel_id", chan_id)
         obj.put("content", message.text.toString())
 
-        message.text.clear()
+        return obj
+    }
+
+    private fun buildGameplayMessage(username: String, message: EditText): JSONObject {
+        val obj = JSONObject()
+        obj.put("event", "chat")
+        obj.put("username", username)
+        obj.put("content", message.text.toString().trim())
 
         return obj
     }
 
-    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray){
+    private fun receiveGameMessage(mes: JSONObject) {
+        val user = mes.getString("username")
+        val content = mes.getString("content")
+        val isServer = mes.getBoolean("isServer")
+
+        activity!!.runOnUiThread {
+            if (channelId == GAME_CHANNEL_ID && user != username) {
+                if (!isServer) {
+                    messageAdapter.add(GameChatItemReceived(content, user))
+                } else {
+                    messageAdapter.add(GameServerChatItemReceived(content))
+                }
+            }
+        }
+    }
+
+    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
+
+            if (channel != null) {
+                if (channel != channelId) {
+                    continue
+                }
+            } else if (message.getString("channel_id") != channelId) {
+                continue
+            }
+
             val username = message.getString("username")
             val content = message.getString("content")
             val time = message.getString("time")

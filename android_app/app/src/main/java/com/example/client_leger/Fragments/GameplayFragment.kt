@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 
 class GameplayFragment: Fragment(), FragmentChangeListener {
 
-    lateinit var endGameSub: Disposable;
+    private lateinit var endGameSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay, container, false)
@@ -35,10 +35,12 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
     override fun replaceFragment(fragment: Fragment) {
         val menu = fragmentManager!!.findFragmentByTag("menu")
         val draw = fragmentManager!!.findFragmentByTag("draw")
-        fragmentManager!!.beginTransaction()
-            .remove(menu!!)
-            .remove(draw!!)
-            .replace(R.id.container_view_right, fragment).commit()
+        if (menu != null && draw != null) {
+            fragmentManager!!.beginTransaction()
+                .remove(menu)
+                .remove(draw)
+                .replace(R.id.container_view_right, fragment).commit()
+        }
     }
 
     override fun onDestroy() {

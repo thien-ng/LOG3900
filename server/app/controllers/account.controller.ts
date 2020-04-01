@@ -53,8 +53,8 @@ export class AccountController {
          *      '200':
          *          description: A successful response
          */
-        this.router.get('/users/online', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.userService.getOnlineUsers());
+        this.router.get('/users/online/:word?', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.userService.getOnlineUsers(req.params.word));
         });
 
         this.router.get('/user/info/:username', async (req: Request, res: Response, next: NextFunction) => {
