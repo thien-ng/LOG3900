@@ -242,7 +242,7 @@ class ChatFragment: Fragment() {
         activity!!.runOnUiThread {
             if (channelId == GAME_CHANNEL_ID && user != username) {
                 if (!isServer) {
-                    messageAdapter.add(GameChatItemReceived(content, username))
+                    messageAdapter.add(GameChatItemReceived(content, user))
                 } else {
                     messageAdapter.add(GameServerChatItemReceived(content))
                 }
