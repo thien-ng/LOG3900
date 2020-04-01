@@ -1,5 +1,6 @@
 package com.example.client_leger.Fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -15,6 +16,8 @@ import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class LobbyFragment : Fragment(),
@@ -86,7 +89,20 @@ class LobbyFragment : Fragment(),
 
                 addBotButton.visibility = View.VISIBLE
                 addBotButton.isEnabled = true
-                addBotButton.setOnClickListener { addBot("bot:olivier") }
+                addBotButton.setOnClickListener {
+                    val builder = AlertDialog.Builder(context)
+                    val bots = arrayOf("bot:olivier", "bot:sebastien", "bot:olivia")
+                    builder.setTitle("Select your bot")
+                    builder.setSingleChoiceItems(bots,-1){dialogInterface,i->
+                        addBot(bots[i])
+                        dialogInterface.dismiss()
+                    }
+                    builder.setNeutralButton("Cancel"){dialog,_->
+                        dialog.cancel()
+                    }
+                    val mDialog = builder.create()
+                    mDialog.show()
+                }
             } else {
                 leaveButton.visibility = View.VISIBLE
                 leaveButton.isEnabled = true
