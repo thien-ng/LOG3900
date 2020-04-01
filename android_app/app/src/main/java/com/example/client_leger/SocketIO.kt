@@ -35,7 +35,6 @@ object SocketIO {
     }
 
     fun sendMessage(event: String, obj: JSONObject){
-        Log.w("channel", "in sendMessage, event: $event")
         socket.emit(event, obj)
     }
 }
