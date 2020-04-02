@@ -165,12 +165,14 @@ class ChatFragment: Fragment() {
                 }
             } else if (mes.getString("type") == "delete" ||
                        mes.getString("type") == "leave") {
-                inLobby = false
-                activity!!.runOnUiThread {
-                    if (channelId == LOBBY_CHANNEL_ID) {
-                        setChannel(DEFAULT_CHANNEL_ID)
-                    } else {
-                        loadChannels()
+                if (mes.getString("user") == username) {
+                    inLobby = false
+                    activity!!.runOnUiThread {
+                        if (channelId == LOBBY_CHANNEL_ID) {
+                            setChannel(DEFAULT_CHANNEL_ID)
+                        } else {
+                            loadChannels()
+                        }
                     }
                 }
             }
