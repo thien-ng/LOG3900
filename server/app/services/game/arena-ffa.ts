@@ -141,6 +141,8 @@ export class ArenaFfa extends Arena {
                 content: format(ANNOUNCEMENT, mes.username),
                 isServer: true});
 
+            this.sendCurrentPointToUser(mes);
+
             if (this.checkIfEveryoneHasRightAnswer())
                 this.isEveryoneHasRightAnswer = true;
         } else {

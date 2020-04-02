@@ -103,7 +103,7 @@ export class ArenaSprint extends Arena {
             //add to score
             this.wordGuessedRight++;
             this.botAnnounceEndSubGane();
-
+            this.sendCurrentPointToUser(mes);
             this.resetSubGame();
 
         } else {
