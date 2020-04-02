@@ -110,7 +110,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
                 if(switch.isChecked) data.put("password", d.findViewById<EditText>(R.id.lobbyPassword).text.trim())
                 data.put("mode", spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString())
-                createLobby(data)
+                lobbyCardsController.joinLobby(this, data)
                 d.hide()
             }
         }
@@ -174,10 +174,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
     private fun toggleView(v: View) {
         v.visibility = if (v.isShown) View.GONE else View.VISIBLE
-    }
-
-    private fun createLobby(lobby: JSONObject){
-        lobbyCardsController.joinLobby(this, lobby)
     }
     
     private fun validateLobbyFields(d: Dialog):Boolean{
