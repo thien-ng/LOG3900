@@ -25,6 +25,7 @@ namespace PolyPaint.VueModeles
             SelectedMode = "FFA";
             getLobbies();
             IsPrivate = false;
+            ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
         }
 
         #region Public Attributes
@@ -167,6 +168,13 @@ namespace PolyPaint.VueModeles
         #endregion
 
         #region Methods
+
+        private void processLobbyNotif(JObject data)
+        {
+            if (data.GetValue("type").ToString() == "create")
+                getLobbies();
+
+        }
 
         private void fillArray(int min, int max) 
         {
