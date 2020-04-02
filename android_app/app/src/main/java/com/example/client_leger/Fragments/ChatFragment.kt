@@ -143,11 +143,16 @@ class ChatFragment: Fragment() {
         }
 
         lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
-            if (mes.getString("type") == "create" && mes.get("type") == "create")
-            inGame = true
-            addGameChannel()
-            activity!!.runOnUiThread {
-                setChannel(GAME_CHANNEL_ID)
+            if (mes.getString("type") == "create") {
+                val user = mes.getJSONArray("users").getString(0)
+                //First user should always be the lobby creator.
+
+                if (username == user) {
+                    addLobbyChannel()
+                    activity!!.runOnUiThread {
+                        setChannel(LOBBY_CHANNEL_ID)
+                    }
+                }
             }
         }
 
@@ -173,6 +178,10 @@ class ChatFragment: Fragment() {
 
     private fun addGameChannel() {
         channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
+    }
+
+    private fun addLobbyChannel() {
+        channelAdapter.add(ChannelItem(LOBBY_CHANNEL_ID, true, controller, this))
     }
 
     private fun sendInput(v: View) {
