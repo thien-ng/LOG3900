@@ -17,6 +17,10 @@ object Communication {
     fun getChannelUpdateListener(): PublishSubject<String>{ return channelSource }
     fun updateChannels(channelId: String) { channelSource.onNext(channelId) }
 
+    private var lobbyChat: PublishSubject<JSONObject> = PublishSubject.create()
+    fun getLobbyChatListener(): PublishSubject<JSONObject>{ return lobbyChat }
+    fun updateLobbyChat(obj: JSONObject) { lobbyChat.onNext(obj) }
+
     private var connectSource: PublishSubject<JSONObject> = PublishSubject.create()
     fun getConnectionListener(): PublishSubject<JSONObject>{ return connectSource }
     fun updateConnection(obj: JSONObject) { connectSource.onNext(obj) }
