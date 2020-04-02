@@ -35,6 +35,7 @@ class ChatFragment: Fragment() {
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
     var inGame: Boolean = false
+    var inLobby: Boolean = false
 
     private lateinit var chatListener: Disposable
     private lateinit var channelListener: Disposable
@@ -148,9 +149,28 @@ class ChatFragment: Fragment() {
                 //First user should always be the lobby creator.
 
                 if (username == user) {
+                    inLobby = true
                     addLobbyChannel()
                     activity!!.runOnUiThread {
                         setChannel(LOBBY_CHANNEL_ID)
+                    }
+                }
+            } else if (mes.getString("type") == "join") {
+                if (mes.getString("user") == username) {
+                    inLobby = true
+                    addLobbyChannel()
+                    activity!!.runOnUiThread {
+                        setChannel(LOBBY_CHANNEL_ID)
+                    }
+                }
+            } else if (mes.getString("type") == "delete" ||
+                       mes.getString("type") == "leave") {
+                inLobby = false
+                activity!!.runOnUiThread {
+                    if (channelId == LOBBY_CHANNEL_ID) {
+                        setChannel(DEFAULT_CHANNEL_ID)
+                    } else {
+                        loadChannels()
                     }
                 }
             }
