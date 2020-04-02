@@ -13,6 +13,9 @@ import android.widget.TextView;
 import com.example.client_leger.models.Lobby;
 import com.example.client_leger.R;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 
 public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCardsRecyclerViewAdapter.ViewHolder> {
@@ -102,12 +105,24 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
     public Lobby getItem(int id) {
         return mData.get(id);
     }
+    public int getItemId(String lobbyName){
+        for (int index = 0; index < mData.size(); index++)
+            if (lobbyName.equals(mData.get(index).getLobbyName())) {
+                return index;
+            }
+        return -1;
+    }
 
-    public void addItems(ArrayList<Lobby> items) {
-        for (int i = 0; i < items.size(); i++) {
-            mData.add(items.get(i));
-            notifyItemChanged(i);
+    public void removeItem(@Nullable Lobby lobby) {
+        int id = getItemId(lobby.getLobbyName());
+        if (id > 0) {
+            mData.remove(id);
+            notifyItemRemoved(id);
         }
+    }
+    public void addItem(Lobby item) {
+        mData.add(item);
+        notifyItemChanged(mData.size() - 1);
     }
 
     public void setItems(ArrayList<Lobby> items) {
@@ -118,7 +133,15 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         }
     }
 
-    // allows clicks events to be caught
+    public void updateUser(@NotNull String lobbyName, @NotNull String username) {
+        int id = getItemId(lobbyName);
+        if (id > 0) {
+            getItem(id).getUsernames().add(username);
+            notifyItemChanged(id);
+        }
+    }
+
+    // allows clicks events to be ca
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }

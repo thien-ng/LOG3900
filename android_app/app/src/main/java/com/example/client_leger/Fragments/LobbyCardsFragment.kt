@@ -13,12 +13,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.example.client_leger.Adapters.LobbyCardsRecyclerViewAdapter
+import com.example.client_leger.Communication.Communication
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.LobbyCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
 import com.example.client_leger.models.GameMode
 import com.example.client_leger.models.Lobby
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_createlobby.*
 import org.json.JSONObject
 
@@ -35,6 +37,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private lateinit var userList: ArrayList<String>
     private lateinit var spinnerGameModes: Spinner
 
+
+    private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gamecards, container, false)
@@ -81,6 +85,42 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 lobbyCardsController.getLobbies(this@LobbyCardsFragment, spinnerToGameMode(position).toString())
             }
 
+        }
+
+        lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
+            when (mes.getString("type")) {
+                "create" -> {
+                    val user = mes.getJSONArray("users").getString(0)
+                    //First user should always be the lobby creator.
+
+                    if (username == user) {
+                        val fragment = LobbyFragment()
+                        val bundle = Bundle()
+                        bundle.putString("lobbyName", mes.getString("lobbyName"));
+                        fragment.arguments = bundle
+                        replaceFragment(fragment)
+                    }else{
+                        adapterLobbyCards.addItem(context?.let { Lobby(mes, it) })
+                    }
+                }
+                "join" -> {
+                    val user = mes.getString("user")
+
+                    if (username == user) {
+                        val fragment = LobbyFragment()
+                        val bundle = Bundle()
+                        bundle.putString("lobbyName", mes.getString("lobbyName"));
+                        fragment.arguments = bundle
+                        replaceFragment(fragment)
+                    }else {
+                        adapterLobbyCards.updateUser(mes.getString("lobbyName"), user)
+                    }
+                }
+                "delete" -> {
+                    adapterLobbyCards.removeItem(context?.let { Lobby(mes, it) })
+
+                }
+            }
         }
 
         return v
