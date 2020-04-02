@@ -166,6 +166,8 @@ class ChatFragment: Fragment() {
         channelListener.dispose()
         startGameSub.dispose()
         gameChatSub.dispose()
+        lobbyChatSub.dispose()
+        lobbyNotifSub.dispose()
         endGameSub.dispose()
     }
 
