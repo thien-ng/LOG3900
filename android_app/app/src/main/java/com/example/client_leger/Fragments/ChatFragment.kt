@@ -15,7 +15,9 @@ import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_chat.view.*
+import kotlinx.android.synthetic.main.fragment_chat.view.chat_message_editText
 import kotlinx.android.synthetic.main.popup_create_channel.view.*
 import kotlinx.android.synthetic.main.fragment_chat.view.textView_channelName
 import org.json.JSONArray
@@ -215,13 +217,10 @@ class ChatFragment: Fragment() {
                 GAME_CHANNEL_ID -> {
                     val obj = buildGameplayMessage(username, v.chat_message_editText)
                     SocketIO.sendMessage("gameplay", obj)
-                    messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
-
                 }
                 LOBBY_CHANNEL_ID -> {
                     val obj = buildLobbyMessage(username, v.chat_message_editText)
                     SocketIO.sendMessage("lobby-chat", obj)
-                    messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
                 }
                 else -> {
                     val message = buildMessage(username, v.chat_message_editText, channelId)
@@ -315,6 +314,8 @@ class ChatFragment: Fragment() {
             if (channelId == GAME_CHANNEL_ID && user != username) {
                 if (!isServer) {
                     messageAdapter.add(GameChatItemReceived(content, user))
+                } else if (user == username) {
+                    messageAdapter.add(GameChatItemSent(content))
                 } else {
                     messageAdapter.add(GameServerChatItemReceived(content))
                 }
@@ -328,8 +329,12 @@ class ChatFragment: Fragment() {
         val lobby = mes.getString("lobbyName")
 
         activity!!.runOnUiThread {
-            if (channelId == LOBBY_CHANNEL_ID && user != username && lobby == lobbyName) {
-                messageAdapter.add(GameChatItemReceived(content, user))
+            if (channelId == LOBBY_CHANNEL_ID && lobby == lobbyName) {
+                if (user == username) {
+                    messageAdapter.add(GameChatItemSent(content))
+                } else {
+                    messageAdapter.add(GameChatItemReceived(content, user))
+                }
             }
         }
     }
