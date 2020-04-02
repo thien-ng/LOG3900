@@ -11,10 +11,13 @@ import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
+import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_chat.view.*
+import kotlinx.android.synthetic.main.fragment_chat.view.chat_message_editText
 import kotlinx.android.synthetic.main.popup_create_channel.view.*
 import kotlinx.android.synthetic.main.fragment_chat.view.textView_channelName
 import org.json.JSONArray
@@ -33,13 +36,17 @@ class ChatFragment: Fragment() {
     lateinit var notSubChannelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
+    private var lobbyName = ""
     var inGame: Boolean = false
+    var inLobby: Boolean = false
 
     private lateinit var chatListener: Disposable
     private lateinit var channelListener: Disposable
     private lateinit var startGameSub: Disposable
     private lateinit var endGameSub: Disposable
     private lateinit var gameChatSub: Disposable
+    private lateinit var lobbyChatSub: Disposable
+    private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_chat, container, false)
@@ -134,6 +141,48 @@ class ChatFragment: Fragment() {
             v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
+        lobbyChatSub = Communication.getLobbyChatListener().subscribe { mes ->
+            receiveLobbyMessage(mes)
+            v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+        }
+
+        lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
+            val type = mes.getString("type")
+            if (type == "create") {
+                val user = mes.getJSONArray("users").getString(0)
+                //First user should always be the lobby creator.
+
+                if (username == user) {
+                    inLobby = true
+                    lobbyName = mes.getString("lobbyName")
+                    addLobbyChannel()
+                    activity!!.runOnUiThread {
+                        setChannel(LOBBY_CHANNEL_ID)
+                    }
+                }
+            } else if (type == "join") {
+                if (mes.getString("user") == username) {
+                    inLobby = true
+                    lobbyName = mes.getString("lobbyName")
+                    addLobbyChannel()
+                    activity!!.runOnUiThread {
+                        setChannel(LOBBY_CHANNEL_ID)
+                    }
+                }
+            } else if (type == "delete" || type == "leave") {
+                if (mes.getString("user") == username) {
+                    inLobby = false
+                    activity!!.runOnUiThread {
+                        if (channelId == LOBBY_CHANNEL_ID) {
+                            setChannel(DEFAULT_CHANNEL_ID)
+                        } else {
+                            loadChannels()
+                        }
+                    }
+                }
+            }
+        }
+
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
             notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
         }
@@ -149,6 +198,8 @@ class ChatFragment: Fragment() {
         channelListener.dispose()
         startGameSub.dispose()
         gameChatSub.dispose()
+        lobbyChatSub.dispose()
+        lobbyNotifSub.dispose()
         endGameSub.dispose()
     }
 
@@ -156,15 +207,25 @@ class ChatFragment: Fragment() {
         channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
     }
 
+    private fun addLobbyChannel() {
+        channelAdapter.add(ChannelItem(LOBBY_CHANNEL_ID, true, controller, this))
+    }
+
     private fun sendInput(v: View) {
         if (v.chat_message_editText.text.trim().isNotEmpty()) {
-            if(channelId != GAME_CHANNEL_ID) {
-                val message = buildMessage(username, v.chat_message_editText, channelId)
-                SocketIO.sendMessage("chat", message)
-            } else {
-                val obj = buildGameplayMessage(username, v.chat_message_editText)
-                SocketIO.sendMessage("gameplay", obj)
-                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
+            when (channelId) {
+                GAME_CHANNEL_ID -> {
+                    val obj = buildGameplayMessage(username, v.chat_message_editText)
+                    SocketIO.sendMessage("gameplay", obj)
+                }
+                LOBBY_CHANNEL_ID -> {
+                    val obj = buildLobbyMessage(username, v.chat_message_editText)
+                    SocketIO.sendMessage("lobby-chat", obj)
+                }
+                else -> {
+                    val message = buildMessage(username, v.chat_message_editText, channelId)
+                    SocketIO.sendMessage("chat", message)
+                }
             }
 
             v.chat_message_editText.text.clear()
@@ -195,7 +256,7 @@ class ChatFragment: Fragment() {
             } else {
                 Toast.makeText(
                     this.context,
-                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID",
+                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID or $LOBBY_CHANNEL_ID",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -235,6 +296,15 @@ class ChatFragment: Fragment() {
         return obj
     }
 
+    private fun buildLobbyMessage(username: String, message: EditText): JSONObject {
+        val obj = JSONObject()
+        obj.put("lobbyName", lobbyName)
+        obj.put("username", username)
+        obj.put("content", message.text.toString().trim())
+
+        return obj
+    }
+
     private fun receiveGameMessage(mes: JSONObject) {
         val user = mes.getString("username")
         val content = mes.getString("content")
@@ -244,8 +314,26 @@ class ChatFragment: Fragment() {
             if (channelId == GAME_CHANNEL_ID && user != username) {
                 if (!isServer) {
                     messageAdapter.add(GameChatItemReceived(content, user))
+                } else if (user == username) {
+                    messageAdapter.add(GameChatItemSent(content))
                 } else {
                     messageAdapter.add(GameServerChatItemReceived(content))
+                }
+            }
+        }
+    }
+
+    private fun receiveLobbyMessage(mes: JSONObject) {
+        val user = mes.getString("username")
+        val content = mes.getString("content")
+        val lobby = mes.getString("lobbyName")
+
+        activity!!.runOnUiThread {
+            if (channelId == LOBBY_CHANNEL_ID && lobby == lobbyName) {
+                if (user == username) {
+                    messageAdapter.add(GameChatItemSent(content))
+                } else {
+                    messageAdapter.add(GameChatItemReceived(content, user))
                 }
             }
         }
