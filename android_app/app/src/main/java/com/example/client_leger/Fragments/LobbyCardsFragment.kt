@@ -2,6 +2,7 @@ package com.example.client_leger.Fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -143,11 +144,12 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             dialog.dismiss()
         }
 
-        builder.setNegativeButton(
+        builder.setNeutralButton(
             "Cancel"
         ) { dialog, _ -> dialog.cancel() }
 
-        builder.show()
+       builder.show()
+
     }
 
     override fun onJoinClick(view: View?, position: Int) {
@@ -175,7 +177,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private fun toggleView(v: View) {
         v.visibility = if (v.isShown) View.GONE else View.VISIBLE
     }
-    
+
     private fun validateLobbyFields(d: Dialog):Boolean{
         return when {
             d.lobbyname.text.isBlank() -> {
