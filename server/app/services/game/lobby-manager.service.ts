@@ -145,7 +145,7 @@ export class LobbyManagerService {
 
 
             this.lobbies.set(req.lobbyName, { users: [user], isPrivate: req.isPrivate, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode } as IActiveLobby);
-            this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size } as INotifyLobbyUpdate);
+            this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size, mode: req.mode } as INotifyLobbyUpdate);
         }
 
         return `Successfully joined lobby ${req.lobbyName}`;
