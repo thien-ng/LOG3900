@@ -1,10 +1,12 @@
 package com.example.client_leger.Fragments
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -117,6 +119,35 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
     override fun onItemClick(view: View?, position: Int) {
 
+
+    }
+
+    override fun onJoinPrivateClick(view: View?, adapterPosition: Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Enter password")
+        val  input =  EditText(context)
+        input.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+        builder.setView(input)
+
+        builder.setPositiveButton(
+            "JOIN"
+        ) { dialog, _ ->
+
+            var lobby = JSONObject()
+            lobby.put("username", username)
+            lobby.put("isPrivate", true)
+            lobby.put("lobbyName", adapterLobbyCards.getItem(adapterPosition).lobbyName)
+            lobby.put("password", input.text.toString())
+
+            lobbyCardsController.joinLobby(this, lobby)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog, _ -> dialog.cancel() }
+
+        builder.show()
     }
 
     override fun onJoinClick(view: View?, position: Int) {
