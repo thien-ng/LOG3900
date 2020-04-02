@@ -138,7 +138,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             lobby.put("username", username)
             lobby.put("isPrivate", true)
             lobby.put("lobbyName", adapterLobbyCards.getItem(adapterPosition).lobbyName)
-            lobby.put("password", input.text.toString())
+            lobby.put("password", input.text.trim())
 
             lobbyCardsController.joinLobby(this, lobby)
             dialog.dismiss()
