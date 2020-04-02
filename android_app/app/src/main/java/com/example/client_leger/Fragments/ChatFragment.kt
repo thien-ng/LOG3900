@@ -11,6 +11,7 @@ import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
+import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
@@ -40,6 +41,8 @@ class ChatFragment: Fragment() {
     private lateinit var startGameSub: Disposable
     private lateinit var endGameSub: Disposable
     private lateinit var gameChatSub: Disposable
+    private lateinit var lobbyChatSub: Disposable
+    private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_chat, container, false)
@@ -134,6 +137,20 @@ class ChatFragment: Fragment() {
             v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
         }
 
+        lobbyChatSub = Communication.getLobbyChatListener().subscribe { mes ->
+            receiveLobbyMessage(mes)
+            v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+        }
+
+        lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
+            if (mes.getString("type") == "create" && mes.get("type") == "create")
+            inGame = true
+            addGameChannel()
+            activity!!.runOnUiThread {
+                setChannel(GAME_CHANNEL_ID)
+            }
+        }
+
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
             notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
         }
@@ -195,7 +212,7 @@ class ChatFragment: Fragment() {
             } else {
                 Toast.makeText(
                     this.context,
-                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID",
+                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID or $LOBBY_CHANNEL_ID",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -249,6 +266,10 @@ class ChatFragment: Fragment() {
                 }
             }
         }
+    }
+
+    private fun receiveLobbyMessage(mes: JSONObject) {
+        //todo
     }
 
     fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
