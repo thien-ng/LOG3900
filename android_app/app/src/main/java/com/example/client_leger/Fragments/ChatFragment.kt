@@ -145,7 +145,8 @@ class ChatFragment: Fragment() {
         }
 
         lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
-            if (mes.getString("type") == "create") {
+            val type = mes.getString("type")
+            if (type == "create") {
                 val user = mes.getJSONArray("users").getString(0)
                 //First user should always be the lobby creator.
 
@@ -157,7 +158,7 @@ class ChatFragment: Fragment() {
                         setChannel(LOBBY_CHANNEL_ID)
                     }
                 }
-            } else if (mes.getString("type") == "join") {
+            } else if (type == "join") {
                 if (mes.getString("user") == username) {
                     inLobby = true
                     lobbyName = mes.getString("lobbyName")
@@ -166,8 +167,7 @@ class ChatFragment: Fragment() {
                         setChannel(LOBBY_CHANNEL_ID)
                     }
                 }
-            } else if (mes.getString("type") == "delete" ||
-                       mes.getString("type") == "leave") {
+            } else if (type == "delete" || type == "leave") {
                 if (mes.getString("user") == username) {
                     inLobby = false
                     activity!!.runOnUiThread {
