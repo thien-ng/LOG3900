@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -18,7 +19,7 @@ namespace PolyPaint.VueModeles
         public GameViewModel()
         {
             DrawViewModel = new DessinViewModel();
-            _points = new ObservableCollection<Points>();
+            _points = new ObservableCollection<PointsDisplay>();
             ServerService.instance.socket.On("game-drawer", data => processRole((JObject)data));
             ServerService.instance.socket.On("game-timer", data => processTime((JObject)data));
             ServerService.instance.socket.On("game-over", data => processEndGame((JObject)data));
@@ -48,8 +49,8 @@ namespace PolyPaint.VueModeles
             set { _objectToDraw = value; ProprieteModifiee(); }
         }
 
-        private ObservableCollection<Points> _points;
-        public ObservableCollection<Points> Points
+        private ObservableCollection<PointsDisplay> _points;
+        public ObservableCollection<PointsDisplay> Points
         {
             get { return _points; }
             set { _points = value; ProprieteModifiee(); }
@@ -117,9 +118,11 @@ namespace PolyPaint.VueModeles
             JArray a = (JArray)pointsReceived["points"];
 
             IList<Points> points = a.ToObject<IList<Points>>();
+            int i = 1;
             foreach (var item in points)
             {
-                Points.Add(item);
+                PointsDisplay temp = new PointsDisplay(item.username, item.points, i++); 
+                Points.Add(temp);
             }
             App.Current.Dispatcher.Invoke(delegate
             {
