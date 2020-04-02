@@ -199,6 +199,7 @@
     <Compile Include="Modeles\ChatRoom.cs" />
     <Compile Include="Modeles\PlayerScore.cs" />
     <Compile Include="Modeles\Points.cs" />
+    <Compile Include="Modeles\PointsDisplay.cs" />
     <Compile Include="Modeles\Stats.cs" />
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Services\ServerService.cs" />
