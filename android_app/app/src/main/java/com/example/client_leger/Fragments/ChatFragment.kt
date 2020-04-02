@@ -211,18 +211,22 @@ class ChatFragment: Fragment() {
 
     private fun sendInput(v: View) {
         if (v.chat_message_editText.text.trim().isNotEmpty()) {
-            if(channelId == GAME_CHANNEL_ID) {
-                val obj = buildGameplayMessage(username, v.chat_message_editText)
-                SocketIO.sendMessage("gameplay", obj)
-                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
+            when (channelId) {
+                GAME_CHANNEL_ID -> {
+                    val obj = buildGameplayMessage(username, v.chat_message_editText)
+                    SocketIO.sendMessage("gameplay", obj)
+                    messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
 
-            } else if (channelId == LOBBY_CHANNEL_ID) {
-                val obj = buildLobbyMessage(username, v.chat_message_editText)
-                SocketIO.sendMessage("lobby-chat", obj)
-                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
-            } else {
-                val message = buildMessage(username, v.chat_message_editText, channelId)
-                SocketIO.sendMessage("chat", message)
+                }
+                LOBBY_CHANNEL_ID -> {
+                    val obj = buildLobbyMessage(username, v.chat_message_editText)
+                    SocketIO.sendMessage("lobby-chat", obj)
+                    messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
+                }
+                else -> {
+                    val message = buildMessage(username, v.chat_message_editText, channelId)
+                    SocketIO.sendMessage("chat", message)
+                }
             }
 
             v.chat_message_editText.text.clear()
