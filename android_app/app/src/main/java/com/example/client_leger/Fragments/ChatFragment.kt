@@ -34,6 +34,7 @@ class ChatFragment: Fragment() {
     lateinit var notSubChannelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
+    private var lobbyName = ""
     var inGame: Boolean = false
     var inLobby: Boolean = false
 
@@ -150,6 +151,7 @@ class ChatFragment: Fragment() {
 
                 if (username == user) {
                     inLobby = true
+                    lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()
                     activity!!.runOnUiThread {
                         setChannel(LOBBY_CHANNEL_ID)
@@ -158,6 +160,7 @@ class ChatFragment: Fragment() {
             } else if (mes.getString("type") == "join") {
                 if (mes.getString("user") == username) {
                     inLobby = true
+                    lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()
                     activity!!.runOnUiThread {
                         setChannel(LOBBY_CHANNEL_ID)
@@ -208,13 +211,18 @@ class ChatFragment: Fragment() {
 
     private fun sendInput(v: View) {
         if (v.chat_message_editText.text.trim().isNotEmpty()) {
-            if(channelId != GAME_CHANNEL_ID) {
-                val message = buildMessage(username, v.chat_message_editText, channelId)
-                SocketIO.sendMessage("chat", message)
-            } else {
+            if(channelId == GAME_CHANNEL_ID) {
                 val obj = buildGameplayMessage(username, v.chat_message_editText)
                 SocketIO.sendMessage("gameplay", obj)
                 messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
+
+            } else if (channelId == LOBBY_CHANNEL_ID) {
+                val obj = buildLobbyMessage(username, v.chat_message_editText)
+                SocketIO.sendMessage("lobby-chat", obj)
+                messageAdapter.add(GameChatItemSent(v.chat_message_editText.text.toString().trim()))
+            } else {
+                val message = buildMessage(username, v.chat_message_editText, channelId)
+                SocketIO.sendMessage("chat", message)
             }
 
             v.chat_message_editText.text.clear()
@@ -285,6 +293,15 @@ class ChatFragment: Fragment() {
         return obj
     }
 
+    private fun buildLobbyMessage(username: String, message: EditText): JSONObject {
+        val obj = JSONObject()
+        obj.put("lobbyName", lobbyName)
+        obj.put("username", username)
+        obj.put("content", message.text.toString().trim())
+
+        return obj
+    }
+
     private fun receiveGameMessage(mes: JSONObject) {
         val user = mes.getString("username")
         val content = mes.getString("content")
@@ -302,7 +319,15 @@ class ChatFragment: Fragment() {
     }
 
     private fun receiveLobbyMessage(mes: JSONObject) {
-        //todo
+        val user = mes.getString("username")
+        val content = mes.getString("content")
+        val lobby = mes.getString("lobbyName")
+
+        activity!!.runOnUiThread {
+            if (channelId == LOBBY_CHANNEL_ID && user != username && lobby == lobbyName) {
+                messageAdapter.add(GameChatItemReceived(content, user))
+            }
+        }
     }
 
     fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
