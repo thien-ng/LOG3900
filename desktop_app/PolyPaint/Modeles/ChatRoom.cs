@@ -88,7 +88,8 @@ namespace PolyPaint.Modeles
             }
             if (IsLobbyChat)
             {
-                var newMessage = new JObject(new JProperty("lobbyName", ID),
+                string lobbyName = ID.Remove(0, 7);
+                var newMessage = new JObject(new JProperty("lobbyName", lobbyName),
                                              new JProperty("username", ServerService.instance.username),
                                              new JProperty("content", message));
                 ServerService.instance.socket.Emit("lobby-chat", newMessage);
