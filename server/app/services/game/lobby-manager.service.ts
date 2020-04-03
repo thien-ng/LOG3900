@@ -178,9 +178,9 @@ export class LobbyManagerService {
 
             if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
+                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete });
                 this.lobbies.delete(req.lobbyName);
                 this.lobbiesMessages.delete(req.lobbyName);
-                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete });
             } else {
                 // Leave lobby
                 this.lobbies.set(req.lobbyName, lobby);
