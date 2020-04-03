@@ -218,12 +218,13 @@ namespace PolyPaint.VueModeles
             IsNotInLobby = false;
             LobbyViewModel = new LobbyViewModel((string)lobbyname);
             this.Lobbyname = (string)lobbyname;
+            string lobbyChannel = "Lobby :" + this.Lobbyname;
             SwitchView = Views.Lobby;
             Application.Current.Dispatcher.Invoke(delegate
             {
-               _subChannels.Add(new MessageChannel(this.Lobbyname, true, true));
+               _subChannels.Add(new MessageChannel(lobbyChannel, true, true));
             });
-            ChangeChannel(this.Lobbyname);
+            ChangeChannel(lobbyChannel);
         }
 
         private async void FetchChannels()
@@ -471,7 +472,11 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    await Task.Run(() => SubToChannel(NewChannelString));
+                    
+                    if (String.Equals(NewChannelString, Constants.GAME_CHANNEL, StringComparison.OrdinalIgnoreCase))
+                        MessageBox.Show("This channel name is used for in game chat.");
+                    else
+                        await Task.Run(() => SubToChannel(NewChannelString));
                     NewChannelString = "";
                     IsCreateChannelDialogOpen = false;
                 }));
