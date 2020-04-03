@@ -114,7 +114,7 @@ class ConnexionController {
             Response.Listener<JSONArray>{ response ->
                 activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
-            },Response.ErrorListener{
+            }, Response.ErrorListener {
                     error ->
                 Toast.makeText(
                     activity.context,
@@ -135,11 +135,17 @@ class ConnexionController {
             Constants.SERVER_URL + "/game/lobby/messages/" + activity.lobbyName,
             null,
             Response.Listener<JSONArray>{ response ->
-                activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
+                activity.receiveMessages (
+                    activity.messageAdapter,
+                    activity.username,
+                    response,
+                    activity.channelId,
+                    false
+                )
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
-            },Response.ErrorListener{
+            }, Response.ErrorListener {
                     error ->
-                Toast.makeText(
+                Toast.makeText (
                     activity.context,
                     error.message,
                     Toast.LENGTH_SHORT
@@ -158,11 +164,16 @@ class ConnexionController {
             Constants.SERVER_URL + "/game/arena/messages/" + activity.username,
             null,
             Response.Listener<JSONArray>{ response ->
-                activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
+                activity.receiveMessages (
+                    activity.messageAdapter,
+                    activity.username, response,
+                    activity.channelId,
+                    false
+                )
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
-            },Response.ErrorListener{
+            }, Response.ErrorListener {
                     error ->
-                Toast.makeText(
+                Toast.makeText (
                     activity.context,
                     error.message,
                     Toast.LENGTH_SHORT
