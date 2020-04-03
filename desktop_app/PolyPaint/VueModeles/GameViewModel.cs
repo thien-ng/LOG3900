@@ -114,21 +114,28 @@ namespace PolyPaint.VueModeles
 
         private void processEndGame(JObject pointsReceived)
         {
-
-            JArray a = (JArray)pointsReceived["points"];
-
-            IList<Points> points = a.ToObject<IList<Points>>();
-            int i = 1;
-            foreach (var item in points)
+            try
             {
-                PointsDisplay temp = new PointsDisplay(item.username, item.points, i++); 
-                Points.Add(temp);
+                JArray a = (JArray)pointsReceived["points"];
+
+                IList<Points> points = a.ToObject<IList<Points>>();
+                int i = 1;
+                foreach (var item in points)
+                {
+                    PointsDisplay temp = new PointsDisplay(item.username, item.points, i++);
+                    Points.Add(temp);
+                }
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    DialogContent = new EndGameControl();
+                    IsEndGameDialogOpen = true;
+                });
             }
-            App.Current.Dispatcher.Invoke(delegate
+            catch (Exception)
             {
-                DialogContent = new EndGameControl();
-                IsEndGameDialogOpen = true;
-            });
+                Mediator.Notify("GoToGameListScreen");
+            }
+            
 
         }
         #endregion

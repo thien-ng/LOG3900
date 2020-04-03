@@ -218,13 +218,12 @@ namespace PolyPaint.VueModeles
             IsNotInLobby = false;
             LobbyViewModel = new LobbyViewModel((string)lobbyname);
             this.Lobbyname = (string)lobbyname;
-            string lobbyChannel = "Lobby :" + this.Lobbyname;
             SwitchView = Views.Lobby;
             Application.Current.Dispatcher.Invoke(delegate
             {
-               _subChannels.Add(new MessageChannel(lobbyChannel, true, true));
+               _subChannels.Add(new MessageChannel(this.Lobbyname, true, true));
             });
-            ChangeChannel(lobbyChannel);
+            ChangeChannel(this.Lobbyname);
         }
 
         private async void FetchChannels()
