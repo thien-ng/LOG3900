@@ -90,6 +90,7 @@ export class GameManagerService {
         const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
 
         this.lobServ.lobbies.delete(lobby.lobbyName);
+        this.lobServ.lobbiesMessages.delete(lobby.lobbyName);
 
         this.arenas.set(this.arenaId, arena);
         this.arenaId++;
