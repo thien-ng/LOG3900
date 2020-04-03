@@ -14,6 +14,7 @@ import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.example.client_leger.Fragments.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.dialog_createlobby.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONArray
@@ -120,6 +121,11 @@ class ConnexionController {
                     error.message,
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+        )
+
+        requestQueue.add(jsonArrayRequest)
+    }
 
     fun loadLobbyChatHistory(activity: ChatFragment) {
         val requestQueue = Volley.newRequestQueue(activity.context)
