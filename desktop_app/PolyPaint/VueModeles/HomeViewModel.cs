@@ -197,7 +197,7 @@ namespace PolyPaint.VueModeles
             IsNotInLobby = true;
             Application.Current.Dispatcher.Invoke(delegate
             {
-                FetchChannels();
+               FetchChannels();
             });
         }
         private void goToGameView(object obj)
@@ -229,9 +229,13 @@ namespace PolyPaint.VueModeles
 
         private async void FetchChannels()
         {
-            _subChannels.Clear();
-            _notSubChannels.Clear();
-            
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                _subChannels.Clear();
+                _notSubChannels.Clear();
+            });
+
+
             var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
             
