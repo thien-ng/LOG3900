@@ -15,7 +15,6 @@ import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_chat.view.*
 import kotlinx.android.synthetic.main.fragment_chat.view.chat_message_editText
 import kotlinx.android.synthetic.main.popup_create_channel.view.*
@@ -36,7 +35,7 @@ class ChatFragment: Fragment() {
     lateinit var notSubChannelAdapter: GroupAdapter<ViewHolder>
     private lateinit var textViewChannelName: TextView
     private var controller = ConnexionController()
-    private var lobbyName = ""
+    var lobbyName = ""
     var inGame: Boolean = false
     var inLobby: Boolean = false
 
@@ -273,8 +272,16 @@ class ChatFragment: Fragment() {
         channelId = newChannelId
         textViewChannelName.text = channelId
 
-        if (newChannelId != GAME_CHANNEL_ID) {
-            controller.loadChatHistory(this)
+        when (newChannelId) {
+            GAME_CHANNEL_ID -> {
+                controller.loadGameChatHistory(this)
+            }
+            LOBBY_CHANNEL_ID -> {
+                controller.loadLobbyChatHistory(this)
+            }
+            else -> {
+                controller.loadChatHistory(this)
+            }
         }
     }
 
