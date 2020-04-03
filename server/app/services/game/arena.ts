@@ -8,9 +8,12 @@ import { HumourBot } from "./bots/humourBot";
 
 import * as io from 'socket.io';
 
+const format = require('string-format');
+
 const StringBuilder = require("string-builder");
 const CHECK_INTERVAL_TIME = 500;
 const ONE_SEC = 1000;
+const ANNOUNCEMENT = "{0} has disconnected";
 
 export abstract class Arena {
 
@@ -84,6 +87,9 @@ export abstract class Arena {
         if (user && user.socket) {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
+
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
         }
 
         let count = 0;
@@ -250,7 +256,7 @@ export abstract class Arena {
             if (n1.points < n2.points) return -1;
             return 0;
         });
-        
+
         return ptsList;
     }
 
