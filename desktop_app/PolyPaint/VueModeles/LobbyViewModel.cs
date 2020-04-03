@@ -168,7 +168,7 @@ namespace PolyPaint.VueModeles
         private void joingame()
         {
             if(!IsGameMaster)
-            Mediator.Notify("GoToGameScreen");
+                Mediator.Notify("GoToGameScreen");
         }
 
         private async Task processBotRequest()

@@ -471,7 +471,11 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    await Task.Run(() => SubToChannel(NewChannelString));
+                    
+                    if (String.Equals(NewChannelString, Constants.GAME_CHANNEL, StringComparison.OrdinalIgnoreCase))
+                        MessageBox.Show("This channel name is used for in game chat.");
+                    else
+                        await Task.Run(() => SubToChannel(NewChannelString));
                     NewChannelString = "";
                     IsCreateChannelDialogOpen = false;
                 }));

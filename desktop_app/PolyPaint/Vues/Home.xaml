@@ -1,4 +1,4 @@
-﻿<Page x:Class="PolyPaint.Vues.Home"
+﻿<UserControl x:Class="PolyPaint.Vues.Home"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,9 +8,8 @@
       xmlns:model="clr-namespace:PolyPaint.VueModeles"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="1000"
-      Loaded="PageLoaded"
-      Title="Home">
-    <Page.Resources>
+      Loaded="PageLoaded">
+    <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
@@ -33,7 +32,7 @@
             </DataTemplate>
         </ResourceDictionary>
         
-    </Page.Resources>
+    </UserControl.Resources>
     <materialDesign:DialogHost IsOpen="{Binding IsCreateChannelDialogOpen}"
                                DialogContent="{Binding DialogContent}"
                                CloseOnClickAway="True">
@@ -95,4 +94,4 @@
             </StackPanel>
         </Grid>
     </materialDesign:DialogHost>
-</Page>
+</UserControl>

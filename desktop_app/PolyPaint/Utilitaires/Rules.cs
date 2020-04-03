@@ -41,4 +41,36 @@ namespace PolyPaint.Utilitaires
                 return ValidationResult.ValidResult;
         }
     }
+    class ChannelNameRule : ValidationRule
+    {
+        private Regex userNameFormat = new Regex("^[a-zA-Z][a-zA-Z0-9]*$");
+        public ChannelNameRule()
+        { }
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string name = "";
+            try
+            {
+                if (((string)value).Length > 0)
+                    name = value.ToString();
+            }
+            catch (Exception e)
+            {
+                return new ValidationResult(false, $"Illegal characters or {e.Message}");
+            }
+
+            if (!userNameFormat.IsMatch(name))
+            {
+                return new ValidationResult(false,
+                  $"Channel name must be alphanumeric");
+            }
+            if ((name.Length <= Constants.USR_MIN_LENGTH) || (name.Length >= 20))
+            {
+                return new ValidationResult(false,
+                  $"Channel name must have between 1 and 20 characters");
+            }
+            return ValidationResult.ValidResult;
+        }
+    }
 }
