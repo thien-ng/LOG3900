@@ -269,4 +269,10 @@ export abstract class Arena {
         return this.dcPlayer.includes(username);
     }
 
+    protected sendCurrentPointToUser(mes: IGameplayChat): void {
+        const user = this.users.find(u => {return u.username === mes.username}) as IUser;
+        const pts = this.userMapPoints.get(user.username) as number;
+        this.socketServer.to(user.socketId).emit("game-points", {point: pts});
+    }
+
 }
