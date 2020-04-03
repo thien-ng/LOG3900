@@ -24,7 +24,7 @@ export abstract class Bot {
         this.socket = socket;
     }
 
-    public abstract launchTauntStart(room: string): void;
+    public abstract launchTauntStart(room: string, gameMessages: IGameplayAnnouncement[]): void;
 
     public draw(room: string, arenaTime: number, drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): NodeJS.Timeout {
         this.setupOnDraw(drawings, mode, panoramicFirstSide);
@@ -152,13 +152,14 @@ export abstract class Bot {
         this.drawings[a] = temp;
     }
 
-    public launchTaunt(room: string): void {
+    public launchTaunt(room: string, gameMessages: IGameplayAnnouncement[]): void {
         const taunt = this.taunts[Math.floor(Math.random() * this.taunts.length)]; //ceci ou la fonction qui envoie un message avec Username
         const announcement: IGameplayAnnouncement = {
             username: this.username,
             content: taunt,
             isServer: false,
         };
+        gameMessages.push(announcement);
         this.socket.to(room).emit("game-chat", announcement);
     }
 }

@@ -32,6 +32,7 @@
 | Get active lobbies by mode        |  GET | /game/lobby/active/:mode        |
 | Get users in a lobby by name      |  GET | /game/lobby/users/:lobbyName    |
 | Get messages in a lobby by name   |  GET | /game/lobby/messages/:lobbyName |
+| Get messages in a arena by name   |  GET | /game/arena/messages/:username  |
 | Start game with lobby name        |  GET | /game/start/:lobbyName          |
 
 ## Creator

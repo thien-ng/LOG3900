@@ -47,6 +47,10 @@ export class GameController {
             res.json(this.lobbyServ.getMessagesByLobbyName(req.params.lobbyName));
         });
 
+        this.router.get('/arena/messages/:username', (req: Request, res: Response, next: NextFunction) => {
+            res.json(this.gameMan.getMessagesByUsername(req.params.username));
+        });
+
         this.router.get('/start/:lobbyName', (req: Request, res: Response, next: NextFunction) => {
             this.gameMan.startGame(req.params.lobbyName);
             res.status(200).send();

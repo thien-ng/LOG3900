@@ -2,7 +2,7 @@ import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
 import { ArenaSprint } from "./arena-sprint";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt, IGameplayAnnouncement } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
@@ -63,6 +63,13 @@ export class GameManagerService {
         if (lobby.users.length < minAmount || lobby.users.length > maxAmount) {
             throw new Error(`the amount of players in the lobby must be between ${minAmount} and ${maxAmount} to play in ${lobby.mode}.`);
         }
+    }
+
+    public getMessagesByUsername(username: string): IGameplayAnnouncement[] {
+        const arenaId = this.userMapArenaId.get(username);
+        if (arenaId === undefined) throw new Error("User is not part of an arena");
+        const arena = this.arenas.get(arenaId) as ArenaFfa | ArenaSprint;
+        return arena.gameMessages;
     }
 
     public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {

@@ -89,17 +89,16 @@ export class ArenaSprint extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
+        this.gameMessages.push({ username: mes.username, content: mes.content, isServer: false });
         this.sendToChat({ username: mes.username, content: mes.content, isServer: false });
         if (this.isRightAnswer(mes.content)) {
             //add time,
             this.timeRemaining += this.timePerImage;
 
             //anounce
-            this.sendToChat({
-                username: "Server",
-                content: format(ANNOUNCEMENT, mes.username),
-                isServer: true
-            });
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true });
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true });
+
             //add to score
             this.wordGuessedRight++;
             this.botAnnounceEndSubGane();
@@ -160,10 +159,10 @@ export class ArenaSprint extends Arena {
     }
 
     protected botAnnounceStart(): void {
-        this.drawer_bot.launchTauntStart(this.room);
+        this.drawer_bot.launchTauntStart(this.room, this.gameMessages);
     }
 
     protected botAnnounceEndSubGane(): void {
-        this.drawer_bot.launchTaunt(this.room);
+        this.drawer_bot.launchTaunt(this.room, this.gameMessages);
     }
 }
