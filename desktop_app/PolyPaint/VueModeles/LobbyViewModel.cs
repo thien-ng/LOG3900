@@ -26,10 +26,11 @@ namespace PolyPaint.VueModeles
             fetchUsername();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
             ServerService.instance.socket.On("game-start", joingame);
-            ServerService.instance.socket.On("lobby-kicked", x => Mediator.Notify("LeaveLobby", ""));
+            ServerService.instance.socket.On("lobby-kicked", kickedFromLobby);
 
             Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
+
 
         #region Public Attributes
 
@@ -93,6 +94,11 @@ namespace PolyPaint.VueModeles
         #endregion
 
         #region Methods
+        private void kickedFromLobby()
+        {
+            Mediator.Notify("LeaveLobby", "");
+        }
+
         private async Task leaveLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
@@ -116,6 +122,7 @@ namespace PolyPaint.VueModeles
             dynamic values = new JObject();
             values.username = username;
             values.lobbyName = LobbyName;
+            values.isKicked = true;
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
@@ -133,8 +140,6 @@ namespace PolyPaint.VueModeles
             {
                 fetchUsername();
             }
-            if(!Usernames.Contains(ServerService.instance.username))
-                Mediator.Notify("LeaveLobby", "");
         }
         private async void fetchUsername()
         {
