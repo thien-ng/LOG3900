@@ -26,6 +26,7 @@ namespace PolyPaint.VueModeles
             fetchUsername();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
             ServerService.instance.socket.On("game-start", joingame);
+            MyUsername = ServerService.instance.username;
 
             Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
@@ -41,6 +42,7 @@ namespace PolyPaint.VueModeles
             set { _usernames = value; ProprieteModifiee(); }
         }
 
+
         private ObservableCollection<string> _bots;
         public ObservableCollection<string> Bots
         {
@@ -54,6 +56,8 @@ namespace PolyPaint.VueModeles
             get { return _selectedBot; }
             set { _selectedBot = value; ProprieteModifiee(); }
         }
+
+        public string MyUsername { get; set; }
 
         private bool _isGameMaster;
         public bool IsGameMaster
@@ -132,9 +136,8 @@ namespace PolyPaint.VueModeles
             {
                 fetchUsername();
             }
-            if(!Usernames.Contains(ServerService.instance.username))
-                Mediator.Notify("LeaveLobby", "");
         }
+
         private async void fetchUsername()
         {
             ObservableCollection<string> usernames = new ObservableCollection<string>();
@@ -152,8 +155,10 @@ namespace PolyPaint.VueModeles
                         usernames.Add(item);
                     });
                 }
+                IsGameMaster = ServerService.instance.username == MyUsername;
+                if(IsGameMaster)
+                    usernames.Remove(usernames[0]);
                 Usernames = usernames;
-                IsGameMaster = ServerService.instance.username == Usernames.First<string>();
             }
         }
         private async Task startGame()
