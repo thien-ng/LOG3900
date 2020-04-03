@@ -221,7 +221,7 @@ export class ArenaFfa extends Arena {
     }
 
     private checkIfEveryoneHasRightAnswer(): boolean {
-        return (this.users.length - this.dcPlayer.length) === this.userWithCorrectAns.length - 1; //-1 to ignore drawer
+        return (this.users.length - this.dcPlayer.length -1 ) <= this.userWithCorrectAns.length; //-1 to ignore drawer
     }
 
     private initBots(): void {
@@ -233,8 +233,8 @@ export class ArenaFfa extends Arena {
         });
     }
 
-    private isNotCurrentDrawer(username: string): boolean {
-        return this.users[this.drawPtr].username !== username;
+    private isNotCurrentDrawer(username: string): boolean {        
+        return this.users[this.drawPtr - 1].username !== username;
     }
 
 }
