@@ -69,7 +69,7 @@ export class GameManagerService {
         const arenaId = this.userMapArenaId.get(username);
         if (arenaId === undefined) throw new Error("User is not part of an arena");
         const arena = this.arenas.get(arenaId) as ArenaFfa | ArenaSprint;
-        return arena.gameMessages;
+        return (arena)? arena.gameMessages : [];
     }
 
     public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
