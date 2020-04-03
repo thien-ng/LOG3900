@@ -197,17 +197,21 @@ namespace PolyPaint.VueModeles
             IsNotInLobby = true;
             Application.Current.Dispatcher.Invoke(delegate
             {
-               FetchChannels();
+                SubChannels.Clear();
+                NotSubChannels.Clear();
             });
+            FetchChannels();
+
         }
         private void goToGameView(object obj)
         {
             SwitchView = Views.Game;
             GameViewModel = new GameViewModel();
+            Console.WriteLine(Lobbyname);
             Application.Current.Dispatcher.Invoke(delegate
             {
-                _subChannels.Remove(_subChannels.SingleOrDefault(i => i.id == Lobbyname));
-                _subChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+                SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == ( Constants.LOBBY_CHANNEL + Lobbyname)));
+                SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
             });
             ChangeChannel(Constants.GAME_CHANNEL);
         }
@@ -222,31 +226,35 @@ namespace PolyPaint.VueModeles
             SwitchView = Views.Lobby;
             Application.Current.Dispatcher.Invoke(delegate
             {
-               _subChannels.Add(new MessageChannel(lobbyChannel, true, true));
+               SubChannels.Add(new MessageChannel(lobbyChannel, true, true));
             });
             ChangeChannel(lobbyChannel);
         }
 
         private async void FetchChannels()
         {
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                _subChannels.Clear();
-                _notSubChannels.Clear();
-            });
+            await Application.Current.Dispatcher.Invoke(async delegate
+             {
+                 SubChannels.Clear();
+                 NotSubChannels.Clear();
 
 
-            var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-            var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-            
-            ProcessChannelRequest(subChannelReq, _subChannels, true);
-            ProcessChannelRequest(notSubChannelReq, _notSubChannels, false);
+                 var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+                 var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
 
-            _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+                 ProcessChannelRequest(subChannelReq, SubChannels, true);
+                 ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
+
+                 SubChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+             });
         }
 
         private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
         {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                list.Clear();
+            });
             if (response.IsSuccessStatusCode)
             {
                 JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
