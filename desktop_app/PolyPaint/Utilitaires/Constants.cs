@@ -38,6 +38,7 @@ namespace PolyPaint.Utilitaires
 
         public const string DEFAULT_CHANNEL         = "general";
         public const string GAME_CHANNEL            = "Game Channel";
+        public const string LOBBY_CHANNEL           = "LOBBY";
 
         public const string SENDER_SERVER           = "server";
         public const string SENDER_ME               = "me";

@@ -26,6 +26,7 @@ namespace PolyPaint.VueModeles
             fetchUsername();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
             ServerService.instance.socket.On("game-start", joingame);
+            ServerService.instance.socket.On("lobby-kicked", x => Mediator.Notify("LeaveLobby", ""));
 
             Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
