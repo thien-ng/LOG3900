@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+             xmlns:util="clr-namespace:PolyPaint.Utilitaires"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="16">
@@ -11,14 +12,31 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBox wpf:HintAssist.Hint="Name" Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
-                 Text="{Binding NewChannelString}"
+        <TextBox wpf:HintAssist.Hint="Channel Name" x:Name="channelText" Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 6 0 0"
-                 FontSize="18" Grid.Row="0"/>
+                 FontSize="18" Grid.Row="0">
+            <TextBox.Text>
+                <Binding Path="NewChannelString"
+             UpdateSourceTrigger="PropertyChanged" >
+                    <Binding.ValidationRules>
+                        <util:ChannelNameRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
         <StackPanel Orientation="Horizontal" Grid.Row="1"
-                    Margin="0 16 0 0">
-            <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}"
+                    Margin="0 40 0 0">
+            <Button IsDefault="True"
                     Command="{Binding AcceptCommand}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}" >
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=channelText, Path=(Validation.HasError)}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 ACCEPT
             </Button>
             <Button IsCancel="True" Margin="8 0 0 0" Style="{DynamicResource MaterialDesignFlatButton}"
