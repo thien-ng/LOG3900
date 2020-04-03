@@ -11,12 +11,14 @@ import * as io from 'socket.io';
 @injectable()
 export class LobbyManagerService {
 
-    public lobbies: Map<string, IActiveLobby>
+    public lobbies:         Map<string, IActiveLobby>;
+    public lobbiesMessages: Map<string, IReceptMesLob[]>;
 
     private socketServer: io.Server;
 
     public constructor(@inject(Types.UserManagerService) private userServ: UserManagerService) {
         this.lobbies = new Map<string, IActiveLobby>();
+        this.lobbiesMessages = new Map<string, IReceptMesLob[]>();
     }
 
     public initSocketServer(socketServer: io.Server): void {
@@ -25,11 +27,14 @@ export class LobbyManagerService {
 
     public getUsersInLobby(lobbyName: string): string[] {
         const lobby = this.lobbies.get(lobbyName) as IActiveLobby;
-
         const users: string[] = [];
         lobby.users.forEach(u => { users.push(u.username) });
-
         return users;
+    }
+
+    public getMessagesByLobbyName(lobbyName: string): IReceptMesLob[] {
+        const messages = this.lobbiesMessages.get(lobbyName);
+        return (messages)? messages : [];
     }
 
     public getActiveLobbies(mode: GameMode): IGetLobby[] {
@@ -143,8 +148,8 @@ export class LobbyManagerService {
                 throw new Error("Creating lobby must have correct mode");
             }
 
-
             this.lobbies.set(req.lobbyName, { users: [user], isPrivate: req.isPrivate, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode } as IActiveLobby);
+            this.lobbiesMessages.set(req.lobbyName, []);
             this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size, mode: req.mode } as INotifyLobbyUpdate);
         }
 
@@ -174,6 +179,7 @@ export class LobbyManagerService {
             if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
                 this.lobbies.delete(req.lobbyName);
+                this.lobbiesMessages.delete(req.lobbyName);
                 this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete });
             } else {
                 // Leave lobby
@@ -211,6 +217,10 @@ export class LobbyManagerService {
         else {
             const message = { lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
             lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
+
+            const messages: IReceptMesLob[] = this.lobbiesMessages.get(mes.lobbyName) as IReceptMesLob[];
+            messages.push(mes);
+            this.lobbiesMessages.set(mes.lobbyName, messages);
         }
     }
 

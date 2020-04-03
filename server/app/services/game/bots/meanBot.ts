@@ -11,12 +11,13 @@ export class MeanBot extends Bot {
         this.taunts = Taunt.mean;
     }
 
-    public launchTauntStart(room: string): void {
+    public launchTauntStart(room: string, gameMessages: IGameplayAnnouncement[]): void {
         const announcement: IGameplayAnnouncement = {
             username: this.username,
             content: "Ur all trash, EZ win today boiz!",
             isServer: false,
         };
+        gameMessages.push(announcement);
         this.socket.to(room).emit("game-chat", announcement);
     }
 
