@@ -164,6 +164,13 @@ export class LobbyManagerService {
 
         if (lobby) {
             lobby.users = lobby.users.filter(u => { return u.username !== req.username });
+
+            if (req.isKicked) {
+                const user = this.findUserToKick(lobby.users, req.username);
+                if (user)
+                    this.socketServer.to(user.socketId).emit("lobby-kicked");
+            }
+
             if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
                 this.lobbies.delete(req.lobbyName);
@@ -191,7 +198,7 @@ export class LobbyManagerService {
         });
         if (!lobbyName)
             return
-        this.leave({ username: username, lobbyName: lobbyName });
+        this.leave({ username: username, lobbyName: lobbyName, isKicked: false });
     }
 
     public sendMessages(mes: IReceptMesLob | INotifyUpdateUser | INotifyLobbyUpdate): void {
@@ -200,7 +207,7 @@ export class LobbyManagerService {
         if (!lobby) return;
 
         if (this.isNotification(mes))
-            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif", mes) });
+            this.socketServer.emit("lobby-notif", mes);
         else {
             const message = { lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
             lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
@@ -272,12 +279,16 @@ export class LobbyManagerService {
     }
 
     private isJoinLobby(req: IJoinLobby | ILeaveLobby): boolean {
-        return Object.keys(req).length >= 3;
+        return Object.keys(req).length >= 4;
     }
 
     private verifySocketConnection(): void {
         if (!this.socketServer)
             throw new Error("Socket is not connected");
+    }
+
+    private findUserToKick(users: IUser[], playerKicked: string): IUser | undefined {
+        return users.find(u => {return u.username === playerKicked});
     }
 
 }

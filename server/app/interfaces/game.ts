@@ -33,6 +33,7 @@ export interface IJoinLobby {
 export interface ILeaveLobby {
     username:  string,
     lobbyName: string,
+    isKicked:  boolean,
 }
 
 export interface IReceptMesLob {
