@@ -144,6 +144,8 @@ export class ArenaFfa extends Arena {
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
 
+            this.sendCurrentPointToUser(mes);
+
             if (this.checkIfEveryoneHasRightAnswer())
                 this.isEveryoneHasRightAnswer = true;
         } else {
