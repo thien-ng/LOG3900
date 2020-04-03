@@ -311,13 +311,13 @@ class ChatFragment: Fragment() {
         val isServer = mes.getBoolean("isServer")
 
         activity!!.runOnUiThread {
-            if (channelId == GAME_CHANNEL_ID && user != username) {
-                if (!isServer) {
-                    messageAdapter.add(GameChatItemReceived(content, user))
+            if (channelId == GAME_CHANNEL_ID) {
+                if (isServer) {
+                    messageAdapter.add(GameServerChatItemReceived(content))
                 } else if (user == username) {
                     messageAdapter.add(GameChatItemSent(content))
                 } else {
-                    messageAdapter.add(GameServerChatItemReceived(content))
+                    messageAdapter.add(GameChatItemReceived(content, user))
                 }
             }
         }
