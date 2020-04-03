@@ -68,7 +68,6 @@ public class UserListViewAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder view;
@@ -111,6 +110,10 @@ public class UserListViewAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void removeUser(String username){
+        mData.remove(username);
+        notifyDataSetChanged();
+    }
     public class ViewHolder {
         TextView myTextView;
         AppCompatImageView deleteIcon;
