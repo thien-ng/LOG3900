@@ -121,6 +121,28 @@ class ConnexionController {
                     Toast.LENGTH_SHORT
                 ).show()
 
+    fun loadLobbyChatHistory(activity: ChatFragment) {
+        val requestQueue = Volley.newRequestQueue(activity.context)
+
+        val jsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET,
+            Constants.SERVER_URL + "/game/lobby/messages/" + activity.lobbyName,
+            null,
+            Response.Listener<JSONArray>{ response ->
+                activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
+                activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
+            },Response.ErrorListener{
+                    error ->
+                Toast.makeText(
+                    activity.context,
+                    error.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+
+        requestQueue.add(jsonArrayRequest)
+    }
             }
         )
 
