@@ -30,10 +30,10 @@ namespace PolyPaint.VueModeles
 
         #region Public Attributes
         private ObservableCollection<int> _numbers;
-        public ObservableCollection<int> Numbers 
+        public ObservableCollection<int> Numbers
         {
             get { return _numbers; }
-            set { _numbers = value; ProprieteModifiee(); } 
+            set { _numbers = value; ProprieteModifiee(); }
         }
 
         private ObservableCollection<GameCard> _gameCards;
@@ -60,10 +60,10 @@ namespace PolyPaint.VueModeles
         public string SelectedMode
         {
             get { return _selectedMode; }
-            set 
-            { 
-                _selectedMode = value; 
-                ProprieteModifiee(); 
+            set
+            {
+                _selectedMode = value;
+                ProprieteModifiee();
                 getLobbies();
                 Numbers.Clear();
                 switch (_selectedMode)
@@ -171,9 +171,8 @@ namespace PolyPaint.VueModeles
 
         private void processLobbyNotif(JObject data)
         {
-            if (data.GetValue("type").ToString() == "create")
+            if ((data.GetValue("type").ToString() == "create" && data.GetValue("mode").ToString() == SelectedMode) || data.GetValue("type").ToString() == "delete")
                 getLobbies();
-
         }
 
         private void fillArray(int min, int max) 
@@ -185,9 +184,12 @@ namespace PolyPaint.VueModeles
         }
         private async void getLobbies()
         {
-            if (_selectedMode == "FFA" || _selectedMode == "SOLO" || _selectedMode == "COOP")
+            if (_selectedMode == Constants.MODE_FFA || _selectedMode == Constants.MODE_SOLO || _selectedMode == Constants.MODE_COOP)
             {
-                GameCards.Clear();
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    GameCards.Clear();
+                });
                 ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
                 var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
 
@@ -204,7 +206,10 @@ namespace PolyPaint.VueModeles
                 foreach (var item in lobbies)
                 {
                     GameCard gameCard = new GameCard(item);
-                    GameCards.Add(gameCard);
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        GameCards.Add(gameCard);
+                    });
                 }
             }
         }
