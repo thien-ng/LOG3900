@@ -267,20 +267,22 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
-        loadChannels()
-        messageAdapter.clear()
-        channelId = newChannelId
-        textViewChannelName.text = channelId
+        if (newChannelId != channelId) {
+            loadChannels()
+            messageAdapter.clear()
+            channelId = newChannelId
+            textViewChannelName.text = channelId
 
-        when (newChannelId) {
-            GAME_CHANNEL_ID -> {
-                controller.loadGameChatHistory(this)
-            }
-            LOBBY_CHANNEL_ID -> {
-                controller.loadLobbyChatHistory(this)
-            }
-            else -> {
-                controller.loadChatHistory(this)
+            when (newChannelId) {
+                GAME_CHANNEL_ID -> {
+                    controller.loadGameChatHistory(this)
+                }
+                LOBBY_CHANNEL_ID -> {
+                    controller.loadLobbyChatHistory(this)
+                }
+                else -> {
+                    controller.loadChatHistory(this)
+                }
             }
         }
     }

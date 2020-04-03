@@ -112,6 +112,7 @@ class ConnexionController {
             Constants.SERVER_URL + "/chat/messages/" + activity.channelId,
             null,
             Response.Listener<JSONArray>{ response ->
+                activity.messageAdapter.clear()
                 activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
             }, Response.ErrorListener {
@@ -135,6 +136,7 @@ class ConnexionController {
             Constants.SERVER_URL + "/game/lobby/messages/" + activity.lobbyName,
             null,
             Response.Listener<JSONArray>{ response ->
+                activity.messageAdapter.clear()
                 activity.receiveMessages (
                     activity.messageAdapter,
                     activity.username,
@@ -164,6 +166,7 @@ class ConnexionController {
             Constants.SERVER_URL + "/game/arena/messages/" + activity.username,
             null,
             Response.Listener<JSONArray>{ response ->
+                activity.messageAdapter.clear()
                 activity.receiveMessages (
                     activity.messageAdapter,
                     activity.username, response,
