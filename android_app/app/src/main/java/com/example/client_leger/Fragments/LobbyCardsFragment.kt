@@ -1,10 +1,13 @@
 package com.example.client_leger.Fragments
 
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,7 +111,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
                 if(switch.isChecked) data.put("password", d.findViewById<EditText>(R.id.lobbyPassword).text.trim())
                 data.put("mode", spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString())
-                createLobby(data)
+                lobbyCardsController.joinLobby(this, data)
                 d.hide()
             }
         }
@@ -116,6 +119,36 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun onItemClick(view: View?, position: Int) {
+
+
+    }
+
+    override fun onJoinPrivateClick(view: View?, adapterPosition: Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Enter password")
+        val  input =  EditText(context)
+        input.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+        builder.setView(input)
+
+        builder.setPositiveButton(
+            "JOIN"
+        ) { dialog, _ ->
+
+            var lobby = JSONObject()
+            lobby.put("username", username)
+            lobby.put("isPrivate", true)
+            lobby.put("lobbyName", adapterLobbyCards.getItem(adapterPosition).lobbyName)
+            lobby.put("password", input.text.trim())
+
+            lobbyCardsController.joinLobby(this, lobby)
+            dialog.dismiss()
+        }
+
+        builder.setNeutralButton(
+            "Cancel"
+        ) { dialog, _ -> dialog.cancel() }
+
+       builder.show()
 
     }
 
@@ -145,10 +178,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         v.visibility = if (v.isShown) View.GONE else View.VISIBLE
     }
 
-    private fun createLobby(lobby: JSONObject){
-        lobbyCardsController.joinLobby(this, lobby)
-    }
-    
     private fun validateLobbyFields(d: Dialog):Boolean{
         return when {
             d.lobbyname.text.isBlank() -> {
