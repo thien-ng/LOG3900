@@ -346,7 +346,12 @@ class ChatFragment: Fragment() {
         }
     }
 
-    fun receiveMessages(adapter: GroupAdapter<ViewHolder>, curUser: String, messages: JSONArray, channel: String? = null){
+    fun receiveMessages(
+        adapter: GroupAdapter<ViewHolder>,
+        curUser: String,
+        messages: JSONArray,
+        channel: String? = null,
+        isNormalChannel: Boolean = true){
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
 
