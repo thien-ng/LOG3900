@@ -11,12 +11,13 @@ export class KindBot extends Bot {
         this.taunts = Taunt.kind;
     }
     
-    public launchTauntStart(room: string): void {
+    public launchTauntStart(room: string, gameMessages: IGameplayAnnouncement[]): void {
         const announcement: IGameplayAnnouncement = {
             username: this.username,
             content: "Even if I'm going to win, let's try to have fun!",
             isServer: false,
         };
+        gameMessages.push(announcement);
         this.socket.to(room).emit("game-chat", announcement);
     }
 
