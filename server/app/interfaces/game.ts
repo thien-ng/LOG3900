@@ -61,7 +61,7 @@ export interface INotify {
 }
 
 export interface INotifyUpdateUser extends INotify{
-    user:      string;
+    username:      string;
 }
 
 export interface INotifyLobbyUpdate extends INotify {
