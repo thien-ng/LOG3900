@@ -67,6 +67,7 @@ export interface INotifyLobbyUpdate extends INotify {
     users?:     string[],
     isPrivate?: boolean,
     size?:      number,
+    mode?:      GameMode,
 }
 
 export enum LobbyNotif {

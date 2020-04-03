@@ -145,7 +145,7 @@ export class LobbyManagerService {
 
 
             this.lobbies.set(req.lobbyName, { users: [user], isPrivate: req.isPrivate, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode } as IActiveLobby);
-            this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size } as INotifyLobbyUpdate);
+            this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size, mode: req.mode } as INotifyLobbyUpdate);
         }
 
         return `Successfully joined lobby ${req.lobbyName}`;
@@ -200,7 +200,7 @@ export class LobbyManagerService {
         if (!lobby) return;
 
         if (this.isNotification(mes))
-            lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-notif", mes) });
+            this.socketServer.emit("lobby-notif", mes);
         else {
             const message = { lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
             lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
