@@ -136,19 +136,21 @@ export class ArenaFfa extends Arena {
                 time: (TOTAL_TIME - this.curTime)/ONE_SEC,
                 ratio: 1 - this.calculateRatio()});
 
-            const encAnswer = this.encryptAnswer(answer);
+            const encAnswer = this.encryptAnswer(mes.content);
+
+            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
+
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
-            this.sendToChat({
-                username: "Server",
-                content: format(ANNOUNCEMENT, mes.username),
-                isServer: true});
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
 
             this.sendCurrentPointToUser(mes);
 
             if (this.checkIfEveryoneHasRightAnswer())
                 this.isEveryoneHasRightAnswer = true;
         } else {
-            this.sendToChat({username: mes.username, content: answer, isServer: false});
+            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
+            this.sendToChat({username: mes.username, content: mes.content, isServer: false});
         }
     }
 
@@ -160,13 +162,13 @@ export class ArenaFfa extends Arena {
 
     protected botAnnounceStart(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
-            bot.launchTauntStart(this.room);
+            bot.launchTauntStart(this.room, this.gameMessages);
         });
     }
 
     protected botAnnounceEndSubGane(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
-            bot.launchTaunt(this.room);
+            bot.launchTaunt(this.room, this.gameMessages);
         });
     }
 

@@ -11,12 +11,13 @@ export class HumourBot extends Bot {
         this.taunts = Taunt.humour;
     }
 
-    public launchTauntStart(room: string): void {
+    public launchTauntStart(room: string, gameMessages: IGameplayAnnouncement[]): void {
         const announcement: IGameplayAnnouncement = {
             username: this.username,
             content: "You're gonna lose, just like yo mamma!",
             isServer: false,
         };
+        gameMessages.push(announcement);
         this.socket.to(room).emit("game-chat", announcement);
     }
 
