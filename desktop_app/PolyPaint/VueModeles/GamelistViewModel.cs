@@ -23,7 +23,6 @@ namespace PolyPaint.VueModeles
             _gameCards = new ObservableCollection<GameCard>();
             _numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             SelectedMode = "FFA";
-            getLobbies();
             IsPrivate = false;
             ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
         }
@@ -190,7 +189,6 @@ namespace PolyPaint.VueModeles
                 {
                     GameCards.Clear();
                 });
-                ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
                 var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
 
                 StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
@@ -200,14 +198,7 @@ namespace PolyPaint.VueModeles
                 {
                     App.Current.Dispatcher.Invoke(delegate
                     {
-                        lobbies.Add(item);
-                    });
-                }
-                foreach (var item in lobbies)
-                {
-                    GameCard gameCard = new GameCard(item);
-                    App.Current.Dispatcher.Invoke(delegate
-                    {
+                        GameCard gameCard = new GameCard(item);
                         GameCards.Add(gameCard);
                     });
                 }
