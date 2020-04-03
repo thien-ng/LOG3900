@@ -116,17 +116,6 @@ export abstract class Arena {
         const pts = this.preparePtsToBePersisted();
         console.log("[Debug] end game points are: ", pts);
         console.log("[Debug] disconnected players: ", this.dcPlayer);
-        pts.sort((n1,n2) => {
-            if (n1.points > n2.points) {
-                return 1;
-            }
-        
-            if (n1.points < n2.points) {
-                return -1;
-            }
-        
-            return 0;
-        });
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
             
