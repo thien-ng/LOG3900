@@ -247,7 +247,7 @@ describe("LobbyManagerService", () => {
         const user = {username:"username", socketId: "testId"};
         service["lobbies"].set("name", {users: [user], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
-        const req: ILeaveLobby = {username:"username", lobbyName: "name"};
+        const req: ILeaveLobby = {username:"username", lobbyName: "name", isKicked: false};
 
         //when
         const result = service.leave(req);
@@ -268,7 +268,7 @@ describe("LobbyManagerService", () => {
         const user2 = {username:"username2", socketId: "testId"};
         service["lobbies"].set("name", {users: [user1, user2], isPrivate: true, lobbyName:"name", password: "password", size: 2, mode: GameMode.FFA})
 
-        const req: ILeaveLobby = {username:"username", lobbyName: "name"};
+        const req: ILeaveLobby = {username:"username", lobbyName: "name", isKicked: false};
 
         //when
         const result = service.leave(req);

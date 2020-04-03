@@ -119,7 +119,6 @@ export class ArenaFfa extends Arena {
         }
     }
 
-
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
         this.users.forEach(u => {
             if (u.username != mes.username)
@@ -128,7 +127,10 @@ export class ArenaFfa extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
-        if (this.isRightAnswer(mes.content)) {
+        
+        const answer = mes.content.toLocaleLowerCase().trim();
+
+        if (this.isRightAnswer(answer) && this.isNotCurrentDrawer(mes.username)) {
             this.userWithCorrectAns.push({
                 username: mes.username,
                 time: (TOTAL_TIME - this.curTime)/ONE_SEC,
@@ -138,6 +140,7 @@ export class ArenaFfa extends Arena {
 
             this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
             this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
+
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
 
@@ -216,7 +219,7 @@ export class ArenaFfa extends Arena {
     }
 
     private checkIfEveryoneHasRightAnswer(): boolean {
-        return (this.users.length - this.dcPlayer.length) === this.userWithCorrectAns.length;
+        return (this.users.length - this.dcPlayer.length) === this.userWithCorrectAns.length - 1; //-1 to ignore drawer
     }
 
     private initBots(): void {
@@ -226,6 +229,10 @@ export class ArenaFfa extends Arena {
                 this.botMap.set(u.username, bot);
             }
         });
+    }
+
+    private isNotCurrentDrawer(username: string): boolean {
+        return this.users[this.drawPtr].username !== username;
     }
 
 }
