@@ -166,15 +166,15 @@ export class LobbyManagerService {
         if (!user) throw new Error(`${req.username} is not found in logged users`);
 
         const lobby = this.lobbyDoesExists(req.lobbyName);
-
+        
         if (lobby) {
-            lobby.users = lobby.users.filter(u => { return u.username !== req.username });
-
             if (req.isKicked) {
                 const user = this.findUserToKick(lobby.users, req.username);
                 if (user)
                     this.socketServer.to(user.socketId).emit("lobby-kicked");
             }
+            
+            lobby.users = lobby.users.filter(u => { return u.username !== req.username });
 
             if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
