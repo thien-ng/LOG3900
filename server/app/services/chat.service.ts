@@ -286,8 +286,8 @@ export class ChatService {
         if (particip.channel.length < 1 || particip.channel.length > 20) {
             throw new Error("channel id length should be between 1 and 20");
         }
-        if (particip.channel.toLocaleLowerCase().trim() !== "lobby" ||
-            particip.channel.toLocaleLowerCase().trim() !== "game") {
+        if (particip.channel.toLocaleLowerCase().trim() === "lobby" ||
+            particip.channel.toLocaleLowerCase().trim() === "game") {
             throw new Error("channel name cannot be 'lobby' or 'game'");
         }
     }
