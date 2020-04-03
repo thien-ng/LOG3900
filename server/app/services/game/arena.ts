@@ -244,6 +244,13 @@ export abstract class Arena {
             if (!this.isBot(key))
                 ptsList.push({username: key, points: pts});
         });
+
+        ptsList.sort((n1,n2) => {
+            if (n1.points > n2.points) return 1;
+            if (n1.points < n2.points) return -1;
+            return 0;
+        });
+        
         return ptsList;
     }
 
