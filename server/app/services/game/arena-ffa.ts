@@ -31,8 +31,8 @@ export class ArenaFfa extends Arena {
 
     private botMap: Map<string, MeanBot | KindBot | HumourBot>;
 
-    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
-        super(type, arenaId, users, room, io, rules, gm)
+    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server | undefined, rules: IGameRule[], gm: GameManagerService) {
+        super(type, arenaId, users, room, io as io.Server, rules, gm)
 
         this.drawPtr = 0;
         this.userWithCorrectAns = [];
