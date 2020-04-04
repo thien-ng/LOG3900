@@ -58,12 +58,14 @@ namespace PolyPaint.Modeles
         private void SetupGameChat()
         {
             IsInGameChat = true;
+            LoadGameMessages();
             ServerService.instance.socket.On("game-chat", data => ReceiveGameMessage((JObject)data));
         }
 
         private void SetupLobbyChat()
         {
             IsInGameChat = false;
+            LoadMessages();
             ServerService.instance.socket.On("lobby-chat", data => ReceiveMessage((JObject)data));
         }
 
@@ -141,12 +143,26 @@ namespace PolyPaint.Modeles
 
         private async void LoadMessages()
         {
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.CHAT_MESSAGES_PATH + "/" + ID);
+            MessagesGame.Clear();
+            Messages.Clear();
+
+            string path = IsLobbyChat ? Constants.SERVER_PATH + Constants.LOBBY_MESSAGES_PATH + ID.Remove(0, 7) : Constants.SERVER_PATH + Constants.CHAT_MESSAGES_PATH + ID;
+            var response = await ServerService.instance.client.GetAsync(path);
             JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
 
             foreach (var item in responseJson)
                 ReceiveMessage(item);
+        }
+        private async void LoadGameMessages()
+        {
+            MessagesGame.Clear();
+            Messages.Clear();
 
+            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GAME_MESSAGES_PATH + ServerService.instance.username);
+            JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
+
+            foreach (var item in responseJson)
+                ReceiveGameMessage(item);
         }
 
         protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
