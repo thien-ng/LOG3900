@@ -71,8 +71,8 @@ namespace PolyPaint.VueModeles
         private string _lobbyInvitedTo;
         public string LobbyInvitedTo
         {
-            get { return _lobbyNameInvitedTo; }
-            set { _lobbyNameInvitedTo = value; ProprieteModifiee(); }
+            get { return _lobbyInvitedTo; }
+            set { _lobbyInvitedTo = value; ProprieteModifiee(); }
         }
 
         private string _pendingMessage;

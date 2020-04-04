@@ -96,5 +96,6 @@
                 </materialDesign:PopupBox>
             </StackPanel>
         </Grid>
+        </materialDesign:DialogHost>
     </materialDesign:DialogHost>
 </UserControl>

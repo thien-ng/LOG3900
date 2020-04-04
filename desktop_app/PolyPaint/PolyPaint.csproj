@@ -161,6 +161,9 @@
     <Compile Include="Controls\Card.xaml.cs">
       <DependentUpon>Card.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\InvitedUserControl.xaml.cs">
+      <DependentUpon>InvitedUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\InviteUserControl.xaml.cs">
       <DependentUpon>InviteUserControl.xaml</DependentUpon>
     </Compile>
@@ -295,6 +298,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Card.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\InvitedUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
