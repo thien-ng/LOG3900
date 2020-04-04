@@ -53,8 +53,23 @@
                        FontSize="25" 
                        Foreground="White"/>
 
-        </StackPanel>
-        <StackPanel Orientation="Horizontal"
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom">
+
+                <TextBlock Text="Points: " 
+                       FontSize="25"
+                       Foreground="White"/>
+
+                <TextBlock Text="{Binding MyPoints}" 
+                       FontSize="25" 
+                       Foreground="White"/>
+
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
                     Grid.Row="1"
                     Grid.Column="1">
 

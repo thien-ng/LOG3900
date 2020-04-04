@@ -20,9 +20,11 @@ namespace PolyPaint.VueModeles
         {
             DrawViewModel = new DessinViewModel();
             _points = new ObservableCollection<PointsDisplay>();
+            _myPoints = "0";
             ServerService.instance.socket.On("game-drawer", data => processRole((JObject)data));
             ServerService.instance.socket.On("game-timer", data => processTime((JObject)data));
             ServerService.instance.socket.On("game-over", data => processEndGame((JObject)data));
+            ServerService.instance.socket.On("game-points", data => processPoints((JObject)data));
         }
 
         #region Public Attributes
@@ -40,6 +42,13 @@ namespace PolyPaint.VueModeles
         {
             get { return _timer; }
             set { _timer = value; ProprieteModifiee(); }
+        }
+
+        private string _myPoints;
+        public string MyPoints
+        {
+            get { return _myPoints; }
+            set { _myPoints = value; ProprieteModifiee(); }
         }
 
         private string _objectToDraw;
@@ -112,6 +121,12 @@ namespace PolyPaint.VueModeles
             Timer = time.GetValue("time").ToString();
         }
 
+        private void processPoints(JObject pts)
+        {
+            Console.WriteLine(pts.GetValue("point").ToString());
+            MyPoints = pts.GetValue("point").ToString();
+        }
+
         private void processEndGame(JObject pointsReceived)
         {
             try
@@ -161,7 +176,7 @@ namespace PolyPaint.VueModeles
                 return _okCommand ?? (_okCommand = new RelayCommand(x =>
                 {
                     IsEndGameDialogOpen = false;
-                    Mediator.Notify("goToGameListView");
+                    Mediator.Notify("LeaveLobby");
                 }));
             }
         }
