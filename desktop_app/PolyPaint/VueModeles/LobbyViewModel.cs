@@ -176,11 +176,12 @@ namespace PolyPaint.VueModeles
 
         private string findFirstNotBot(ObservableCollection<string> list)
         {
-            while (list.First<string>().Contains("bot:"))
+            ObservableCollection<string> temp = new ObservableCollection<string>(list);
+            while (temp.First<string>().Contains("bot:"))
             {
-                list.Move(0, list.Count);
+                temp.Remove(temp.First<string>());
             }
-            return list.First<string>();
+            return temp.First<string>();
         }
 
         private async Task startGame()
