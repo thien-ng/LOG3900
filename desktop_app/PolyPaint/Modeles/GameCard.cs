@@ -233,7 +233,6 @@ namespace PolyPaint.Modeles
                 return _cancelPasswordCommand ?? (_cancelPasswordCommand = new RelayCommand(x =>
                 {
                     this.IsPasswordDialogOpen = false;
-                    Password.Password = "";
                 }));
             }
         }

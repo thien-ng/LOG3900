@@ -545,7 +545,6 @@ namespace PolyPaint.VueModeles
                 return _acceptInviteCommand ?? (_acceptInviteCommand = new RelayCommand(x =>
                 {
                     Mediator.Notify("joinLobbyFromInvite", LobbyInvitedTo);
-                    goToLobbyView(LobbyInvitedTo);
                     IsInvitedDialogOpen = false;
                 }));
             }
