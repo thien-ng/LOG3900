@@ -28,6 +28,7 @@ namespace PolyPaint.Utilitaires
         public const string SUGGESTION_PATH         = CREATOR_PATH + "/game/suggestion";
         public const string GAME_JOIN_PATH          = "/game/lobby/join";
         public const string GAME_INVITE_PATH        = "/game/lobby/invite";
+        public const string GAME_REFUSE_INVITE_PATH = "/game/lobby/invite/refuse";
         public const string GAME_LEAVE_PATH         = "/game/lobby/leave";
         public const string GET_ACTIVE_LOBBY_PATH   = "/game/lobby/active";
         public const string SUB_CHANNELS_PATH       = CHANNELS_PATH + "/sub";

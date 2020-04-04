@@ -201,7 +201,10 @@ namespace PolyPaint.VueModeles
         }
         private async void fetchUsername()
         {
-            Usernames.Clear();
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                Usernames.Clear();
+            });
             ObservableCollection<UserLobby> usernames = new ObservableCollection<UserLobby>();
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);
             if (response.IsSuccessStatusCode)
@@ -335,8 +338,9 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _openInviteUserControl ?? (_openInviteUserControl = new RelayCommand(async x =>
+                return _openInviteUserControl ?? (_openInviteUserControl = new RelayCommand(x =>
                 {
+                    SearchString = "";
                     InviteDialogContent = new InviteUserControl();
                     IsInviteUserDialogOpen = true;
                 }));

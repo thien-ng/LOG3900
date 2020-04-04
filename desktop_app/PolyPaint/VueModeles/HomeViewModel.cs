@@ -1,4 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PolyPaint.Controls;
 using PolyPaint.Modeles;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -59,13 +61,6 @@ namespace PolyPaint.VueModeles
         public ObservableCollection<MessageGame> MessagesGame
         {
             get { return _selectedChannel.MessagesGame; }
-        }
-
-        private string _userWhoInvited;
-        public string UserWhoInvited
-        {
-            get { return _userWhoInvited; }
-            set { _userWhoInvited = value; ProprieteModifiee(); }
         }
 
         private string _lobbyInvitedTo;
@@ -164,7 +159,7 @@ namespace PolyPaint.VueModeles
         }
 
         private bool _isInvitedDialogOpen;
-        public bool IsInvitedlDialogOpen
+        public bool IsInvitedDialogOpen
         {
             get { return _isInvitedDialogOpen; }
             set
@@ -182,7 +177,7 @@ namespace PolyPaint.VueModeles
             set
             {
                 if (_invitedDialogContent == value) return;
-                _dialogContent = value;
+                _invitedDialogContent = value;
                 ProprieteModifiee();
             }
         }
@@ -225,7 +220,6 @@ namespace PolyPaint.VueModeles
             _backEnabled = false;
             _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
             _searchString = "";
-            _userWhoInvited = "";
             _lobbyInvitedTo = "";
 
             ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
@@ -234,10 +228,13 @@ namespace PolyPaint.VueModeles
 
         private void processLobbyInvite(JObject data)
         {
-            UserWhoInvited = data.GetValue("username").ToString();
+            Console.WriteLine(data.GetValue("lobbyName").ToString());
             LobbyInvitedTo = data.GetValue("lobbyName").ToString();
-            InvitedDialogContent = new InvitedUserControl();
-            IsInvitedlDialogOpen = true;
+            Application.Current.Dispatcher.Invoke(delegate
+            { 
+                InvitedDialogContent = new InvitedUserControl();
+                IsInvitedDialogOpen = true;
+            });
         }
 
         private void goToGameListView(object obj)
@@ -454,6 +451,20 @@ namespace PolyPaint.VueModeles
             });
         }
 
+        private async void declineInvite(string lobbyInvitedTo)
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_REFUSE_INVITE_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.lobbyName = lobbyInvitedTo;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            Console.WriteLine(response.IsSuccessStatusCode);
+        }
+
         #endregion
 
         #region Commands
@@ -533,22 +544,23 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptInviteCommand ?? (_acceptInviteCommand = new RelayCommand(x =>
                 {
+                    Mediator.Notify("joinLobbyFromInvite", LobbyInvitedTo);
                     goToLobbyView(LobbyInvitedTo);
-                    IsInvitedlDialogOpen = false;
+                    IsInvitedDialogOpen = false;
                 }));
             }
         }
 
         private ICommand _declineInviteCommand;
-        public ICommand DeclineCommand
+        public ICommand DeclineInviteCommand
         {
             get
             {
                 return _declineInviteCommand ?? (_declineInviteCommand = new RelayCommand(x =>
                 {
+                    declineInvite(LobbyInvitedTo);
                     LobbyInvitedTo = "";
-                    UserWhoInvited = "";
-                    IsInvitedlDialogOpen = false;
+                    IsInvitedDialogOpen = false;
                 }));
             }
         }
