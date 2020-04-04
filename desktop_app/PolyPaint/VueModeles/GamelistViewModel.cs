@@ -62,6 +62,8 @@ namespace PolyPaint.VueModeles
             get { return _selectedMode; }
             set
             {
+                if (_selectedMode == value)
+                    return;
                 _selectedMode = value;
                 ProprieteModifiee();
                 getLobbies();
@@ -171,24 +173,23 @@ namespace PolyPaint.VueModeles
 
         private void processLobbyNotif(JObject data)
         {
-            if ((data.GetValue("type").ToString() == "create" && data.GetValue("mode").ToString() == SelectedMode) || data.GetValue("type").ToString() == "delete")
-                getLobbies();
-            if(((string)data.GetValue("type") == "join"))
-            {
-                Console.WriteLine((string)data.GetValue("username"));
-                App.Current.Dispatcher.Invoke(delegate
-                { 
-                GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
-                });
-            }
-            if (((string)data.GetValue("type") == "leave"))
-            {
-                Console.WriteLine((string)data.GetValue("username"));
-                App.Current.Dispatcher.Invoke(delegate
+            App.Current.Dispatcher.Invoke(delegate
+            { 
+                if ((data.GetValue("type").ToString() == "create" && data.GetValue("mode").ToString() == _selectedMode) || data.GetValue("type").ToString() == "delete")
+                    getLobbies();
+                if(((string)data.GetValue("type") == "join"))
                 {
+                    Console.WriteLine((string)data.GetValue("username"));
+                
+                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                }
+                if (((string)data.GetValue("type") == "leave"))
+                {
+                    Console.WriteLine((string)data.GetValue("username"));
                     GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
-                });
-            }
+                }
+            });
+
         }
 
         private void fillArray(int min, int max) 
@@ -200,26 +201,24 @@ namespace PolyPaint.VueModeles
         }
         private async void getLobbies()
         {
-            if (_selectedMode == Constants.MODE_FFA || _selectedMode == Constants.MODE_SOLO || _selectedMode == Constants.MODE_COOP)
-            {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-                    GameCards.Clear();
-                });
-                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
+            await App.Current.Dispatcher.Invoke(async delegate
+             {
+                 if (_selectedMode == Constants.MODE_FFA || _selectedMode == Constants.MODE_SOLO || _selectedMode == Constants.MODE_COOP)
+                 {
+                     GameCards.Clear();
+                     var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
 
-                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-                String responseData = streamReader.ReadToEnd();
-                var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
-                foreach (var item in myData)
-                {
-                    App.Current.Dispatcher.Invoke(delegate
-                    {
-                        GameCard gameCard = new GameCard(item);
-                        GameCards.Add(gameCard);
-                    });
-                }
-            }
+                     StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+                     String responseData = streamReader.ReadToEnd();
+                     var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
+                     foreach (var item in myData)
+                     {
+                             GameCard gameCard = new GameCard(item);
+                             GameCards.Add(gameCard);
+                     }
+                 }
+             });
+
         }
         private async void createLobby()
         {
@@ -238,13 +237,8 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-                    getLobbies();
-                });
                 Mediator.Notify("GoToLobbyScreen", _lobbyName);
                 LobbyName = "";
-
             }
         }
 
