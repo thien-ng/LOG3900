@@ -16,7 +16,6 @@ import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlin.collections.ArrayList
 
 
 class LobbyFragment : Fragment(),
@@ -55,17 +54,23 @@ class LobbyFragment : Fragment(),
         lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
             when (mes.getString("type")) {
                 "join" -> {
-                    val user = mes.getString("user")
+                    val user = mes.getString("username")
 
                     if (username == user) {
 
                     } else {
-                        userListAdapter.addUser(user)
+                        activity!!.runOnUiThread {
+                            // Stuff that updates the UI
+                            userListAdapter.addUser(user)
+                        }
+
                     }
                 }
                 "leave" -> {
-                    val user = mes.getString("user")
-                    userListAdapter.removeUser(user)
+                    val user = mes.getString("username")
+                    activity!!.runOnUiThread {
+                        userListAdapter.removeUser(user)
+                    }
 
                 }
             }

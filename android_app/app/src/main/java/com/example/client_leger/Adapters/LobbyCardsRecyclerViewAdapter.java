@@ -44,11 +44,11 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         Lobby currLobby = mData.get(position);
         holder.myTextView.setText(currLobby.getLobbyName());
         holder.usersListView.setAdapter(currLobby.getAdapter());
-        holder.lobbySize.setText(currLobby.getUsernames().size()+"/"+currLobby.getSize()+" players");
-        if(currLobby.getPrivate()){
+        holder.lobbySize.setText(currLobby.getUsernames().size() + "/" + currLobby.getSize() + " players");
+        if (currLobby.getPrivate()) {
             holder.joinPrivateButton.setEnabled(true);
             holder.joinPrivateButton.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             holder.joinButton.setEnabled(true);
             holder.joinButton.setVisibility(View.VISIBLE);
         }
@@ -69,6 +69,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         ListView usersListView;
         Button joinButton;
         Button joinPrivateButton;
+
         ViewHolder(View itemView) {
             super(itemView);
             itemView.findViewById(R.id.listView_users).setVisibility(View.GONE);
@@ -91,9 +92,9 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
                 mClickListener.onItemClick(view, getAdapterPosition());
                 if (view.getId() == joinButton.getId()) {
                     mClickListener.onJoinClick(view, getAdapterPosition());
-                }else if(view.getId() == expandUsers.getId()){
+                } else if (view.getId() == expandUsers.getId()) {
                     mClickListener.onUsersDropClick(usersListView, getAdapterPosition());
-                }else if(view.getId() == joinPrivateButton.getId()){
+                } else if (view.getId() == joinPrivateButton.getId()) {
                     mClickListener.onJoinPrivateClick(view, getAdapterPosition());
                 }
 
@@ -105,7 +106,8 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
     public Lobby getItem(int id) {
         return mData.get(id);
     }
-    public int getItemId(String lobbyName){
+
+    public int getItemId(String lobbyName) {
         for (int index = 0; index < mData.size(); index++)
             if (lobbyName.equals(mData.get(index).getLobbyName())) {
                 return index;
@@ -120,6 +122,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
             notifyItemRemoved(id);
         }
     }
+
     public void addItem(Lobby item) {
         mData.add(item);
         notifyItemChanged(mData.size() - 1);
@@ -149,8 +152,11 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+
         void onJoinClick(View view, int position);
+
         void onUsersDropClick(View view, int position);
+
         void onJoinPrivateClick(View view, int adapterPosition);
     }
 }
