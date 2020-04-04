@@ -16,8 +16,6 @@ import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class LobbyFragment : Fragment(),
@@ -28,6 +26,8 @@ class LobbyFragment : Fragment(),
     private var usernames: ArrayList<String> = arrayListOf()
     lateinit var userListAdapter: UserListViewAdapter
     lateinit var startListener: Disposable;
+
+    private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_lobby, container, false)
@@ -50,6 +50,32 @@ class LobbyFragment : Fragment(),
                 replaceFragment(GameplayFragment())
             }
         }
+
+        lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
+            when (mes.getString("type")) {
+                "join" -> {
+                    val user = mes.getString("username")
+
+                    if (username == user) {
+
+                    } else {
+                        activity!!.runOnUiThread {
+                            // Stuff that updates the UI
+                            userListAdapter.addUser(user)
+                        }
+
+                    }
+                }
+                "leave" -> {
+                    val user = mes.getString("username")
+                    activity!!.runOnUiThread {
+                        userListAdapter.removeUser(user)
+                    }
+
+                }
+            }
+        }
+
         return v
     }
 
