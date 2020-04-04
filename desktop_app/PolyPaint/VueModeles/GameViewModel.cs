@@ -148,7 +148,7 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-                Mediator.Notify("GoToGameListScreen");
+                Mediator.Notify("LeaveLobby");
             }
             
 

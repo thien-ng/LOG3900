@@ -243,17 +243,13 @@ namespace PolyPaint.VueModeles
             IsNotInLobby = true;
             Application.Current.Dispatcher.Invoke(delegate
             {
-                SubChannels.Clear();
-                NotSubChannels.Clear();
+                FetchChannels();
             });
-            FetchChannels();
-
         }
         private void goToGameView(object obj)
         {
             SwitchView = Views.Game;
             GameViewModel = new GameViewModel();
-            Console.WriteLine(Lobbyname);
             Application.Current.Dispatcher.Invoke(delegate
             {
                 SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == ( Constants.LOBBY_CHANNEL + Lobbyname)));
@@ -277,10 +273,10 @@ namespace PolyPaint.VueModeles
             ChangeChannel(lobbyChannel);
         }
 
-        private async void FetchChannels()
+        private void FetchChannels()
         {
-            await Application.Current.Dispatcher.Invoke(async delegate
-             {
+            Application.Current.Dispatcher.Invoke(async delegate
+            {
                  SubChannels.Clear();
                  NotSubChannels.Clear();
 
@@ -291,8 +287,8 @@ namespace PolyPaint.VueModeles
                  ProcessChannelRequest(subChannelReq, SubChannels, true);
                  ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
 
-                 SubChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
-             });
+                 ChangeChannel(Constants.DEFAULT_CHANNEL);
+            });
         }
 
         private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
