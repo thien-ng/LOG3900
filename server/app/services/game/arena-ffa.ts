@@ -119,7 +119,6 @@ export class ArenaFfa extends Arena {
         }
     }
 
-
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
         this.users.forEach(u => {
             if (u.username != mes.username)
@@ -128,22 +127,29 @@ export class ArenaFfa extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
-        if (this.isRightAnswer(mes.content)) {
+        
+        const answer = mes.content.toLocaleLowerCase().trim();
+
+        if (this.isRightAnswer(answer) && this.isNotCurrentDrawer(mes.username)) {
             this.userWithCorrectAns.push({
                 username: mes.username,
                 time: (TOTAL_TIME - this.curTime)/ONE_SEC,
                 ratio: 1 - this.calculateRatio()});
 
             const encAnswer = this.encryptAnswer(mes.content);
+
+            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
+
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
-            this.sendToChat({
-                username: "Server",
-                content: format(ANNOUNCEMENT, mes.username),
-                isServer: true});
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
+
+            this.sendCurrentPointToUser(mes);
 
             if (this.checkIfEveryoneHasRightAnswer())
                 this.isEveryoneHasRightAnswer = true;
         } else {
+            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
             this.sendToChat({username: mes.username, content: mes.content, isServer: false});
         }
     }
@@ -156,13 +162,13 @@ export class ArenaFfa extends Arena {
 
     protected botAnnounceStart(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
-            bot.launchTauntStart(this.room);
+            bot.launchTauntStart(this.room, this.gameMessages);
         });
     }
 
     protected botAnnounceEndSubGane(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
-            bot.launchTaunt(this.room);
+            bot.launchTaunt(this.room, this.gameMessages);
         });
     }
 
@@ -215,7 +221,7 @@ export class ArenaFfa extends Arena {
     }
 
     private checkIfEveryoneHasRightAnswer(): boolean {
-        return (this.users.length - this.dcPlayer.length) === this.userWithCorrectAns.length;
+        return (this.users.length - this.dcPlayer.length -1 ) <= this.userWithCorrectAns.length; //-1 to ignore drawer
     }
 
     private initBots(): void {
@@ -225,6 +231,10 @@ export class ArenaFfa extends Arena {
                 this.botMap.set(u.username, bot);
             }
         });
+    }
+
+    private isNotCurrentDrawer(username: string): boolean {        
+        return this.users[this.drawPtr - 1].username !== username;
     }
 
 }

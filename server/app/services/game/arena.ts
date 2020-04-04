@@ -8,9 +8,12 @@ import { HumourBot } from "./bots/humourBot";
 
 import * as io from 'socket.io';
 
+const format = require('string-format');
+
 const StringBuilder = require("string-builder");
 const CHECK_INTERVAL_TIME = 500;
 const ONE_SEC = 1000;
+const ANNOUNCEMENT = "{0} has disconnected";
 
 export abstract class Arena {
 
@@ -22,7 +25,7 @@ export abstract class Arena {
     protected curRule:             IGameRule;
     protected userMapPoints:       Map<string, number>;
     protected type:                GameMode;
-
+    
     protected userMapReady:        Map<string, boolean>;
     protected dcPlayer:            string[];
     protected users:               IUser[];
@@ -31,10 +34,12 @@ export abstract class Arena {
     private arenaId:               number;
     private chronometerTimer:      number;
     private hintPtr:               number;
-
+    
     protected curArenaInterval:    NodeJS.Timeout;
     public  chronometerInterval:   NodeJS.Timeout;
 
+    public gameMessages:           IGameplayAnnouncement[];
+    
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
         this.room           = room;
@@ -47,6 +52,7 @@ export abstract class Arena {
         this.type           = type;
         this.hintPtr        = 0;
         this.isAllDc        = false;
+        this.gameMessages   = [];
 
         this.initReadyMap();
         this.setupPoints();
@@ -81,6 +87,9 @@ export abstract class Arena {
         if (user && user.socket) {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
+
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
         }
 
         let count = 0;
@@ -240,6 +249,13 @@ export abstract class Arena {
             if (!this.isBot(key))
                 ptsList.push({username: key, points: pts});
         });
+
+        ptsList.sort((n1,n2) => {
+            if (n1.points > n2.points) return 1;
+            if (n1.points < n2.points) return -1;
+            return 0;
+        });
+
         return ptsList;
     }
 
@@ -256,6 +272,12 @@ export abstract class Arena {
 
     protected isUserDc(username: string): boolean {
         return this.dcPlayer.includes(username);
+    }
+
+    protected sendCurrentPointToUser(mes: IGameplayChat): void {
+        const user = this.users.find(u => {return u.username === mes.username}) as IUser;
+        const pts = this.userMapPoints.get(user.username) as number;
+        this.socketServer.to(user.socketId).emit("game-points", {point: pts});
     }
 
 }

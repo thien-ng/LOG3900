@@ -42,6 +42,13 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         holder.myTextView.setText(currLobby.getLobbyName());
         holder.usersListView.setAdapter(currLobby.getAdapter());
         holder.lobbySize.setText(currLobby.getUsernames().size()+"/"+currLobby.getSize()+" players");
+        if(currLobby.getPrivate()){
+            holder.joinPrivateButton.setEnabled(true);
+            holder.joinPrivateButton.setVisibility(View.VISIBLE);
+        }else{
+            holder.joinButton.setEnabled(true);
+            holder.joinButton.setVisibility(View.VISIBLE);
+        }
     }
 
     // total number of cells
@@ -58,6 +65,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         View expandUsers;
         ListView usersListView;
         Button joinButton;
+        Button joinPrivateButton;
         ViewHolder(View itemView) {
             super(itemView);
             itemView.findViewById(R.id.listView_users).setVisibility(View.GONE);
@@ -67,8 +75,10 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
             lobbySize = itemView.findViewById(R.id.textView_lobbySize);
             usersListView = itemView.findViewById(R.id.listView_users);
             joinButton = itemView.findViewById(R.id.button_join);
+            joinPrivateButton = itemView.findViewById(R.id.button_joinPrivate);
 
             joinButton.setOnClickListener(this);
+            joinPrivateButton.setOnClickListener(this);
             expandUsers.setOnClickListener(this);
         }
 
@@ -80,6 +90,8 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
                     mClickListener.onJoinClick(view, getAdapterPosition());
                 }else if(view.getId() == expandUsers.getId()){
                     mClickListener.onUsersDropClick(usersListView, getAdapterPosition());
+                }else if(view.getId() == joinPrivateButton.getId()){
+                    mClickListener.onJoinPrivateClick(view, getAdapterPosition());
                 }
 
             }
@@ -116,5 +128,6 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         void onItemClick(View view, int position);
         void onJoinClick(View view, int position);
         void onUsersDropClick(View view, int position);
+        void onJoinPrivateClick(View view, int adapterPosition);
     }
 }
