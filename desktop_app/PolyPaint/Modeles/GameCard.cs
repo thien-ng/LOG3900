@@ -6,6 +6,7 @@ using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
@@ -31,9 +32,14 @@ namespace PolyPaint.Modeles
             _lobby = lobby;
             _mode = lobby.mode;
             _lobbyName = lobby.lobbyName;
+            Size = lobby.size;
+            _actualSize = _players.Count;
             IsPrivate = lobby.isPrivate;
             _isPasswordDialogOpen = false;
+            _players.CollectionChanged += this.OnCollectionChanged;
         }
+
+        
 
         #region Public Attributes
         public event PropertyChangedEventHandler PropertyChanged;
@@ -47,14 +53,30 @@ namespace PolyPaint.Modeles
             set { _lobby = value; ProprieteModifiee(nameof(Lobby)); }
         }
 
+        public int Size { get; }
+        private int _actualSize;
+        public int ActualSize 
+        { 
+            get { return _actualSize; }
+            set
+            {
+                _actualSize = value; ProprieteModifiee();
+            }
+        }
+
         private string _mode;
         public string Mode { get { return _mode; } }
 
         private ObservableCollection<string> _players;
         public ObservableCollection<string> Players
         {
-            get { return _players; }
-            set { _players = value; ProprieteModifiee(nameof(Players)); }
+            get { return _players;  }
+            set 
+            {
+                _players = value;
+                ActualSize = Players.Count;
+                ProprieteModifiee(nameof(Players));
+            }
         }
 
         private string _lobbyName;
@@ -107,6 +129,11 @@ namespace PolyPaint.Modeles
         #endregion
 
         #region Methods
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            ActualSize = _players.Count;
+        }
+
         protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
