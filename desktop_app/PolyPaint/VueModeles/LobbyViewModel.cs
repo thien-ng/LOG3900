@@ -97,6 +97,7 @@ namespace PolyPaint.VueModeles
         private void kickedFromLobby()
         {
             Mediator.Notify("LeaveLobby", "");
+            MessageBox.Show("You got kicked from lobby");
         }
 
         private async Task leaveLobby()

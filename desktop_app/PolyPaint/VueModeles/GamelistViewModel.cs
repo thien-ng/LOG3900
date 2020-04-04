@@ -13,6 +13,7 @@ using System;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Linq;
 
 namespace PolyPaint.VueModeles
 {
@@ -172,6 +173,22 @@ namespace PolyPaint.VueModeles
         {
             if ((data.GetValue("type").ToString() == "create" && data.GetValue("mode").ToString() == SelectedMode) || data.GetValue("type").ToString() == "delete")
                 getLobbies();
+            if(((string)data.GetValue("type") == "join"))
+            {
+                Console.WriteLine((string)data.GetValue("username"));
+                App.Current.Dispatcher.Invoke(delegate
+                { 
+                GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                });
+            }
+            if (((string)data.GetValue("type") == "leave"))
+            {
+                Console.WriteLine((string)data.GetValue("username"));
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                });
+            }
         }
 
         private void fillArray(int min, int max) 
