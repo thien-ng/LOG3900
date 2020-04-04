@@ -160,7 +160,7 @@ class ChatFragment: Fragment() {
                     }
                 }
             } else if (type == "join") {
-                if (mes.getString("user") == username) {
+                if (mes.getString("username") == username) {
                     inLobby = true
                     lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()

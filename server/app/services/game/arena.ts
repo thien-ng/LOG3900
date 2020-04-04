@@ -113,7 +113,7 @@ export abstract class Arena {
             }
             else if (numOfTries >= 3) {
                 clearInterval(checkInterval);
-                this.cancelGame(); // TODO should handle game which doesn't affect player's kdr
+                this.cancelGame();
             }
             numOfTries++;
 
