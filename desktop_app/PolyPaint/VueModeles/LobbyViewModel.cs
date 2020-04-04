@@ -136,8 +136,18 @@ namespace PolyPaint.VueModeles
 
         private void refreshUserList(JObject data)
         {
-            if((string)data.GetValue("lobbyName") == this.LobbyName && ((string)data.GetValue("type") == "join"|| (string)data.GetValue("type") == "leave"))
+            if((string)data.GetValue("lobbyName") == this.LobbyName && ((string)data.GetValue("type") == "join"))
             {
+                fetchUsername();
+            }
+            if((string)data.GetValue("type") == "leave"){
+                if (data.GetValue("username").ToString().Contains("bot:"))
+                {
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        Bots.Add(data.GetValue("username").ToString());
+                    });
+                }
                 fetchUsername();
             }
         }
@@ -159,9 +169,20 @@ namespace PolyPaint.VueModeles
                     });
                 }
                 Usernames = usernames;
-                IsGameMaster = ServerService.instance.username == Usernames.First<string>();
+                string firstUser = findFirstNotBot(Usernames);
+                IsGameMaster = ServerService.instance.username == firstUser;
             }
         }
+
+        private string findFirstNotBot(ObservableCollection<string> list)
+        {
+            while (list.First<string>().Contains("bot:"))
+            {
+                list.Move(0, list.Count);
+            }
+            return list.First<string>();
+        }
+
         private async Task startGame()
         {
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
