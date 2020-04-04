@@ -103,7 +103,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
             when (mes.getString("type")) {
                 "create" -> {
-                    val user = mes.getJSONArray("users").getString(0)
+                    val user = mes.getJSONArray("usernames").getString(0)
                     //First user should always be the lobby creator.
 
                     if (username == user) {
