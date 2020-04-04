@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PolyPaint.Controls;
+using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
@@ -21,7 +22,7 @@ namespace PolyPaint.VueModeles
     {
         public LobbyViewModel(string lobbyname)
         {
-            Usernames = new ObservableCollection<string>();
+            Usernames = new ObservableCollection<UserLobby>();
             this.LobbyName = lobbyname;
             fetchUsername();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
@@ -36,8 +37,8 @@ namespace PolyPaint.VueModeles
 
         public static string[] BotList = { "bot:sebastien", "bot:olivia", "bot:olivier" };
         public string LobbyName { get; set; }
-        private ObservableCollection<string> _usernames;
-        public ObservableCollection<string> Usernames
+        private ObservableCollection<UserLobby> _usernames;
+        public ObservableCollection<UserLobby> Usernames
         {
             get { return _usernames; }
             set { _usernames = value; ProprieteModifiee(); }
@@ -154,7 +155,7 @@ namespace PolyPaint.VueModeles
         }
         private async void fetchUsername()
         {
-            ObservableCollection<string> usernames = new ObservableCollection<string>();
+            ObservableCollection<UserLobby> usernames = new ObservableCollection<UserLobby>();
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);
             if (response.IsSuccessStatusCode)
             {
@@ -166,7 +167,7 @@ namespace PolyPaint.VueModeles
                 {
                     App.Current.Dispatcher.Invoke(delegate
                     {
-                        usernames.Add(item);
+                        usernames.Add(new UserLobby(item, item == ServerService.instance.username));
                     });
                 }
                 Usernames = usernames;
@@ -175,14 +176,14 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private string findFirstNotBot(ObservableCollection<string> list)
+        private string findFirstNotBot(ObservableCollection<UserLobby> list)
         {
-            ObservableCollection<string> temp = new ObservableCollection<string>(list);
-            while (temp.First<string>().Contains("bot:"))
+            ObservableCollection<UserLobby> temp = new ObservableCollection<UserLobby>(list);
+            while (temp.First<UserLobby>().username.Contains("bot:"))
             {
-                temp.Remove(temp.First<string>());
+                temp.Remove(temp.First<UserLobby>());
             }
-            return temp.First<string>();
+            return temp.First<UserLobby>().username;
         }
 
         private async Task startGame()

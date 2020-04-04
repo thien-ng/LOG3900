@@ -40,10 +40,12 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Foreground="White" FontSize="20" Text="-"/>
-                            <TextBlock Foreground="White" FontSize="20" Text="{Binding}" />
-                            <Button Style="{StaticResource MaterialDesignIconButton}" Command="{Binding ElementName=MyItems,  Path=DataContext.RemoveUserCommand}" CommandParameter="{Binding}" Visibility="{Binding ElementName=MyItems, Path=DataContext.IsGameMaster, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <materialDesign:PackIcon Kind="Delete" Foreground="DarkRed" Height="40" Width="40" />
-                            </Button>
+                            <TextBlock Foreground="White" FontSize="20" Text="{Binding username}" />
+                            <StackPanel  VerticalAlignment="Top" Visibility="{Binding ElementName=MyItems, Path=DataContext.IsGameMaster, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Button Style="{StaticResource MaterialDesignIconButton}" Command="{Binding ElementName=MyItems,  Path=DataContext.RemoveUserCommand}" CommandParameter="{Binding username}" Visibility="{Binding isMyself, Converter={StaticResource InverseBoolToVisConverter}}" >
+                                    <materialDesign:PackIcon Kind="Delete" Foreground="DarkRed" Height="40" Width="40" />
+                                </Button>
+                            </StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
