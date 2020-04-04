@@ -33,6 +33,9 @@
         </ResourceDictionary>
         
     </UserControl.Resources>
+    <materialDesign:DialogHost IsOpen="{Binding IsInvitedDialogOpen}"
+                               DialogContent="{Binding InvitedDialogContent}"
+                               CloseOnClickAway="True">
     <materialDesign:DialogHost IsOpen="{Binding IsCreateChannelDialogOpen}"
                                DialogContent="{Binding DialogContent}"
                                CloseOnClickAway="True">

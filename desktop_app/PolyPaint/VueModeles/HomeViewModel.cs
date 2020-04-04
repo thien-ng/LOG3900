@@ -61,6 +61,20 @@ namespace PolyPaint.VueModeles
             get { return _selectedChannel.MessagesGame; }
         }
 
+        private string _userWhoInvited;
+        public string UserWhoInvited
+        {
+            get { return _userWhoInvited; }
+            set { _userWhoInvited = value; ProprieteModifiee(); }
+        }
+
+        private string _lobbyInvitedTo;
+        public string LobbyInvitedTo
+        {
+            get { return _lobbyNameInvitedTo; }
+            set { _lobbyNameInvitedTo = value; ProprieteModifiee(); }
+        }
+
         private string _pendingMessage;
         public string PendingMessage
         {
@@ -149,6 +163,30 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private bool _isInvitedDialogOpen;
+        public bool IsInvitedlDialogOpen
+        {
+            get { return _isInvitedDialogOpen; }
+            set
+            {
+                if (_isInvitedDialogOpen == value) return;
+                _isInvitedDialogOpen = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private object _invitedDialogContent;
+        public object InvitedDialogContent
+        {
+            get { return _invitedDialogContent; }
+            set
+            {
+                if (_invitedDialogContent == value) return;
+                _dialogContent = value;
+                ProprieteModifiee();
+            }
+        }
+
         private string _newChannelString;
         public string NewChannelString
         {
@@ -187,8 +225,19 @@ namespace PolyPaint.VueModeles
             _backEnabled = false;
             _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
             _searchString = "";
+            _userWhoInvited = "";
+            _lobbyInvitedTo = "";
 
             ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
+            ServerService.instance.socket.On("lobby-invitation", data => processLobbyInvite((JObject)data));
+        }
+
+        private void processLobbyInvite(JObject data)
+        {
+            UserWhoInvited = data.GetValue("username").ToString();
+            LobbyInvitedTo = data.GetValue("lobbyName").ToString();
+            InvitedDialogContent = new InvitedUserControl();
+            IsInvitedlDialogOpen = true;
         }
 
         private void goToGameListView(object obj)
@@ -473,6 +522,33 @@ namespace PolyPaint.VueModeles
                 {
                     NewChannelString = "";
                     IsCreateChannelDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _acceptInviteCommand;
+        public ICommand AcceptInviteCommand
+        {
+            get
+            {
+                return _acceptInviteCommand ?? (_acceptInviteCommand = new RelayCommand(x =>
+                {
+                    goToLobbyView(LobbyInvitedTo);
+                    IsInvitedlDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _declineInviteCommand;
+        public ICommand DeclineCommand
+        {
+            get
+            {
+                return _declineInviteCommand ?? (_declineInviteCommand = new RelayCommand(x =>
+                {
+                    LobbyInvitedTo = "";
+                    UserWhoInvited = "";
+                    IsInvitedlDialogOpen = false;
                 }));
             }
         }
