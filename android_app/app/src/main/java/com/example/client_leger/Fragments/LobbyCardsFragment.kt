@@ -128,9 +128,9 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
-                        activity!!.runOnUiThread(Runnable {
+                        activity!!.runOnUiThread {
                             adapterLobbyCards.updateUser(mes.getString("lobbyName"), user)
-                        })
+                        }
                     }
                 }
                 "delete" -> {
