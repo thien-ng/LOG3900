@@ -1,6 +1,7 @@
 package com.example.client_leger
 
 import android.view.View
+import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.example.client_leger.Fragments.ChatFragment
@@ -15,15 +16,16 @@ class ChannelItem(private val channelId: String, private val isSub: Boolean, pri
 
     override fun bind(viewHolder: ViewHolder, position: Int){
         viewHolder.itemView.textView_channelName.text = channelId
+
         if (isSub &&
-            channelId != Constants.DEFAULT_CHANNEL_ID &&
+            channelId != DEFAULT_CHANNEL_ID &&
             channelId != GAME_CHANNEL_ID &&
             channelId != LOBBY_CHANNEL_ID) {
+            viewHolder.itemView.imageButton_leaveChannel.visibility = View.VISIBLE
             viewHolder.itemView.imageButton_leaveChannel.setOnClickListener {
                 controller.leaveChannel(activity, channelId)
             }
-        }
-        else {
+        } else {
             viewHolder.itemView.imageButton_leaveChannel.visibility = View.GONE
         }
 

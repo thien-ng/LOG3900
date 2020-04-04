@@ -61,14 +61,14 @@ export interface INotify {
 }
 
 export interface INotifyUpdateUser extends INotify{
-    user:      string;
+    username:      string;
 }
 
 export interface INotifyLobbyUpdate extends INotify {
-    users?:     string[],
-    isPrivate?: boolean,
-    size?:      number,
-    mode?:      GameMode,
+    usernames?:     string[],
+    isPrivate?:     boolean,
+    size?:          number,
+    mode?:          GameMode,
 }
 
 export enum LobbyNotif {

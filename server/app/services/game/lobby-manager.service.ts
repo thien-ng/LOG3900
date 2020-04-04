@@ -11,12 +11,14 @@ import * as io from 'socket.io';
 @injectable()
 export class LobbyManagerService {
 
-    public lobbies: Map<string, IActiveLobby>
+    public lobbies:         Map<string, IActiveLobby>;
+    public lobbiesMessages: Map<string, IReceptMesLob[]>;
 
     private socketServer: io.Server;
 
     public constructor(@inject(Types.UserManagerService) private userServ: UserManagerService) {
         this.lobbies = new Map<string, IActiveLobby>();
+        this.lobbiesMessages = new Map<string, IReceptMesLob[]>();
     }
 
     public initSocketServer(socketServer: io.Server): void {
@@ -25,11 +27,14 @@ export class LobbyManagerService {
 
     public getUsersInLobby(lobbyName: string): string[] {
         const lobby = this.lobbies.get(lobbyName) as IActiveLobby;
-
         const users: string[] = [];
         lobby.users.forEach(u => { users.push(u.username) });
-
         return users;
+    }
+
+    public getMessagesByLobbyName(lobbyName: string): IReceptMesLob[] {
+        const messages = this.lobbiesMessages.get(lobbyName);
+        return (messages)? messages : [];
     }
 
     public getActiveLobbies(mode: GameMode): IGetLobby[] {
@@ -124,11 +129,11 @@ export class LobbyManagerService {
 
             if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user)) || isBot) {
                 lobby.users.push(user);
-                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username } as INotifyUpdateUser);
+                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username } as INotifyUpdateUser);
             }
             else if (lobby.isPrivate == false) {
                 lobby.users.push(user);
-                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, user: user.username } as INotifyUpdateUser);
+                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username } as INotifyUpdateUser);
             }
             else
                 throw new Error(`Wrong password for lobby ${req.lobbyName}`);
@@ -143,9 +148,9 @@ export class LobbyManagerService {
                 throw new Error("Creating lobby must have correct mode");
             }
 
-
             this.lobbies.set(req.lobbyName, { users: [user], isPrivate: req.isPrivate, size: req.size, password: req.password, lobbyName: req.lobbyName, mode: req.mode } as IActiveLobby);
-            this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, users: [user.username], private: req.isPrivate, size: req.size, mode: req.mode } as INotifyLobbyUpdate);
+            this.lobbiesMessages.set(req.lobbyName, []);
+            this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, usernames: [user.username], isPrivate: req.isPrivate, size: req.size, mode: req.mode } as INotifyLobbyUpdate);
         }
 
         return `Successfully joined lobby ${req.lobbyName}`;
@@ -161,24 +166,25 @@ export class LobbyManagerService {
         if (!user) throw new Error(`${req.username} is not found in logged users`);
 
         const lobby = this.lobbyDoesExists(req.lobbyName);
-
+        
         if (lobby) {
-            lobby.users = lobby.users.filter(u => { return u.username !== req.username });
-
             if (req.isKicked) {
                 const user = this.findUserToKick(lobby.users, req.username);
                 if (user)
                     this.socketServer.to(user.socketId).emit("lobby-kicked");
             }
+            
+            lobby.users = lobby.users.filter(u => { return u.username !== req.username });
 
             if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
-                this.lobbies.delete(req.lobbyName);
                 this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete });
+                this.lobbies.delete(req.lobbyName);
+                this.lobbiesMessages.delete(req.lobbyName);
             } else {
                 // Leave lobby
                 this.lobbies.set(req.lobbyName, lobby);
-                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.leave, user: req.username });
+                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.leave, username: req.username });
             }
 
         } else {
@@ -211,6 +217,10 @@ export class LobbyManagerService {
         else {
             const message = { lobbyName: mes.lobbyName, username: mes.username, content: mes.content, time: Time.now() } as ILobEmitMes;
             lobby.users.forEach(u => { this.socketServer.to(u.socketId).emit("lobby-chat", message) });
+
+            const messages: IReceptMesLob[] = this.lobbiesMessages.get(mes.lobbyName) as IReceptMesLob[];
+            messages.push(mes);
+            this.lobbiesMessages.set(mes.lobbyName, messages);
         }
     }
 

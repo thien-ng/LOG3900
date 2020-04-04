@@ -23,15 +23,17 @@
 
 ## Game
 
-| Description                  | type | path                         |
-| ---------------------------- | :--: | ---------------------------- |
-| Join/Create lobby            | POST | /game/lobby/join             |
-| Leave/Delete lobby           | POST | /game/lobby/leave            |
-| invite a user in a lobby     | POST | /game/lobby/invite           |
-| invite a user in a lobby     | POST | /game/lobby/invite/refuse    |
-| Get active lobbies by mode   |  GET | /game/lobby/active/:mode     |
-| Get users in a lobby by name |  GET | /game/lobby/users/:lobbyName |
-| Start game with lobby name   |  GET | /game/start/:lobbyName       |
+| Description                       | type | path                            |
+| ----------------------------      | :--: | ----------------------------    |
+| Join/Create lobby                 | POST | /game/lobby/join                |
+| Leave/Delete lobby                | POST | /game/lobby/leave               |
+| invite a user in a lobby          | POST | /game/lobby/invite              |
+| invite a user in a lobby          | POST | /game/lobby/invite/refuse       |
+| Get active lobbies by mode        |  GET | /game/lobby/active/:mode        |
+| Get users in a lobby by name      |  GET | /game/lobby/users/:lobbyName    |
+| Get messages in a lobby by name   |  GET | /game/lobby/messages/:lobbyName |
+| Get messages in a arena by name   |  GET | /game/arena/messages/:username  |
+| Start game with lobby name        |  GET | /game/start/:lobbyName          |
 
 ## Creator
 
@@ -66,3 +68,4 @@
 | drawer-update  | emit when changing roles of players in arena           | username: string                                                                              |
 | game-over      | emit when it's end of the game                         | [{username: string, points: number}, {...}, ...]                                              |
 | game-guessLeft | emit when sending amount of guess left in sprints      | {guessLeft: number}                                                                           |
+| game-points    | emit when user has found the right answer              | {point: number}                                                                               |
