@@ -394,9 +394,8 @@ namespace PolyPaint.VueModeles
             {
                 return _inviteUserCommand ?? (_inviteUserCommand = new RelayCommand(async x =>
                 {
-                    Console.WriteLine("invite user: " + (string)x);
-                    await Task.Run(() => InviteUserAsync((string)x));
                     IsInviteUserDialogOpen = false;
+                    await Task.Run(() => InviteUserAsync((string)x));
                 }));
             }
         }

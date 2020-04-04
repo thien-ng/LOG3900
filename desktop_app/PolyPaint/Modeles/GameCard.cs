@@ -40,14 +40,6 @@ namespace PolyPaint.Modeles
             Mediator.Subscribe("joinLobbyFromInvite", joinLobbyFromInvite);
         }
 
-        private void joinLobbyFromInvite(object obj)
-        {
-            if((string)obj == this.LobbyName)
-                joinPublicLobby();
-        }
-
-
-
         #region Public Attributes
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -144,6 +136,11 @@ namespace PolyPaint.Modeles
         protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        private void joinLobbyFromInvite(object obj)
+        {
+            if ((string)obj == this.LobbyName)
+                joinPublicLobby();
         }
         private async void joinPublicLobby()
         {
