@@ -12,12 +12,14 @@ import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_gameplay_menu.view.*
 import org.json.JSONObject
 
+
 class GameplayMenuFragment: Fragment() {
 
     lateinit var username:  String
 
     private lateinit var timerSub:  Disposable
     private lateinit var drawerSub: Disposable
+    private lateinit var gamePoints: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay_menu, container, false)
@@ -30,19 +32,23 @@ class GameplayMenuFragment: Fragment() {
         readyState.put("username", username)
         SocketIO.sendMessage("gameplay", readyState)
 
-        timerSub = Communication.getTimerListener().subscribe{res ->
+        timerSub = Communication.getTimerListener().subscribe { res ->
             activity!!.runOnUiThread {
                 v.timer.text = res.getString("time")
             }
         }
 
+        gamePoints = Communication.getGamePointsListener().subscribe { res ->
+            v.points.text = "Your points: " + res.getInt("point").toString()
+        }
+
         drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
             activity!!.runOnUiThread {
                 if (res.getString("username") == username) {
-                    v.role.text = "drawer"
-                    v.item.text = res.getString("object")
+                    v.role.text = "Your role: drawer"
+                    v.item.text = "Your word to draw: " + res.getString("object")
                 } else {
-                    v.role.text = "guesser"
+                    v.role.text = "Your role: guesser"
                     v.item.text = ""
                 }
             }
