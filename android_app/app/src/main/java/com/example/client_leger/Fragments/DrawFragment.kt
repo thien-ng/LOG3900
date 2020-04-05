@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment
 import android.util.AttributeSet
 import android.view.*
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -27,85 +28,85 @@ import kotlin.math.sqrt
 
 class DrawFragment: Fragment() {
 
-    private val canvasViewChildPosition = 6
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
 
+        val canvasView = DrawCanvas(
+            activity!!.applicationContext,
+            null,
+            this.activity!!.intent.getStringExtra("username")
+        )
+
+        canvasView.layoutParams = LinearLayout.LayoutParams(1000, 750)
+
+        v.ConstraintLayout_canvasView.addView(canvasView)
+
         v.button_change_color.setOnClickListener {
-            openColorPicker(v)
+            openColorPicker(canvasView)
         }
 
         v.button_strokeErase.setOnClickListener {
-            switchStrokeEraser(v)
+            switchStrokeEraser(canvasView)
         }
 
         v.button_normalErase.setOnClickListener {
-            switchNormalEraser(v)
+            switchNormalEraser(canvasView)
         }
 
         v.button_changeWidth.setOnClickListener {
-            openWidthSelector(v)
+            openWidthSelector(canvasView)
         }
 
         v.button_round.setOnClickListener {
-            switchDrawWithCircle(v)
+            switchDrawWithCircle(canvasView)
             v.button_square.isChecked = false
             v.button_round.isChecked = true
         }
 
         v.button_square.setOnClickListener {
-            switchDrawWithSquare(v)
+            switchDrawWithSquare(canvasView)
             v.button_square.isChecked = true
             v.button_round.isChecked = false
         }
 
-        v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
-
         return v
     }
 
-    private fun switchDrawWithCircle(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.switchDrawWithCircle()
+    private fun switchDrawWithCircle(v: DrawCanvas) {
+        v.switchDrawWithCircle()
     }
 
-    private fun switchDrawWithSquare(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.switchDrawWithSquare()
+    private fun switchDrawWithSquare(v: DrawCanvas) {
+        v.switchDrawWithSquare()
     }
 
-    private fun switchStrokeEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.isStrokeErasing = !drawCanvasView.isStrokeErasing
-        if (drawCanvasView.isNormalErasing) {
-            drawCanvasView.isNormalErasing = false
+    private fun switchStrokeEraser(v: DrawCanvas) {
+        v.isStrokeErasing = !v.isStrokeErasing
+        if (v.isNormalErasing) {
+            v.isNormalErasing = false
             v.button_normalErase.toggle()
         }
     }
 
-    private fun switchNormalEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.isNormalErasing = !drawCanvasView.isNormalErasing
-        if (drawCanvasView.isStrokeErasing) {
-            drawCanvasView.isStrokeErasing = false
+    private fun switchNormalEraser(v: DrawCanvas) {
+        v.isNormalErasing = !v.isNormalErasing
+        if (v.isStrokeErasing) {
+            v.isStrokeErasing = false
             v.button_strokeErase.toggle()
         }
     }
 
-    private fun openColorPicker(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        val colorPicker = AmbilWarnaDialog(this.context, drawCanvasView.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
+    private fun openColorPicker(v: DrawCanvas) {
+        val colorPicker = AmbilWarnaDialog(this.context, v.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {}
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                    drawCanvasView.paintLine.color = color
+                    v.paintLine.color = color
                 }
             })
         colorPicker.show()
     }
 
-    private fun openWidthSelector(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+    private fun openWidthSelector(v: DrawCanvas) {
         val view = layoutInflater.inflate(R.layout.popup_change_width, null)
         val popupWindow = PopupWindow(
             view,
@@ -119,11 +120,11 @@ class DrawFragment: Fragment() {
         val okButton = view.findViewById<Button>(R.id.button_changeWidthOk)
 
         updateSeekBarThumbSize(seekBar)
-        seekBar.progress = drawCanvasView.paintLine.strokeWidth.toInt()
+        seekBar.progress = v.paintLine.strokeWidth.toInt()
 
         okButton.setOnClickListener {
             val minStrokeSize = 5.0f
-            drawCanvasView.paintLine.strokeWidth = max(minStrokeSize, seekBar.progress.toFloat())
+            v.paintLine.strokeWidth = max(minStrokeSize, seekBar.progress.toFloat())
             popupWindow.dismiss()
         }
 
@@ -151,6 +152,7 @@ class DrawFragment: Fragment() {
 class Segment(var point: Point, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
+
     var paintLine: Paint = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
@@ -202,6 +204,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
+
         matrix = Array((h / matrixSquareSize) + 1) {
             Array((w / matrixSquareSize) + 1) {
                 ArrayList<Segment>()
