@@ -39,7 +39,9 @@ class GameplayMenuFragment: Fragment() {
         }
 
         gamePoints = Communication.getGamePointsListener().subscribe { res ->
-            v.points.text = "Your points: " + res.getInt("point").toString()
+            activity!!.runOnUiThread {
+                v.points.text = "Your points: " + res.getInt("point").toString()
+            }
         }
 
         drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
