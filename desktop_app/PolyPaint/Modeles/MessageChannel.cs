@@ -40,7 +40,7 @@ namespace PolyPaint.Modeles
 
         private bool _isSubbed;
         public bool isSubbed { 
-            get { return _isSubbed && id != Constants.DEFAULT_CHANNEL && !isLobbyChat; }
+            get { return _isSubbed && id != Constants.DEFAULT_CHANNEL && !isLobbyChat && id != Constants.GAME_CHANNEL; }
             set { _isSubbed = value; }
         }
         #endregion

@@ -16,7 +16,6 @@ namespace PolyPaint.VueModeles
             CurrentPageViewModel = PageViewModels[nameof(LoginViewModel)];
 
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
-            Mediator.Subscribe("GoToDrawScreen", OnGoToDrawScreen);
             Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
             Mediator.Subscribe("GoToHomeScreen", OnGoToHomeScreen);
 
@@ -76,10 +75,6 @@ namespace PolyPaint.VueModeles
             ChangeViewModel(nameof(RegisterViewModel), typeof(RegisterViewModel));
         }
 
-        private void OnGoToDrawScreen(object obj)
-        {
-            ChangeViewModel(nameof(DessinViewModel), typeof(DessinViewModel));
-        }
 
         private void OnGoToHomeScreen(object obj)
         {
