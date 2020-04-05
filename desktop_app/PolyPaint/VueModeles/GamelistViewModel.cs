@@ -174,8 +174,9 @@ namespace PolyPaint.VueModeles
         private void processLobbyNotif(JObject data)
         {
             App.Current.Dispatcher.Invoke(delegate
-            { 
-                if ((data.GetValue("type").ToString() == "create" && data.GetValue("mode").ToString() == _selectedMode) || data.GetValue("type").ToString() == "delete")
+            {
+                bool needUpdate = ((data.GetValue("type").ToString() == "create" && data.GetValue("mode").ToString() == _selectedMode) || data.GetValue("type").ToString() == "delete");
+                if (needUpdate)
                     getLobbies();
                 if(((string)data.GetValue("type") == "join"))
                 {
