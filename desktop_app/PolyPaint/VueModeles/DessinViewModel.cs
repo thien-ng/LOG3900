@@ -15,7 +15,7 @@ namespace PolyPaint.VueModeles
     class DessinViewModel : BaseViewModel, IPageViewModel
     {
 
-        
+
 
         /// <summary>
         /// Constructeur de VueModele
@@ -23,34 +23,30 @@ namespace PolyPaint.VueModeles
         /// sur lesquelles la vue se connectera.
         /// </summary>
         /// 
-        public DessinViewModel(int width = 600, int height = 500)
+        public DessinViewModel()
+        {
+            Width = 1000;
+            Height = 500;
+            setup();
+        }
+        public DessinViewModel(int width, int height)
         {
             Width = width;
             Height = height;
-
-            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
-            
-            editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
-
-            // On initialise les attributs de dessin avec les valeurs de départ du modèle.
-            AttributsDessin = new DrawingAttributes();
-            AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
-            AjusterPointe();
-
-            Traits = editeur.traits;
-
-            // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.
-            // Pour les commandes suivantes, il est toujours possible des les activer.
-            // Donc, aucune vérification de type Peut"Action" à faire.
-            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
-            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
-
-            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            setup();
         }
 
         #region Public Attributes
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         private Editeur editeur = new Editeur();
+
+        private bool _isDrawer;
+        public bool IsDrawer
+        {
+            get { return _isDrawer; }
+            set{ _isDrawer = value; ProprieteModifiee(); } 
+        }
+
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
 
         public string OutilSelectionne
@@ -84,9 +80,18 @@ namespace PolyPaint.VueModeles
             set { _traits = value; ProprieteModifiee(); }
         }
 
-        public int Width { get; set; }
-        
-        public int Height { get; set; }
+        private double _width;
+        public double Width { 
+            get { return _width; } 
+            set { _width = value; ProprieteModifiee(); } 
+        }
+
+        private double _height;
+        public double Height
+        {
+            get { return _height; }
+            set { _height = value; ProprieteModifiee(); }
+        }
 
         // Commandes sur lesquels la vue pourra se connecter.
         public RelayCommand<string> ChoisirPointe { get; set; }
@@ -130,6 +135,40 @@ namespace PolyPaint.VueModeles
                     AjusterPointe();
                     break;
             }
+        }
+
+        private void setup()
+        {
+            IsDrawer = false;
+
+            Mediator.Subscribe("updateRole", (x) => { IsDrawer = (bool)x; });
+
+            Mediator.Subscribe("clearDraw", (x) => 
+            {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Traits.Clear();
+                });
+            });
+
+            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
+
+            editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
+
+            // On initialise les attributs de dessin avec les valeurs de départ du modèle.
+            AttributsDessin = new DrawingAttributes();
+            AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
+            AjusterPointe();
+
+            Traits = editeur.traits;
+
+            // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.
+            // Pour les commandes suivantes, il est toujours possible des les activer.
+            // Donc, aucune vérification de type Peut"Action" à faire.
+            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
+            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
+
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
         /// <summary>

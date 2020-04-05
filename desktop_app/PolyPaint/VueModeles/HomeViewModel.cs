@@ -1,4 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PolyPaint.Controls;
 using PolyPaint.Modeles;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -17,6 +19,8 @@ namespace PolyPaint.VueModeles
     class HomeViewModel : BaseViewModel, IPageViewModel
     { 
         public LobbyViewModel LobbyViewModel { get; private set; }
+
+        public GameViewModel GameViewModel { get; private set; }
         public string Lobbyname { get; set; }
         public HomeViewModel()
         {
@@ -29,7 +33,8 @@ namespace PolyPaint.VueModeles
         {
             Gamelist,
             Profile,
-            Lobby
+            Lobby,
+            Game
         }
 
 
@@ -51,6 +56,18 @@ namespace PolyPaint.VueModeles
         public ObservableCollection<MessageChat> Messages
         {
             get { return _selectedChannel.Messages; }
+        }
+
+        public ObservableCollection<MessageGame> MessagesGame
+        {
+            get { return _selectedChannel.MessagesGame; }
+        }
+
+        private string _lobbyInvitedTo;
+        public string LobbyInvitedTo
+        {
+            get { return _lobbyInvitedTo; }
+            set { _lobbyInvitedTo = value; ProprieteModifiee(); }
         }
 
         private string _pendingMessage;
@@ -141,6 +158,30 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private bool _isInvitedDialogOpen;
+        public bool IsInvitedDialogOpen
+        {
+            get { return _isInvitedDialogOpen; }
+            set
+            {
+                if (_isInvitedDialogOpen == value) return;
+                _isInvitedDialogOpen = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private object _invitedDialogContent;
+        public object InvitedDialogContent
+        {
+            get { return _invitedDialogContent; }
+            set
+            {
+                if (_invitedDialogContent == value) return;
+                _invitedDialogContent = value;
+                ProprieteModifiee();
+            }
+        }
+
         private string _newChannelString;
         public string NewChannelString
         {
@@ -163,6 +204,7 @@ namespace PolyPaint.VueModeles
             Mediator.Subscribe("SubToChannel", SubToChannel);
             Mediator.Subscribe("UnsubChannel", UnsubChannel);
             Mediator.Subscribe("GoToLobbyScreen", goToLobbyView);
+            Mediator.Subscribe("GoToGameScreen", goToGameView);
             Mediator.Subscribe("LeaveLobby", goToGameListView);
 
             _subChannels = new ObservableCollection<MessageChannel>();
@@ -178,8 +220,20 @@ namespace PolyPaint.VueModeles
             _backEnabled = false;
             _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
             _searchString = "";
+            _lobbyInvitedTo = "";
 
             ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
+            ServerService.instance.socket.On("lobby-invitation", data => processLobbyInvite((JObject)data));
+        }
+
+        private void processLobbyInvite(JObject data)
+        {
+            LobbyInvitedTo = data.GetValue("lobbyName").ToString();
+            Application.Current.Dispatcher.Invoke(delegate
+            { 
+                InvitedDialogContent = new InvitedUserControl();
+                IsInvitedDialogOpen = true;
+            });
         }
 
         private void goToGameListView(object obj)
@@ -191,36 +245,57 @@ namespace PolyPaint.VueModeles
                 FetchChannels();
             });
         }
+        private void goToGameView(object obj)
+        {
+            SwitchView = Views.Game;
+            GameViewModel = new GameViewModel();
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == ( Constants.LOBBY_CHANNEL + Lobbyname)));
+                SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+            });
+            ChangeChannel(Constants.GAME_CHANNEL);
+        }
+
 
         private void goToLobbyView(object lobbyname)
         {
             IsNotInLobby = false;
-            SwitchView = Views.Lobby;
             LobbyViewModel = new LobbyViewModel((string)lobbyname);
             this.Lobbyname = (string)lobbyname;
+            string lobbyChannel = Constants.LOBBY_CHANNEL + this.Lobbyname;
+            SwitchView = Views.Lobby;
             Application.Current.Dispatcher.Invoke(delegate
             {
-               _subChannels.Add(new MessageChannel(this.Lobbyname, true, true));
+               SubChannels.Add(new MessageChannel(lobbyChannel, true, true));
             });
-            ChangeChannel(this.Lobbyname);
+            ChangeChannel(lobbyChannel);
         }
 
-        private async void FetchChannels()
+        private void FetchChannels()
         {
-            _subChannels.Clear();
-            _notSubChannels.Clear();
-            
-            var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-            var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-            
-            ProcessChannelRequest(subChannelReq, _subChannels, true);
-            ProcessChannelRequest(notSubChannelReq, _notSubChannels, false);
+            Application.Current.Dispatcher.Invoke(async delegate
+            {
+                 SubChannels.Clear();
+                 NotSubChannels.Clear();
 
-            _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+
+                 var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+                 var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+
+                 ProcessChannelRequest(subChannelReq, SubChannels, true);
+                 ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
+
+                 ChangeChannel(Constants.DEFAULT_CHANNEL);
+            });
         }
 
         private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
         {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                list.Clear();
+            });
             if (response.IsSuccessStatusCode)
             {
                 JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
@@ -254,6 +329,8 @@ namespace PolyPaint.VueModeles
                 _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
                 ProprieteModifiee("Messages");
+                ProprieteModifiee("MessagesGame");
+
             }
         }
 
@@ -369,6 +446,19 @@ namespace PolyPaint.VueModeles
             });
         }
 
+        private async void declineInvite(string lobbyInvitedTo)
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_REFUSE_INVITE_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.lobbyName = lobbyInvitedTo;
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+        }
+
         #endregion
 
         #region Commands
@@ -441,6 +531,33 @@ namespace PolyPaint.VueModeles
             }
         }
 
+        private ICommand _acceptInviteCommand;
+        public ICommand AcceptInviteCommand
+        {
+            get
+            {
+                return _acceptInviteCommand ?? (_acceptInviteCommand = new RelayCommand(x =>
+                {
+                    Mediator.Notify("joinLobbyFromInvite", LobbyInvitedTo);
+                    IsInvitedDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _declineInviteCommand;
+        public ICommand DeclineInviteCommand
+        {
+            get
+            {
+                return _declineInviteCommand ?? (_declineInviteCommand = new RelayCommand(x =>
+                {
+                    declineInvite(LobbyInvitedTo);
+                    LobbyInvitedTo = "";
+                    IsInvitedDialogOpen = false;
+                }));
+            }
+        }
+
         private ICommand _acceptCommand;
         public ICommand AcceptCommand
         {
@@ -448,7 +565,11 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    await Task.Run(() => SubToChannel(NewChannelString));
+                    
+                    if (String.Equals(NewChannelString, Constants.GAME_CHANNEL, StringComparison.OrdinalIgnoreCase))
+                        MessageBox.Show("This channel name is used for in game chat.");
+                    else
+                        await Task.Run(() => SubToChannel(NewChannelString));
                     NewChannelString = "";
                     IsCreateChannelDialogOpen = false;
                 }));

@@ -131,11 +131,17 @@
     <Compile Include="Controls\Chat\Channel.xaml.cs">
       <DependentUpon>Channel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Chat\MessageGameItem.xaml.cs">
+      <DependentUpon>MessageGameItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Chat\MessageItem.xaml.cs">
       <DependentUpon>MessageItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Chat\MessageList.xaml.cs">
       <DependentUpon>MessageList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CreateBotControl.xaml.cs">
+      <DependentUpon>CreateBotControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\CreateChannelControl.xaml.cs">
       <DependentUpon>CreateChannelControl.xaml</DependentUpon>
@@ -146,11 +152,20 @@
     <Compile Include="Controls\CreateLobbyControl.xaml.cs">
       <DependentUpon>CreateLobbyControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\EndGameControl.xaml.cs">
+      <DependentUpon>EndGameControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\FenetreDessin.xaml.cs">
       <DependentUpon>FenetreDessin.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Card.xaml.cs">
       <DependentUpon>Card.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InvitedUserControl.xaml.cs">
+      <DependentUpon>InvitedUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\InviteUserControl.xaml.cs">
+      <DependentUpon>InviteUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LobbyPasswordControl.xaml.cs">
       <DependentUpon>LobbyPasswordControl.xaml</DependentUpon>
@@ -171,6 +186,10 @@
     <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToAlignementConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerAlignementConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerToBorderRadiusConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerToColorConverter.cs" />
+    <Compile Include="Convertisseurs\SentByServerToVisibleConverter.cs" />
     <Compile Include="Modeles\Connection.cs" />
     <Compile Include="Modeles\Editeur.cs" />
     <Compile Include="Modeles\Game.cs" />
@@ -179,12 +198,17 @@
     <Compile Include="Modeles\MessageChannel.cs" />
     <Compile Include="Modeles\HintModel.cs" />
     <Compile Include="Modeles\MessageChat.cs" />
+    <Compile Include="Modeles\MessageGame.cs" />
+    <Compile Include="Modeles\MessageGameReception.cs" />
     <Compile Include="Modeles\MessageReception.cs" />
     <Compile Include="Modeles\MessageSend.cs" />
     <Compile Include="Modeles\ChatRoom.cs" />
     <Compile Include="Modeles\PlayerScore.cs" />
+    <Compile Include="Modeles\Points.cs" />
+    <Compile Include="Modeles\PointsDisplay.cs" />
     <Compile Include="Modeles\Stats.cs" />
     <Compile Include="Modeles\User.cs" />
+    <Compile Include="Modeles\UserLobby.cs" />
     <Compile Include="Services\ServerService.cs" />
     <Compile Include="Utilitaires\Enums.cs" />
     <Compile Include="Utilitaires\Constants.cs" />
@@ -198,6 +222,7 @@
     <Compile Include="VueModeles\CreateGameDrawViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\GamelistViewModel.cs" />
+    <Compile Include="VueModeles\GameViewModel.cs" />
     <Compile Include="VueModeles\HomeViewModel.cs" />
     <Compile Include="VueModeles\CreateGameViewModel.cs" />
     <Compile Include="VueModeles\LobbyViewModel.cs" />
@@ -207,6 +232,9 @@
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="Vues\Chat.xaml.cs">
       <DependentUpon>Chat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\Game.xaml.cs">
+      <DependentUpon>Game.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\GameList.xaml.cs">
       <DependentUpon>GameList.xaml</DependentUpon>
@@ -233,11 +261,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\Chat\MessageGameItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\Chat\MessageItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Chat\MessageList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CreateBotControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -253,11 +289,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\EndGameControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\FenetreDessin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Card.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\InvitedUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\InviteUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -281,6 +329,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Vues\Game.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Vues\GameList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

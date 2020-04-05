@@ -23,7 +23,8 @@
             <materialDesign:Flipper.FrontContent>
                 <Grid Height="150" Width="220">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
             <materialDesign:ColorZone
@@ -34,11 +35,20 @@
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding LobbyName}" FontSize="25" Foreground="White" />
                         </StackPanel>
                     </materialDesign:ColorZone>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock FontSize="18" Text="Gamemode: "/>
+                        <TextBlock FontSize="18" Text="{Binding Mode}"/>
+                    </StackPanel>
+                    
         <StackPanel
-            Grid.Row="1"
+            Grid.Row="2"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
-                            <TextBlock HorizontalAlignment="Center" Text="{Binding Mode}" />
+                        <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock FontSize="18" Text="{Binding ActualSize}"/>
+                            <TextBlock FontSize="18" Text="/"/>
+                            <TextBlock FontSize="18" Text="{Binding Size}"/>
+                        </StackPanel>
                             <Button Style="{StaticResource MaterialDesignFlatButton}"
                                 Command="{x:Static materialDesign:Flipper.FlipCommand}"
                                 Margin="0 4 0 0">
@@ -50,7 +60,7 @@
         <materialDesign:Flipper.BackContent>
             <Grid Height="150" Width="220">
                 <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
+                        <RowDefinition Height="auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
@@ -74,28 +84,15 @@
                             </TextBlock>
                         </StackPanel>
                     </materialDesign:ColorZone>
-                        <Grid
-                            Grid.Row="1"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Width="172">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                        
-                            <ScrollViewer Margin="10" Grid.Row="1" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom">
+                            <ScrollViewer Margin="10" Grid.Row="1" VerticalScrollBarVisibility="Auto">
                                 <ItemsControl ItemsSource="{Binding Players}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding}" Margin="5,0,5,0" FontSize="15"/>
-                                            </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
-                        </Grid>
                             <Button Margin="10" Grid.Row="2" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Join Lobby" Command="{Binding JoinLobbyCommand}" FontSize="15"/>
                 </Grid>
             </materialDesign:Flipper.BackContent>

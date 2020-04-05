@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="PolyPaint.Controls.InviteUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converter="clr-namespace:PolyPaint.Convertisseurs"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PolyPaint.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="15" Width="200" Height="200" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Margin="0,0,0,5" FontSize="20" Text="Invite a player" HorizontalAlignment="Center"/>
+        <Border Grid.Row="0" BorderThickness="0,0,0,2" BorderBrush="{StaticResource PrimaryHueLightBrush}"/>
+        <Grid Grid.Row="1">
+            <TextBlock Margin="8,5,5,5"
+                           Foreground="{StaticResource SecondaryAccentBrush}"
+                           VerticalAlignment="Top"
+                           Text="Search ..."
+                           Visibility="{Binding SearchString, Converter={converter:SearchBarVisibilityConverter}}"/>
+        <TextBox Margin="5"
+                         Text="{Binding SearchString, UpdateSourceTrigger=PropertyChanged}"
+                         Foreground="{StaticResource SecondaryAccentBrush}"
+                         BorderBrush="{StaticResource SecondaryAccentBrush}"
+                         materialDesign:TextFieldAssist.UnderlineBrush="White"/>
+        </Grid>
+        <TextBlock Grid.Row="2" Text="Online Users: "/>
+        <ScrollViewer Grid.Row="3" Margin="10" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="MyItems" ItemsSource="{Binding OnlineUsers}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="5,0,0,5" FontSize="15"/>
+                        <Button  VerticalAlignment="Top" FontSize="15" Command="{Binding ElementName=MyItems,  Path=DataContext.InviteUserCommand}" Style="{StaticResource MaterialDesignFlatButton}" CommandParameter="{Binding}">
+                            <materialDesign:PackIcon Kind="Add" Foreground="{StaticResource PrimaryHueLightBrush}" Width="20" Height="20" VerticalAlignment="Center"/>
+                        </Button>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

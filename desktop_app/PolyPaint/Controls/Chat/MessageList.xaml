@@ -7,11 +7,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom" ScrollChanged="ScrollViewer_ScrollChanged">
+        <ScrollViewer Visibility="{Binding IsInGameChat, Converter={StaticResource InverseBoolToVisConverter}}" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom" ScrollChanged="ScrollViewer_ScrollChanged">
             <ItemsControl ItemsSource="{Binding Messages}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <local:MessageItem />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <ScrollViewer Visibility="{Binding IsInGameChat, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalScrollBarVisibility="Auto" VerticalAlignment="Bottom" ScrollChanged="ScrollViewer_ScrollChanged">
+            <ItemsControl ItemsSource="{Binding MessagesGame}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:MessageGameItem />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
