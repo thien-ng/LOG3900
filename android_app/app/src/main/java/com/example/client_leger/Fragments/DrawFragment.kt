@@ -204,7 +204,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
-        context.resources.displayMetrics.density = 1F
 
         matrix = Array((h / matrixSquareSize) + 1) {
             Array((w / matrixSquareSize) + 1) {
