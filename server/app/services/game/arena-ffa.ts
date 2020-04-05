@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
