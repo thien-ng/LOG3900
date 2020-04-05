@@ -2,7 +2,6 @@ package com.example.client_leger.Fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,16 +9,17 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
 import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_gameplay_menu.view.*
 import org.json.JSONObject
+
 
 class GameplayMenuFragment: Fragment() {
 
     lateinit var username:  String
 
-    lateinit var timerSub:  Disposable;
-    lateinit var drawerSub: Disposable;
+    private lateinit var timerSub:  Disposable
+    private lateinit var drawerSub: Disposable
+    private lateinit var gamePoints: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay_menu, container, false)
@@ -32,20 +32,27 @@ class GameplayMenuFragment: Fragment() {
         readyState.put("username", username)
         SocketIO.sendMessage("gameplay", readyState)
 
-        timerSub = Communication.getTimerListener().subscribe{res ->
+        timerSub = Communication.getTimerListener().subscribe { res ->
             activity!!.runOnUiThread {
-                v.timer.setText(res.getString("time"))
+                v.timer.text = "Time left: " + res.getString("time")
+
+            }
+        }
+
+        gamePoints = Communication.getGamePointsListener().subscribe { res ->
+            activity!!.runOnUiThread {
+                v.points.text = "Your points: " + res.getInt("point").toString()
             }
         }
 
         drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
             activity!!.runOnUiThread {
                 if (res.getString("username") == username) {
-                    v.role.setText("drawer")
-                    v.item.setText(res.getString("object"))
+                    v.role.text = "Your role: drawer"
+                    v.item.text = "Your word to draw: " + res.getString("object")
                 } else {
-                    v.role.setText("guesser")
-                    v.item.setText("")
+                    v.role.text = "Your role: guesser"
+                    v.item.text = ""
                 }
             }
         }
@@ -57,5 +64,6 @@ class GameplayMenuFragment: Fragment() {
         super.onDestroy()
         timerSub.dispose()
         drawerSub.dispose()
+        gamePoints.dispose()
     }
 }

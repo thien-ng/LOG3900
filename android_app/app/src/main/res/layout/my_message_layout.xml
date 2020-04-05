@@ -5,7 +5,9 @@
         android:paddingVertical="10dp"
         android:paddingRight="15dp"
         android:paddingLeft="60dp"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:paddingEnd="15dp"
+        android:paddingStart="60dp">
 
     <TextView
             android:layout_width="wrap_content"
@@ -14,11 +16,10 @@
             android:background="@drawable/my_message_drawable"
             android:textColor="#fff"
             android:padding="10dp"
-            android:elevation="2dp"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:layout_alignParentRight="true"
             android:text="Test message"
-            />
+            android:layout_alignParentEnd="true" />
 
     <TextView
             android:id="@+id/my_message_time"
@@ -26,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/my_message_body"
             android:layout_alignParentRight="true"
-            android:text="TextView" />
+            android:text=""
+            android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

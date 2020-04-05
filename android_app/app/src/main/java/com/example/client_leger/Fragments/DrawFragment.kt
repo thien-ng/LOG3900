@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment
 import android.util.AttributeSet
 import android.view.*
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -27,85 +28,85 @@ import kotlin.math.sqrt
 
 class DrawFragment: Fragment() {
 
-    private val canvasViewChildPosition = 6
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
         val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
 
+        val canvasView = DrawCanvas(
+            activity!!.applicationContext,
+            null,
+            this.activity!!.intent.getStringExtra("username")
+        )
+
+        canvasView.layoutParams = LinearLayout.LayoutParams(1000, 750)
+
+        v.ConstraintLayout_canvasView.addView(canvasView)
+
         v.button_change_color.setOnClickListener {
-            openColorPicker(v)
+            openColorPicker(canvasView)
         }
 
         v.button_strokeErase.setOnClickListener {
-            switchStrokeEraser(v)
+            switchStrokeEraser(canvasView)
         }
 
         v.button_normalErase.setOnClickListener {
-            switchNormalEraser(v)
+            switchNormalEraser(canvasView)
         }
 
         v.button_changeWidth.setOnClickListener {
-            openWidthSelector(v)
+            openWidthSelector(canvasView)
         }
 
         v.button_round.setOnClickListener {
-            switchDrawWithCircle(v)
+            switchDrawWithCircle(canvasView)
             v.button_square.isChecked = false
             v.button_round.isChecked = true
         }
 
         v.button_square.setOnClickListener {
-            switchDrawWithSquare(v)
+            switchDrawWithSquare(canvasView)
             v.button_square.isChecked = true
             v.button_round.isChecked = false
         }
 
-        v.addView(DrawCanvas(activity!!.applicationContext, null, this.activity!!.intent.getStringExtra("username")))
-
         return v
     }
 
-    private fun switchDrawWithCircle(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.switchDrawWithCircle()
+    private fun switchDrawWithCircle(v: DrawCanvas) {
+        v.switchDrawWithCircle()
     }
 
-    private fun switchDrawWithSquare(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.switchDrawWithSquare()
+    private fun switchDrawWithSquare(v: DrawCanvas) {
+        v.switchDrawWithSquare()
     }
 
-    private fun switchStrokeEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.isStrokeErasing = !drawCanvasView.isStrokeErasing
-        if (drawCanvasView.isNormalErasing) {
-            drawCanvasView.isNormalErasing = false
+    private fun switchStrokeEraser(v: DrawCanvas) {
+        v.isStrokeErasing = !v.isStrokeErasing
+        if (v.isNormalErasing) {
+            v.isNormalErasing = false
             v.button_normalErase.toggle()
         }
     }
 
-    private fun switchNormalEraser(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        drawCanvasView.isNormalErasing = !drawCanvasView.isNormalErasing
-        if (drawCanvasView.isStrokeErasing) {
-            drawCanvasView.isStrokeErasing = false
+    private fun switchNormalEraser(v: DrawCanvas) {
+        v.isNormalErasing = !v.isNormalErasing
+        if (v.isStrokeErasing) {
+            v.isStrokeErasing = false
             v.button_strokeErase.toggle()
         }
     }
 
-    private fun openColorPicker(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
-        val colorPicker = AmbilWarnaDialog(this.context, drawCanvasView.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
+    private fun openColorPicker(v: DrawCanvas) {
+        val colorPicker = AmbilWarnaDialog(this.context, v.paintLine.color, object : AmbilWarnaDialog.OnAmbilWarnaListener {
                 override fun onCancel(dialog: AmbilWarnaDialog?) {}
                 override fun onOk(dialog: AmbilWarnaDialog?, color: Int) {
-                    drawCanvasView.paintLine.color = color
+                    v.paintLine.color = color
                 }
             })
         colorPicker.show()
     }
 
-    private fun openWidthSelector(v: ViewGroup) {
-        val drawCanvasView = v.getChildAt(canvasViewChildPosition) as DrawCanvas
+    private fun openWidthSelector(v: DrawCanvas) {
         val view = layoutInflater.inflate(R.layout.popup_change_width, null)
         val popupWindow = PopupWindow(
             view,
@@ -119,11 +120,11 @@ class DrawFragment: Fragment() {
         val okButton = view.findViewById<Button>(R.id.button_changeWidthOk)
 
         updateSeekBarThumbSize(seekBar)
-        seekBar.progress = drawCanvasView.paintLine.strokeWidth.toInt()
+        seekBar.progress = v.paintLine.strokeWidth.toInt()
 
         okButton.setOnClickListener {
             val minStrokeSize = 5.0f
-            drawCanvasView.paintLine.strokeWidth = max(minStrokeSize, seekBar.progress.toFloat())
+            v.paintLine.strokeWidth = max(minStrokeSize, seekBar.progress.toFloat())
             popupWindow.dismiss()
         }
 
@@ -148,23 +149,26 @@ class DrawFragment: Fragment() {
     }
 }
 
-class Segment(var path: Path, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
+class Segment(var point: Point, var paint: Paint, var previousSegment: Segment?, var nextSegment: Segment?)
 
 class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String) : View(ctx, attr) {
+
     var paintLine: Paint = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
+    var isDrawer = false
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
-    private var currentStroke = Path()
     private var currentStartX = 0
     private var currentStartY = 0
     private var segments = ArrayList<Segment>()
     private var strokeJustEnded = true
     private var drawListener: Disposable
-    private var lastErasePoint: Point? = null
     private var roleListener: Disposable
-    private val matrixSquareSize = 100
+    private var drawerSub: Disposable
+    private val matrixSquareSize = 100  //todo: test with smaller size
+    private var lastErasePoint: Point? = null
+    private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
     private lateinit var bitmap: Bitmap
     private lateinit var bitmapCanvas: Canvas
@@ -183,18 +187,24 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         roleListener = Communication.getDrawerUpdateListener().subscribe{
             clearStrokes()
         }
+
+        drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
+            isDrawer = res.getString("username") == username
+        }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         drawListener.dispose()
         roleListener.dispose()
+        drawerSub.dispose()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
+
         matrix = Array((h / matrixSquareSize) + 1) {
             Array((w / matrixSquareSize) + 1) {
                 ArrayList<Segment>()
@@ -206,18 +216,21 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (bitmapNeedsToUpdate) {
             redrawPathsToBitmap()
         }
+
         canvas.drawBitmap(bitmap, 0.0F, 0.0F, paintScreen)
-        canvas.drawPath(currentStroke, paintLine)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isDrawer) {
+            return true
+        }
+
         val x = event.x.toInt()
         val y = event.y.toInt()
 
         if (!isValidPoint(x, y)) {
             strokeJustEnded = true
-            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
-            currentStroke.reset()
+
             return true
         }
 
@@ -228,20 +241,22 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 }
             } else {
                 lastErasePoint = Point(x, y)
-                if (bitmap.getPixel(x, y) != Color.WHITE) {
-                    checkForStrokesToErase(x, y, isStrokeErasing)
-                    sendErase(x, y, isStrokeErasing)
-                }
+                checkForStrokesToErase(x, y, isStrokeErasing)
+                sendErase(x, y, isStrokeErasing)
             }
         } else if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            addSegment(Point(x,y))
+            sendStroke(x, y, x, y, false)
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-            touchMoved(currentStartX, currentStartY, x, y)
+            touchMoved(currentStartX, currentStartY, x, y, false)
+            currentStartX = x
+            currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_UP){
+            sendStroke(x, y, x, y, true)
             strokeJustEnded = true
-            bitmapCanvas.drawPath(Path(currentStroke), Paint(paintLine))
-            currentStroke.reset()
+            redrawPathsToBitmap()
         }
 
         return true
@@ -249,21 +264,24 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun eraseInLine(destX: Int, destY: Int) {
         val distance = distance(lastErasePoint!!, Point(destX, destY))
+
+        if (distance == 0.0F) {
+            return
+        }
+
         val directionX = (destX - lastErasePoint!!.x) / distance
         val directionY = (destY - lastErasePoint!!.y) / distance
-        val startX = lastErasePoint!!.x
-        val startY = lastErasePoint!!.y
 
-        for (i in 1..(distance / 15).toInt()) {
-            val newX = (startX + directionX * 15 * i).toInt()
-            val newY = (startY + directionY * 15 * i).toInt()
-            if (bitmap.getPixel(destX, destY) != Color.WHITE) {
-                checkForStrokesToErase(newX, newY, isStrokeErasing)
-                sendErase(newX, newY, isStrokeErasing)
-            }
-            lastErasePoint!!.x = newX
-            lastErasePoint!!.y = newY
+        for (i in 0..distance.toInt()) {
+            val newX = (lastErasePoint!!.x + directionX * i).toInt()
+            val newY = (lastErasePoint!!.y + directionY * i).toInt()
+
+            checkForStrokesToErase(newX, newY, isStrokeErasing)
+            sendErase(newX, newY, isStrokeErasing)
         }
+
+        lastErasePoint!!.x = destX
+        lastErasePoint!!.y = destY
     }
 
     private fun distance(point1: Point, point2: Point): Float {
@@ -285,7 +303,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         synchronized(segments) {
             segments = ArrayList()
         }
-        currentStroke.reset()
+
         bitmapNeedsToUpdate = true
         postInvalidate()
     }
@@ -298,7 +316,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         bitmap.eraseColor(Color.WHITE)
         synchronized(segments) {
             for (segment in segments) {
-                bitmapCanvas.drawPath(segment.path, segment.paint)
+                bitmapCanvas.drawPoint(segment.point.x.toFloat(), segment.point.y.toFloat(), segment.paint)
             }
         }
         bitmapNeedsToUpdate = false
@@ -309,6 +327,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.nextSegment != null) {
             if (segment.nextSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.nextSegment!!.paint.color = Color.TRANSPARENT
+                segmentsToBeRemoved.add(segment)
                 batchErase(segment.nextSegment!!)
             }
         }
@@ -316,92 +335,204 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.previousSegment != null) {
             if (segment.previousSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.previousSegment!!.paint.color = Color.TRANSPARENT
+                segmentsToBeRemoved.add(segment)
                 batchErase(segment.previousSegment!!)
             }
         }
     }
 
-    private fun checkForStrokesToErase(pointX: Int, pointY: Int, isStroke: Boolean) {
+    private fun removeSegmentFromMatrix(segment: Segment) {
+        val width = paintLine.strokeWidth / 2
+        val middle      = Point(segment.point.x / matrixSquareSize, segment.point.y / matrixSquareSize)
+        val left        = Point((segment.point.x - width).toInt() / matrixSquareSize, middle.y)
+        val right       = Point((segment.point.x + width).toInt() / matrixSquareSize, middle.y)
+        val top         = Point(middle.x, (segment.point.y + width).toInt() / matrixSquareSize)
+        val bottom      = Point(middle.x, (segment.point.y - width).toInt() / matrixSquareSize)
+
+        synchronized(matrix) {
+            matrix[middle.y][middle.x].remove(segment)
+            if (top.y != middle.y) {
+                matrix[top.y][top.x].remove(segment)
+                val topLeft = Point(
+                    (segment.point.x - width).toInt() / matrixSquareSize,
+                    (segment.point.y + width).toInt() / matrixSquareSize
+                )
+                if (topLeft.x != middle.x) {
+                    matrix[topLeft.y][topLeft.x].remove(segments[segments.size - 1])
+                }
+                val topRight = Point(
+                    (segment.point.x + width).toInt() / matrixSquareSize,
+                    (segment.point.y + width).toInt() / matrixSquareSize
+                )
+                if (topRight.x != middle.x) {
+                    matrix[topRight.y][topRight.x].remove(segment)
+                }
+            } else if (bottom.y != middle.y) {
+                matrix[bottom.y][bottom.x].remove(segment)
+                val bottomLeft = Point(
+                    (segment.point.x - width).toInt() / matrixSquareSize,
+                    (segment.point.y - width).toInt() / matrixSquareSize
+                )
+                if (bottomLeft.x != middle.x) {
+                    matrix[bottomLeft.y][bottomLeft.x].remove(segment)
+                }
+                val bottomRight = Point(
+                    (segment.point.x + width).toInt() / matrixSquareSize,
+                    (segment.point.y - width).toInt() / matrixSquareSize
+                )
+                if (bottomRight.x != middle.x) {
+                    matrix[bottomRight.y][bottomRight.x].remove(segment)
+                }
+            }
+            if (left.x != middle.x) {
+                matrix[left.y][left.x].remove(segment)
+            }
+            if (right.x != middle.x) {
+                matrix[right.y][right.x].remove(segment)
+            }
+        }
+    }
+
+    private fun addSegmentToMatrix(segment: Segment) {
+        val width = paintLine.strokeWidth / 2
+        val middle      = Point(segment.point.x / matrixSquareSize, segment.point.y / matrixSquareSize)
+        val left        = Point((segment.point.x - width).toInt() / matrixSquareSize, middle.y)
+        val right       = Point((segment.point.x + width).toInt() / matrixSquareSize, middle.y)
+        val top         = Point(middle.x, (segment.point.y + width).toInt() / matrixSquareSize)
+        val bottom      = Point(middle.x, (segment.point.y - width).toInt() / matrixSquareSize)
+
+        synchronized(matrix) {
+            matrix[middle.y][middle.x].add(segment)
+            if (top.y != middle.y) {
+                matrix[top.y][top.x].add(segment)
+                val topLeft = Point(
+                    (segment.point.x - width).toInt() / matrixSquareSize,
+                    (segment.point.y + width).toInt() / matrixSquareSize
+                )
+                if (topLeft.x != middle.x) {
+                    matrix[topLeft.y][topLeft.x].add(segment)
+                }
+                val topRight = Point(
+                    (segment.point.x + width).toInt() / matrixSquareSize,
+                    (segment.point.y + width).toInt() / matrixSquareSize
+                )
+                if (topRight.x != middle.x) {
+                    matrix[topRight.y][topRight.x].add(segment)
+                }
+            } else if (bottom.y != middle.y) {
+                matrix[bottom.y][bottom.x].add(segment)
+                val bottomLeft = Point(
+                    (segment.point.x - width).toInt() / matrixSquareSize,
+                    (segment.point.y - width).toInt() / matrixSquareSize
+                )
+                if (bottomLeft.x != middle.x) {
+                    matrix[bottomLeft.y][bottomLeft.x].add(segment)
+                }
+                val bottomRight = Point(
+                    (segment.point.x + width).toInt() / matrixSquareSize,
+                    (segment.point.y - width).toInt() / matrixSquareSize
+                )
+                if (bottomRight.x != middle.x) {
+                    matrix[bottomRight.y][bottomRight.x].add(segment)
+                }
+            }
+            if (left.x != middle.x) {
+                matrix[left.y][left.x].add(segment)
+            }
+            if (right.x != middle.x) {
+                matrix[right.y][right.x].add(segment)
+            }
+        }
+    }
+
+    private fun checkPointForErase(pointX: Int, pointY: Int, isStroke: Boolean): Boolean {
         var strokeFound = false
 
-        synchronized(segments) {
+        synchronized(matrix) {
             for (segment in matrix[pointY / matrixSquareSize][pointX / matrixSquareSize]) {
                 if (segment.paint.color == Color.TRANSPARENT) {
                     continue
                 }
 
-                val pm = PathMeasure(segment.path, false)
-                val coordinates = FloatArray(2)
-
-                pm.getPosTan(pm.length / 2.0f, coordinates, null)
                 val eraserHalfSize = segment.paint.strokeWidth / 2.0f
-                val xOnLine = coordinates[0].toInt()
-                val yOnLine = coordinates[1].toInt()
 
-                if (xOnLine <= pointX + eraserHalfSize && xOnLine >= pointX - eraserHalfSize) {
-                    if (yOnLine <= pointY + eraserHalfSize && yOnLine >= pointY - eraserHalfSize) {
-                        segment.paint.color = Color.TRANSPARENT
-                        if (isStroke) {
-                            batchErase(segment)
-                        }
-
-                        strokeFound = true
+                if (segment.point.x + eraserHalfSize >= pointX &&
+                    segment.point.x - eraserHalfSize <= pointX &&
+                    segment.point.y + eraserHalfSize >= pointY &&
+                    segment.point.y - eraserHalfSize <= pointY
+                ) {
+                    segment.paint.color = Color.TRANSPARENT
+                    if (isStroke) {
+                        batchErase(segment)
+                    } else {
+                        segmentsToBeRemoved.add(segment)
                     }
+
+                    strokeFound = true
                 }
             }
         }
 
+        return strokeFound
+    }
+
+    private fun checkForStrokesToErase(pointX: Int, pointY: Int, isStroke: Boolean) {
+        val eraserHalfSize = 4
+
+        val strokeFound = (
+            checkPointForErase(pointX, pointY, isStroke) ||
+            checkPointForErase(pointX + eraserHalfSize, pointY, isStroke) ||
+            checkPointForErase(pointX - eraserHalfSize, pointY, isStroke) ||
+            checkPointForErase(pointX, pointY + eraserHalfSize, isStroke) ||
+            checkPointForErase(pointX, pointY - eraserHalfSize, isStroke))
+
         if (strokeFound) {
             bitmapNeedsToUpdate = true
+            for (segment in segmentsToBeRemoved) {
+                removeSegmentFromMatrix(segment)
+            }
+            segmentsToBeRemoved = ArrayList()
             postInvalidate()
         }
     }
 
-    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int) {
-        val distance = distance(Point(startX, startY), Point(destX, destY))
-
-        if (distance == 0.0F) {
-            return
-        }
-
-        val directionX = (destX - currentStartX) / distance
-        val directionY = (destY - currentStartY) / distance
-
-        for (i in 1..(distance / paintLine.strokeWidth).toInt()) {
-            val newX = (startX + directionX * paintLine.strokeWidth * i).toInt()
-            val newY = (startY + directionY * paintLine.strokeWidth * i).toInt()
-
-            currentStroke.moveTo(currentStartX.toFloat(), currentStartY.toFloat())
-            currentStroke.lineTo(newX.toFloat(), newY.toFloat())
-            sendStroke(currentStartX, newX, currentStartY, newY, strokeJustEnded)
-            addSegment(currentStartX, newX, currentStartY, newY, strokeJustEnded)
-
-            currentStartX = newX
-            currentStartY = newY
-        }
-
+    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int, isEnd: Boolean) {
+        sendStroke(startX, startY, destX, destY, isEnd)
+        divideAndAddSegment(startX, startY, destX, destY)
         postInvalidate()
     }
 
-    private fun addSegment(startX: Int, destX: Int, startY: Int, destY: Int, isNew: Boolean) {
-        val newSegment = Path()
-        newSegment.moveTo(startX.toFloat(), startY.toFloat())
-        newSegment.lineTo(destX.toFloat(), destY.toFloat())
+    private fun divideAndAddSegment(startX: Int, startY: Int, destX: Int, destY: Int) {
+        val distance = distance(Point(startX, startY), Point(destX, destY))
 
+        if (distance == 0.0F) {
+            addSegment(Point(startX, startY))
+
+            return
+        }
+
+        val directionX = (destX - startX) / distance
+        val directionY = (destY - startY) / distance
+
+        for (i in 0..distance.toInt()) {
+            val newX = (startX + directionX * i).toInt()
+            val newY = (startY + directionY * i).toInt()
+            addSegment(Point(newX, newY))
+            bitmapCanvas.drawPoint(newX.toFloat(), newY.toFloat(), paintLine)
+        }
+    }
+
+    private fun addSegment(point: Point) {
         synchronized(segments) {
-            segments.add(Segment(newSegment, Paint(paintLine), null, null))
-            if (segments.size - 2 >= 0 && !isNew) {
+            segments.add(Segment(point, Paint(paintLine), null, null))
+            if (segments.size - 2 >= 0 && !strokeJustEnded) {
                 // segments.size - 1 is the index of the segment we just added,
                 // segments.size - 2 is the index of the segment just before it.
                 segments[segments.size - 1].previousSegment = segments[segments.size - 2]
                 segments[segments.size - 2].nextSegment = segments[segments.size - 1]
             }
 
-            matrix[startY / matrixSquareSize][startX / matrixSquareSize].add(segments[segments.size - 1])
-            if (startY / matrixSquareSize != destY / matrixSquareSize ||
-                startX / matrixSquareSize != destX / matrixSquareSize) {
-                matrix[destY / matrixSquareSize][destX / matrixSquareSize].add(segments[segments.size - 1])
-            }
+            addSegmentToMatrix(segments[segments.size - 1])
         }
 
         strokeJustEnded = false
@@ -410,8 +541,14 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun strokeReceived(obj: JSONObject) {
         when {
             obj.getString("type") == "ink" -> {
-                currentStroke.moveTo(obj.getInt("startPosX").toFloat(), obj.getInt("startPosY").toFloat())
-                currentStroke.lineTo(obj.getInt("endPosX").toFloat(), obj.getInt("endPosY").toFloat())
+                if (obj.getBoolean("isEnd")) {
+                    strokeJustEnded = true
+                    return
+                }
+
+                if (strokeJustEnded) {
+                    bitmapNeedsToUpdate = true
+                }
 
                 paintLine.isAntiAlias = true
                 paintLine.color = obj.getInt("color")
@@ -423,21 +560,14 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     else
                         Paint.Cap.SQUARE
 
-                addSegment(
+                divideAndAddSegment(
                     obj.getInt("startPosX"),
-                    obj.getInt("endPosX"),
                     obj.getInt("startPosY"),
-                    obj.getInt("endPosY"),
-                    obj.getBoolean("isEnd")
+                    obj.getInt("endPosX"),
+                    obj.getInt("endPosY")
                 )
-
-                if (obj.getBoolean("isEnd")) {
-                    currentStroke.reset()
-                    bitmapNeedsToUpdate = true
-                }
             }
             obj.getString("type") == "eraser" -> {
-                currentStroke.reset()
                 checkForStrokesToErase(
                     obj.getInt("x"),
                     obj.getInt("y"),
@@ -449,7 +579,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         postInvalidate()
     }
 
-    private fun sendStroke(startPointX: Int, finishPointX: Int, startPointY: Int, finishPointY: Int, isEnd: Boolean) {
+    private fun sendStroke(startPointX: Int, startPointY: Int, finishPointX: Int, finishPointY: Int, isEnd: Boolean) {
         val obj = JSONObject()
         obj.put("event", "draw")
         obj.put("type", "ink")
@@ -478,5 +608,3 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         SocketIO.sendMessage("gameplay", obj)
     }
 }
-
-

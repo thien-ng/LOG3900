@@ -21,9 +21,6 @@
             <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource MaterialDesignPasswordBox}">
                 <Setter Property="Margin" Value="0 8 0 8" />
             </Style>
-            <DataTemplate DataType="{x:Type ViewModel:DessinViewModel}">
-                <Controls:FenetreDessin/>
-            </DataTemplate>
             <DataTemplate DataType="{x:Type ViewModel:LoginViewModel}">
                 <View:Login/>
             </DataTemplate>

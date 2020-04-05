@@ -1,9 +1,8 @@
 import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
-import { ArenaSolo } from "./arena-solo";
-import { ArenaCoop } from "./arena-coop";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt } from "../../interfaces/game";
+import { ArenaSprint } from "./arena-sprint";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt, IGameplayAnnouncement } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
@@ -15,7 +14,7 @@ import * as io from 'socket.io';
 @injectable()
 export class GameManagerService {
 
-    private arenas: Map<number, ArenaFfa | ArenaSolo | ArenaCoop>;
+    private arenas: Map<number, ArenaFfa | ArenaSprint>;
     private userMapArenaId: Map<string, number>;
     private arenaId: number;
 
@@ -26,7 +25,7 @@ export class GameManagerService {
         @inject(Types.RulesDbService) private rulesDb: RulesDbService,
         @inject(Types.GameDbService) private gameDb: GameDbService) {
 
-        this.arenas = new Map<number, ArenaFfa | ArenaSolo | ArenaCoop>();
+        this.arenas = new Map<number, ArenaFfa | ArenaSprint>();
         this.userMapArenaId = new Map<string, number>();
         this.arenaId = 0;
     }
@@ -53,17 +52,24 @@ export class GameManagerService {
                 maxAmount = 9;
                 break;
             case GameMode.COOP:
-                minAmount = 3;
-                maxAmount = 5;
+                minAmount = 2;
+                maxAmount = 4;
                 break;
             case GameMode.SOLO:
-                minAmount = 2;
-                maxAmount = 2;
+                minAmount = 1;
+                maxAmount = 1;
                 break;
         }
         if (lobby.users.length < minAmount || lobby.users.length > maxAmount) {
             throw new Error(`the amount of players in the lobby must be between ${minAmount} and ${maxAmount} to play in ${lobby.mode}.`);
         }
+    }
+
+    public getMessagesByUsername(username: string): IGameplayAnnouncement[] {
+        const arenaId = this.userMapArenaId.get(username);
+        if (arenaId === undefined) throw new Error("User is not part of an arena");
+        const arena = this.arenas.get(arenaId) as ArenaFfa | ArenaSprint;
+        return (arena)? arena.gameMessages : [];
     }
 
     public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
@@ -91,6 +97,7 @@ export class GameManagerService {
         const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
 
         this.lobServ.lobbies.delete(lobby.lobbyName);
+        this.lobServ.lobbiesMessages.delete(lobby.lobbyName);
 
         this.arenas.set(this.arenaId, arena);
         this.arenaId++;
@@ -100,14 +107,14 @@ export class GameManagerService {
         arena.start();
     }
 
-    private createArenaAccordingToMode(arenaId: number, lobby: IActiveLobby, room: string, rules: IGameRule[]): ArenaFfa | ArenaSolo | ArenaCoop {
+    private createArenaAccordingToMode(arenaId: number, lobby: IActiveLobby, room: string, rules: IGameRule[]): ArenaFfa | ArenaSprint {
         switch (lobby.mode) {
             case GameMode.FFA:
                 return new ArenaFfa(GameMode.FFA, arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.SOLO:
-                return new ArenaSolo(GameMode.SOLO, arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaSprint(GameMode.SOLO, arenaId, lobby.users, room, this.socketServer, rules, this);
             case GameMode.COOP:
-                return new ArenaCoop(GameMode.COOP, arenaId, lobby.users, room, this.socketServer, rules, this);
+                return new ArenaSprint(GameMode.COOP, arenaId, lobby.users, room, this.socketServer, rules, this);
         }
     }
 

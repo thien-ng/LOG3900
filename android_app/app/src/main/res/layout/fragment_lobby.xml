@@ -17,4 +17,43 @@
             android:text="Start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+    <Button
+            android:id="@+id/button_leave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="44dp"
+            android:layout_marginEnd="38dp"
+            android:layout_marginRight="38dp"
+            android:visibility="invisible"
+            android:enabled="false"
+            app:backgroundTint="@color/colorPrimary"
+            android:text="Leave"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <ListView
+            android:id="@+id/userlist"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_start" />
+
+    <Button
+            android:id="@+id/button_addBot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="258dp"
+            android:layout_marginLeft="258dp"
+            android:layout_marginTop="13dp"
+            android:layout_marginEnd="255dp"
+            android:layout_marginRight="255dp"
+            android:layout_marginBottom="34dp"
+            android:visibility="invisible"
+            android:enabled="false"
+            android:text="Add bot"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userlist" />
 </android.support.constraint.ConstraintLayout>

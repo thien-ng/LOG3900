@@ -13,6 +13,7 @@ using System;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Linq;
 
 namespace PolyPaint.VueModeles
 {
@@ -20,16 +21,20 @@ namespace PolyPaint.VueModeles
     {
         public GamelistViewModel()
         {
-
             _gameCards = new ObservableCollection<GameCard>();
-            Numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            _selectedMode = "FFA";
-            getLobbies();
+            _numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            SelectedMode = "FFA";
             IsPrivate = false;
+            ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
         }
 
         #region Public Attributes
-        public ObservableCollection<int> Numbers { get; }
+        private ObservableCollection<int> _numbers;
+        public ObservableCollection<int> Numbers
+        {
+            get { return _numbers; }
+            set { _numbers = value; ProprieteModifiee(); }
+        }
 
         private ObservableCollection<GameCard> _gameCards;
         public ObservableCollection<GameCard> GameCards
@@ -55,7 +60,33 @@ namespace PolyPaint.VueModeles
         public string SelectedMode
         {
             get { return _selectedMode; }
-            set { _selectedMode = value; ProprieteModifiee(); getLobbies(); }
+            set
+            {
+                if (_selectedMode == value)
+                    return;
+                _selectedMode = value;
+                ProprieteModifiee();
+                getLobbies();
+                Numbers.Clear();
+                switch (_selectedMode)
+                {
+                    case Constants.MODE_FFA:
+                        fillArray(2, 9);
+                        break;
+
+                    case Constants.MODE_COOP:
+                        fillArray(3, 5);
+                        break;
+
+                    case Constants.MODE_SOLO:
+                        fillArray(2, 2);
+                        break;
+
+                    default:
+                        fillArray(1, 9);
+                        break;
+                }
+            }
         }
 
         private bool _isPrivate;
@@ -140,30 +171,53 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
+        private void processLobbyNotif(JObject data)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                bool needUpdate = ((data.GetValue("type").ToString() == "create" && data.GetValue("mode").ToString() == _selectedMode) || data.GetValue("type").ToString() == "delete");
+                if (needUpdate)
+                    getLobbies();
+                if(((string)data.GetValue("type") == "join"))
+                {
+                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                }
+                if (((string)data.GetValue("type") == "leave"))
+                {
+                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                }
+            });
+
+        }
+
+        private void fillArray(int min, int max) 
+        {
+            for (int i = min; i <= max; i++)
+            {
+                Numbers.Add(i);
+            }
+        }
         private async void getLobbies()
         {
-            if (_selectedMode == "FFA" || _selectedMode == "SOLO" || _selectedMode == "COOP")
-            {
-                GameCards.Clear();
-                ObservableCollection<Lobby> lobbies = new ObservableCollection<Lobby>();
-                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
+            await App.Current.Dispatcher.Invoke(async delegate
+             {
+                 bool isExistingSelectedMode = (_selectedMode == Constants.MODE_FFA || _selectedMode == Constants.MODE_SOLO || _selectedMode == Constants.MODE_COOP);
+                 if (isExistingSelectedMode)
+                 {
+                     GameCards.Clear();
+                     var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
 
-                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-                String responseData = streamReader.ReadToEnd();
-                var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
-                foreach (var item in myData)
-                {
-                    App.Current.Dispatcher.Invoke(delegate
-                    {
-                        lobbies.Add(item);
-                    });
-                }
-                foreach (var item in lobbies)
-                {
-                    GameCard gameCard = new GameCard(item);
-                    GameCards.Add(gameCard);
-                }
-            }
+                     StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+                     String responseData = streamReader.ReadToEnd();
+                     var myData = JsonConvert.DeserializeObject<List<Lobby>>(responseData);
+                     foreach (var item in myData)
+                     {
+                             GameCard gameCard = new GameCard(item);
+                             GameCards.Add(gameCard);
+                     }
+                 }
+             });
+
         }
         private async void createLobby()
         {
@@ -182,13 +236,8 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-                    getLobbies();
-                });
                 Mediator.Notify("GoToLobbyScreen", _lobbyName);
                 LobbyName = "";
-
             }
         }
 

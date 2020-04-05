@@ -8,31 +8,37 @@ import { HumourBot } from "./bots/humourBot";
 
 import * as io from 'socket.io';
 
+const format = require('string-format');
+
 const StringBuilder = require("string-builder");
 const CHECK_INTERVAL_TIME = 500;
 const ONE_SEC = 1000;
+const ANNOUNCEMENT = "{0} has disconnected";
 
 export abstract class Arena {
 
     protected gm : GameManagerService;
 
-    protected socketServer:  io.Server;
-    protected rules:         IGameRule[];
-    protected room:          string;
-    protected curRule:       IGameRule;
-    protected userMapPoints: Map<string, number>;
-    protected type:          GameMode;
+    protected socketServer:        io.Server;
+    protected rules:               IGameRule[];
+    protected room:                string;
+    protected curRule:             IGameRule;
+    protected userMapPoints:       Map<string, number>;
+    protected type:                GameMode;
     
-    protected userMapReady:  Map<string, boolean>;
-    protected dcPlayer:      string[];
-    protected users:         IUser[];
-    protected isAllDc:       boolean;
+    protected userMapReady:        Map<string, boolean>;
+    protected dcPlayer:            string[];
+    protected users:               IUser[];
+    protected isAllDc:             boolean;
 
-    private arenaId:             number;
-    private chronometerTimer:    number;
-    private hintPtr:             number;
+    private arenaId:               number;
+    private chronometerTimer:      number;
+    private hintPtr:               number;
+    
+    protected curArenaInterval:    NodeJS.Timeout;
+    public  chronometerInterval:   NodeJS.Timeout;
 
-    public  chronometerInterval: NodeJS.Timeout;
+    public gameMessages:           IGameplayAnnouncement[];
     
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         this.users          = users;
@@ -46,20 +52,22 @@ export abstract class Arena {
         this.type           = type;
         this.hintPtr        = 0;
         this.isAllDc        = false;
-        
+        this.gameMessages   = [];
+
         this.initReadyMap();
         this.setupPoints();
     }
-    
+
     public abstract start(): void;
     public abstract receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void;
-    
+
     protected abstract startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout;
     protected abstract botAnnounceStart(): void;
     protected abstract botAnnounceEndSubGane(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
-    protected abstract handlePoints(): void;
-    
+    protected abstract updatePoints(username: string, time: number, ratio: number): void;
+    protected abstract sendCurrentPointToUser(mes: IGameplayChat): void;
+
     protected handleGameplayHint(): void {
         const totalHint = this.curRule.clues.length;
         const announcement: IGameplayAnnouncement = {
@@ -80,6 +88,9 @@ export abstract class Arena {
         if (user && user.socket) {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
+
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
         }
 
         let count = 0;
@@ -95,7 +106,7 @@ export abstract class Arena {
     protected checkArenaLoadingState(callback: () => void): void {
         let numOfTries = 0;
         const checkInterval = setInterval(() => {
-            
+
             if (this.checkIfEveryoneIsReady()) {
                 clearInterval(checkInterval);
                 this.startChronometer();
@@ -103,7 +114,7 @@ export abstract class Arena {
             }
             else if (numOfTries >= 3) {
                 clearInterval(checkInterval);
-                this.cancelGame(); // TODO should handle game which doesn't affect player's kdr
+                this.cancelGame();
             }
             numOfTries++;
 
@@ -115,13 +126,15 @@ export abstract class Arena {
         const pts = this.preparePtsToBePersisted();
         console.log("[Debug] end game points are: ", pts);
         console.log("[Debug] disconnected players: ", this.dcPlayer);
-        
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over", {points: pts});
+            
+            if (u.socket)
+                u.socket.leave(this.room);
         });
 
         clearInterval(this.chronometerTimer);
-        
+
         this.gm.persistPoints(pts, this.chronometerTimer / ONE_SEC, this.type);
         this.gm.deleteArena(this.arenaId);
     }
@@ -130,6 +143,9 @@ export abstract class Arena {
         console.log("[Debug] Cancel routine");
         this.users.forEach(u => {
             this.socketServer.to(this.room).emit("game-over");
+            
+            if (u.socket)
+                u.socket.leave(this.room);
         });
         this.gm.deleteArena(this.arenaId);
     }
@@ -193,7 +209,6 @@ export abstract class Arena {
         });
     }
 
-
     protected isBot(username: string): boolean {
         return username === Bot.humour || username === Bot.kind || username === Bot.mean;
     }
@@ -225,7 +240,7 @@ export abstract class Arena {
                     isEveryoneReady = false;
             }
         });
-        
+
         return isEveryoneReady;
     }
 
@@ -235,6 +250,13 @@ export abstract class Arena {
             if (!this.isBot(key))
                 ptsList.push({username: key, points: pts});
         });
+
+        ptsList.sort((n1,n2) => {
+            if (n1.points > n2.points) return -1;
+            if (n1.points < n2.points) return 1;
+            return 0;
+        });
+
         return ptsList;
     }
 
@@ -243,6 +265,14 @@ export abstract class Arena {
         this.chronometerInterval = setInterval(() => {
             this.chronometerTimer += ONE_SEC;
         }, ONE_SEC)
+    }
+
+    protected sendToChat(obj: IGameplayAnnouncement): void {
+        this.socketServer.to(this.room).emit("game-chat", obj);
+    }
+
+    protected isUserDc(username: string): boolean {
+        return this.dcPlayer.includes(username);
     }
 
 }
