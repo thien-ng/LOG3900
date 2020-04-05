@@ -199,9 +199,17 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+
+        Log.w("resolution", "width: " + width)
+        Log.w("resolution", "height: " + height)
+
         bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
+        Log.w("resolution", "context.resources.displayMetrics.density: " + context.resources.displayMetrics.density)
+        context.resources.displayMetrics.density = 1F
+        Log.w("resolution", "context.resources.displayMetrics.density: " + context.resources.displayMetrics.density)
+
         matrix = Array((h / matrixSquareSize) + 1) {
             Array((w / matrixSquareSize) + 1) {
                 ArrayList<Segment>()
