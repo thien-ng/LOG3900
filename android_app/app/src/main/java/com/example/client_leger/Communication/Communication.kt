@@ -37,6 +37,10 @@ object Communication {
     fun getGameChatListener(): PublishSubject<JSONObject>{ return gameChatSource }
     fun updateGameChat(obj: JSONObject) { gameChatSource.onNext(obj) }
 
+    private var gamePointsSource: PublishSubject<JSONObject> = PublishSubject.create()
+    fun getGamePointsListener(): PublishSubject<JSONObject>{ return gamePointsSource }
+    fun updateGamePoints(obj: JSONObject) { gamePointsSource.onNext(obj) }
+
     private var gameEndSource: PublishSubject<JSONObject> = PublishSubject.create()
     fun getEndGameListener(): PublishSubject<JSONObject>{ return gameEndSource }
     fun updateEndGame(obj: JSONObject) { gameEndSource.onNext(obj) }
