@@ -65,7 +65,6 @@ export class ArenaSprint extends Arena {
 
             if (this.timeRemaining <= 0) {
                 clearInterval(this.curArenaInterval);
-                this.handlePoints();
                 this.end();
             }
             this.timeRemaining -= ONE_SEC;
@@ -102,6 +101,7 @@ export class ArenaSprint extends Arena {
             //add to score
             this.wordGuessedRight++;
             this.botAnnounceEndSubGane();
+            this.handlePoints();
             this.sendCurrentPointToUser(mes);
             this.resetSubGame();
 
@@ -150,6 +150,16 @@ export class ArenaSprint extends Arena {
             if (!this.isUserDc(u.username)) // give points to all connected users
                 this.userMapPoints.set(u.username, this.wordGuessedRight * this.pointsMult)
         });
+    }
+
+    protected updatePoints(username: string, time: number, ratio: number): void {
+        // not implemented function from parent
+    }
+
+    protected sendCurrentPointToUser(mes: IGameplayChat): void {
+        const user = this.users.find(u => {return u.username === mes.username}) as IUser;
+        const pts = this.userMapPoints.get(user.username) as number;
+        this.socketServer.to(this.room).emit("game-points", {point: pts});
     }
 
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {

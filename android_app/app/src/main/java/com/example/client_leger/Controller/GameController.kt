@@ -19,17 +19,19 @@ class GameController {
         val jsonObjectRequest = StringRequest(
             Request.Method.GET,
             Constants.SERVER_URL + Constants.START_GAME_ENDPOINT + lobbyName,
-            Response.Listener {
-                // Do nothing
+            Response.Listener {response ->
+                Toast.makeText(
+                    fragment.context,
+                    response,
+                    Toast.LENGTH_SHORT
+                ).show()
             }, Response.ErrorListener { error ->
                 Toast.makeText(
                     fragment.context,
                     error.message,
                     Toast.LENGTH_SHORT
                 ).show()
-
-            }
-        )
+            })
 
         requestQueue.add(jsonObjectRequest)
     }
