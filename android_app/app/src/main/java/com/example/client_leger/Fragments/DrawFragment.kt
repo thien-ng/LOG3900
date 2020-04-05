@@ -37,6 +37,8 @@ class DrawFragment: Fragment() {
             this.activity!!.intent.getStringExtra("username")
         )
 
+        canvasView.layoutParams = LinearLayout.LayoutParams(800, 800)
+
         v.ConstraintLayout_canvasView.addView(canvasView)
 
         v.button_change_color.setOnClickListener {
