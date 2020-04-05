@@ -123,7 +123,6 @@ namespace PolyPaint.VueModeles
 
         private void processPoints(JObject pts)
         {
-            Console.WriteLine(pts.GetValue("point").ToString());
             MyPoints = pts.GetValue("point").ToString();
         }
 

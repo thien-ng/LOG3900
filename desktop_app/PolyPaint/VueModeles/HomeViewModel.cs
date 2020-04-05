@@ -228,7 +228,6 @@ namespace PolyPaint.VueModeles
 
         private void processLobbyInvite(JObject data)
         {
-            Console.WriteLine(data.GetValue("lobbyName").ToString());
             LobbyInvitedTo = data.GetValue("lobbyName").ToString();
             Application.Current.Dispatcher.Invoke(delegate
             { 
@@ -458,7 +457,6 @@ namespace PolyPaint.VueModeles
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            Console.WriteLine(response.IsSuccessStatusCode);
         }
 
         #endregion
