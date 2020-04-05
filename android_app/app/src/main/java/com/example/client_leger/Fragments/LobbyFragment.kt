@@ -56,14 +56,10 @@ class LobbyFragment : Fragment(),
                 "join" -> {
                     val user = mes.getString("username")
 
-                    if (username == user) {
-
-                    } else {
+                    if (username != user) {
                         activity!!.runOnUiThread {
-                            // Stuff that updates the UI
                             userListAdapter.addUser(user)
                         }
-
                     }
                 }
                 "leave" -> {
