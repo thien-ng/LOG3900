@@ -61,5 +61,6 @@ class GameplayMenuFragment: Fragment() {
         super.onDestroy()
         timerSub.dispose()
         drawerSub.dispose()
+        gamePoints.dispose()
     }
 }
