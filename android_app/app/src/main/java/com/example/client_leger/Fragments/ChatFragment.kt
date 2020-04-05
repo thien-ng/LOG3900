@@ -169,7 +169,7 @@ class ChatFragment: Fragment() {
                     }
                 }
             } else if (type == "delete" || type == "leave") {
-                if (mes.getString("user") == username) {
+                if (mes.getString("username") == username) {
                     inLobby = false
                     activity!!.runOnUiThread {
                         if (channelId == LOBBY_CHANNEL_ID) {
