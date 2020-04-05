@@ -148,7 +148,7 @@ class ChatFragment: Fragment() {
         lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
             val type = mes.getString("type")
             if (type == "create") {
-                val user = mes.getJSONArray("users").getString(0)
+                val user = mes.getJSONArray("usernames").getString(0)
                 //First user should always be the lobby creator.
 
                 if (username == user) {
