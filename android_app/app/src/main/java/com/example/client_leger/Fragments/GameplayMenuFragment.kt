@@ -34,7 +34,8 @@ class GameplayMenuFragment: Fragment() {
 
         timerSub = Communication.getTimerListener().subscribe { res ->
             activity!!.runOnUiThread {
-                v.timer.text = res.getString("time")
+                v.timer.text = "Time left: " + res.getString("time")
+
             }
         }
 
