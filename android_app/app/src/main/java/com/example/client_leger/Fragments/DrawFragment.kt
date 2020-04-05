@@ -8,9 +8,9 @@ import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -199,16 +199,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-
-        Log.w("resolution", "width: " + width)
-        Log.w("resolution", "height: " + height)
-
         bitmap = createBitmap(w, h, Bitmap.Config.ARGB_8888)
         bitmapCanvas = Canvas(bitmap)
         bitmap.eraseColor(Color.WHITE)
-        Log.w("resolution", "context.resources.displayMetrics.density: " + context.resources.displayMetrics.density)
         context.resources.displayMetrics.density = 1F
-        Log.w("resolution", "context.resources.displayMetrics.density: " + context.resources.displayMetrics.density)
 
         matrix = Array((h / matrixSquareSize) + 1) {
             Array((w / matrixSquareSize) + 1) {
