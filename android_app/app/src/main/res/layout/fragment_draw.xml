@@ -8,6 +8,7 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -24,8 +25,8 @@
                     android:drawableTop="@drawable/ic_eraser_stroke"
                     android:gravity="center"
                     android:textSize="0sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button_normalErase" />
+                    app:layout_constraintStart_toEndOf="@+id/button_normalErase"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             <ToggleButton
                     android:id="@+id/button_round"
@@ -35,8 +36,8 @@
                     android:drawableTop="@drawable/ic_circle_24dp"
                     android:gravity="center"
                     android:textSize="0sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button_strokeErase" />
+                    app:layout_constraintStart_toEndOf="@+id/button_strokeErase"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             <ToggleButton
                     android:id="@+id/button_normalErase"
@@ -46,8 +47,8 @@
                     android:drawableTop="@drawable/ic_eraser"
                     android:gravity="center"
                     android:textSize="0sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button_change_color" />
+                    app:layout_constraintStart_toEndOf="@+id/button_change_color"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             <ToggleButton
                     android:id="@+id/button_square"
@@ -57,8 +58,8 @@
                     android:drawableTop="@drawable/ic_square_24dp"
                     android:gravity="center"
                     android:textSize="0sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button_round" />
+                    app:layout_constraintStart_toEndOf="@+id/button_round"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                     android:id="@+id/button_change_color"
@@ -67,8 +68,8 @@
                     android:background="#FFFFFF"
                     android:text="Change color"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button_changeWidth"
+                    app:layout_constraintStart_toEndOf="@+id/button_changeWidth"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0" />
 
             <Button

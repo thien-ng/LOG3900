@@ -37,7 +37,7 @@ class DrawFragment: Fragment() {
             this.activity!!.intent.getStringExtra("username")
         )
 
-        canvasView.layoutParams = LinearLayout.LayoutParams(800, 800)
+        canvasView.layoutParams = LinearLayout.LayoutParams(1000, 750)
 
         v.ConstraintLayout_canvasView.addView(canvasView)
 
