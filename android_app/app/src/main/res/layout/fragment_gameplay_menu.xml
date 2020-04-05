@@ -30,4 +30,15 @@
             android:text="Your role:"
             app:layout_constraintStart_toEndOf="@+id/item"
             app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+            android:id="@+id/points"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Your points: 0"
+            app:layout_constraintStart_toEndOf="@+id/timer"
+            app:layout_constraintTop_toBottomOf="@+id/item" />
 </android.support.constraint.ConstraintLayout>
