@@ -180,7 +180,7 @@ namespace PolyPaint.VueModeles
                 });
             });
 
-            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
+            ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
 
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
@@ -198,6 +198,7 @@ namespace PolyPaint.VueModeles
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
 
             previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            eraserDiameter = 8;
         }
 
         /// <summary>

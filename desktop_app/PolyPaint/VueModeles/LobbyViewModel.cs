@@ -315,13 +315,7 @@ namespace PolyPaint.VueModeles
             {
                 return _startGameCommand ?? (_startGameCommand = new RelayCommand(async x =>
                 {
-                    await startGame().ContinueWith(x =>
-                    {
-                        if (x.Result.IsSuccessStatusCode)
-                            Mediator.Notify("GoToDrawScreen");
-                        else
-                            MessageBox.Show("Error starting game");
-                    });
+                    await startGame();
                 }));
             }
         }    
