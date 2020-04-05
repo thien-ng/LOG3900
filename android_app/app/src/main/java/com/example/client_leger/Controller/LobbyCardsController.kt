@@ -25,11 +25,7 @@ class LobbyCardsController {
             Method.POST,
             Constants.SERVER_URL + Constants.LOBBY_JOIN_ENDPOINT,
             Response.Listener {
-                val fragment = LobbyFragment()
-                val bundle = Bundle()
-                bundle.putString("lobbyName", body.getString("lobbyName"));
-                fragment.arguments = bundle
-                activity.replaceFragment(fragment)
+
             },
             Response.ErrorListener {error->
                 Toast.makeText(activity.context, error.toString(), Toast.LENGTH_SHORT).show()
