@@ -200,7 +200,8 @@ namespace PolyPaint.VueModeles
         {
             await App.Current.Dispatcher.Invoke(async delegate
              {
-                 if (_selectedMode == Constants.MODE_FFA || _selectedMode == Constants.MODE_SOLO || _selectedMode == Constants.MODE_COOP)
+                 bool isExistingSelectedMode = (_selectedMode == Constants.MODE_FFA || _selectedMode == Constants.MODE_SOLO || _selectedMode == Constants.MODE_COOP);
+                 if (isExistingSelectedMode)
                  {
                      GameCards.Clear();
                      var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.GET_ACTIVE_LOBBY_PATH + "/" + _selectedMode);
