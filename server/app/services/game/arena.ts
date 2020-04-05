@@ -65,7 +65,8 @@ export abstract class Arena {
     protected abstract botAnnounceStart(): void;
     protected abstract botAnnounceEndSubGane(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
-    protected abstract handlePoints(): void;
+    protected abstract updatePoints(username: string, time: number, ratio: number): void;
+    protected abstract sendCurrentPointToUser(mes: IGameplayChat): void;
 
     protected handleGameplayHint(): void {
         const totalHint = this.curRule.clues.length;
@@ -251,8 +252,8 @@ export abstract class Arena {
         });
 
         ptsList.sort((n1,n2) => {
-            if (n1.points > n2.points) return 1;
-            if (n1.points < n2.points) return -1;
+            if (n1.points > n2.points) return -1;
+            if (n1.points < n2.points) return 1;
             return 0;
         });
 
@@ -272,12 +273,6 @@ export abstract class Arena {
 
     protected isUserDc(username: string): boolean {
         return this.dcPlayer.includes(username);
-    }
-
-    protected sendCurrentPointToUser(mes: IGameplayChat): void {
-        const user = this.users.find(u => {return u.username === mes.username}) as IUser;
-        const pts = this.userMapPoints.get(user.username) as number;
-        this.socketServer.to(user.socketId).emit("game-points", {point: pts});
     }
 
 }

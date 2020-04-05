@@ -52,8 +52,12 @@ export class GameController {
         });
 
         this.router.get('/start/:lobbyName', (req: Request, res: Response, next: NextFunction) => {
-            this.gameMan.startGame(req.params.lobbyName);
-            res.status(200).send();
+            try {
+                this.gameMan.startGame(req.params.lobbyName);
+                res.json("starting game");
+            } catch(e) {
+                res.json(e.message);
+            };
         });
     }
 }
