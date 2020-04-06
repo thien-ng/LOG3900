@@ -232,9 +232,6 @@ namespace PolyPaint.VueModeles
 
         public void ReceiveDrawing(JObject data) 
         {
-
-            Console.WriteLine(data);
-
             if (!data.ContainsKey("type")) return;
 
             switch ((string)data.GetValue("type"))
@@ -309,7 +306,15 @@ namespace PolyPaint.VueModeles
             coll.Add(new StylusPoint(X1, Y1));
             coll.Add(new StylusPoint(X2, Y2));
 
-            byte[] colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
+            byte[] colorBytes;
+            try
+            {
+                colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
+            } catch(Exception e)
+            {
+                colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
+            }
+
             if (!BitConverter.IsLittleEndian) Array.Reverse(colorBytes);
             Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[3], colorBytes[2], colorBytes[1], colorBytes[0]) : (Color)ColorConverter.ConvertFromString("#FF000000");
 
