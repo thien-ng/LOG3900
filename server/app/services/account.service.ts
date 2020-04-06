@@ -27,6 +27,22 @@ export class AccountService {
         return result;
     }
 
+    public async setAvatar(req: { username: string, avatar: Uint8Array }): Promise<IStatus> {
+        let result: IStatus = {
+            status: 200,
+            message: "Succesfully changed avatar"
+        };
+
+        try {
+            await this.database.setAvatar(req.username, req.avatar);
+        } catch (e) {
+            result.status = 400;
+            result.message = e.message;
+        }
+
+        return result;
+    }
+
     public async login(login: ILogin): Promise<IStatus> {
         let result: IStatus = {
             status: 200,
@@ -88,7 +104,7 @@ export class AccountService {
             return e;
         });
         const profileStats: Promise<IStats> = this.database.getProfileStats(username).then((result: pg.QueryResult) => {
-            return result.rows.map((row: any) => ({totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame}))[0];
+            return result.rows.map((row: any) => ({ totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame }))[0];
         }).catch((e) => {
             return e;
         });
@@ -102,12 +118,12 @@ export class AccountService {
     }
 
     private async getGameInfos(username: string): Promise<IGame[]> {
-        const mapDate           = new Map<number, IModeDate>();
-        const idList: number[]  = [];
+        const mapDate = new Map<number, IModeDate>();
+        const idList: number[] = [];
         const gameList: IGame[] = [];
 
         (await this.database.getGameIds(username)).rows.forEach(u => {
-            mapDate.set(u.out_gamesid, {mode: u.out_mode, date: u.out_date});
+            mapDate.set(u.out_gamesid, { mode: u.out_mode, date: u.out_date });
             idList.push(u.out_gamesid);
         });
 
@@ -118,7 +134,7 @@ export class AccountService {
             info.getgameinfo.forEach((p: IPlayer) => { list.push(p) });
 
             const obj = mapDate.get(id) as IModeDate;
-            gameList.push({mode: obj.mode, date: obj.date, players: list});
+            gameList.push({ mode: obj.mode, date: obj.date, players: list });
         }
 
         return gameList;

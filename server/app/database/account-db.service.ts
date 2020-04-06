@@ -17,12 +17,16 @@ export class AccountDbService extends DatabaseService {
                 let avatar: Uint8Array;
                 if (registration.avatar) {
                     avatar = registration.avatar;
-                    this.pool.query(`SELECT LOG3900.setAvatar(
-                    CAST('${registration.username}' AS VARCHAR),
-                    CAST('${avatar}' AS BYTEA));`);
+                    return this.setAvatar(registration.username, avatar);
                 }
                 return res
             });
+    }
+
+    public async setAvatar(username: string, avatar: Uint8Array): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.setAvatar(
+                                    CAST('${username}' AS VARCHAR),
+                                    CAST('${avatar}' AS BYTEA));`);
     }
 
     public async loginAccount(login: ILogin): Promise<pg.QueryResult> {
