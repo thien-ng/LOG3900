@@ -48,7 +48,7 @@ namespace PolyPaint.VueModeles
         public bool IsDrawer
         {
             get { return _isDrawer; }
-            set{ _isDrawer = value; ProprieteModifiee(); } 
+            set { _isDrawer = value; ProprieteModifiee(); } 
         }
 
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
@@ -442,21 +442,6 @@ namespace PolyPaint.VueModeles
                 return _goToLogin ?? (_goToLogin = new RelayCommand(x =>
                 {
                     Mediator.Notify("GoToLoginScreen", "");
-                }));
-            }
-        }
-
-        private ICommand _loadedCommand;
-        public ICommand LoadedCommand
-        {
-            get
-            {
-                return _loadedCommand ?? (_loadedCommand = new RelayCommand(x =>
-                {
-                    JObject clientReady = new JObject(new JProperty("username", ServerService.instance.username),
-                                                      new JProperty("event", "ready"));
-
-                    ServerService.instance.socket.Emit("gameplay", clientReady);
                 }));
             }
         }
