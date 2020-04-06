@@ -310,7 +310,10 @@ namespace PolyPaint.VueModeles
             coll.Add(new StylusPoint(X2, Y2));
 
             byte[] colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
-            if (!BitConverter.IsLittleEndian) Array.Reverse(colorBytes);
+            
+            if (!BitConverter.IsLittleEndian) 
+                Array.Reverse(colorBytes);
+            
             Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[3], colorBytes[2], colorBytes[1], colorBytes[0]) : (Color)ColorConverter.ConvertFromString("#FF000000");
 
             DrawingAttributes attr = new DrawingAttributes();
@@ -354,7 +357,8 @@ namespace PolyPaint.VueModeles
 
                 StrokeCollection strokes = Traits.HitTest(new Point(x, y), eraserDiameter);
 
-                if (strokes.Count == 0) return;
+                if (strokes.Count == 0) 
+                    return;
 
                 Rect rect = new Rect(x - (eraserDiameter / 2),
                                      y - (eraserDiameter / 2),

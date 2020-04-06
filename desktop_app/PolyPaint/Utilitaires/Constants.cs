@@ -8,7 +8,6 @@ namespace PolyPaint.Utilitaires
 {
     class Constants
     {
-        //SERVER https://log3000-app.herokuapp.com http://localhost:3000
         public const string SERVER_PATH             = "https://log3000-app.herokuapp.com";
         public const string ACCOUNT_PATH            = "/account";
         public const string LOGIN_PATH              = ACCOUNT_PATH + "/login";
