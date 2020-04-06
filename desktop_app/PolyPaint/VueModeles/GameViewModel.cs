@@ -105,15 +105,19 @@ namespace PolyPaint.VueModeles
             {
                 Role = Constants.ROLE_DRAWER;
                 ObjectToDraw = role.GetValue("object").ToString();
-                Mediator.Notify("updateRole", true);
+                DrawViewModel.IsDrawer = true;
             }
             else
             {
                 Role = Constants.ROLE_GUESSER;
                 ObjectToDraw = "";
-                Mediator.Notify("updateRole", false);
+                DrawViewModel.IsDrawer = false;
             }
-            Mediator.Notify("clearDraw");
+
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                DrawViewModel.Traits.Clear();
+            });
         }
 
         private void processTime(JObject time)
