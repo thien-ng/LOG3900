@@ -31,6 +31,17 @@ CREATE OR REPLACE FUNCTION LOG3900.registerAccount(in_username VARCHAR(20), in_p
     END;
 $$LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION LOG3900.setAvatar(in_username VARCHAR(20), new_avatar BYTEA) RETURNS VOID AS $$
+    BEGIN
+        IF NOT EXISTS (SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) then
+            RAIS EXCEPTION 'Username doesnt exist';
+        END IF;
+        UPDATE LOG3900.Account
+        SET avatar = new_avatar
+
+    END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_password VARCHAR(100)) RETURNS void AS $$
     BEGIN
         IF NOT EXISTS( SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) THEN
