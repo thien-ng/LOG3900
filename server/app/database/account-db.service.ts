@@ -9,19 +9,20 @@ import * as pg from "pg";
 export class AccountDbService extends DatabaseService {
 
     public async registerAccount(registration: IRegistration): Promise<pg.QueryResult> {
-        avatar: Uint8Array;
-        if (registration.avatar)
-            avatar = registration.avatar;
-        const reg = this.pool.query(`SELECT LOG3900.registerAccount(
+        return this.pool.query(`SELECT LOG3900.registerAccount(
                                 CAST('${registration.username}' AS VARCHAR),
                                 CAST('${registration.password}' AS VARCHAR),
                                 CAST('${registration.firstName}' AS VARCHAR),
-                                CAST('${registration.lastName}' AS VARCHAR));`);
-        const av = this.poll.query(`SELECT LOG3900.setAvatar(
-                                CAST('${registration.username}' AS BYTEA));`);
-        return Promise.all([av, reg]).then().catch((e) => {
-            return e;
-        });
+                                CAST('${registration.lastName}' AS VARCHAR));`).then((res) => {
+                let avatar: Uint8Array;
+                if (registration.avatar) {
+                    avatar = registration.avatar;
+                    this.pool.query(`SELECT LOG3900.setAvatar(
+                    CAST('${registration.username}' AS VARCHAR),
+                    CAST('${avatar}' AS BYTEA));`);
+                }
+                return res
+            });
     }
 
     public async loginAccount(login: ILogin): Promise<pg.QueryResult> {
