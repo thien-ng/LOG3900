@@ -170,16 +170,6 @@ namespace PolyPaint.VueModeles
         {
             IsDrawer = false;
 
-            Mediator.Subscribe("updateRole", (x) => { IsDrawer = (bool)x; });
-
-            Mediator.Subscribe("clearDraw", (x) => 
-            {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-                    Traits.Clear();
-                });
-            });
-
             ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
 
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
