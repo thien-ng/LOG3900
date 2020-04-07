@@ -66,10 +66,11 @@ class LobbyFragment : Fragment(),
                 }
                 "leave" -> {
                     val user = mes.getString("username")
-                    activity!!.runOnUiThread {
-                        userListAdapter.removeUser(user)
+                    if(user != username) {
+                        activity!!.runOnUiThread {
+                            userListAdapter.removeUser(user)
+                        }
                     }
-
                 }
             }
         }

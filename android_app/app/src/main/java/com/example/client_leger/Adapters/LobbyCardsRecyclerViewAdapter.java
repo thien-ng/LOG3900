@@ -129,6 +129,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
 
     public void setItems(ArrayList<Lobby> items) {
         mData.clear();
+        notifyDataSetChanged();
         for (int i = 0; i < items.size(); i++) {
             mData.add(items.get(i));
             notifyItemChanged(i);
