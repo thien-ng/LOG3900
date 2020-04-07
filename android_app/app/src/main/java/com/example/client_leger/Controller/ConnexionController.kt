@@ -187,7 +187,7 @@ class ConnexionController {
         requestQueue.add(jsonArrayRequest)
     }
 
-    private fun joinChannel(activity: ChatFragment, channelId: String) {
+    private fun joinChannel(activity: ChatFragment, channelId: String, justCreated: Boolean = false) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
         val jsonObjectRequest = JsonObjectRequest(
@@ -195,7 +195,7 @@ class ConnexionController {
             Constants.SERVER_URL + "/chat/channels/join/" + activity.username + "/" + channelId ,
             null,
             Response.Listener<JSONObject>{
-                activity.setChannel(channelId)
+                activity.setChannel(channelId, !justCreated)
             },Response.ErrorListener{ error ->
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }
@@ -225,7 +225,7 @@ class ConnexionController {
     }
 
     fun createChannel(activity: ChatFragment, channelId: String) {
-        joinChannel(activity, channelId)
+        joinChannel(activity, channelId, true)
     }
 
     fun loadChannels(activity: ChatFragment, search: String? = null) {
