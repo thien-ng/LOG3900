@@ -112,7 +112,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
-                        if(mes.getString("gameMode") == getCurrentGameMode().toString()){
+                        if(mes.getString("mode") == getCurrentGameMode().toString()){
                                 activity!!.runOnUiThread {
                                     adapterLobbyCards.addItem(context?.let { Lobby(mes, it) })
                                 }
@@ -129,7 +129,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
-                        if (mes.getString("gameMode") == getCurrentGameMode().toString()) {
+                        if (mes.getString("mode") == getCurrentGameMode().toString()) {
                             activity!!.runOnUiThread {
                                 adapterLobbyCards.updateUser(mes.getString("lobbyName"), user)
                             }
