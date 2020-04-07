@@ -10,6 +10,7 @@ import { HumourBot } from "./bots/humourBot";
 import { Bot } from "./bots/bot";
 
 import * as io from 'socket.io';
+import { Difficulty } from "../../interfaces/creator";
 
 const format = require('string-format');
 
@@ -183,7 +184,8 @@ export class ArenaFfa extends Arena {
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
-        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
+        const speed = this.chooseDrawingSpeed(arenaTime);
+        return bot.draw(this.room, speed, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
     protected botAnnounceStart(): void {
@@ -196,6 +198,19 @@ export class ArenaFfa extends Arena {
         this.botMap.forEach((bot: Bot, key: string) => {
             bot.launchTaunt(this.room, this.gameMessages);
         });
+    }
+
+    private chooseDrawingSpeed(arenaTime: number): number {
+        switch(this.curRule.difficulty){
+            case Difficulty.EASY:
+                return Math.floor(arenaTime/4);
+            case Difficulty.MEDIUM:
+                return Math.floor(arenaTime/2);
+            case Difficulty.HARD:
+                return arenaTime;
+            default:
+                return arenaTime;
+        }
     }
 
     private attributeRoles(): void | boolean {
