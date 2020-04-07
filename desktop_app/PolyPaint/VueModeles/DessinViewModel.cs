@@ -35,7 +35,7 @@ namespace PolyPaint.VueModeles
         {
             Width = width;
             Height = height;
-            setup();
+            Setup();
         }
 
         #region Public Attributes
@@ -118,6 +118,8 @@ namespace PolyPaint.VueModeles
 
         private void Setup()
         {
+            IsDrawer = true;
+
             ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
 
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
@@ -164,31 +166,6 @@ namespace PolyPaint.VueModeles
                     AjusterPointe();
                     break;
             }
-        }
-
-        private void setup()
-        {
-            IsDrawer = false;
-
-            ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
-
-            editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
-
-            // On initialise les attributs de dessin avec les valeurs de départ du modèle.
-            AttributsDessin = new DrawingAttributes();
-            AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
-            AjusterPointe();
-
-            Traits = editeur.traits;
-
-            // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.
-            // Pour les commandes suivantes, il est toujours possible des les activer.
-            // Donc, aucune vérification de type Peut"Action" à faire.
-            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
-            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
-
-            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
-            eraserDiameter = 8;
         }
 
         /// <summary>
