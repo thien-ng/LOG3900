@@ -14,7 +14,7 @@ export class HumourBot extends Bot {
     public launchTauntStart(room: string, gameMessages: IGameplayAnnouncement[]): void {
         const announcement: IGameplayAnnouncement = {
             username: this.username,
-            content: "You're gonna lose, just like yo mamma!",
+            content: "with you, may the force be",
             isServer: false,
         };
         gameMessages.push(announcement);
