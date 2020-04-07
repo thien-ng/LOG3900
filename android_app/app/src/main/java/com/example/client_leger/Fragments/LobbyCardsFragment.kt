@@ -137,7 +137,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     }
                 }
                 "delete" -> {
-                    if (mes.getString("gameMode") == getCurrentGameMode().toString()) {
+                    if (mes.getString("mode") == getCurrentGameMode().toString()) {
                         activity!!.runOnUiThread {
                             adapterLobbyCards.removeItem(context?.let { Lobby(mes, it) })
                         }
