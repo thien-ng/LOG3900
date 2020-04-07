@@ -210,6 +210,7 @@
     <Compile Include="Modeles\User.cs" />
     <Compile Include="Modeles\UserLobby.cs" />
     <Compile Include="Services\ServerService.cs" />
+    <Compile Include="Utilitaires\CustomStroke.cs" />
     <Compile Include="Utilitaires\Enums.cs" />
     <Compile Include="Utilitaires\Constants.cs" />
     <Compile Include="Utilitaires\EventRaiser.cs" />
