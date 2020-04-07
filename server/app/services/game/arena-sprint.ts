@@ -139,6 +139,8 @@ export class ArenaSprint extends Arena {
         //show an image or build one.
         clearInterval(this.drawing);
         this.drawing = this.startBotDrawing(this.drawer_bot.username, this.timePerImage);
+        
+        this.assignRule();
 
         //reset guess left
         this.guessLeft = this.guessPerImage;
@@ -163,7 +165,6 @@ export class ArenaSprint extends Arena {
     }
 
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
-        this.assignRule();
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         return this.drawer_bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
     }
