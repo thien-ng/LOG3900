@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, ICorrAns, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
@@ -23,7 +23,7 @@ export class ArenaFfa extends Arena {
     private drawPtr: number;
 
     private curTime: number;
-    private userWithCorrectAns: ICorrAns[];
+    private userWithCorrectAns: number;
 
     private isEveryoneHasRightAnswer: boolean;
 
@@ -31,11 +31,11 @@ export class ArenaFfa extends Arena {
 
     private botMap: Map<string, MeanBot | KindBot | HumourBot>;
 
-    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
-        super(type, arenaId, users, room, io, rules, gm)
+    public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server | undefined, rules: IGameRule[], gm: GameManagerService) {
+        super(type, arenaId, users, room, io as io.Server, rules, gm)
 
         this.drawPtr = 0;
-        this.userWithCorrectAns = [];
+        this.userWithCorrectAns = 0;
         this.isEveryoneHasRightAnswer = false;
         this.isBotDrawing = false;
         this.botMap = new Map<string, MeanBot | KindBot | HumourBot>();
@@ -76,7 +76,6 @@ export class ArenaFfa extends Arena {
             if (timer >= TOTAL_TIME || this.isEveryoneHasRightAnswer || this.isAllDc) {
                 clearInterval(this.curArenaInterval);
 
-                this.handlePoints();
                 this.botAnnounceEndSubGane();
 
                 if (this.drawPtr >= this.users.length) {
@@ -93,7 +92,7 @@ export class ArenaFfa extends Arena {
     }
 
     private resetSubGame(): void | boolean {
-        this.userWithCorrectAns = [];
+        this.userWithCorrectAns = 0;
         this.isEveryoneHasRightAnswer = false;
         this.isBotDrawing = false;
 
@@ -119,7 +118,6 @@ export class ArenaFfa extends Arena {
         }
     }
 
-
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
         this.users.forEach(u => {
             if (u.username != mes.username)
@@ -128,24 +126,58 @@ export class ArenaFfa extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
-        if (this.isRightAnswer(mes.content)) {
-            this.userWithCorrectAns.push({
-                username: mes.username,
-                time: (TOTAL_TIME - this.curTime)/ONE_SEC,
-                ratio: 1 - this.calculateRatio()});
+        
+        const answer = mes.content.toLocaleLowerCase().trim();
 
+        if (this.isRightAnswer(answer) && this.isNotCurrentDrawer(mes.username)) {
+            
             const encAnswer = this.encryptAnswer(mes.content);
+            
+            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
+            
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
-            this.sendToChat({
-                username: "Server",
-                content: format(ANNOUNCEMENT, mes.username),
-                isServer: true});
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
+            
+            const time = (TOTAL_TIME - this.curTime)/ONE_SEC;
+            const ratio = 1 - this.calculateRatio()
+
+            this.userWithCorrectAns++;
+
+            this.updatePoints(mes.username, time, ratio);
+            this.sendCurrentPointToUser(mes);
 
             if (this.checkIfEveryoneHasRightAnswer())
                 this.isEveryoneHasRightAnswer = true;
         } else {
+            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
             this.sendToChat({username: mes.username, content: mes.content, isServer: false});
         }
+    }
+
+    protected updatePoints(username: string, time: number, ratio: number): void {
+        // Give points to guesser
+        // pts = time_left * (1 - ratio_found)
+        const pts = this.userMapPoints.get(username) as number;
+        const newPts = Math.floor(time * ratio);
+        this.userMapPoints.set(username, pts + newPts);
+
+        // Give points to drawer
+        // pts = 20 * ratio_found
+        const drawName = this.users[this.drawPtr - 1].username;
+        const drawPts = this.userMapPoints.get(drawName) as number;
+        const drawNewPts = Math.floor(INIT_DRAW_PTS * this.calculateRatio());
+        this.userMapPoints.set(drawName, drawNewPts + drawPts);
+    }
+    
+    protected sendCurrentPointToUser(mes: IGameplayChat): void {
+        const user = this.users.find(u => {return u.username === mes.username}) as IUser;
+        const pts = this.userMapPoints.get(user.username) as number;
+        this.socketServer.to(user.socketId).emit("game-points", {point: pts});
+
+        const drawUser = this.users[this.drawPtr - 1];
+        const drawPts = this.userMapPoints.get(drawUser.username) as number;
+        this.socketServer.to(drawUser.socketId).emit("game-points", {point: drawPts});
     }
 
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
@@ -156,31 +188,14 @@ export class ArenaFfa extends Arena {
 
     protected botAnnounceStart(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
-            bot.launchTauntStart(this.room);
+            bot.launchTauntStart(this.room, this.gameMessages);
         });
     }
 
     protected botAnnounceEndSubGane(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
-            bot.launchTaunt(this.room);
+            bot.launchTaunt(this.room, this.gameMessages);
         });
-    }
-
-    protected handlePoints(): void {
-        // Give points to guesser
-        // pts = time_left * (1 - ratio_found)
-        this.userWithCorrectAns.forEach(u => {
-            const pts = this.userMapPoints.get(u.username) as number;
-            const newPts = Math.floor(u.time * u.ratio);
-            this.userMapPoints.set(u.username, pts + newPts);
-        });
-
-        // Give points to drawer
-        // pts = 20 * ratio_found
-        const drawName = this.users[this.drawPtr - 1].username;
-        const drawPts = this.userMapPoints.get(drawName) as number;
-        const drawNewPts = Math.floor(INIT_DRAW_PTS * this.calculateRatio());
-        this.userMapPoints.set(drawName, drawNewPts + drawPts);
     }
 
     private attributeRoles(): void | boolean {
@@ -211,11 +226,11 @@ export class ArenaFfa extends Arena {
     }
 
     private calculateRatio(): number {
-        return Math.floor(this.userWithCorrectAns.length / this.users.length);
+        return Math.floor(this.userWithCorrectAns / this.users.length);
     }
 
     private checkIfEveryoneHasRightAnswer(): boolean {
-        return (this.users.length - this.dcPlayer.length) === this.userWithCorrectAns.length;
+        return (this.users.length - this.dcPlayer.length -1 ) <= this.userWithCorrectAns; //-1 to ignore drawer
     }
 
     private initBots(): void {
@@ -225,6 +240,10 @@ export class ArenaFfa extends Arena {
                 this.botMap.set(u.username, bot);
             }
         });
+    }
+
+    private isNotCurrentDrawer(username: string): boolean {        
+        return this.users[this.drawPtr - 1].username !== username;
     }
 
 }

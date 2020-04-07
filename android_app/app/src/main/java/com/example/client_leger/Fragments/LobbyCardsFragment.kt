@@ -1,21 +1,26 @@
 package com.example.client_leger.Fragments
 
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.example.client_leger.Adapters.LobbyCardsRecyclerViewAdapter
+import com.example.client_leger.Communication.Communication
 import com.example.client_leger.ConnexionController
 import com.example.client_leger.Controller.LobbyCardsController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
 import com.example.client_leger.models.GameMode
 import com.example.client_leger.models.Lobby
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_createlobby.*
 import org.json.JSONObject
 
@@ -33,7 +38,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private lateinit var spinnerGameModes: Spinner
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private lateinit var lobbyNotifSub: Disposable
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val v = inflater.inflate(R.layout.fragment_gamecards, container, false)
         username = activity!!.intent.getStringExtra("username")
         lobbyCardsController = LobbyCardsController()
@@ -64,20 +75,71 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         buttonShowDialog.setOnClickListener { showDialog() }
 
         spinnerGameModes = v.findViewById(R.id.GameMode)
-        var gamemodes = arrayListOf("Select Game Mode","Free for all","Sprint Solo","Sprint Co-op")
-        var dataAdapter  = ArrayAdapter(context,  R.layout.gamemode_item, gamemodes)
+        var gamemodes =
+            arrayListOf("Select Game Mode", "Free for all", "Sprint Solo", "Sprint Co-op")
+        var dataAdapter = ArrayAdapter(context, R.layout.gamemode_item, gamemodes)
         spinnerGameModes.adapter = dataAdapter
-        spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
 
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(position > 0)
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (position > 0)
                     buttonShowDialog.isEnabled = true
-                lobbyCardsController.getLobbies(this@LobbyCardsFragment, spinnerToGameMode(position).toString())
+                lobbyCardsController.getLobbies(
+                    this@LobbyCardsFragment,
+                    spinnerToGameMode(position).toString()
+                )
             }
 
+        }
+
+        lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
+            when (mes.getString("type")) {
+                "create" -> {
+                    val user = mes.getJSONArray("usernames").getString(0)
+                    //First user should always be the lobby creator.
+
+                    if (username == user) {
+                        val fragment = LobbyFragment()
+                        val bundle = Bundle()
+                        bundle.putString("lobbyName", mes.getString("lobbyName"));
+                        fragment.arguments = bundle
+                        replaceFragment(fragment)
+                    } else {
+                        activity!!.runOnUiThread {
+                            adapterLobbyCards.addItem(context?.let { Lobby(mes, it) })
+                        }
+                    }
+                }
+                "join" -> {
+                    val user = mes.getString("username")
+
+                    if (username == user) {
+                        val fragment = LobbyFragment()
+                        val bundle = Bundle()
+                        bundle.putString("lobbyName", mes.getString("lobbyName"));
+                        fragment.arguments = bundle
+                        replaceFragment(fragment)
+                    } else {
+                        activity!!.runOnUiThread {
+                            adapterLobbyCards.updateUser(mes.getString("lobbyName"), user)
+                        }
+                    }
+                }
+                "delete" -> {
+                    activity!!.runOnUiThread {
+                        adapterLobbyCards.removeItem(context?.let { Lobby(mes, it) })
+                    }
+
+                }
+            }
         }
 
         return v
@@ -94,28 +156,65 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
         val switch: Switch = d.findViewById(R.id.switch_private)
         switch.setOnCheckedChangeListener { _, isChecked ->
-            d.findViewById<EditText>(R.id.lobbyPassword).visibility = if(isChecked) View.VISIBLE else View.GONE
+            d.findViewById<EditText>(R.id.lobbyPassword).visibility =
+                if (isChecked) View.VISIBLE else View.GONE
         }
 
 
         val button: Button = d.findViewById(R.id.button_CreateLobby)
         button.setOnClickListener {
-            if(validateLobbyFields(d)) {
+            if (validateLobbyFields(d)) {
                 var data = JSONObject()
                 data.put("username", username)
                 data.put("isPrivate", d.findViewById<Switch>(R.id.switch_private).isChecked)
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
                 data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
-                if(switch.isChecked) data.put("password", d.findViewById<EditText>(R.id.lobbyPassword).text.trim())
-                data.put("mode", spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString())
-                createLobby(data)
-                d.hide()
+                if (switch.isChecked) data.put(
+                    "password",
+                    d.findViewById<EditText>(R.id.lobbyPassword).text.trim()
+                )
+                data.put(
+                    "mode",
+                    spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString()
+                )
+                lobbyCardsController.joinLobby(this, data)
+                d.dismiss()
             }
         }
         d.show()
     }
 
     override fun onItemClick(view: View?, position: Int) {
+
+
+    }
+
+    override fun onJoinPrivateClick(view: View?, adapterPosition: Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Enter password")
+        val input = EditText(context)
+        input.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+        builder.setView(input)
+
+        builder.setPositiveButton(
+            "JOIN"
+        ) { dialog, _ ->
+
+            var lobby = JSONObject()
+            lobby.put("username", username)
+            lobby.put("isPrivate", true)
+            lobby.put("lobbyName", adapterLobbyCards.getItem(adapterPosition).lobbyName)
+            lobby.put("password", input.text.trim())
+
+            lobbyCardsController.joinLobby(this, lobby)
+            dialog.dismiss()
+        }
+
+        builder.setNeutralButton(
+            "Cancel"
+        ) { dialog, _ -> dialog.cancel() }
+
+        builder.show()
 
     }
 
@@ -148,18 +247,14 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         v.visibility = if (v.isShown) View.GONE else View.VISIBLE
     }
 
-    private fun createLobby(lobby: JSONObject){
-        lobbyCardsController.joinLobby(this, lobby)
-    }
-    
-    private fun validateLobbyFields(d: Dialog):Boolean{
+    private fun validateLobbyFields(d: Dialog): Boolean {
         return when {
             d.lobbyname.text.isBlank() -> {
                 d.lobbyname.error = "Enter a Lobby Name"
                 d.lobbyname.requestFocus()
                 false
             }
-            d.lobbyname.text.length > 20 ->{
+            d.lobbyname.text.length > 20 -> {
                 d.lobbyname.error = "Lobby name must be between 1 and 20 characters"
                 d.lobbyname.requestFocus()
                 false
@@ -171,7 +266,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         d.lobbyPassword.requestFocus()
                         false
                     }
-                    d.lobbyPassword.text.length > 20 ->{
+                    d.lobbyPassword.text.length > 20 -> {
                         d.lobbyPassword.error = "Lobby password must be between 1 and 20 characters"
                         d.lobbyPassword.requestFocus()
                         false
@@ -183,7 +278,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         }
 
     }
-    private fun spinnerToGameMode(id:Int):GameMode{
+
+    private fun spinnerToGameMode(id: Int): GameMode {
         return when (id) {
             1 -> GameMode.FFA
             2 -> GameMode.SOLO

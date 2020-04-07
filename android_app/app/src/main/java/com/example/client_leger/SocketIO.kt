@@ -24,6 +24,9 @@ object SocketIO {
         socket.on("game-timer")     { Communication.updateTimer(it[0] as JSONObject) }
         socket.on("game-drawer")    { Communication.updateDrawer(it[0] as JSONObject) }
         socket.on("game-chat")      { Communication.updateGameChat(it[0] as JSONObject) }
+        socket.on("game-points")    { Communication.updateGamePoints(it[0] as JSONObject) }
+        socket.on("lobby-chat")     { Communication.updateLobbyChat(it[0] as JSONObject) }
+        socket.on("lobby-notif")    { Communication.updateLobby(it[0] as JSONObject) }
     }
 
     fun connect(username: String) {

@@ -10,9 +10,11 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
+import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.example.client_leger.Fragments.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.dialog_createlobby.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONArray
@@ -110,16 +112,75 @@ class ConnexionController {
             Constants.SERVER_URL + "/chat/messages/" + activity.channelId,
             null,
             Response.Listener<JSONArray>{ response ->
+                activity.messageAdapter.clear()
                 activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
-            },Response.ErrorListener{
+            }, Response.ErrorListener {
                     error ->
                 Toast.makeText(
                     activity.context,
                     error.message,
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+        )
 
+        requestQueue.add(jsonArrayRequest)
+    }
+
+    fun loadLobbyChatHistory(activity: ChatFragment) {
+        val requestQueue = Volley.newRequestQueue(activity.context)
+
+        val jsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET,
+            Constants.SERVER_URL + "/game/lobby/messages/" + activity.lobbyName,
+            null,
+            Response.Listener<JSONArray>{ response ->
+                activity.messageAdapter.clear()
+                activity.receiveMessages (
+                    activity.messageAdapter,
+                    activity.username,
+                    response,
+                    activity.channelId,
+                    false
+                )
+                activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
+            }, Response.ErrorListener {
+                    error ->
+                Toast.makeText (
+                    activity.context,
+                    error.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+
+        requestQueue.add(jsonArrayRequest)
+    }
+
+    fun loadGameChatHistory(activity: ChatFragment) {
+        val requestQueue = Volley.newRequestQueue(activity.context)
+
+        val jsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET,
+            Constants.SERVER_URL + "/game/arena/messages/" + activity.username,
+            null,
+            Response.Listener<JSONArray>{ response ->
+                activity.messageAdapter.clear()
+                activity.receiveMessages (
+                    activity.messageAdapter,
+                    activity.username, response,
+                    activity.channelId,
+                    false
+                )
+                activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
+            }, Response.ErrorListener {
+                    error ->
+                Toast.makeText (
+                    activity.context,
+                    error.message,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         )
 
@@ -181,6 +242,16 @@ class ConnexionController {
                         val channelsToRemove = GroupAdapter<ViewHolder>()
                         for ( view in 0 until activity.channelAdapter.itemCount) {
                             if (activity.channelAdapter.getItem(view).toString() != GAME_CHANNEL_ID) {
+                                channelsToRemove.add(activity.channelAdapter.getItem(view))
+                            }
+                        }
+                        for (view in 0 until channelsToRemove.itemCount) {
+                            activity.channelAdapter.remove(channelsToRemove.getItem(view))
+                        }
+                    } else if (activity.inLobby){
+                        val channelsToRemove = GroupAdapter<ViewHolder>()
+                        for ( view in 0 until activity.channelAdapter.itemCount) {
+                            if (activity.channelAdapter.getItem(view).toString() != LOBBY_CHANNEL_ID) {
                                 channelsToRemove.add(activity.channelAdapter.getItem(view))
                             }
                         }

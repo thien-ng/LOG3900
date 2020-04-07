@@ -2,7 +2,7 @@ import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
 import { ArenaSprint } from "./arena-sprint";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt, IGameplayAnnouncement } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
@@ -65,6 +65,13 @@ export class GameManagerService {
         }
     }
 
+    public getMessagesByUsername(username: string): IGameplayAnnouncement[] {
+        const arenaId = this.userMapArenaId.get(username);
+        if (arenaId === undefined) throw new Error("User is not part of an arena");
+        const arena = this.arenas.get(arenaId) as ArenaFfa | ArenaSprint;
+        return (arena)? arena.gameMessages : [];
+    }
+
     public sendMessageToArena(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
         const arenaId = this.userMapArenaId.get(mes.username) as number;
         const arena = this.arenas.get(arenaId);
@@ -90,6 +97,7 @@ export class GameManagerService {
         const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
 
         this.lobServ.lobbies.delete(lobby.lobbyName);
+        this.lobServ.lobbiesMessages.delete(lobby.lobbyName);
 
         this.arenas.set(this.arenaId, arena);
         this.arenaId++;

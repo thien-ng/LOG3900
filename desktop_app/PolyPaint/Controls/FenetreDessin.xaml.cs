@@ -29,12 +29,10 @@ namespace PolyPaint.Controls
         }
 
         // Pour la gestion de l'affichage de position du pointeur.
-        private void surfaceDessin_MouseLeave(object sender, MouseEventArgs e) => textBlockPosition.Text = "";
 
         private void surfaceDessin_MouseMove(object sender, MouseEventArgs e)
         {
             Point p = e.GetPosition(surfaceDessin);
-            textBlockPosition.Text = Math.Round(p.X) + ", " + Math.Round(p.Y) + "px";
 
             bool isLBPressedInsideCanvas = e.LeftButton == MouseButtonState.Pressed &&
                                            p.X >= 0 && p.X <= surfaceDessin.ActualWidth &&
@@ -47,13 +45,12 @@ namespace PolyPaint.Controls
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             ((DessinViewModel)DataContext).IsDrawing = true;
+            ((DessinViewModel)DataContext).IsEndOfStroke = false;
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            ((DessinViewModel)DataContext).IsDrawing = false;
-            ((DessinViewModel)DataContext).previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            ((DessinViewModel)DataContext).OnEndOfStroke(surfaceDessin, e);
         }
-
     }
 }

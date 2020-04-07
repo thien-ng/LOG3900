@@ -65,7 +65,6 @@ export class ArenaSprint extends Arena {
 
             if (this.timeRemaining <= 0) {
                 clearInterval(this.curArenaInterval);
-                this.handlePoints();
                 this.end();
             }
             this.timeRemaining -= ONE_SEC;
@@ -89,21 +88,21 @@ export class ArenaSprint extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
+        this.gameMessages.push({ username: mes.username, content: mes.content, isServer: false });
         this.sendToChat({ username: mes.username, content: mes.content, isServer: false });
         if (this.isRightAnswer(mes.content)) {
             //add time,
             this.timeRemaining += this.timePerImage;
 
             //anounce
-            this.sendToChat({
-                username: "Server",
-                content: format(ANNOUNCEMENT, mes.username),
-                isServer: true
-            });
+            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true });
+            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true });
+
             //add to score
             this.wordGuessedRight++;
             this.botAnnounceEndSubGane();
-
+            this.handlePoints();
+            this.sendCurrentPointToUser(mes);
             this.resetSubGame();
 
         } else {
@@ -153,6 +152,16 @@ export class ArenaSprint extends Arena {
         });
     }
 
+    protected updatePoints(username: string, time: number, ratio: number): void {
+        // not implemented function from parent
+    }
+
+    protected sendCurrentPointToUser(mes: IGameplayChat): void {
+        const user = this.users.find(u => {return u.username === mes.username}) as IUser;
+        const pts = this.userMapPoints.get(user.username) as number;
+        this.socketServer.to(this.room).emit("game-points", {point: pts});
+    }
+
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
         this.assignRule();
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
@@ -160,10 +169,10 @@ export class ArenaSprint extends Arena {
     }
 
     protected botAnnounceStart(): void {
-        this.drawer_bot.launchTauntStart(this.room);
+        this.drawer_bot.launchTauntStart(this.room, this.gameMessages);
     }
 
     protected botAnnounceEndSubGane(): void {
-        this.drawer_bot.launchTaunt(this.room);
+        this.drawer_bot.launchTaunt(this.room, this.gameMessages);
     }
 }

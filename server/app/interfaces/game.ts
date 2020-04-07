@@ -33,6 +33,7 @@ export interface IJoinLobby {
 export interface ILeaveLobby {
     username:  string,
     lobbyName: string,
+    isKicked:  boolean,
 }
 
 export interface IReceptMesLob {
@@ -60,13 +61,14 @@ export interface INotify {
 }
 
 export interface INotifyUpdateUser extends INotify{
-    user:      string;
+    username:      string;
 }
 
 export interface INotifyLobbyUpdate extends INotify {
-    users?:     string[],
-    isPrivate?: boolean,
-    size?:      number,
+    usernames?:     string[],
+    isPrivate?:     boolean,
+    size?:          number,
+    mode?:          GameMode,
 }
 
 export enum LobbyNotif {

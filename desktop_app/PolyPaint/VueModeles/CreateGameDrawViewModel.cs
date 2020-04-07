@@ -8,6 +8,7 @@ namespace PolyPaint.VueModeles
 {
     class CreateGameDrawViewModel: DessinViewModel
     {
+        #region Methods
         private double PerpendicularDistance(StylusPoint pt, StylusPoint lineStart, StylusPoint lineEnd)
         {
             double dx = lineEnd.X - lineStart.X;
@@ -97,5 +98,6 @@ namespace PolyPaint.VueModeles
 
             return Strokes;
         }
+        #endregion
     }
 }
