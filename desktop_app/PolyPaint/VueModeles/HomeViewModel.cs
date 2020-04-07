@@ -209,6 +209,7 @@ namespace PolyPaint.VueModeles
 
             _subChannels = new ObservableCollection<MessageChannel>();
             _notSubChannels = new ObservableCollection<MessageChannel>();
+            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
 
             FetchChannels();
             
@@ -218,7 +219,6 @@ namespace PolyPaint.VueModeles
             _isNotInLobby = true;
             _frontEnabled = false;
             _backEnabled = false;
-            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
             _searchString = "";
             _lobbyInvitedTo = "";
 
@@ -287,7 +287,10 @@ namespace PolyPaint.VueModeles
                  ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
 
                  ChangeChannel(Constants.DEFAULT_CHANNEL);
+                _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+
             });
+
         }
 
         private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
