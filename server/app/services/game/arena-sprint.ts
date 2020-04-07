@@ -115,20 +115,20 @@ export class ArenaSprint extends Arena {
         switch (diff) {
             case Difficulty.HARD:
                 this.guessPerImage = 2;
-                this.timePerImage = 3 * ONE_SEC;
+                this.timePerImage = 15 * ONE_SEC;
                 this.timeRemaining = 20 * ONE_SEC;
                 this.pointsMult = 14;
                 break;
             case Difficulty.MEDIUM:
                 this.guessPerImage = 3;
-                this.timePerImage = 7 * ONE_SEC;
+                this.timePerImage = 10 * ONE_SEC;
                 this.timeRemaining = 30 * ONE_SEC;
                 this.pointsMult = 10;
                 break;
             case Difficulty.EASY:
             default:
                 this.guessPerImage = 4;
-                this.timePerImage = 10 * ONE_SEC;
+                this.timePerImage = 8 * ONE_SEC;
                 this.timeRemaining = 40 * ONE_SEC;
                 this.pointsMult = 6;
                 break;
