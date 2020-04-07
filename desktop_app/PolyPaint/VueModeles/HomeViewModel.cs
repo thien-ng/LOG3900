@@ -6,6 +6,7 @@ using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
@@ -258,11 +259,12 @@ namespace PolyPaint.VueModeles
         }
 
 
-        private void goToLobbyView(object lobbyname)
+        private void goToLobbyView(object lobbyData)
         {
             IsNotInLobby = false;
-            LobbyViewModel = new LobbyViewModel((string)lobbyname);
-            this.Lobbyname = (string)lobbyname;
+            Dictionary<string, string> data = new Dictionary<string, string>((Dictionary<string, string>)lobbyData);
+            LobbyViewModel = new LobbyViewModel(data["lobbyName"], data["mode"]);
+            this.Lobbyname = data["lobbyName"];
             string lobbyChannel = Constants.LOBBY_CHANNEL + this.Lobbyname;
             SwitchView = Views.Lobby;
             Application.Current.Dispatcher.Invoke(delegate

@@ -54,7 +54,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button Grid.Column="1" Grid.Row="3" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Start game" Command="{Binding StartGameCommand}" Visibility="{Binding IsGameMaster, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <Button Grid.Column="1" Grid.Row="3" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Start game" Command="{Binding StartGameCommand}" Visibility="{Binding IsStartGameVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
         </materialDesign:DialogHost>
     </materialDesign:DialogHost>

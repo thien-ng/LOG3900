@@ -236,7 +236,10 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                Mediator.Notify("GoToLobbyScreen", _lobbyName);
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("lobbyName", _lobbyName);
+                data.Add("mode", _selectedMode);
+                Mediator.Notify("GoToLobbyScreen", data);
                 LobbyName = "";
             }
         }
