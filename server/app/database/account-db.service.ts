@@ -24,10 +24,19 @@ export class AccountDbService extends DatabaseService {
     }
 
     public async setAvatar(username: string, avatar: Uint8Array): Promise<pg.QueryResult> {
+        //const bitmap = new Buffer(avatar, 'base64');
         return this.pool.query(`SELECT LOG3900.setAvatar(
                                     CAST('${username}' AS VARCHAR),
                                     CAST('${avatar}' AS BYTEA));`);
     }
+
+    public async getAvatar(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.getAvatar(
+            CAST('${username}' AS VARCHAR));`);
+    }
+    // function base64_encode(bitmap) {
+    //     new Buffer(bitmap).toString('base64');
+    // }
 
     public async loginAccount(login: ILogin): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT LOG3900.loginAccount(

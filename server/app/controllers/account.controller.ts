@@ -40,13 +40,24 @@ export class AccountController {
          *      '200':
          *          description: A successful response
          */
-        this.router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.post('/setAvatar', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.accountService.setAvatar(req.body));
         });
 
-
-
-        setAvatar
+        /**
+         * @swagger
+         * /account/getAvatar:
+         *  get:
+         *    description: Use to get the avatar of an existing user
+         *    responses:
+         *      '200':
+         *          description: A successful response
+         */
+        this.router.get('/getAvatar/:username', async (req: Request, res: Response, next: NextFunction) => {
+            this.accountService.getAvatar(req.params.username).then((result: string) => {
+                res.json(result);
+            });
+        });
 
         /**
          * @swagger

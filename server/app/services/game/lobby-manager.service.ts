@@ -11,7 +11,7 @@ import * as io from 'socket.io';
 @injectable()
 export class LobbyManagerService {
 
-    public lobbies:         Map<string, IActiveLobby>;
+    public lobbies: Map<string, IActiveLobby>;
     public lobbiesMessages: Map<string, IReceptMesLob[]>;
 
     private socketServer: io.Server;
@@ -34,7 +34,7 @@ export class LobbyManagerService {
 
     public getMessagesByLobbyName(lobbyName: string): IReceptMesLob[] {
         const messages = this.lobbiesMessages.get(lobbyName);
-        return (messages)? messages : [];
+        return (messages) ? messages : [];
     }
 
     public getActiveLobbies(mode: GameMode): IGetLobby[] {
@@ -166,14 +166,14 @@ export class LobbyManagerService {
         if (!user) throw new Error(`${req.username} is not found in logged users`);
 
         const lobby = this.lobbyDoesExists(req.lobbyName);
-        
+
         if (lobby) {
             if (req.isKicked) {
                 const user = this.findUserToKick(lobby.users, req.username);
                 if (user)
                     this.socketServer.to(user.socketId).emit("lobby-kicked");
             }
-            
+
             lobby.users = lobby.users.filter(u => { return u.username !== req.username });
             const mode = lobby.mode;
 
@@ -299,7 +299,7 @@ export class LobbyManagerService {
     }
 
     private findUserToKick(users: IUser[], playerKicked: string): IUser | undefined {
-        return users.find(u => {return u.username === playerKicked});
+        return users.find(u => { return u.username === playerKicked });
     }
 
 }

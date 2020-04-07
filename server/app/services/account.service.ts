@@ -43,6 +43,14 @@ export class AccountService {
         return result;
     }
 
+    public async getAvatar(username: string): Promise<string> {
+        return this.database.getAvatar(username).then((res: pg.QueryResult) => {
+            return new Buffer(res.rows[0]).toString("base64");
+        }).catch((e) => {
+            return e;
+        });
+    }
+
     public async login(login: ILogin): Promise<IStatus> {
         let result: IStatus = {
             status: 200,
