@@ -28,8 +28,10 @@ import kotlin.math.sqrt
 
 class DrawFragment: Fragment() {
 
+    private lateinit var fragmentView: ViewGroup
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): ViewGroup {
-        val v = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
+        fragmentView = inflater.inflate(R.layout.fragment_draw, container, false) as ViewGroup
 
         val canvasView = DrawCanvas(
             activity!!.applicationContext,
@@ -39,37 +41,37 @@ class DrawFragment: Fragment() {
 
         canvasView.layoutParams = LinearLayout.LayoutParams(1000, 750)
 
-        v.ConstraintLayout_canvasView.addView(canvasView)
+        fragmentView.ConstraintLayout_canvasView.addView(canvasView)
 
-        v.button_change_color.setOnClickListener {
+        fragmentView.button_change_color.setOnClickListener {
             openColorPicker(canvasView)
         }
 
-        v.button_strokeErase.setOnClickListener {
+        fragmentView.button_strokeErase.setOnClickListener {
             switchStrokeEraser(canvasView)
         }
 
-        v.button_normalErase.setOnClickListener {
+        fragmentView.button_normalErase.setOnClickListener {
             switchNormalEraser(canvasView)
         }
 
-        v.button_changeWidth.setOnClickListener {
+        fragmentView.button_changeWidth.setOnClickListener {
             openWidthSelector(canvasView)
         }
 
-        v.button_round.setOnClickListener {
+        fragmentView.button_round.setOnClickListener {
             switchDrawWithCircle(canvasView)
-            v.button_square.isChecked = false
-            v.button_round.isChecked = true
+            fragmentView.button_square.isChecked = false
+            fragmentView.button_round.isChecked = true
         }
 
-        v.button_square.setOnClickListener {
+        fragmentView.button_square.setOnClickListener {
             switchDrawWithSquare(canvasView)
-            v.button_square.isChecked = true
-            v.button_round.isChecked = false
+            fragmentView.button_square.isChecked = true
+            fragmentView.button_round.isChecked = false
         }
 
-        return v
+        return fragmentView
     }
 
     private fun switchDrawWithCircle(v: DrawCanvas) {
@@ -84,7 +86,7 @@ class DrawFragment: Fragment() {
         v.isStrokeErasing = !v.isStrokeErasing
         if (v.isNormalErasing) {
             v.isNormalErasing = false
-            v.button_normalErase.toggle()
+            fragmentView.button_normalErase.toggle()
         }
     }
 
@@ -92,7 +94,7 @@ class DrawFragment: Fragment() {
         v.isNormalErasing = !v.isNormalErasing
         if (v.isStrokeErasing) {
             v.isStrokeErasing = false
-            v.button_strokeErase.toggle()
+            fragmentView.button_strokeErase.toggle()
         }
     }
 
