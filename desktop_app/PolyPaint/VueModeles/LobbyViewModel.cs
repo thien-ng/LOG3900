@@ -11,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -316,7 +315,7 @@ namespace PolyPaint.VueModeles
             {
                 return _startGameCommand ?? (_startGameCommand = new RelayCommand(async x =>
                 {
-                    await Task.Run(() => startGame());
+                    await startGame();
                 }));
             }
         }    

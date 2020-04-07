@@ -16,7 +16,6 @@ namespace PolyPaint.Modeles
 
         public event PropertyChangedEventHandler PropertyChanged;
         public StrokeCollection traits = new StrokeCollection();
-        private StrokeCollection traitsRetires = new StrokeCollection();
 
         // Outil actif dans l'éditeur
         private string outilSelectionne = "crayon";
@@ -40,7 +39,7 @@ namespace PolyPaint.Modeles
         }
 
         // Couleur des traits tracés par le crayon.
-        private string couleurSelectionnee = "Black";
+        private string couleurSelectionnee = "#FF000000";
         public string CouleurSelectionnee
         {
             get { return couleurSelectionnee; }

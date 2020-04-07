@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
@@ -26,9 +27,10 @@ namespace PolyPaint.VueModeles
         public DessinViewModel()
         {
             Width = 1000;
-            Height = 500;
-            setup();
+            Height = 800;
+            Setup();
         }
+
         public DessinViewModel(int width, int height)
         {
             Width = width;
@@ -39,12 +41,14 @@ namespace PolyPaint.VueModeles
         #region Public Attributes
         // Ensemble d'attributs qui définissent l'apparence d'un trait.
         private Editeur editeur = new Editeur();
+        private Guid currentStrokeId = Guid.NewGuid();
+        private int eraserDiameter;
 
         private bool _isDrawer;
         public bool IsDrawer
         {
             get { return _isDrawer; }
-            set{ _isDrawer = value; ProprieteModifiee(); } 
+            set { _isDrawer = value; ProprieteModifiee(); } 
         }
 
         public DrawingAttributes AttributsDessin { get; set; } = new DrawingAttributes();
@@ -106,9 +110,34 @@ namespace PolyPaint.VueModeles
 
         public Dictionary<string, double?> previousPos { get; set; }
 
+        public bool IsEndOfStroke { get; set; }
+
         #endregion
 
         #region Methods
+
+        private void Setup()
+        {
+            ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
+
+            editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
+
+            // On initialise les attributs de dessin avec les valeurs de départ du modèle.
+            AttributsDessin = new DrawingAttributes();
+            AttributsDessin.Color = (Color)ColorConverter.ConvertFromString(editeur.CouleurSelectionnee);
+            AjusterPointe();
+
+            Traits = editeur.traits;
+
+            // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.
+            // Pour les commandes suivantes, il est toujours possible des les activer.
+            // Donc, aucune vérification de type Peut"Action" à faire.
+            ChoisirPointe = new RelayCommand<string>(editeur.ChoisirPointe);
+            ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
+
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            eraserDiameter = 8;
+        }
 
         /// <summary>
         /// Traite les évènements de modifications de propriétés qui ont été lancés à partir
@@ -141,17 +170,7 @@ namespace PolyPaint.VueModeles
         {
             IsDrawer = false;
 
-            Mediator.Subscribe("updateRole", (x) => { IsDrawer = (bool)x; });
-
-            Mediator.Subscribe("clearDraw", (x) => 
-            {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-                    Traits.Clear();
-                });
-            });
-
-            ServerService.instance.socket.On("draw", data => OnDraw((JObject)data));
+            ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
 
             editeur.PropertyChanged += new PropertyChangedEventHandler(EditeurProprieteModifiee);
 
@@ -169,6 +188,7 @@ namespace PolyPaint.VueModeles
             ChoisirOutil = new RelayCommand<string>(editeur.ChoisirOutil);
 
             previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            eraserDiameter = 8;
         }
 
         /// <summary>
@@ -185,52 +205,229 @@ namespace PolyPaint.VueModeles
 
         public void MouseMove(InkCanvas sender, MouseEventArgs e)
         {
-            if (IsDrawing)
+            if (!IsDrawing) return;
+
+            if (previousPos["X"] == null || previousPos["Y"] == null)
             {
-                if (previousPos["X"] == null || previousPos["Y"] == null)
-                {
-                    previousPos["X"] = e.GetPosition(sender).X;
-                    previousPos["Y"] = e.GetPosition(sender).Y;
-
-                    return;
-                }
-
-                dynamic values = new JObject();
-
-                values.username = ServerService.instance.username;
-                values.startPosX = previousPos["X"];
-                values.startPosY = previousPos["Y"];
-                values.endPosX = e.GetPosition(sender).X;
-                values.endPosY = e.GetPosition(sender).Y;
-                values.color = editeur.CouleurSelectionnee;
-                values.width = editeur.TailleTrait;
-
                 previousPos["X"] = e.GetPosition(sender).X;
                 previousPos["Y"] = e.GetPosition(sender).Y;
+            }
 
-                ServerService.instance.socket.Emit("gameplay", values);
+            switch (editeur.OutilSelectionne)
+            {
+                case "crayon":
+                    DrawingInk(sender, e);
+                    break;
+                case "efface_segment":
+                case "efface_trait":
+                    DrawingEraser(sender, e);
+                    break;
+                default:
+                    break;
+            }
+
+            previousPos["X"] = e.GetPosition(sender).X;
+            previousPos["Y"] = e.GetPosition(sender).Y;
+        }
+
+        public void ReceiveDrawing(JObject data) 
+        {
+            if (!data.ContainsKey("type")) return;
+
+            switch ((string)data.GetValue("type"))
+            {
+                case "ink":
+                    ReceiveDrawingInk(data);
+                    break;
+                case "eraser":
+                    if ((string)data.GetValue("eraser") == "stroke")
+                        ReceiveEraseStroke(data);
+                    else
+                        ReceiveErasePoint(data);
+                    break;
             }
         }
 
-        public void OnDraw(JObject data) 
+        private void DrawingInk(InkCanvas sender, MouseEventArgs e)
         {
-           double X1 = (double)data.GetValue("startPosX");
-           double X2 = (double)data.GetValue("endPosX");
-           double Y1 = (double)data.GetValue("startPosY");
-           double Y2 = (double)data.GetValue("endPosY");
+            string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
-           StylusPointCollection coll = new StylusPointCollection();
-           coll.Add(new StylusPoint(X1, Y1));
-           coll.Add(new StylusPoint(X2, Y2));
+            int color = int.Parse(editeur.CouleurSelectionnee.Remove(0,1), System.Globalization.NumberStyles.HexNumber);
 
-           Stroke str = new Stroke(coll);
+            JObject drawing = new JObject(new JProperty("event", "draw"),
+                                          new JProperty("username", ServerService.instance.username),
+                                          new JProperty("startPosX", previousPos["X"]),
+                                          new JProperty("startPosY", previousPos["Y"]),
+                                          new JProperty("endPosX", e.GetPosition(sender).X),
+                                          new JProperty("endPosY", e.GetPosition(sender).Y),
+                                          new JProperty("color", color),
+                                          new JProperty("width", editeur.TailleTrait),
+                                          new JProperty("isEnd", IsEndOfStroke),
+                                          new JProperty("format", format),
+                                          new JProperty("type", "ink"));
 
-           App.Current.Dispatcher.Invoke(delegate
-           {
-               Traits.Add(str);
-           });
+            ServerService.instance.socket.Emit("gameplay", drawing);
         }
-        
+
+        private void DrawingEraser(InkCanvas sender, MouseEventArgs e)
+        {
+            string eraserType;
+            int? eraserWidth = null;
+
+            if (editeur.OutilSelectionne == "efface_segment")
+            {
+                eraserType = "point";
+                eraserWidth = editeur.TailleTrait;
+            }
+            else
+                eraserType = "stroke";
+
+            JObject eraser = new JObject(new JProperty("event", "draw"),
+                                         new JProperty("username", ServerService.instance.username),
+                                         new JProperty("type", "eraser"),
+                                         new JProperty("x", e.GetPosition(sender).X),
+                                         new JProperty("y", e.GetPosition(sender).Y),
+                                         new JProperty("eraser", eraserType));
+
+            if (eraserWidth != null)
+                eraser.Add("width", eraserWidth);
+
+            ServerService.instance.socket.Emit("gameplay", eraser);
+        } 
+
+        private void ReceiveDrawingInk(JObject data)
+        {
+            double X1 = (double)data.GetValue("startPosX");
+            double X2 = (double)data.GetValue("endPosX");
+            double Y1 = (double)data.GetValue("startPosY");
+            double Y2 = (double)data.GetValue("endPosY");
+
+            StylusPointCollection coll = new StylusPointCollection();
+            coll.Add(new StylusPoint(X1, Y1));
+            coll.Add(new StylusPoint(X2, Y2));
+
+            byte[] colorBytes;
+            try
+            {
+                colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
+            } catch(Exception e)
+            {
+                colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
+            }
+
+            if (!BitConverter.IsLittleEndian) 
+                Array.Reverse(colorBytes);
+
+            Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[3], colorBytes[2], colorBytes[1], colorBytes[0]) : (Color)ColorConverter.ConvertFromString("#FF000000");
+
+            DrawingAttributes attr = new DrawingAttributes();
+            attr.Color = color;
+            attr.Height = (double)data.GetValue("width");
+            attr.Width = attr.Height;
+            attr.StylusTip = (string)data.GetValue("format") == "circle" ? StylusTip.Ellipse : StylusTip.Rectangle;
+
+            CustomStroke str = new CustomStroke(coll, attr);
+            str.uid = currentStrokeId;
+
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                Traits.Add(str);
+            });
+
+            if ((bool)data.GetValue("isEnd"))
+                MergeStrokes(attr);
+        }
+
+        private void ReceiveEraseStroke(JObject data)
+        {
+            double x = (double)data.GetValue("x");
+            double y = (double)data.GetValue("y");
+
+            StrokeCollection coll = Traits.HitTest(new Point(x, y), eraserDiameter);
+
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                Traits.Remove(coll);
+            });
+        }
+
+        private void ReceiveErasePoint(JObject data)
+        {
+            try
+            {
+                double x = (double)data.GetValue("x");
+                double y = (double)data.GetValue("y");
+
+
+                StrokeCollection strokes = Traits.HitTest(new Point(x, y), eraserDiameter);
+
+                if (strokes.Count == 0) 
+                    return;
+
+                Rect rect = new Rect(x - (eraserDiameter / 2),
+                                     y - (eraserDiameter / 2),
+                                     eraserDiameter,
+                                     eraserDiameter);
+
+                foreach (var stroke in strokes)
+                {
+                    int strokeIndex = Traits.IndexOf(stroke);
+                    
+                    StrokeCollection splitStroke = stroke.GetEraseResult(rect);
+                    
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        foreach (var item in splitStroke)
+                        {
+                            ((CustomStroke)item).uid = Guid.NewGuid();
+
+                            Traits.Insert(strokeIndex, item);
+                        }
+
+                        Traits.Remove(stroke);
+                    });
+                }
+            }
+            catch { /*fail silently*/ }
+        }
+
+        private void MergeStrokes(DrawingAttributes attr)
+        {
+            StylusPointCollection points = new StylusPointCollection();
+            StrokeCollection strokesToRemove = new StrokeCollection();
+
+            foreach (CustomStroke trait in Traits)
+            {
+                if (trait.uid == currentStrokeId)
+                {
+                    points.Add(trait.StylusPoints);
+                    strokesToRemove.Add(trait);
+                }
+            }
+
+            CustomStroke fullStroke = new CustomStroke(points, attr);
+            fullStroke.uid = currentStrokeId;
+
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                Traits.Add(fullStroke);
+                Traits.Remove(strokesToRemove);
+            });
+
+            currentStrokeId = Guid.NewGuid();
+        }
+
+        public void OnEndOfStroke(InkCanvas sender, MouseEventArgs e)
+        {
+            IsEndOfStroke = true;
+
+            if (editeur.OutilSelectionne == "crayon")
+                DrawingInk(sender, e);
+
+            IsDrawing = false;
+            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+        }
+
         #endregion
 
         #region Commands
