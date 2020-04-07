@@ -24,13 +24,15 @@ class LobbyFragment : Fragment(),
     private lateinit var username: String
     private lateinit var lobbyName: String
     private var usernames: ArrayList<String> = arrayListOf()
-    lateinit var userListAdapter: UserListViewAdapter
-    lateinit var startListener: Disposable;
 
-    private lateinit var lobbyNotifSub: Disposable
+    lateinit var v: View
+
+    lateinit var userListAdapter: UserListViewAdapter
+    lateinit var startListener: Disposable
+    lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragment_lobby, container, false)
+        v = inflater.inflate(R.layout.fragment_lobby, container, false)
         username = activity!!.intent.getStringExtra("username")
         val bundle = this.arguments
         lobbyName = ""
@@ -72,7 +74,6 @@ class LobbyFragment : Fragment(),
                 }
             }
         }
-
         return v
     }
 
@@ -102,9 +103,9 @@ class LobbyFragment : Fragment(),
             usernames.add(userJsonArray.get(i).toString())
         }
         if (usernames.isNotEmpty()) {
-            var startButton = view!!.findViewById<Button>(R.id.button_start)
-            var leaveButton = view!!.findViewById<Button>(R.id.button_leave)
-            var addBotButton = view!!.findViewById<Button>(R.id.button_addBot)
+            var startButton = v.findViewById<Button>(R.id.button_start)
+            var leaveButton = v.findViewById<Button>(R.id.button_leave)
+            var addBotButton = v.findViewById<Button>(R.id.button_addBot)
             if (usernames[0] == username) {
                 startButton.visibility = View.VISIBLE
                 startButton.isEnabled = true
