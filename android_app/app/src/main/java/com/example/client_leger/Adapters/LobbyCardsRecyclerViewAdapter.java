@@ -3,6 +3,7 @@ package com.example.client_leger.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,9 +116,9 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         return -1;
     }
 
-    public void removeItem(@Nullable Lobby lobby) {
+    public void removeItem(Lobby lobby) {
         int id = getItemId(lobby.getLobbyName());
-        if (id > 0) {
+        if (id >= 0) {
             mData.remove(id);
             notifyItemRemoved(id);
         }
