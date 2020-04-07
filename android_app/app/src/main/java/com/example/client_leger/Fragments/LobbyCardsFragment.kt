@@ -112,9 +112,11 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
-                        activity!!.runOnUiThread {
-                            adapterLobbyCards.addItem(context?.let { Lobby(mes, it) })
-                        }
+                        if(mes.getString("mode") == getCurrentGameMode().toString()){
+                                activity!!.runOnUiThread {
+                                    adapterLobbyCards.addItem(context?.let { Lobby(mes, it) })
+                                }
+                            }
                     }
                 }
                 "join" -> {
@@ -127,14 +129,18 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
-                        activity!!.runOnUiThread {
-                            adapterLobbyCards.updateUser(mes.getString("lobbyName"), user)
+                        if (mes.getString("mode") == getCurrentGameMode().toString()) {
+                            activity!!.runOnUiThread {
+                                adapterLobbyCards.updateUser(mes.getString("lobbyName"), user)
+                            }
                         }
                     }
                 }
                 "delete" -> {
-                    activity!!.runOnUiThread {
-                        adapterLobbyCards.removeItem(context?.let { Lobby(mes, it) })
+                    if (mes.getString("mode") == getCurrentGameMode().toString()) {
+                        activity!!.runOnUiThread {
+                            adapterLobbyCards.removeItem(context?.let { Lobby(mes, it) })
+                        }
                     }
 
                 }
@@ -181,6 +187,10 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             }
         }
         d.show()
+    }
+
+    private fun getCurrentGameMode(): GameMode{
+        return spinnerToGameMode(spinnerGameModes.selectedItemPosition)
     }
 
     override fun onItemClick(view: View?, position: Int) {
