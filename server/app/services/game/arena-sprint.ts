@@ -24,7 +24,7 @@ export class ArenaSprint extends Arena {
     private pointsMult: number;
 
     private rulePtr: number;
-    private drawing: NodeJS.Timeout;
+    private botInterval: NodeJS.Timeout;
     private drawerBot: Bot;
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
@@ -139,8 +139,8 @@ export class ArenaSprint extends Arena {
 
     private resetSubGame(): void {
         //show an image or build one.
-        clearInterval(this.drawing);
-        this.drawing = this.startBotDrawing(this.drawerBot.username, this.timePerImage);
+        clearInterval(this.botInterval);
+        this.botInterval = this.startBotDrawing(this.drawerBot.username, this.timePerImage);
         
         this.assignRule();
 

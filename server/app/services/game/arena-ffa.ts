@@ -64,8 +64,9 @@ export class ArenaFfa extends Arena {
             return;
         }
 
+        let botInterval: NodeJS.Timeout;
         if (this.isBotDrawing)
-            this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
+            botInterval= this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
@@ -78,7 +79,13 @@ export class ArenaFfa extends Arena {
                 clearInterval(this.curArenaInterval);
 
                 if (this.isEveryoneHasRightAnswer == false) {
+                    // Announce answer
                     this.sendAnswer(this.curRule.solution);
+                }
+
+                if (botInterval) {
+                    // Stop bot drawing
+                    clearInterval(botInterval);
                 }
 
                 this.botAnnounceEndSubGame();
