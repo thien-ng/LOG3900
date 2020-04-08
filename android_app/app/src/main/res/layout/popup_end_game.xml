@@ -6,7 +6,7 @@
         android:background="@drawable/all_around_border">
 
     <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textView_gameOver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Game over"
@@ -16,7 +16,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textView_goodGame"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -24,7 +24,7 @@
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintTop_toBottomOf="@+id/textView_gameOver" />
 
     <TableLayout
             android:id="@+id/tableView_ranks"
@@ -36,7 +36,7 @@
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3">
+            app:layout_constraintTop_toBottomOf="@+id/textView_goodGame">
 
     </TableLayout>
 
