@@ -28,6 +28,7 @@ namespace PolyPaint.VueModeles
             this.Mode = mode;
             _isStartGameVisible = false;
             _searchString = "";
+            _isAddBotPossible = false;
             fetchUsername();
             getOnlineUsers();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
@@ -96,6 +97,23 @@ namespace PolyPaint.VueModeles
             set
             {
                 _isGameMaster = value;
+                ProprieteModifiee();
+                if (Mode == Constants.MODE_COOP || Mode == Constants.MODE_SOLO)
+                    IsAddBotPossible = false;
+                if (value && Mode == Constants.MODE_FFA)
+                    IsAddBotPossible = true;
+                else
+                    IsAddBotPossible = false;
+            }
+        }
+
+        private bool _isAddBotPossible;
+        public bool IsAddBotPossible
+        {
+            get { return _isAddBotPossible; }
+            set
+            {
+                _isAddBotPossible = value;
                 ProprieteModifiee();
             }
         }
