@@ -3,7 +3,6 @@ package com.example.client_leger.Fragments
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.*
 import android.widget.PopupWindow
 import android.widget.TableRow
@@ -66,7 +65,6 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
                 val ranks = res.getJSONArray("points")
 
                 for (i in 0 until ranks.length()) {
-                    Log.w("rank", i.toString())
                     val infos = ranks.getJSONObject(i)
 
                     tableRow = TableRow(this.context)
