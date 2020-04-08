@@ -2,6 +2,7 @@ package com.example.client_leger
 
 import android.content.Context
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -14,7 +15,7 @@ import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.example.client_leger.Fragments.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.dialog_createlobby.*
+import kotlinx.android.synthetic.main.fragment_chat.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONArray
@@ -104,6 +105,32 @@ class ConnexionController {
         mRequestQueue!!.add(mStringRequest)
     }
 
+    fun showLoadHistoryButtonIfPreviousMessages(activity: ChatFragment, channel: String, messageRoute: String) {
+        val requestQueue = Volley.newRequestQueue(activity.context)
+
+        val jsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET,
+            Constants.SERVER_URL + messageRoute + channel,
+            null,
+            Response.Listener<JSONArray>{ response ->
+                if (response.length() > 0) {
+                    activity.showLoadHistoryButton()
+                } else {
+                    activity.hideLoadHistoryButton()
+                }
+            }, Response.ErrorListener {
+                    error ->
+                Toast.makeText(
+                    activity.context,
+                    error.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+
+        requestQueue.add(jsonArrayRequest)
+    }
+
     fun loadChatHistory(activity: ChatFragment) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
@@ -187,7 +214,7 @@ class ConnexionController {
         requestQueue.add(jsonArrayRequest)
     }
 
-    private fun joinChannel(activity: ChatFragment, channelId: String, justCreated: Boolean = false) {
+    private fun joinChannel(activity: ChatFragment, channelId: String) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
         val jsonObjectRequest = JsonObjectRequest(
@@ -195,7 +222,7 @@ class ConnexionController {
             Constants.SERVER_URL + "/chat/channels/join/" + activity.username + "/" + channelId ,
             null,
             Response.Listener<JSONObject>{
-                activity.setChannel(channelId, !justCreated)
+                activity.setChannel(channelId)
             },Response.ErrorListener{ error ->
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }
@@ -225,7 +252,7 @@ class ConnexionController {
     }
 
     fun createChannel(activity: ChatFragment, channelId: String) {
-        joinChannel(activity, channelId, true)
+        joinChannel(activity, channelId)
     }
 
     fun loadChannels(activity: ChatFragment, search: String? = null) {
