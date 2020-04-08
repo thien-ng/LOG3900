@@ -63,7 +63,7 @@ export abstract class Arena {
 
     protected abstract startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout;
     protected abstract botAnnounceStart(): void;
-    protected abstract botAnnounceEndSubGane(): void;
+    protected abstract botAnnounceEndSubGame(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract updatePoints(username: string, time: number, ratio: number): void;
     protected abstract sendCurrentPointToUser(mes: IGameplayChat): void;

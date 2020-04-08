@@ -81,7 +81,7 @@ export class ArenaFfa extends Arena {
                     this.sendAnswer(this.curRule.solution);
                 }
 
-                this.botAnnounceEndSubGane();
+                this.botAnnounceEndSubGame();
 
                 if (this.drawPtr >= this.users.length) {
                     // Handle end of game
@@ -196,7 +196,7 @@ export class ArenaFfa extends Arena {
         });
     }
 
-    protected botAnnounceEndSubGane(): void {
+    protected botAnnounceEndSubGame(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
             bot.launchTaunt(this.room, this.gameMessages);
         });

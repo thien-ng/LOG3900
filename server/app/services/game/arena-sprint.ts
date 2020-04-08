@@ -72,7 +72,6 @@ export class ArenaSprint extends Arena {
             this.timeRemaining -= ONE_SEC;
 
         }, ONE_SEC);
-
     }
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
@@ -103,7 +102,7 @@ export class ArenaSprint extends Arena {
 
             //add to score
             this.wordGuessedRight++;
-            this.botAnnounceEndSubGane();
+            this.botAnnounceEndSubGame();
             this.handlePoints();
             this.sendCurrentPointToUser(mes);
             this.resetSubGame();
@@ -176,7 +175,7 @@ export class ArenaSprint extends Arena {
         this.drawerBot.launchTauntStart(this.room, this.gameMessages);
     }
 
-    protected botAnnounceEndSubGane(): void {
+    protected botAnnounceEndSubGame(): void {
         this.drawerBot.launchTaunt(this.room, this.gameMessages);
     }
     
