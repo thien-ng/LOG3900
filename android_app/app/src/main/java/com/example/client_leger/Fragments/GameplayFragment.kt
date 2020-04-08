@@ -18,6 +18,7 @@ import java.util.*
 class GameplayFragment: Fragment(), FragmentChangeListener {
 
     private lateinit var endGameSub: Disposable
+    private var colorList = arrayListOf("#FF90EE90", "#FFFFA500", "#FFFF0000", "#FFD3D3D3")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay, container, false)
@@ -73,14 +74,11 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
 
                     tableRow = TableRow(this.context)
 
-                    val rnd = Random()
-                    val color = Color.argb(
-                        200,
-                        rnd.nextInt(130),
-                        rnd.nextInt(130),
-                        rnd.nextInt(130)
-                    )
-                    tableRow.setBackgroundColor(color)
+                    if (i >= 4) {
+                        tableRow.setBackgroundColor(Color.parseColor(colorList[3]))
+                    } else {
+                        tableRow.setBackgroundColor(Color.parseColor(colorList[i]))
+                    }
 
                     tableRow.layoutParams = TableRow.LayoutParams(
                         TableRow.LayoutParams.MATCH_PARENT,
