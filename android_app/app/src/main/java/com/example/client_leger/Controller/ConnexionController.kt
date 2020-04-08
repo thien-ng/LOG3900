@@ -1,7 +1,6 @@
 package com.example.client_leger
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -14,11 +13,11 @@ import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.example.client_leger.Fragments.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.dialog_createlobby.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
 import org.json.JSONArray
 import org.json.JSONObject
+
 
 class ConnexionController {
 
@@ -102,6 +101,32 @@ class ConnexionController {
             }
         }
         mRequestQueue!!.add(mStringRequest)
+    }
+
+    fun showLoadHistoryButtonIfPreviousMessages(activity: ChatFragment, messageRoute: String) {
+        val requestQueue = Volley.newRequestQueue(activity.context)
+
+        val jsonArrayRequest = JsonArrayRequest(
+            Request.Method.GET,
+            Constants.SERVER_URL + messageRoute,
+            null,
+            Response.Listener<JSONArray>{ response ->
+                if (response.length() > 0) {
+                    activity.showLoadHistoryButton()
+                } else {
+                    activity.hideLoadHistoryButton()
+                }
+            }, Response.ErrorListener {
+                    error ->
+                Toast.makeText(
+                    activity.context,
+                    error.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+
+        requestQueue.add(jsonArrayRequest)
     }
 
     fun loadChatHistory(activity: ChatFragment) {
@@ -292,7 +317,6 @@ class ConnexionController {
                         }
                     }
                 },Response.ErrorListener{ error ->
-                    Log.w("socket", "load")
                     Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
                 }
             )
