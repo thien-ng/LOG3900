@@ -7,7 +7,7 @@
     <FrameLayout
             android:id="@+id/container_view_top"
             android:layout_width="match_parent"
-            android:background="@drawable/bottom_and_top_border_background"
+            android:background="@drawable/bottom_border_background"
             android:layout_height="0dp"
             android:layout_weight="0.1" />
 

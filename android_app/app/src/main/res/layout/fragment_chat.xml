@@ -18,7 +18,7 @@
             android:text="channelName"
             android:textColor="#F44336"
             android:textSize="24sp"
-            android:background="@drawable/border_background"
+            android:background="@drawable/right_bottom_border_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/recyclerView_chat_log"
             app:layout_constraintTop_toTopOf="parent" />
