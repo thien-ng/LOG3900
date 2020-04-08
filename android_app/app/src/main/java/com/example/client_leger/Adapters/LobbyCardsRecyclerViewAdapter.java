@@ -14,7 +14,6 @@ import com.example.client_leger.models.Lobby;
 import com.example.client_leger.R;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -115,9 +114,9 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         return -1;
     }
 
-    public void removeItem(@Nullable Lobby lobby) {
+    public void removeItem(Lobby lobby) {
         int id = getItemId(lobby.getLobbyName());
-        if (id > 0) {
+        if (id >= 0) {
             mData.remove(id);
             notifyItemRemoved(id);
         }
@@ -130,6 +129,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
 
     public void setItems(ArrayList<Lobby> items) {
         mData.clear();
+        notifyDataSetChanged();
         for (int i = 0; i < items.size(); i++) {
             mData.add(items.get(i));
             notifyItemChanged(i);

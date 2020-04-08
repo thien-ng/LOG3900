@@ -61,7 +61,8 @@ export interface INotify {
 }
 
 export interface INotifyUpdateUser extends INotify{
-    username:      string;
+    username:      string,
+    mode:          GameMode,
 }
 
 export interface INotifyLobbyUpdate extends INotify {
@@ -129,10 +130,6 @@ export interface IGameplayChat {
     content:  string,
 }
 
-export interface IGameplayHint {
-    event: EventType,
-}
-
 export interface IGameplayAnnouncement {
     username: string,
     content:  string,
@@ -143,7 +140,6 @@ export enum EventType {
     draw   = "draw",
     chat   = "chat",
     ready  = "ready",
-    hint   = "hint",
 }
 
 export enum EraserType {

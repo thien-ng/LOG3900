@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
@@ -10,6 +10,7 @@ import { HumourBot } from "./bots/humourBot";
 import { Bot } from "./bots/bot";
 
 import * as io from 'socket.io';
+import { Difficulty } from "../../interfaces/creator";
 
 const format = require('string-format');
 
@@ -63,8 +64,9 @@ export class ArenaFfa extends Arena {
             return;
         }
 
+        let botInterval: NodeJS.Timeout;
         if (this.isBotDrawing)
-            this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
+            botInterval= this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
@@ -76,7 +78,17 @@ export class ArenaFfa extends Arena {
             if (timer >= TOTAL_TIME || this.isEveryoneHasRightAnswer || this.isAllDc) {
                 clearInterval(this.curArenaInterval);
 
-                this.botAnnounceEndSubGane();
+                if (this.isEveryoneHasRightAnswer == false) {
+                    // Announce answer
+                    this.sendAnswer(this.curRule.solution);
+                }
+
+                if (botInterval) {
+                    // Stop bot drawing
+                    clearInterval(botInterval);
+                }
+
+                this.botAnnounceEndSubGame();
 
                 if (this.drawPtr >= this.users.length) {
                     // Handle end of game
@@ -101,7 +113,7 @@ export class ArenaFfa extends Arena {
             return true;
     }
 
-    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser | IGameplayHint): void {
+    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
         switch(mes.event) {
             case EventType.draw:
                 this.handleGameplayDraw(socket, mes as IGameplayDraw | IGameplayEraser);
@@ -111,9 +123,6 @@ export class ArenaFfa extends Arena {
                 break;
             case EventType.ready:
                 this.handleGameplayReady(mes as IGameplayReady);
-                break;
-            case EventType.hint:
-                this.handleGameplayHint();
                 break;
         }
     }
@@ -126,15 +135,17 @@ export class ArenaFfa extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
-        
         const answer = mes.content.toLocaleLowerCase().trim();
+        const drawerUsername = this.users[this.drawPtr - 1].username;
+
+        if (this.isHintingRequest(mes) && this.isBot(drawerUsername)) {
+            this.sendToChat({username: mes.username, content: mes.content, isServer: false});
+            this.sendHint(drawerUsername);
+            return;
+        }
 
         if (this.isRightAnswer(answer) && this.isNotCurrentDrawer(mes.username)) {
-            
             const encAnswer = this.encryptAnswer(mes.content);
-            
-            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
-            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
             
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
@@ -150,7 +161,6 @@ export class ArenaFfa extends Arena {
             if (this.checkIfEveryoneHasRightAnswer())
                 this.isEveryoneHasRightAnswer = true;
         } else {
-            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
             this.sendToChat({username: mes.username, content: mes.content, isServer: false});
         }
     }
@@ -183,7 +193,8 @@ export class ArenaFfa extends Arena {
     protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
-        return bot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
+        const speed = this.chooseDrawingSpeed(arenaTime);
+        return bot.draw(this.room, speed, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
     protected botAnnounceStart(): void {
@@ -192,10 +203,23 @@ export class ArenaFfa extends Arena {
         });
     }
 
-    protected botAnnounceEndSubGane(): void {
+    protected botAnnounceEndSubGame(): void {
         this.botMap.forEach((bot: Bot, key: string) => {
             bot.launchTaunt(this.room, this.gameMessages);
         });
+    }
+
+    private chooseDrawingSpeed(arenaTime: number): number {
+        switch(this.curRule.difficulty){
+            case Difficulty.EASY:
+                return Math.floor(arenaTime/4);
+            case Difficulty.MEDIUM:
+                return Math.floor(arenaTime/2);
+            case Difficulty.HARD:
+                return arenaTime;
+            default:
+                return arenaTime;
+        }
     }
 
     private attributeRoles(): void | boolean {

@@ -26,7 +26,7 @@ export abstract class Bot {
 
     public abstract launchTauntStart(room: string, gameMessages: IGameplayAnnouncement[]): void;
 
-    public draw(room: string, arenaTime: number, drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): NodeJS.Timeout {
+    public draw(room: string, speed: number, drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): NodeJS.Timeout {
         this.setupOnDraw(drawings, mode, panoramicFirstSide);
 
         let count = 0;
@@ -41,7 +41,7 @@ export abstract class Bot {
             }
             count++;
 
-        }, this.calculateTimeToDrawingProportion(arenaTime));
+        }, this.calculateTimeToDrawingProportion(speed));
 
         return interval;
     }
