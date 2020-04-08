@@ -1,11 +1,11 @@
 import { Arena } from "./arena";
-import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, EventType, IDrawing } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, EventType, IDrawing, Bot } from "../../interfaces/game";
 import { Difficulty } from "../../interfaces/creator";
 import { IUser } from "../../interfaces/user-manager";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
-import { Bot } from "./bots/bot";
+import * as bot from "./bots/bot";
 
 import * as io from 'socket.io';
 
@@ -25,7 +25,7 @@ export class ArenaSprint extends Arena {
 
     private rulePtr: number;
     private botInterval: NodeJS.Timeout;
-    private drawerBot: Bot;
+    private drawerBot: bot.Bot;
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
