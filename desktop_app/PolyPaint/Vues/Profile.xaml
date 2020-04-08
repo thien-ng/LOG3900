@@ -22,7 +22,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="250"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
@@ -39,7 +39,8 @@
             <TextBlock Text="{Binding Username}" FontSize="25" Foreground="White" VerticalAlignment="Bottom" />
             <materialDesign:PackIcon Kind="EditOutline" VerticalAlignment="Bottom" Height="30" Width="30" Foreground="White" />
         </StackPanel>
-
+        <Border Grid.ColumnSpan="3" Grid.Row="2" BorderThickness="0,0,0,1" BorderBrush="White" />
+        <TextBlock Text="Match history: " Foreground="White" FontSize="20" Grid.Row="3" Grid.Column="0"/>
         <StackPanel Margin="15" Orientation="Vertical" Grid.Row="3" Grid.ColumnSpan="3">
             <ScrollViewer Margin="15" Grid.Row="3" Grid.ColumnSpan="3" MinHeight="150" MaxHeight="350" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding Games}">
@@ -82,24 +83,24 @@
             <Border BorderBrush="White" BorderThickness="1" Grid.Column="1"/>
             <StackPanel VerticalAlignment="Bottom" Orientation="Vertical" Grid.Row="0" Grid.Column="1">
                 <StackPanel Margin="10" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ClockFast"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.avgGameTime, StringFormat=Average game length: {0} seconds}" Foreground="White" FontSize="20"/>
+                    <materialDesign:PackIcon Kind="ClockFast"  Width="30" Height="30" Foreground="Red"/>
+                    <TextBlock Text="{Binding Stats.avgGameTime, StringFormat=Average game length: {0} seconds}" Foreground="Red" FontSize="20"/>
                 </StackPanel>
                 <StackPanel Margin="10" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Games"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.totalGame, StringFormat=Total game played: {0}}" Foreground="White" FontSize="20"/>
+                    <materialDesign:PackIcon Kind="Games"  Width="30" Height="30" Foreground="Black"/>
+                    <TextBlock Text="{Binding Stats.totalGame, StringFormat=Total game played: {0}}" Foreground="Black" FontSize="20"/>
                 </StackPanel>
                 <StackPanel Margin="10" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Infinity"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.totalPlayTime, StringFormat=Total time played: {0} seconds}" Foreground="White" FontSize="20"/>
+                    <materialDesign:PackIcon Kind="Infinity"  Width="30" Height="30" Foreground="CadetBlue"/>
+                    <TextBlock Text="{Binding Stats.totalPlayTime, StringFormat=Total time played: {0} seconds}" Foreground="CadetBlue" FontSize="20"/>
                 </StackPanel>
                 <StackPanel Margin="10" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Star"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.bestSoloScore, StringFormat=Best solo score: {0}}" Foreground="White" FontSize="20"/>
+                    <materialDesign:PackIcon Kind="Star"  Width="30" Height="30" Foreground="Yellow"/>
+                    <TextBlock Text="{Binding Stats.bestSoloScore, StringFormat=Best solo score: {0}}" Foreground="Yellow" FontSize="20"/>
                 </StackPanel>
                 <StackPanel Margin="10" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowSplitHorizontal"  Width="30" Height="30" Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.winRate, StringFormat=Win/Lose ratio: {0}}" Foreground="White" FontSize="20"/>
+                    <materialDesign:PackIcon Kind="ArrowSplitHorizontal"  Width="30" Height="30" Foreground="Green"/>
+                    <TextBlock Text="{Binding Stats.winRate, StringFormat=Win/Lose ratio: {0}}" Foreground="Green" FontSize="20"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel VerticalAlignment="Bottom" Margin="20" Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
@@ -107,7 +108,7 @@
                     <materialDesign:PackIcon Kind="Rotate3dVariant"  Width="30" Height="30" Foreground="White"/>
                     <TextBlock Text="LAST CONNECTION:" FontSize="25" Foreground="White"/>
                 </StackPanel>
-                    <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
+                    <ScrollViewer Margin="15,15,15,5" Grid.Row="3" Grid.Column="2"
                       VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding Connections}">
                             <ItemsControl.ItemTemplate>
