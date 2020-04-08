@@ -12,7 +12,6 @@ import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.popup_end_game.view.*
-import java.util.*
 
 
 class GameplayFragment: Fragment(), FragmentChangeListener {
