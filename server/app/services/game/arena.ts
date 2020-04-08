@@ -63,19 +63,32 @@ export abstract class Arena {
 
     protected abstract startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout;
     protected abstract botAnnounceStart(): void;
-    protected abstract botAnnounceEndSubGane(): void;
+    protected abstract botAnnounceEndSubGame(): void;
     protected abstract handleGameplayChat(mes: IGameplayChat): void;
     protected abstract updatePoints(username: string, time: number, ratio: number): void;
     protected abstract sendCurrentPointToUser(mes: IGameplayChat): void;
 
-    protected handleGameplayHint(): void {
-        const totalHint = this.curRule.clues.length;
+    protected sendAnswer(answer: string): void {
         const announcement: IGameplayAnnouncement = {
             username: "Server",
-            content: `Hint: ${this.curRule.clues[this.hintPtr % totalHint]}`,
+            content: `Answer was: ${answer}.`,
             isServer: true,
         };
-        this.socketServer.to(this.room).emit("game-hint", announcement);
+        this.sendToChat(announcement);
+    }
+
+    protected sendHint(botName: string): void {
+        const totalHint = this.curRule.clues.length;
+        const announcement: IGameplayAnnouncement = {
+            username: botName,
+            content: `Hint: ${this.curRule.clues[this.hintPtr % totalHint]}`,
+            isServer: false,
+        };
+        this.sendToChat(announcement);
+    }
+
+    protected isHintingRequest(mes: IGameplayChat): boolean {
+        return mes.content.startsWith("!hint");
     }
 
     protected handleGameplayReady(mes: IGameplayReady): void {
@@ -89,7 +102,6 @@ export abstract class Arena {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
 
-            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
         }
 
@@ -269,6 +281,7 @@ export abstract class Arena {
     }
 
     protected sendToChat(obj: IGameplayAnnouncement): void {
+        this.gameMessages.push(obj);
         this.socketServer.to(this.room).emit("game-chat", obj);
     }
 
