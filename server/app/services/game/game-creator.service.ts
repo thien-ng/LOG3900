@@ -34,7 +34,7 @@ export class GameCreatorService {
         if (!configs.solution || /[^a-zA-Z]/.test(configs.solution))
             throw new Error("Solution must contains letters only");
         if (!configs.clues ||configs.clues.length < 1)
-            throw new Error("Some clues must be included in reuqest");
+            throw new Error("Some clues must be included in request");
         configs.clues.forEach(c => {
             if (/[^a-zA-Z]/.test(c))
                 throw new Error("Clues must contains letters only");
