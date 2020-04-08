@@ -274,7 +274,7 @@ namespace PolyPaint.VueModeles
             ChangeChannel(lobbyChannel);
         }
 
-        private void FetchChannels()
+        public void FetchChannels()
         {
             Application.Current.Dispatcher.Invoke(async delegate
             {
@@ -322,7 +322,7 @@ namespace PolyPaint.VueModeles
             string channelId = (string)id;
 
 
-            if (channelId != _selectedChannel.ID)
+            if (channelId != _selectedChannel.ID || channelId == Constants.DEFAULT_CHANNEL)
             {
                 MessageChannel channel;
 

@@ -140,7 +140,6 @@ namespace PolyPaint.VueModeles
                     {
                         _loginIsRunning = true;
                         IsButtonEnabled = false;
-
                         JObject res = await LoginRequestAsync(_username, Password.Password);
 
                         if (res.ContainsKey("status"))
