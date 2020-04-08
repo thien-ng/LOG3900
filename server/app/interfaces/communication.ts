@@ -3,7 +3,7 @@ export interface IRegistration {
     password: string,
     firstName: string,
     lastName: string,
-    avatar?: Uint8Array,
+    avatar?: string,
 }
 
 export interface ILogin {

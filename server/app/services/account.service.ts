@@ -27,13 +27,14 @@ export class AccountService {
         return result;
     }
 
-    public async setAvatar(req: { username: string, avatar: Uint8Array }): Promise<IStatus> {
+    public async setAvatar(req: { username: string, avatar: string }): Promise<IStatus> {
         let result: IStatus = {
             status: 200,
             message: "Succesfully changed avatar"
         };
 
         try {
+            this.verifyAvatar(req.avatar);
             await this.database.setAvatar(req.username, req.avatar);
         } catch (e) {
             result.status = 400;
@@ -45,7 +46,7 @@ export class AccountService {
 
     public async getAvatar(username: string): Promise<string> {
         return this.database.getAvatar(username).then((res: pg.QueryResult) => {
-            return new Buffer(res.rows[0]).toString("base64");
+            return res.rows[0];
         }).catch((e) => {
             return e;
         });
@@ -85,6 +86,14 @@ export class AccountService {
         }
         if (regis.lastName.length < 1 || regis.lastName.length > 100) {
             throw new Error("last name length should be between 1 and 100");
+        }
+        if (regis.avatar)
+            this.verifyAvatar(regis.avatar);
+    }
+
+    private verifyAvatar(avatar: string): void {
+        if (avatar.length < 1 || avatar.length > 400000) {
+            throw new Error("avatar size should be under 300 KB in size; this file size is : " + (((avatar.length * 6) / 8) + 1) + "bytes");
         }
     }
 

@@ -31,13 +31,28 @@ CREATE OR REPLACE FUNCTION LOG3900.registerAccount(in_username VARCHAR(20), in_p
     END;
 $$LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION LOG3900.setAvatar(in_username VARCHAR(20), new_avatar BYTEA) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.setAvatar(in_username VARCHAR(20), new_avatar TEXT) RETURNS VOID AS $$
     BEGIN
         IF NOT EXISTS (SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) then
-            RAIS EXCEPTION 'Username doesnt exist';
+            RAISE EXCEPTION 'Username doesnt exist';
         END IF;
         UPDATE LOG3900.Account
         SET avatar = new_avatar
+        WHERE username = in_username;
+
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getAvatar(in_username VARCHAR(20))
+    RETURNS TABLE  (avatar_out TEXT ) AS $$
+    BEGIN
+        IF NOT EXISTS (SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) then
+            RAISE EXCEPTION 'Username doesnt exist';
+        END IF;
+        RETURN QUERY
+        SELECT LOG3900.Account.avatar AS avatar_out
+        FROM LOG3900.Account
+        WHERE LOG3900.Account.username = in_username;
 
     END;
 $$ LANGUAGE plpgsql;
