@@ -92,8 +92,7 @@ class ChatFragment: Fragment() {
                     }
                 }
 
-                it.isEnabled = false
-                v.button_load_chat_history.visibility = View.GONE
+                hideLoadHistoryButton()
             }
         }
 
@@ -176,7 +175,7 @@ class ChatFragment: Fragment() {
                     lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()
                     activity!!.runOnUiThread {
-                        setChannel(LOBBY_CHANNEL_ID, false)
+                        setChannel(LOBBY_CHANNEL_ID)
                     }
                 }
             } else if (type == "join") {
@@ -283,21 +282,38 @@ class ChatFragment: Fragment() {
         }
     }
 
+    fun showLoadHistoryButton() {
+        activity!!.runOnUiThread {
+            v.button_load_chat_history.isEnabled = true
+            v.button_load_chat_history.visibility = View.VISIBLE
+        }
+    }
+
+    fun hideLoadHistoryButton() {
+        activity!!.runOnUiThread {
+            v.button_load_chat_history.isEnabled = false
+            v.button_load_chat_history.visibility = View.GONE
+        }
+    }
+
     fun loadChannels(search: String? = null){
         controller.loadChannels(this, search)
     }
 
-    fun setChannel(newChannelId: String, showLoadHistoryButton: Boolean = true) {
+    fun setChannel(newChannelId: String) {
         if (newChannelId != channelId) {
             loadChannels()
             messageAdapter.clear()
+            hideLoadHistoryButton()
+            val route =
+                when (newChannelId) {
+                    LOBBY_CHANNEL_ID -> "/game/lobby/messages/"
+                    GAME_CHANNEL_ID -> "/game/arena/messages/"
+                    else -> "/chat/messages/"
+                }
 
-            v.button_load_chat_history.isEnabled = showLoadHistoryButton
-            if (showLoadHistoryButton) {
-                v.button_load_chat_history.visibility = View.VISIBLE
-            } else {
-                v.button_load_chat_history.visibility = View.GONE
-            }
+
+            controller.showLoadHistoryButtonIfPreviousMessages(this, newChannelId, route)
 
             channelId = newChannelId
             textViewChannelName.text = channelId
