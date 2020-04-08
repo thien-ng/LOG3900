@@ -11,11 +11,7 @@ import android.widget.TextView
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
-import com.example.client_leger.RankItem
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
-import kotlinx.android.synthetic.main.fragment_chat.view.*
 import kotlinx.android.synthetic.main.popup_end_game.view.*
 import java.util.*
 
