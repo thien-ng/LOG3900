@@ -77,6 +77,10 @@ export class ArenaFfa extends Arena {
             if (timer >= TOTAL_TIME || this.isEveryoneHasRightAnswer || this.isAllDc) {
                 clearInterval(this.curArenaInterval);
 
+                if (this.isEveryoneHasRightAnswer == false) {
+                    this.sendAnswer(this.curRule.solution);
+                }
+
                 this.botAnnounceEndSubGane();
 
                 if (this.drawPtr >= this.users.length) {

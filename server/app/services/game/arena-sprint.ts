@@ -66,6 +66,7 @@ export class ArenaSprint extends Arena {
 
             if (this.timeRemaining <= 0) {
                 clearInterval(this.curArenaInterval);
+                this.sendAnswer(this.curRule.solution);
                 this.end();
             }
             this.timeRemaining -= ONE_SEC;

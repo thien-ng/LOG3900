@@ -68,6 +68,15 @@ export abstract class Arena {
     protected abstract updatePoints(username: string, time: number, ratio: number): void;
     protected abstract sendCurrentPointToUser(mes: IGameplayChat): void;
 
+    protected sendAnswer(answer: string): void {
+        const announcement: IGameplayAnnouncement = {
+            username: "Server",
+            content: `Answer was: ${answer}.`,
+            isServer: true,
+        };
+        this.sendToChat(announcement);
+    }
+
     protected sendHint(botName: string): void {
         const totalHint = this.curRule.clues.length;
         const announcement: IGameplayAnnouncement = {
