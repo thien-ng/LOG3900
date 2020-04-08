@@ -71,7 +71,7 @@ export class LobbyManagerService {
 
         if (!lobby) throw new Error(`lobby ${lobbyName} doesn't exist`);
 
-        if (lobby.whitelist) {
+        if (lobby.whitelist && !this.isUserWhitelisted(lobby, user)) {
             lobby.whitelist.push(user);
         }
         else {
