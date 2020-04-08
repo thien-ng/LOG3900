@@ -1,7 +1,6 @@
 package com.example.client_leger
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -113,11 +112,9 @@ class ConnexionController {
             null,
             Response.Listener<JSONArray>{ response ->
                 if (response.length() > 0) {
-                    Log.w("draw", "should show")
                     activity.showLoadHistoryButton()
                 } else {
                     activity.hideLoadHistoryButton()
-                    Log.w("draw", "should NOT show")
                 }
             }, Response.ErrorListener {
                     error ->
@@ -320,7 +317,6 @@ class ConnexionController {
                         }
                     }
                 },Response.ErrorListener{ error ->
-                    Log.w("socket", "load")
                     Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
                 }
             )
