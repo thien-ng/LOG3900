@@ -138,9 +138,10 @@ export abstract class Arena {
         const pts = this.preparePtsToBePersisted();
         console.log("[Debug] end game points are: ", pts);
         console.log("[Debug] disconnected players: ", this.dcPlayer);
-        this.users.forEach(u => {
-            this.socketServer.to(this.room).emit("game-over", {points: pts});
-            
+
+        this.socketServer.to(this.room).emit("game-over", {points: pts});
+
+        this.users.forEach(u => {            
             if (u.socket)
                 u.socket.leave(this.room);
         });
@@ -153,9 +154,9 @@ export abstract class Arena {
 
     private cancelGame(): void {
         console.log("[Debug] Cancel routine");
+        this.socketServer.to(this.room).emit("game-over");
+
         this.users.forEach(u => {
-            this.socketServer.to(this.room).emit("game-over");
-            
             if (u.socket)
                 u.socket.leave(this.room);
         });
