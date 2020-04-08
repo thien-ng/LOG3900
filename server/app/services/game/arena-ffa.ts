@@ -1,6 +1,6 @@
 import { Arena } from "./arena";
 import { IUser } from "../../interfaces/user-manager";
-import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType, IGameplayHint } from "../../interfaces/game";
+import { IGameplayChat, IGameplayDraw, IGameplayReady, GameMode, IGameplayEraser, IDrawing, EventType } from "../../interfaces/game";
 import { IGameRule } from "../../interfaces/rule";
 import { GameManagerService } from "./game-manager.service";
 import { DrawingTools } from "./utils/drawing-tools";
@@ -102,7 +102,7 @@ export class ArenaFfa extends Arena {
             return true;
     }
 
-    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser | IGameplayHint): void {
+    public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
         switch(mes.event) {
             case EventType.draw:
                 this.handleGameplayDraw(socket, mes as IGameplayDraw | IGameplayEraser);
@@ -112,9 +112,6 @@ export class ArenaFfa extends Arena {
                 break;
             case EventType.ready:
                 this.handleGameplayReady(mes as IGameplayReady);
-                break;
-            case EventType.hint:
-                this.handleGameplayHint();
                 break;
         }
     }
@@ -127,15 +124,17 @@ export class ArenaFfa extends Arena {
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
-        
         const answer = mes.content.toLocaleLowerCase().trim();
+        const drawerUsername = this.users[this.drawPtr - 1].username;
+
+        if (this.isHintingRequest(mes) && this.isBot(drawerUsername)) {
+            this.sendToChat({username: mes.username, content: mes.content, isServer: false});
+            this.sendHint(drawerUsername);
+            return;
+        }
 
         if (this.isRightAnswer(answer) && this.isNotCurrentDrawer(mes.username)) {
-            
             const encAnswer = this.encryptAnswer(mes.content);
-            
-            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
-            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
             
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
@@ -151,7 +150,6 @@ export class ArenaFfa extends Arena {
             if (this.checkIfEveryoneHasRightAnswer())
                 this.isEveryoneHasRightAnswer = true;
         } else {
-            this.gameMessages.push({username: mes.username, content: mes.content, isServer: false});
             this.sendToChat({username: mes.username, content: mes.content, isServer: false});
         }
     }

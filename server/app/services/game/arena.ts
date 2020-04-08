@@ -68,14 +68,18 @@ export abstract class Arena {
     protected abstract updatePoints(username: string, time: number, ratio: number): void;
     protected abstract sendCurrentPointToUser(mes: IGameplayChat): void;
 
-    protected handleGameplayHint(): void {
+    protected sendHint(botName: string): void {
         const totalHint = this.curRule.clues.length;
         const announcement: IGameplayAnnouncement = {
-            username: "Server",
+            username: botName,
             content: `Hint: ${this.curRule.clues[this.hintPtr % totalHint]}`,
-            isServer: true,
+            isServer: false,
         };
-        this.socketServer.to(this.room).emit("game-hint", announcement);
+        this.sendToChat(announcement);
+    }
+
+    protected isHintingRequest(mes: IGameplayChat): boolean {
+        return mes.content.startsWith("!hint");
     }
 
     protected handleGameplayReady(mes: IGameplayReady): void {
@@ -89,7 +93,6 @@ export abstract class Arena {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
 
-            this.gameMessages.push({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
         }
 
@@ -268,6 +271,7 @@ export abstract class Arena {
     }
 
     protected sendToChat(obj: IGameplayAnnouncement): void {
+        this.gameMessages.push(obj);
         this.socketServer.to(this.room).emit("game-chat", obj);
     }
 
