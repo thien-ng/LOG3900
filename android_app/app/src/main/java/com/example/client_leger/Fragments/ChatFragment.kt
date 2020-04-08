@@ -307,13 +307,12 @@ class ChatFragment: Fragment() {
             hideLoadHistoryButton()
             val route =
                 when (newChannelId) {
-                    LOBBY_CHANNEL_ID -> "/game/lobby/messages/"
-                    GAME_CHANNEL_ID -> "/game/arena/messages/"
-                    else -> "/chat/messages/"
+                    LOBBY_CHANNEL_ID -> "/game/lobby/messages/$lobbyName"
+                    GAME_CHANNEL_ID -> "/game/arena/messages/$username"
+                    else -> "/chat/messages/$newChannelId"
                 }
 
-
-            controller.showLoadHistoryButtonIfPreviousMessages(this, newChannelId, route)
+            controller.showLoadHistoryButtonIfPreviousMessages(this, route)
 
             channelId = newChannelId
             textViewChannelName.text = channelId
