@@ -83,29 +83,29 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
                         TableRow.LayoutParams.WRAP_CONTENT
                     )
 
-                    val b = TextView(this.context)
-                    b.setPadding(10, 0, 0, 0)
+                    val rank = TextView(this.context)
+                    rank.setPadding(10, 0, 0, 0)
                     val str: String = java.lang.String.valueOf(i + 1)
-                    b.text = str
-                    b.setTextColor(Color.BLACK)
-                    b.textSize = 20F
-                    tableRow.addView(b)
+                    rank.text = str
+                    rank.setTextColor(Color.BLACK)
+                    rank.textSize = 20F
+                    tableRow.addView(rank)
 
-                    val b1 = TextView(this.context)
-                    b1.setPadding(180 - b.width, 0, 0, 0)
-                    b1.textSize = 20F
+                    val user = TextView(this.context)
+                    user.setPadding(180 - rank.width, 0, 0, 0)
+                    user.textSize = 20F
                     val str1: String = infos.getString("username")
-                    b1.text = str1
-                    b1.setTextColor(Color.BLACK)
-                    tableRow.addView(b1)
+                    user.text = str1
+                    user.setTextColor(Color.BLACK)
+                    tableRow.addView(user)
 
-                    val b2 = TextView(this.context)
-                    b2.setPadding(140 - str1.length, 0, 0, 0)
+                    val points = TextView(this.context)
+                    points.setPadding(140 - str1.length, 0, 0, 0)
                     val str2: String = infos.getInt("points").toString()
-                    b2.text = str2
-                    b2.setTextColor(Color.BLACK)
-                    b2.textSize = 20F
-                    tableRow.addView(b2)
+                    points.text = str2
+                    points.setTextColor(Color.BLACK)
+                    points.textSize = 20F
+                    tableRow.addView(points)
 
                     rankingView.tableView_ranks.addView(tableRow)
                 }
