@@ -61,7 +61,8 @@ export interface INotify {
 }
 
 export interface INotifyUpdateUser extends INotify{
-    username:      string;
+    username:      string,
+    mode:          GameMode,
 }
 
 export interface INotifyLobbyUpdate extends INotify {

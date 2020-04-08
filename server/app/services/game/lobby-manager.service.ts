@@ -129,11 +129,11 @@ export class LobbyManagerService {
 
             if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user)) || isBot) {
                 lobby.users.push(user);
-                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username } as INotifyUpdateUser);
+                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username, mode: lobby.mode } as INotifyUpdateUser);
             }
             else if (lobby.isPrivate == false) {
                 lobby.users.push(user);
-                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username } as INotifyUpdateUser);
+                this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username, mode: lobby.mode } as INotifyUpdateUser);
             }
             else
                 throw new Error(`Wrong password for lobby ${req.lobbyName}`);
@@ -175,16 +175,17 @@ export class LobbyManagerService {
             }
             
             lobby.users = lobby.users.filter(u => { return u.username !== req.username });
+            const mode = lobby.mode;
 
             if (this.checkUsersLeftExceptBot(lobby)) {
                 // Delete lobby
-                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete });
+                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.delete, mode: mode });
                 this.lobbies.delete(req.lobbyName);
                 this.lobbiesMessages.delete(req.lobbyName);
             } else {
                 // Leave lobby
                 this.lobbies.set(req.lobbyName, lobby);
-                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.leave, username: req.username });
+                this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.leave, username: req.username, mode: mode });
             }
 
         } else {
