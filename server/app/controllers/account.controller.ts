@@ -40,7 +40,7 @@ export class AccountController {
          *      '200':
          *          description: A successful response
          */
-        this.router.post('/setAvatar', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.post('/avatar', async (req: Request, res: Response, next: NextFunction) => {
             res.json(await this.accountService.setAvatar(req.body));
         });
 
@@ -53,7 +53,7 @@ export class AccountController {
          *      '200':
          *          description: A successful response
          */
-        this.router.get('/getAvatar/:username', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.get('/avatar/:username', async (req: Request, res: Response, next: NextFunction) => {
             this.accountService.getAvatar(req.params.username).then((result: string) => {
                 res.json(result);
             });

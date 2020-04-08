@@ -6,6 +6,8 @@
 | ---------------------------------------------------- | :--: | ---------------------------- |
 | Register account                                     | POST | /account/register            |
 | Login account                                        | POST | /account/login               |
+| set the new avatar                                   | POST | /account/avatar              |
+| get the avatar from username                         |  GET | /account/avatar/:username    |
 | Get users whose username starts with word (optional) |  GET | /account/users/online/:word? |
 | Get user information                                 |  GET | /account/user/info/:username |
 
@@ -23,17 +25,17 @@
 
 ## Game
 
-| Description                       | type | path                            |
-| ----------------------------      | :--: | ----------------------------    |
-| Join/Create lobby                 | POST | /game/lobby/join                |
-| Leave/Delete lobby                | POST | /game/lobby/leave               |
-| invite a user in a lobby          | POST | /game/lobby/invite              |
-| invite a user in a lobby          | POST | /game/lobby/invite/refuse       |
-| Get active lobbies by mode        |  GET | /game/lobby/active/:mode        |
-| Get users in a lobby by name      |  GET | /game/lobby/users/:lobbyName    |
-| Get messages in a lobby by name   |  GET | /game/lobby/messages/:lobbyName |
-| Get messages in a arena by name   |  GET | /game/arena/messages/:username  |
-| Start game with lobby name        |  GET | /game/start/:lobbyName          |
+| Description                     | type | path                            |
+| ------------------------------- | :--: | ------------------------------- |
+| Join/Create lobby               | POST | /game/lobby/join                |
+| Leave/Delete lobby              | POST | /game/lobby/leave               |
+| invite a user in a lobby        | POST | /game/lobby/invite              |
+| invite a user in a lobby        | POST | /game/lobby/invite/refuse       |
+| Get active lobbies by mode      |  GET | /game/lobby/active/:mode        |
+| Get users in a lobby by name    |  GET | /game/lobby/users/:lobbyName    |
+| Get messages in a lobby by name |  GET | /game/lobby/messages/:lobbyName |
+| Get messages in a arena by name |  GET | /game/arena/messages/:username  |
+| Start game with lobby name      |  GET | /game/start/:lobbyName          |
 
 ## Creator
 
@@ -47,11 +49,11 @@
 ## Lobby
 
 | Event            | Description                                                      | Object                                                                                            |
-| ---------------- | ---------------------------------------------------------------- | -----------------------------------------------------------------------------------               |
+| ---------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | lobby-chat       | emit when sending messages in lobby                              |                                                                                                   |
 | lobby-notif      | emit when sending notification about lobby update when is join   | {type: join, lobbyName: string, user: string, mode: string}                                       |
 | lobby-notif      | emit when sending notification about lobby update when is leave  | {type: leave, lobbyName: string, user: string, mode: string}                                      |
-| lobby-notif      | emit when sending notification about lobby update when is create | {type: create, lobbyName: string, users: string[], private: boolean, size: number, mode: string} |
+| lobby-notif      | emit when sending notification about lobby update when is create | {type: create, lobbyName: string, users: string\[], private: boolean, size: number, mode: string} |
 | lobby-notif      | emit when sending notification about lobby update when is delete | {type: delete, lobbyName: string, mode: string}                                                   |
 | lobby-invitation | emit when received an invitation to a lobby                      | {type: invitation, lobbyName: string}                                                             |
 
