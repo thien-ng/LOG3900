@@ -68,19 +68,52 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
                 rankingView.tableView_ranks.addView(tableRow)
 
                 val ranks = res.getJSONArray("points")
-                Log.w("rank", "ranks.length(): " + ranks.length())
 
                 for (i in 0 until ranks.length()) {
                     Log.w("rank", i.toString())
                     val infos = ranks.getJSONObject(i)
-                    Log.w("rank", "ranks.getJSONObject(i): " + ranks.getJSONObject(i).toString())
-                    Log.w("rank", "infos.getString(\"username\"): " + infos.getString("username"))
-                    Log.w("rank", "infos.getInt(\"points\"): " + infos.getInt("points"))
-                    rankAdapter.add(RankItem(
-                        i + 1,
-                        infos.getString("username"),
-                        infos.getInt("points")
-                    ))
+
+                    tableRow = TableRow(this.context)
+
+                    val rnd = Random()
+                    val color = Color.argb(
+                        255,
+                        rnd.nextInt(256),
+                        rnd.nextInt(256),
+                        rnd.nextInt(256)
+                    )
+                    tableRow.setBackgroundColor(color)
+
+                    tableRow.layoutParams = TableRow.LayoutParams(
+                        TableRow.LayoutParams.MATCH_PARENT,
+                        TableRow.LayoutParams.WRAP_CONTENT
+                    )
+
+                    val b = TextView(this.context)
+                    b.setPadding(10, 0, 0, 0)
+                    val str: String = java.lang.String.valueOf(i + 1)
+                    b.text = str
+                    b.setTextColor(Color.BLACK)
+                    b.textSize = 20F
+                    tableRow.addView(b)
+
+                    val b1 = TextView(this.context)
+                    b1.setPadding(180 - b.width, 0, 0, 0)
+                    b1.textSize = 20F
+                    val str1: String = infos.getString("username")
+                    b1.text = str1
+                    b1.setTextColor(Color.BLACK)
+                    tableRow.addView(b1)
+
+                    val b2 = TextView(this.context)
+                    b2.setPadding(140 - str1.length, 0, 0, 0)
+                    val str2: String = infos.getInt("points").toString()
+                    b2.text = str2
+                    b2.setTextColor(Color.BLACK)
+                    b2.textSize = 20F
+                    tableRow.addView(b2)
+
+                    rankingView.tableView_ranks.addView(tableRow)
                 }
 
                 popupWindow.showAtLocation(rankingView, Gravity.CENTER, 0, 0)
