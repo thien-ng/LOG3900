@@ -38,6 +38,7 @@ class ChatFragment: Fragment() {
     var lobbyName = ""
     var inGame: Boolean = false
     var inLobby: Boolean = false
+    private lateinit var v: View
 
     private lateinit var chatListener: Disposable
     private lateinit var channelListener: Disposable
@@ -48,7 +49,7 @@ class ChatFragment: Fragment() {
     private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragment_chat, container, false)
+        v = inflater.inflate(R.layout.fragment_chat, container, false)
 
         recyclerViewChannels = v.recyclerView_channels
         recyclerViewNotSubChannels = v.recyclerView_notSubChannels
@@ -74,8 +75,26 @@ class ChatFragment: Fragment() {
         v.chat_message_editText.filters = fArray
 
         loadChannels()
-        controller.loadChatHistory(this)
+
         textViewChannelName.text = channelId
+
+        v.button_load_chat_history.setOnClickListener {
+            activity!!.runOnUiThread {
+                when (channelId) {
+                    GAME_CHANNEL_ID -> {
+                        controller.loadGameChatHistory(this)
+                    }
+                    LOBBY_CHANNEL_ID -> {
+                        controller.loadLobbyChatHistory(this)
+                    }
+                    else -> {
+                        controller.loadChatHistory(this)
+                    }
+                }
+
+                hideLoadHistoryButton()
+            }
+        }
 
         v.searchView_channelSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -101,7 +120,7 @@ class ChatFragment: Fragment() {
         }
 
         v.imageButton_createChannel.setOnClickListener {
-            onButtonShowPopupWindowClick(inflater, v)
+            onButtonShowPopupWindowClick(inflater)
         }
 
         v.disconnect_button.setOnClickListener {
@@ -232,14 +251,14 @@ class ChatFragment: Fragment() {
         }
     }
 
-    private fun onButtonShowPopupWindowClick(inflater: LayoutInflater, view: View?) {
+    private fun onButtonShowPopupWindowClick(inflater: LayoutInflater) {
         val popupView = inflater.inflate(R.layout.popup_create_channel, null)
         val width = LinearLayout.LayoutParams.WRAP_CONTENT
         val height = LinearLayout.LayoutParams.WRAP_CONTENT
         val focusable = true
         val popupWindow = PopupWindow(popupView, width, height, focusable)
 
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+        popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0)
 
         popupView.setOnTouchListener { _, _ ->
             popupWindow.dismiss()
@@ -263,6 +282,20 @@ class ChatFragment: Fragment() {
         }
     }
 
+    fun showLoadHistoryButton() {
+        activity!!.runOnUiThread {
+            v.button_load_chat_history.isEnabled = true
+            v.button_load_chat_history.visibility = View.VISIBLE
+        }
+    }
+
+    fun hideLoadHistoryButton() {
+        activity!!.runOnUiThread {
+            v.button_load_chat_history.isEnabled = false
+            v.button_load_chat_history.visibility = View.GONE
+        }
+    }
+
     fun loadChannels(search: String? = null){
         controller.loadChannels(this, search)
     }
@@ -271,20 +304,18 @@ class ChatFragment: Fragment() {
         if (newChannelId != channelId) {
             loadChannels()
             messageAdapter.clear()
+            hideLoadHistoryButton()
+            val route =
+                when (newChannelId) {
+                    LOBBY_CHANNEL_ID -> "/game/lobby/messages/$lobbyName"
+                    GAME_CHANNEL_ID -> "/game/arena/messages/$username"
+                    else -> "/chat/messages/$newChannelId"
+                }
+
+            controller.showLoadHistoryButtonIfPreviousMessages(this, route)
+
             channelId = newChannelId
             textViewChannelName.text = channelId
-
-            when (newChannelId) {
-                GAME_CHANNEL_ID -> {
-                    controller.loadGameChatHistory(this)
-                }
-                LOBBY_CHANNEL_ID -> {
-                    controller.loadLobbyChatHistory(this)
-                }
-                else -> {
-                    controller.loadChatHistory(this)
-                }
-            }
         }
     }
 
@@ -322,12 +353,16 @@ class ChatFragment: Fragment() {
 
         activity!!.runOnUiThread {
             if (channelId == GAME_CHANNEL_ID) {
-                if (isServer) {
-                    messageAdapter.add(GameServerChatItemReceived(content))
-                } else if (user == username) {
-                    messageAdapter.add(GameChatItemSent(content))
-                } else {
-                    messageAdapter.add(GameChatItemReceived(content, user))
+                when {
+                    isServer -> {
+                        messageAdapter.add(GameServerChatItemReceived(content))
+                    }
+                    user == username -> {
+                        messageAdapter.add(GameChatItemSent(content))
+                    }
+                    else -> {
+                        messageAdapter.add(GameChatItemReceived(content, user))
+                    }
                 }
             }
         }
