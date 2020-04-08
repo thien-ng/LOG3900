@@ -34,8 +34,12 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
                     rankingView,
                     WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT,
-                    false
+                    true
                 )
+
+                popupWindow.setOnDismissListener {
+                    replaceFragment(LobbyCardsFragment())
+                }
 
                 var tableRow = TableRow(this.context)
                 tableRow.layoutParams = TableRow.LayoutParams(
@@ -72,9 +76,9 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
                     val rnd = Random()
                     val color = Color.argb(
                         200,
-                        rnd.nextInt(150),
-                        rnd.nextInt(150),
-                        rnd.nextInt(150)
+                        rnd.nextInt(130),
+                        rnd.nextInt(130),
+                        rnd.nextInt(130)
                     )
                     tableRow.setBackgroundColor(color)
 
@@ -113,7 +117,6 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
                 popupWindow.showAtLocation(rankingView, Gravity.CENTER, 0, 0)
 
                 rankingView.button_ok.setOnClickListener {
-                    replaceFragment(LobbyCardsFragment())
                     popupWindow.dismiss()
                 }
             }
