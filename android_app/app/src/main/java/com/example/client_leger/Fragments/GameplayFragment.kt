@@ -20,7 +20,7 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
 
         fragmentManager!!.beginTransaction()
             .replace(R.id.container_view_top, GameplayMenuFragment(), "menu")
-            .replace(R.id.container_view_bottom, DrawFragment(), "draw")
+            .replace(R.id.container_view_canvas, DrawFragment(), "draw")
             .commit()
 
         endGameSub = Communication.getEndGameListener().subscribe{ res ->

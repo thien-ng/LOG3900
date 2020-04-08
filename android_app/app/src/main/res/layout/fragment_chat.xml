@@ -7,16 +7,18 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:focusableInTouchMode="true"
+        android:background="@drawable/right_border_background"
         tools:context=".Chat">
 
     <TextView
             android:id="@+id/textView_channelName"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:gravity="center"
             android:text="channelName"
             android:textColor="#F44336"
             android:textSize="24sp"
+            android:background="@drawable/right_bottom_border_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/recyclerView_chat_log"
             app:layout_constraintTop_toTopOf="parent" />
@@ -25,7 +27,7 @@
             android:id="@+id/recyclerView_chat_log"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="2dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
             app:layout_constraintEnd_toEndOf="parent"
@@ -49,6 +51,8 @@
             android:id="@+id/chat_send_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_marginRight="2dp"
             android:text="Send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
