@@ -85,7 +85,6 @@ class GameController {
             Method.POST,
             Constants.SERVER_URL + Constants.LOBBY_JOIN_ENDPOINT,
             Response.Listener {
-                fragment!!.userListAdapter.addBot(body.getString("username"))
             },
             Response.ErrorListener { error ->
                 Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()

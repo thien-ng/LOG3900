@@ -3,7 +3,7 @@ export interface IRegistration {
     password: string,
     firstName: string,
     lastName: string,
-    //avatar: Uint8Array,
+    avatar?: string,
 }
 
 export interface ILogin {
@@ -53,7 +53,7 @@ export interface IStats {
     winRate:       number,
     bestScore:     number,
     totalPlayTime: number,
-    avgGameTime:   number, 
+    avgGameTime:   number,
 }
 
 export interface IInvitationChannel {

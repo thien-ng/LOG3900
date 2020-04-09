@@ -541,6 +541,13 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun strokeReceived(obj: JSONObject) {
+        if (!isValidPoint(obj.getInt("startPosX"), obj.getInt("startPosY")) ||
+            !isValidPoint(obj.getInt("endPosX"), obj.getInt("endPosY"))) {
+            strokeJustEnded = true
+            return
+        }
+
+
         when {
             obj.getString("type") == "ink" -> {
                 if (obj.getBoolean("isEnd")) {
