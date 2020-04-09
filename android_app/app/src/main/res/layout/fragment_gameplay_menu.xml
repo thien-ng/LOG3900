@@ -42,4 +42,14 @@
             android:text="Your points: 0"
             app:layout_constraintStart_toEndOf="@+id/timer"
             app:layout_constraintTop_toBottomOf="@+id/item" />
+
+    <TextView
+            android:id="@+id/guessLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="52dp"
+            android:layout_marginLeft="52dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toEndOf="@+id/points"
+            app:layout_constraintTop_toBottomOf="@+id/role" />
 </android.support.constraint.ConstraintLayout>
