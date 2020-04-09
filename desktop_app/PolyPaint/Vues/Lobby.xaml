@@ -43,8 +43,8 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Foreground="White" FontSize="20" Text="-"/>
-                            <TextBlock VerticalAlignment="Center" Foreground="White" FontSize="20" Text="{Binding username}" />
+                                <materialDesign:PackIcon Kind="AccountNetwork" Margin="5" Foreground="White" VerticalAlignment="Center" Width="20" Height="20"/>
+                                <TextBlock VerticalAlignment="Center" Foreground="White" FontSize="20" Text="{Binding username}" />
                             <StackPanel  VerticalAlignment="Top" Visibility="{Binding ElementName=MyItems, Path=DataContext.IsGameMaster, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Button VerticalAlignment="Top" Style="{StaticResource MaterialDesignIconButton}" Command="{Binding ElementName=MyItems,  Path=DataContext.RemoveUserCommand}" CommandParameter="{Binding username}" Visibility="{Binding isMyself, Converter={StaticResource InverseBoolToVisConverter}}" >
                                     <materialDesign:PackIcon Kind="Delete" Foreground="DarkRed" Height="40" Width="40" />
