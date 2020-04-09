@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import com.example.client_leger.Adapters.ConnexionListViewAdapter
+import com.example.client_leger.Adapters.MatchHistoryAdapter
 import com.example.client_leger.Controller.ProfileController
 import com.example.client_leger.R
 import com.example.client_leger.databinding.FragmentProfilBinding
@@ -16,12 +17,16 @@ class ProfilFragment: Fragment() {
     lateinit var binding: FragmentProfilBinding
     private var profileController:ProfileController = ProfileController()
     lateinit var  adapter: ConnexionListViewAdapter
+    lateinit var adapterMatchHistory: MatchHistoryAdapter
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate<FragmentProfilBinding>(inflater,R.layout.fragment_profil, container, false)
-        adapter = ConnexionListViewAdapter(this.context)
+        adapter = ConnexionListViewAdapter(context)
+        adapterMatchHistory = MatchHistoryAdapter(context)
         profileController.getUserProfile(this, activity!!.intent.getStringExtra("username"))
-        var listview = binding.root.findViewById<ListView>(R.id.listView);
+        var listview = binding.root.findViewById<ListView>(R.id.listView)
         listview.adapter = adapter
+        var matchHistoryListView = binding.root.findViewById<ListView>(R.id.matchHistory)
+        matchHistoryListView.adapter = adapterMatchHistory
         return binding.root
     }
 }
