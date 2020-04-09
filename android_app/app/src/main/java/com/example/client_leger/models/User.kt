@@ -17,10 +17,21 @@ class User(username:String, fName:String, lName:String, connections: JSONArray, 
         var tempArray: ArrayList<Game> = arrayListOf()
         for (i in 0 until games.length()) {
             var jsonGame = games.getJSONObject(i)
-            var tempGame = Game(jsonGame.getString("mode"),jsonGame.getString("date"), jsonGame.getJSONArray("players").toString())
+            var tempGame = Game(jsonGame.getString("mode"),jsonGame.getString("date"), jsonArrayToPlayerArray(jsonGame.getJSONArray("players")))
             tempArray.add(tempGame)
         }
         return tempArray
     }
+    private fun jsonArrayToPlayerArray(players: JSONArray): String{
 
+        var string = ""
+        for (i in 0 until players.length()) {
+            var jsonPlayer = players.getJSONObject(i)
+            if(i != 0){
+                string += ", "
+            }
+            string += jsonPlayer.getString("username")+ ": "+ jsonPlayer.getString("score")
+        }
+        return string
+    }
 }

@@ -161,7 +161,7 @@
                         android:id="@+id/stats"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dip"
+                        android:layout_marginTop="10dip"
                         android:background="@drawable/white_border"
                         android:orientation="vertical"
                         android:padding="10dip"
@@ -173,6 +173,7 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
                             android:paddingRight="100dp"
+                            android:drawableLeft="@drawable/ic_access_time_white_24dp"
                             android:text="@{`Average game lenght: ` + user.stats.avgGameTime + ` seconds`}"
                             android:textColor="@android:color/white" />
 
@@ -188,6 +189,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
+                            android:drawableLeft="@drawable/ic_all_inclusive_white_24dp"
                             android:text="@{`Total time played: `+ user.stats.totalPlayTime + ` seconds`}"
                             android:textColor="@android:color/white" />
 
@@ -203,6 +205,7 @@
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="5dp"
+                            android:drawableLeft="@drawable/ic_emoji_events_24px"
                             android:text="@{`Win loss ratio: ` + user.stats.winRate}"
                             android:textColor="@android:color/white" />
                 </LinearLayout>

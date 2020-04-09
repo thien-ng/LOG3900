@@ -14,7 +14,7 @@
             android:layout_weight="9"
             android:gravity="center"
             android:text="sample"
-            android:textColor="#FFF" />
+            android:textColor= "@android:color/white" />
     <TextView
             android:id="@+id/players"
             android:layout_width="wrap_content"
