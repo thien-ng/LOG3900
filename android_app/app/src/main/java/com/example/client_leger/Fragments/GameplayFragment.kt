@@ -43,12 +43,8 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
             rankingView,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            true
+            false
         )
-
-        popupWindow.setOnDismissListener {
-            replaceFragment(LobbyCardsFragment())
-        }
 
         var tableRow = TableRow(this.context)
         tableRow.layoutParams = TableRow.LayoutParams(
@@ -124,6 +120,7 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
 
         rankingView.button_ok.setOnClickListener {
             popupWindow.dismiss()
+            replaceFragment(LobbyCardsFragment())
         }
     }
 
