@@ -221,10 +221,19 @@ export class ChatService {
             this.channelMapUsersList.set(channel, newList);
             if (newList.length < 1) {
                 //delete the channel since nobody in here anymore
-                this.db.deleteChannel(channel);
-                this.channelMapUsersList.delete(channel);
+                this.deleteChannel(channel);
             }
         }
+    }
+
+    private deleteChannel(channel: string) {
+        this.db.deleteChannel(channel);
+        this.channelMapUsersList.delete(channel);
+        this.userServ.getUsers().forEach((u: IUser) => {
+            this.socket.to(u.socketId).emit("channel-delete", {
+                channel: String
+            })
+        });
     }
 
     public async getChannelsNotSubWithAccountName(username: string): Promise<IChannelIds[]> {
