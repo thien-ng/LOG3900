@@ -51,8 +51,8 @@ namespace PolyPaint.Utilitaires
         public const string MODE_SOLO               = "SOLO";
         public const string MODE_COOP               = "COOP";
 
-        public const int MIN_MODE_FFA = 2;
-        public const int MIN_MODE_COOP = 2;
+        public const int MIN_MODE_FFA               = 2;
+        public const int MIN_MODE_COOP              = 1;
 
         public const string ROLE_DRAWER             = "Drawer";
         public const string ROLE_GUESSER            = "Guesser";

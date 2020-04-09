@@ -52,8 +52,10 @@ namespace PolyPaint.VueModeles
             { 
                 _usernames = value;
                 ProprieteModifiee();
-                if((Mode == Constants.MODE_FFA || Mode == Constants.MODE_COOP) && IsGameMaster) 
-                    IsStartGameVisible = (Usernames.Count < Constants.MIN_MODE_FFA) ? false : true;
+                if (Mode == Constants.MODE_FFA)
+                {
+                    IsStartGameVisible = (_usernames.Count < Constants.MIN_MODE_FFA) ? false : true;
+                }
             }
         }
 
@@ -99,7 +101,10 @@ namespace PolyPaint.VueModeles
                 _isGameMaster = value;
                 ProprieteModifiee();
                 if (Mode == Constants.MODE_COOP || Mode == Constants.MODE_SOLO)
+                {
                     IsAddBotPossible = false;
+                    IsStartGameVisible = true;
+                }
                 if (value && Mode == Constants.MODE_FFA)
                     IsAddBotPossible = true;
                 else
@@ -124,7 +129,8 @@ namespace PolyPaint.VueModeles
             get { return _isStartGameVisible; }
             set
             {
-                _isStartGameVisible = value;
+                if(IsGameMaster)
+                    _isStartGameVisible = value;
                 ProprieteModifiee();
             }
         }

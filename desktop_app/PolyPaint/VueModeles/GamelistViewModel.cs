@@ -180,11 +180,25 @@ namespace PolyPaint.VueModeles
                     getLobbies();
                 if(((string)data.GetValue("type") == "join"))
                 {
-                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                    try
+                    {
+                        GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                    }
+                    catch (Exception)
+                    {
+                        //fail silently
+                    }
                 }
                 if (((string)data.GetValue("type") == "leave"))
                 {
-                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                    try
+                    {
+                        GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                    }
+                    catch (Exception)
+                    {
+                        // fail silently
+                    }
                 }
             });
 
