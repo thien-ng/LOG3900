@@ -99,7 +99,7 @@
                     <TextBlock Text="{Binding Stats.bestSoloScore, StringFormat=Best solo score: {0}}" Foreground="Yellow" FontSize="20"/>
                 </StackPanel>
                 <StackPanel Margin="10" Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="ArrowSplitHorizontal"  Width="30" Height="30" Foreground="Green"/>
+                    <materialDesign:PackIcon Kind="Trophy"  Width="30" Height="30" Foreground="Green"/>
                     <TextBlock Text="{Binding Stats.winRate, StringFormat=Win/Lose ratio: {0}}" Foreground="Green" FontSize="20"/>
                 </StackPanel>
             </StackPanel>
