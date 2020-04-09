@@ -33,6 +33,34 @@ export class AccountController {
 
         /**
          * @swagger
+         * /account/setAvatar:
+         *  post:
+         *    description: Use to set or change the avatarof an existing user
+         *    responses:
+         *      '200':
+         *          description: A successful response
+         */
+        this.router.post('/avatar', async (req: Request, res: Response, next: NextFunction) => {
+            res.json(await this.accountService.setAvatar(req.body));
+        });
+
+        /**
+         * @swagger
+         * /account/getAvatar:
+         *  get:
+         *    description: Use to get the avatar of an existing user
+         *    responses:
+         *      '200':
+         *          description: A successful response
+         */
+        this.router.get('/avatar/:username', async (req: Request, res: Response, next: NextFunction) => {
+            this.accountService.getAvatar(req.params.username).then((result: string) => {
+                res.json(result);
+            });
+        });
+
+        /**
+         * @swagger
          * /account/login:
          *  post:
          *    description: Use to log a user

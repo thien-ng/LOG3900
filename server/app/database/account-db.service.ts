@@ -10,10 +10,26 @@ export class AccountDbService extends DatabaseService {
 
     public async registerAccount(registration: IRegistration): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT LOG3900.registerAccount(
-                                    CAST('${registration.username}' AS VARCHAR),
-                                    CAST('${registration.password}' AS VARCHAR),
-                                    CAST('${registration.firstName}' AS VARCHAR),
-                                    CAST('${registration.lastName}' AS VARCHAR));`);
+                                CAST('${registration.username}' AS VARCHAR),
+                                CAST('${registration.password}' AS VARCHAR),
+                                CAST('${registration.firstName}' AS VARCHAR),
+                                CAST('${registration.lastName}' AS VARCHAR));`).then((res) => {
+                if (registration.avatar) {
+                    return this.setAvatar(registration.username, registration.avatar);
+                }
+                return res
+            });
+    }
+
+    public async setAvatar(username: string, avatar: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.setAvatar(
+                                    CAST('${username}' AS VARCHAR),
+                                    CAST('${avatar}' AS TEXT));`);
+    }
+
+    public async getAvatar(username: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.getAvatar(
+            CAST('${username}' AS VARCHAR));`);
     }
 
     public async loginAccount(login: ILogin): Promise<pg.QueryResult> {

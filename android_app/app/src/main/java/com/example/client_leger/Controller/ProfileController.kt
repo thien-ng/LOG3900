@@ -18,7 +18,7 @@ class ProfileController {
             Constants.SERVER_URL + Constants.USER_INFO_ENDPOINT + username,
             null,
             Response.Listener { response ->
-                fragment.binding.user = User(username, response.getString("firstName"), response.getString("lastName"), response.getJSONArray("connections"))
+                fragment.binding.user = User(username, response.getString("firstName"), response.getString("lastName"), response.getJSONArray("connections"),response.getJSONObject("stats"), response.getJSONArray("games"))
                 (0 until fragment.binding!!.user!!.connections!!.length()).forEach { i ->
                     var item = fragment.binding!!.user!!.connections.getJSONObject(i)
                     if(item.getBoolean("isLogin")) {
@@ -27,7 +27,10 @@ class ProfileController {
                         fragment.adapter.addLoggedOut(item.getString("times"))
                     }
 
-                    fragment.adapter.getItemViewType(i)
+                }
+                (0 until fragment.binding!!.user!!.games!!.size).forEach { i ->
+                    var item = fragment.binding!!.user!!.games[i]
+                    fragment.adapterMatchHistory.addItem(item)
                 }
             }, Response.ErrorListener{
                     error ->
