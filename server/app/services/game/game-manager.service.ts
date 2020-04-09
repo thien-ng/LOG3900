@@ -52,7 +52,7 @@ export class GameManagerService {
                 maxAmount = 9;
                 break;
             case GameMode.COOP:
-                minAmount = 2;
+                minAmount = 1;
                 maxAmount = 4;
                 break;
             case GameMode.SOLO:
