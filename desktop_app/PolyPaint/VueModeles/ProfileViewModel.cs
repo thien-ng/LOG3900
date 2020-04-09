@@ -97,7 +97,6 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-
                 MessageBox.Show("failed to retrieve stats");
             }
 
