@@ -231,7 +231,7 @@ export class ChatService {
         this.channelMapUsersList.delete(channel);
         this.userServ.getUsers().forEach((u: IUser) => {
             this.socket.to(u.socketId).emit("channel-delete", {
-                channel: String
+                channel: channel
             })
         });
     }

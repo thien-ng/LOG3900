@@ -71,3 +71,8 @@
 | game-over      | emit when it's end of the game                         | [{username: string, points: number}, {...}, ...]                                              |
 | game-guessLeft | emit when sending amount of guess left in sprints      | {guessLeft: number}                                                                           |
 | game-points    | emit when user has found the right answer              | {point: number}                                                                               |
+
+\##Chat
+| Event            | Description         | Object                |
+\| ---------------- \| ------------------- \| --------------------- \|
+| channel-delete   | when a channel is deleted | {channel: string}|
