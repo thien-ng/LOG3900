@@ -145,6 +145,13 @@ CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_un VARCHAR(20), in_ch
     END;
 $$LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION LOG3900.deleteChannel(delete_channel_id VARCHAR(20)) RETURNS VOID AS $$
+    BEGIN
+        DELETE FROM LOG3900.Channel
+        WHERE LOG3900.Channel.id = delete_channel_id;
+    END;
+$$LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION LOG3900.insertChannelMessage(in_channel_id VARCHAR(20), in_account_id INT, in_content TEXT, in_ts VARCHAR(8)) RETURNS VOID AS $$
     DECLARE
         last_id INT;

@@ -24,8 +24,8 @@ export class ChatService {
     private usernameMapSocketId: Map<string, string>;
 
     public constructor(
-            @inject(Types.ChatDbService)      private db:       ChatDbService,
-            @inject(Types.UserManagerService) private userServ: UserManagerService) {
+        @inject(Types.ChatDbService) private db: ChatDbService,
+        @inject(Types.UserManagerService) private userServ: UserManagerService) {
         this.channelMapUsersList = new Map<string, IUser[]>();
         this.usernameMapUserId = new Map<string, number>();
         this.usernameMapSocketId = new Map<string, string>();
@@ -155,10 +155,10 @@ export class ChatService {
             if (isNew === 1) {
                 users.forEach(u => {
                     if (u.username !== join.username)
-                        this.socket.to(u.socketId).emit("channel-new", {id: join.channel});
+                        this.socket.to(u.socketId).emit("channel-new", { id: join.channel });
                 });
             }
-            
+
             this.updateUserToChannels(join.username, join.channel, true);
         } catch (e) {
             result.status = 400
@@ -217,8 +217,13 @@ export class ChatService {
         const userList = this.channelMapUsersList.get(channel);
 
         if (userList) {
-            const newList = userList.filter(u => u.username !== username);
+            const newList: IUser[] = userList.filter(u => u.username !== username);
             this.channelMapUsersList.set(channel, newList);
+            if (newList.length < 1) {
+                //delete the channel since nobody in here anymore
+                this.db.deleteChannel(channel);
+                this.channelMapUsersList.delete(channel);
+            }
         }
     }
 
