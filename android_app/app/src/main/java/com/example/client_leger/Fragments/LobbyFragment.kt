@@ -36,10 +36,12 @@ class LobbyFragment : Fragment(),
         username = activity!!.intent.getStringExtra("username")
         val bundle = this.arguments
         lobbyName = ""
+        var mode = ""
         if (bundle != null) {
-            lobbyName = bundle.getString("lobbyName")
+            lobbyName = bundle.getString("lobbyName")!!
+            mode = bundle.getString("mode")!!
         }
-        gameController.getUsers(this, lobbyName)
+        gameController.getUsers(this, lobbyName, mode)
 
         userListAdapter = UserListViewAdapter(this)
         var listview = v.findViewById<ListView>(R.id.userlist)
@@ -102,7 +104,7 @@ class LobbyFragment : Fragment(),
             .addToBackStack(fragment.toString()).commit()
     }
 
-    fun loadUsers(userJsonArray: JSONArray) {
+    fun loadUsers(userJsonArray: JSONArray, mode: String) {
         for (i in 0 until userJsonArray.length()) {
             if(userJsonArray.get(i).toString().startsWith("bot:")){
                 userListAdapter.addBot(userJsonArray.get(i).toString())
@@ -117,21 +119,23 @@ class LobbyFragment : Fragment(),
                 startButton.isEnabled = true
                 startButton.setOnClickListener { startGame(lobbyName) }
 
-                addBotButton.visibility = View.VISIBLE
-                addBotButton.isEnabled = true
-                addBotButton.setOnClickListener {
-                    val builder = AlertDialog.Builder(context)
-                    val bots = arrayOf("bot:olivier", "bot:sebastien", "bot:olivia")
-                    builder.setTitle("Select your bot")
-                    builder.setSingleChoiceItems(bots,-1){dialogInterface,i->
-                        addBot(bots[i])
-                        dialogInterface.dismiss()
+                if (mode == "FFA") {
+                    addBotButton.visibility = View.VISIBLE
+                    addBotButton.isEnabled = true
+                    addBotButton.setOnClickListener {
+                        val builder = AlertDialog.Builder(context)
+                        val bots = arrayOf("bot:olivier", "bot:sebastien", "bot:olivia")
+                        builder.setTitle("Select your bot")
+                        builder.setSingleChoiceItems(bots,-1){dialogInterface,i->
+                            addBot(bots[i])
+                            dialogInterface.dismiss()
+                        }
+                        builder.setNeutralButton("Cancel"){dialog,_->
+                            dialog.cancel()
+                        }
+                        val mDialog = builder.create()
+                        mDialog.show()
                     }
-                    builder.setNeutralButton("Cancel"){dialog,_->
-                        dialog.cancel()
-                    }
-                    val mDialog = builder.create()
-                    mDialog.show()
                 }
             } else {
                 leaveButton.visibility = View.VISIBLE
