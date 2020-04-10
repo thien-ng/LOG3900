@@ -224,6 +224,7 @@ namespace PolyPaint.VueModeles
             _lobbyInvitedTo = "";
 
             ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
+            ServerService.instance.socket.On("channel-delete", data => RemoveUnsubChannel((JObject)data));
             ServerService.instance.socket.On("lobby-invitation", data => processLobbyInvite((JObject)data));
         }
 
@@ -410,6 +411,22 @@ namespace PolyPaint.VueModeles
             App.Current.Dispatcher.Invoke(delegate
             {
                 _notSubChannels.Add(newChannel);
+            });
+        }
+
+        private void RemoveUnsubChannel(JObject channelMes)
+        {
+            string channelId = channelMes.GetValue("channel").ToString();
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                try 
+                { 
+                    _notSubChannels.Remove(_notSubChannels.Where(i => i.id == channelId).Single());
+                }
+                catch(InvalidOperationException e) 
+                {
+                    // Fade away silently
+                }
             });
         }
 
