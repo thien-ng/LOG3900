@@ -13,7 +13,8 @@
             android:textSize="32sp"
             app:layout_constraintBottom_toTopOf="@+id/textView_Description"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
             android:id="@+id/textView_Description"
@@ -23,18 +24,19 @@
             android:text="description"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/userlist"
-            app:layout_constraintStart_toStartOf="@+id/textView_gameModeName" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     <Button
             android:id="@+id/button_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="44dp"
-            android:layout_marginEnd="38dp"
-            android:layout_marginRight="38dp"
-            android:visibility="invisible"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginRight="30dp"
             android:enabled="false"
             android:text="Start"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,13 +44,14 @@
             android:id="@+id/button_leave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginLeft="30dp"
             android:layout_marginTop="20dp"
             android:enabled="true"
             android:text="Leave"
             android:visibility="visible"
             app:backgroundTint="@color/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/userlist"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,6 +59,10 @@
             android:id="@+id/userlist"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:layout_marginStart="38dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginEnd="38dp"
+            android:layout_marginRight="38dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_start" />
