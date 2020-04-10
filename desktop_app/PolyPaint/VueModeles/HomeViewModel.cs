@@ -6,6 +6,7 @@ using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
@@ -209,6 +210,7 @@ namespace PolyPaint.VueModeles
 
             _subChannels = new ObservableCollection<MessageChannel>();
             _notSubChannels = new ObservableCollection<MessageChannel>();
+            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
 
             FetchChannels();
             
@@ -218,7 +220,6 @@ namespace PolyPaint.VueModeles
             _isNotInLobby = true;
             _frontEnabled = false;
             _backEnabled = false;
-            _selectedChannel = new ChatRoom(Constants.DEFAULT_CHANNEL, false);
             _searchString = "";
             _lobbyInvitedTo = "";
 
@@ -258,11 +259,12 @@ namespace PolyPaint.VueModeles
         }
 
 
-        private void goToLobbyView(object lobbyname)
+        private void goToLobbyView(object lobbyData)
         {
             IsNotInLobby = false;
-            LobbyViewModel = new LobbyViewModel((string)lobbyname);
-            this.Lobbyname = (string)lobbyname;
+            Dictionary<string, string> data = new Dictionary<string, string>((Dictionary<string, string>)lobbyData);
+            LobbyViewModel = new LobbyViewModel(data["lobbyName"], data["mode"]);
+            this.Lobbyname = data["lobbyName"];
             string lobbyChannel = Constants.LOBBY_CHANNEL + this.Lobbyname;
             SwitchView = Views.Lobby;
             Application.Current.Dispatcher.Invoke(delegate
@@ -272,7 +274,7 @@ namespace PolyPaint.VueModeles
             ChangeChannel(lobbyChannel);
         }
 
-        private void FetchChannels()
+        public void FetchChannels()
         {
             Application.Current.Dispatcher.Invoke(async delegate
             {
@@ -287,7 +289,10 @@ namespace PolyPaint.VueModeles
                  ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
 
                  ChangeChannel(Constants.DEFAULT_CHANNEL);
+                _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
+
             });
+
         }
 
         private async void ProcessChannelRequest(HttpResponseMessage response, ObservableCollection<MessageChannel> list, bool isSubbed)
@@ -317,7 +322,7 @@ namespace PolyPaint.VueModeles
             string channelId = (string)id;
 
 
-            if (channelId != _selectedChannel.ID)
+            if (channelId != _selectedChannel.ID || channelId == Constants.DEFAULT_CHANNEL)
             {
                 MessageChannel channel;
 
