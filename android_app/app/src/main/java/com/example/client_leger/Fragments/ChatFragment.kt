@@ -233,11 +233,15 @@ class ChatFragment: Fragment() {
     }
 
     private fun addGameChannel() {
-        channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
+        activity!!.runOnUiThread {
+            channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
+        }
     }
 
     private fun addLobbyChannel() {
-        channelAdapter.add(ChannelItem(LOBBY_CHANNEL_ID, true, controller, this))
+        activity!!.runOnUiThread {
+            channelAdapter.add(ChannelItem(LOBBY_CHANNEL_ID, true, controller, this))
+        }
     }
 
     private fun sendInput(v: View) {
