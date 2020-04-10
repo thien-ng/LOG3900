@@ -43,7 +43,7 @@ export class CreationAssist2 {
                 if(j > 0)
                     ctx.lineTo(x, y);
                     
-                points.push({x: x*3 + 120, y: y*3 + 120});
+                points.push({x: x*2 + 120, y: y*2 + 120});
             }
             ctx.stroke();
             points = this.dilate(points);
