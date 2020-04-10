@@ -457,6 +457,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun checkPointForErase(pointX: Int, pointY: Int, isStroke: Boolean): Boolean {
         var strokeFound = false
 
+        if (bitmap.getPixel(pointX, pointY) == Color.WHITE) {
+            return false
+        }
+
         synchronized(matrix) {
             for (segment in matrix[pointY / matrixSquareSize][pointX / matrixSquareSize]) {
                 if (segment.paint.color == Color.TRANSPARENT) {
