@@ -133,15 +133,25 @@ CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_un VARCHAR(20), in_cha
 $$LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS INTEGER AS $$
     DECLARE
         delete_id INTEGER;
+        num_sub   INTEGER;
+        is_delete INTEGER;
     BEGIN
         SELECT account.id FROM log3900.account WHERE username = in_account_un INTO delete_id;
 
         DELETE FROM LOG3900.accountChannel as acc
         WHERE acc.account_id = delete_id
         AND acc.channel_id = in_channel_id;
+
+        SELECT COUNT(ac.account_id) FROM LOG3900.accountChannel as ac WHERE ac.channel_id = in_channel_id INTO num_sub;
+        is_delete = 0;
+        IF num_sub = 0 THEN
+            is_delete = 1;
+        END IF;
+
+        RETURN is_delete;
     END;
 $$LANGUAGE plpgsql;
 

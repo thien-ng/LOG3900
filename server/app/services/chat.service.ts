@@ -181,7 +181,14 @@ export class ChatService {
             if (leave.channel === "general")
                 throw new Error(`cannot leave default channel: ${leave.channel}.`);
 
-            await this.db.leaveChannel(leave.username, leave.channel);
+            const isDelete = (await this.db.leaveChannel(leave.username, leave.channel)).rows[0].leavechannel;
+            if (isDelete === 1) {
+                this.userServ.getUsers().forEach((u: IUser) => {
+                    this.socket.to(u.socketId).emit("channel-delete", {channel: leave.channel})
+                });
+                this.db.deleteChannel(leave.channel);
+            }
+
             this.updateUserToChannels(leave.username, leave.channel, false);
         } catch (e) {
             result.status = 400
@@ -219,21 +226,7 @@ export class ChatService {
         if (userList) {
             const newList: IUser[] = userList.filter(u => u.username !== username);
             this.channelMapUsersList.set(channel, newList);
-            if (newList.length < 1) {
-                //delete the channel since nobody in here anymore
-                this.deleteChannel(channel);
-            }
         }
-    }
-
-    private deleteChannel(channel: string) {
-        this.db.deleteChannel(channel);
-        this.channelMapUsersList.delete(channel);
-        this.userServ.getUsers().forEach((u: IUser) => {
-            this.socket.to(u.socketId).emit("channel-delete", {
-                channel: channel
-            })
-        });
     }
 
     public async getChannelsNotSubWithAccountName(username: string): Promise<IChannelIds[]> {
