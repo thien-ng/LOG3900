@@ -15,6 +15,7 @@ import android.widget.PopupWindow
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.example.client_leger.Communication.Communication
+import com.example.client_leger.Communication.Communication.getGameClearListener
 import com.example.client_leger.R
 import com.example.client_leger.SocketIO
 import io.reactivex.rxjava3.disposables.Disposable
@@ -167,6 +168,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var strokeJustEnded = true
     private var drawListener: Disposable
     private var roleListener: Disposable
+    private var clearListener: Disposable
     private var drawerSub: Disposable
     private val matrixSquareSize = 100  //todo: test with smaller size
     private var lastErasePoint: Point? = null
@@ -182,15 +184,19 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         paintLine.strokeWidth = 16.0F
         paintLine.strokeCap = Paint.Cap.ROUND
 
-        drawListener = Communication.getDrawListener().subscribe{ obj ->
+        drawListener = Communication.getDrawListener().subscribe { obj ->
             strokeReceived(obj)
         }
 
-        roleListener = Communication.getDrawerUpdateListener().subscribe{
+        roleListener = Communication.getDrawerUpdateListener().subscribe {
             clearStrokes()
         }
 
-        drawerSub = Communication.getDrawerUpdateListener().subscribe{res ->
+        clearListener = getGameClearListener().subscribe {
+            clearStrokes()
+        }
+
+        drawerSub = Communication.getDrawerUpdateListener().subscribe { res ->
             isDrawer = res.getString("username") == username
         }
     }
