@@ -170,7 +170,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var roleListener: Disposable
     private var clearListener: Disposable
     private var drawerSub: Disposable
-    private val matrixSquareSize = 40
+    private val matrixSquareSize = 20
     private var lastErasePoint: Point? = null
     private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
@@ -550,6 +550,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private fun strokeReceived(obj: JSONObject) {
         when {
             obj.getString("type") == "ink" -> {
+                if (isDrawer) {
+                    return
+                }
+
                 if (obj.getBoolean("isEnd")) {
                     strokeJustEnded = true
                     return
