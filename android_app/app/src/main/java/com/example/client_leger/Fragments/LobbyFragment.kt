@@ -60,7 +60,9 @@ class LobbyFragment : Fragment(),
 
                     if (username != user) {
                         activity!!.runOnUiThread {
-                            userListAdapter.addUser(user)
+                            if(user.startsWith("bot:")){
+                                userListAdapter.addBot(user)
+                            }else userListAdapter.addUser(user)
                         }
                     }
                 }
@@ -68,7 +70,9 @@ class LobbyFragment : Fragment(),
                     val user = mes.getString("username")
                     if(user != username) {
                         activity!!.runOnUiThread {
-                            userListAdapter.removeUser(user)
+                            if(user.startsWith("bot:")){
+                                userListAdapter.removeUser(user)
+                            }else userListAdapter.removeUser(user)
                         }
                     }
                 }
@@ -100,7 +104,9 @@ class LobbyFragment : Fragment(),
 
     fun loadUsers(userJsonArray: JSONArray) {
         for (i in 0 until userJsonArray.length()) {
-            usernames.add(userJsonArray.get(i).toString())
+            if(userJsonArray.get(i).toString().startsWith("bot:")){
+                userListAdapter.addBot(userJsonArray.get(i).toString())
+            }else usernames.add(userJsonArray.get(i).toString())
         }
         if (usernames.isNotEmpty()) {
             var startButton = v.findViewById<Button>(R.id.button_start)
