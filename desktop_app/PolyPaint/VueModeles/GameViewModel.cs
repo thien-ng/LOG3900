@@ -21,10 +21,12 @@ namespace PolyPaint.VueModeles
             DrawViewModel = new DessinViewModel();
             _points = new ObservableCollection<PointsDisplay>();
             _myPoints = "0";
+            DrawViewModel.IsDrawer = false;
             ServerService.instance.socket.On("game-drawer", data => processRole((JObject)data));
             ServerService.instance.socket.On("game-timer", data => processTime((JObject)data));
             ServerService.instance.socket.On("game-over", data => processEndGame((JObject)data));
             ServerService.instance.socket.On("game-points", data => processPoints((JObject)data));
+            ServerService.instance.socket.On("game-clear", processClear);
         }
 
         #region Public Attributes
@@ -113,7 +115,14 @@ namespace PolyPaint.VueModeles
                 ObjectToDraw = "";
                 DrawViewModel.IsDrawer = false;
             }
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                DrawViewModel.Traits.Clear();
+            });
+        }
 
+        private void processClear()
+        {
             App.Current.Dispatcher.Invoke(delegate
             {
                 DrawViewModel.Traits.Clear();
