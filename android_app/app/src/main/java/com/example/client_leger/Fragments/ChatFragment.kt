@@ -42,6 +42,7 @@ class ChatFragment: Fragment() {
 
     private lateinit var chatListener: Disposable
     private lateinit var channelListener: Disposable
+    private lateinit var channelRemovedListener: Disposable
     private lateinit var startGameSub: Disposable
     private lateinit var endGameSub: Disposable
     private lateinit var gameChatSub: Disposable
@@ -214,6 +215,8 @@ class ChatFragment: Fragment() {
 
         channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
             notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
+        channelRemovedListener = Communication.getChannelRemovedUpdateListener().subscribe{
+            controller.loadChannels(this)
         }
 
         v.recyclerView_chat_log.adapter = messageAdapter
