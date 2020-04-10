@@ -552,13 +552,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun strokeReceived(obj: JSONObject) {
-        if (!isValidPoint(obj.getInt("startPosX"), obj.getInt("startPosY")) ||
-            !isValidPoint(obj.getInt("endPosX"), obj.getInt("endPosY"))) {
-            strokeJustEnded = true
-            return
-        }
-
-
         when {
             obj.getString("type") == "ink" -> {
                 if (obj.getBoolean("isEnd")) {
@@ -568,6 +561,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
                 if (strokeJustEnded) {
                     bitmapNeedsToUpdate = true
+                }
+
+                if (!isValidPoint(obj.getInt("startPosX"), obj.getInt("startPosY")) ||
+                    !isValidPoint(obj.getInt("endPosX"), obj.getInt("endPosY"))) {
+                    strokeJustEnded = true
+                    return
                 }
 
                 paintLine.isAntiAlias = true
@@ -588,6 +587,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 )
             }
             obj.getString("type") == "eraser" -> {
+                if (!isValidPoint(obj.getInt("x"), obj.getInt("y"))) {
+                    return
+                }
                 checkForStrokesToErase(
                     obj.getInt("x"),
                     obj.getInt("y"),
