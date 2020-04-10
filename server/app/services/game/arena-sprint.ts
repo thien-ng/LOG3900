@@ -94,8 +94,6 @@ export class ArenaSprint extends Arena {
         }
 
         if (this.isRightAnswer(mes.content)) {
-            // clearInterval(this.drawerBot.interval);
-
             //add time,
             this.timeRemaining += this.timePerImage;
 
