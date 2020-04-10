@@ -110,7 +110,7 @@ class ConnexionController {
             Request.Method.GET,
             Constants.SERVER_URL + messageRoute,
             null,
-            Response.Listener<JSONArray>{ response ->
+            Response.Listener { response ->
                 if (response.length() > 0) {
                     activity.showLoadHistoryButton()
                 } else {
@@ -136,7 +136,7 @@ class ConnexionController {
             Request.Method.GET,
             Constants.SERVER_URL + "/chat/messages/" + activity.channelId,
             null,
-            Response.Listener<JSONArray>{ response ->
+            Response.Listener { response ->
                 activity.messageAdapter.clear()
                 activity.receiveMessages(activity.messageAdapter, activity.username, response, activity.channelId)
                 activity.recyclerViewChatLog.scrollToPosition(activity.messageAdapter.itemCount -1)
@@ -160,7 +160,7 @@ class ConnexionController {
             Request.Method.GET,
             Constants.SERVER_URL + "/game/lobby/messages/" + activity.lobbyName,
             null,
-            Response.Listener<JSONArray>{ response ->
+            Response.Listener { response ->
                 activity.messageAdapter.clear()
                 activity.receiveMessages (
                     activity.messageAdapter,
@@ -190,7 +190,7 @@ class ConnexionController {
             Request.Method.GET,
             Constants.SERVER_URL + "/game/arena/messages/" + activity.username,
             null,
-            Response.Listener<JSONArray>{ response ->
+            Response.Listener { response ->
                 activity.messageAdapter.clear()
                 activity.receiveMessages (
                     activity.messageAdapter,
@@ -212,14 +212,14 @@ class ConnexionController {
         requestQueue.add(jsonArrayRequest)
     }
 
-    private fun joinChannel(activity: ChatFragment, channelId: String) {
+    fun joinChannel(activity: ChatFragment, channelId: String) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.PUT,
             Constants.SERVER_URL + "/chat/channels/join/" + activity.username + "/" + channelId ,
             null,
-            Response.Listener<JSONObject>{
+            Response.Listener {
                 activity.setChannel(channelId)
             },Response.ErrorListener{ error ->
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
@@ -235,7 +235,7 @@ class ConnexionController {
             Request.Method.DELETE,
             Constants.SERVER_URL + "/chat/channels/leave/" + activity.username + "/" + channelId ,
             null,
-            Response.Listener<JSONObject>{
+            Response.Listener {
                 if (activity.channelId == channelId) {
                     activity.setChannel(Constants.DEFAULT_CHANNEL_ID)
                 }
@@ -256,35 +256,39 @@ class ConnexionController {
     fun loadChannels(activity: ChatFragment, search: String? = null) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
-        if (search.isNullOrBlank()){
+        if (search.isNullOrBlank()) {
             val subRequest = JsonArrayRequest(
                 Request.Method.GET,
                 Constants.SERVER_URL + "/chat/channels/sub/" + activity.username ,
                 null,
-                Response.Listener<JSONArray>{response ->
+                Response.Listener{response ->
 
-                    if (activity.inGame) {
-                        val channelsToRemove = GroupAdapter<ViewHolder>()
-                        for ( view in 0 until activity.channelAdapter.itemCount) {
-                            if (activity.channelAdapter.getItem(view).toString() != GAME_CHANNEL_ID) {
-                                channelsToRemove.add(activity.channelAdapter.getItem(view))
+                    when {
+                        activity.inGame -> {
+                            val channelsToRemove = GroupAdapter<ViewHolder>()
+                            for ( view in 0 until activity.channelAdapter.itemCount) {
+                                if (activity.channelAdapter.getItem(view).toString() != GAME_CHANNEL_ID) {
+                                    channelsToRemove.add(activity.channelAdapter.getItem(view))
+                                }
+                            }
+                            for (view in 0 until channelsToRemove.itemCount) {
+                                activity.channelAdapter.remove(channelsToRemove.getItem(view))
                             }
                         }
-                        for (view in 0 until channelsToRemove.itemCount) {
-                            activity.channelAdapter.remove(channelsToRemove.getItem(view))
-                        }
-                    } else if (activity.inLobby){
-                        val channelsToRemove = GroupAdapter<ViewHolder>()
-                        for ( view in 0 until activity.channelAdapter.itemCount) {
-                            if (activity.channelAdapter.getItem(view).toString() != LOBBY_CHANNEL_ID) {
-                                channelsToRemove.add(activity.channelAdapter.getItem(view))
+                        activity.inLobby -> {
+                            val channelsToRemove = GroupAdapter<ViewHolder>()
+                            for ( view in 0 until activity.channelAdapter.itemCount) {
+                                if (activity.channelAdapter.getItem(view).toString() != LOBBY_CHANNEL_ID) {
+                                    channelsToRemove.add(activity.channelAdapter.getItem(view))
+                                }
+                            }
+                            for (view in 0 until channelsToRemove.itemCount) {
+                                activity.channelAdapter.remove(channelsToRemove.getItem(view))
                             }
                         }
-                        for (view in 0 until channelsToRemove.itemCount) {
-                            activity.channelAdapter.remove(channelsToRemove.getItem(view))
+                        else -> {
+                            activity.channelAdapter.clear()
                         }
-                    } else {
-                        activity.channelAdapter.clear()
                     }
 
                     for (i in 0 until response.length()) {
@@ -307,7 +311,7 @@ class ConnexionController {
                 Request.Method.GET,
                 Constants.SERVER_URL + "/chat/channels/notsub/" + activity.username ,
                 null,
-                Response.Listener<JSONArray>{response ->
+                Response.Listener {response ->
                     activity.notSubChannelAdapter.clear()
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)
@@ -327,7 +331,7 @@ class ConnexionController {
                 Request.Method.GET,
                 Constants.SERVER_URL + "/chat/channels/search/" + activity.username + "/" + search,
                 null,
-                Response.Listener<JSONArray>{response ->
+                Response.Listener {response ->
                     activity.channelAdapter.clear()
                     activity.notSubChannelAdapter.clear()
 
@@ -353,5 +357,4 @@ class ConnexionController {
             requestQueue.add(subRequest)
         }
     }
-
 }
