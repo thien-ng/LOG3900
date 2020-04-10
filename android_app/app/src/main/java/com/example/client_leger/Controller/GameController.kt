@@ -11,6 +11,7 @@ import com.example.client_leger.Constants
 import com.example.client_leger.Fragments.LobbyFragment
 import org.json.JSONObject
 
+
 class GameController {
 
     fun startGame(fragment: LobbyFragment, lobbyName: String) {
@@ -19,9 +20,9 @@ class GameController {
         val jsonObjectRequest = StringRequest(
             Request.Method.GET,
             Constants.SERVER_URL + Constants.START_GAME_ENDPOINT + lobbyName,
-            Response.Listener {response ->
+            Response.Listener {
                 // do nothing
-            }, Response.ErrorListener { error ->
+            }, Response.ErrorListener {
                 Toast.makeText(
                     fragment.context,
                     "Not enough players",
@@ -32,7 +33,7 @@ class GameController {
         requestQueue.add(jsonObjectRequest)
     }
 
-    fun getUsers(fragment: LobbyFragment, lobbyName: String) {
+    fun getUsers(fragment: LobbyFragment, lobbyName: String, mode: String) {
         val requestQueue = Volley.newRequestQueue(fragment.context)
 
         val jsonArrayRequest = JsonArrayRequest(
@@ -40,7 +41,7 @@ class GameController {
             Constants.SERVER_URL + Constants.USERS_LOBBY_ENDPOINT + lobbyName,
             null,
             Response.Listener { response ->
-                fragment.loadUsers(response)
+                fragment.loadUsers(response, mode)
             }, Response.ErrorListener { error ->
                 Toast.makeText(
                     fragment.context,

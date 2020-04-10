@@ -9,6 +9,9 @@
             android:id="@+id/timer"
             android:layout_width="137dp"
             android:layout_height="72dp"
+            android:textSize="24sp"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -18,7 +21,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:text="Your word to draw:"
             app:layout_constraintStart_toEndOf="@+id/timer"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,7 +30,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            android:text="Your role:"
             app:layout_constraintStart_toEndOf="@+id/item"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,7 +40,6 @@
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
-            android:text="Your points: 0"
             app:layout_constraintStart_toEndOf="@+id/timer"
             app:layout_constraintTop_toBottomOf="@+id/item" />
 

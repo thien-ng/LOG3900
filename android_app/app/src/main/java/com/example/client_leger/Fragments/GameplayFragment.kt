@@ -117,10 +117,12 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
         }
 
         popupWindow.showAtLocation(rankingView, Gravity.CENTER, 0, 0)
+        rankingView.button_ok.isEnabled = true
 
         rankingView.button_ok.setOnClickListener {
             popupWindow.dismiss()
             replaceFragment(LobbyCardsFragment())
+            rankingView.visibility = View.GONE
         }
     }
 

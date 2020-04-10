@@ -24,30 +24,30 @@ class LobbyFragment : Fragment(),
     private lateinit var username: String
     private lateinit var lobbyName: String
     private var usernames: ArrayList<String> = arrayListOf()
-
-    lateinit var v: View
-
-    lateinit var userListAdapter: UserListViewAdapter
-    lateinit var startListener: Disposable
-    lateinit var lobbyNotifSub: Disposable
+    private lateinit var v: View
+    private lateinit var userListAdapter: UserListViewAdapter
+    private lateinit var startListener: Disposable
+    private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         v = inflater.inflate(R.layout.fragment_lobby, container, false)
         username = activity!!.intent.getStringExtra("username")
         val bundle = this.arguments
         lobbyName = ""
+        var mode = ""
         if (bundle != null) {
-            lobbyName = bundle.getString("lobbyName")
+            lobbyName = bundle.getString("lobbyName")!!
+            mode = bundle.getString("mode")!!
         }
-        gameController.getUsers(this, lobbyName)
+        gameController.getUsers(this, lobbyName, mode)
 
         userListAdapter = UserListViewAdapter(this)
-        var listview = v.findViewById<ListView>(R.id.userlist)
+        val listview = v.findViewById<ListView>(R.id.userlist)
         listview.adapter = userListAdapter
 
 
 
-        startListener = Communication.getGameStartListener().subscribe { res ->
+        startListener = Communication.getGameStartListener().subscribe {
             activity!!.runOnUiThread {
                 replaceFragment(GameplayFragment())
             }
@@ -84,6 +84,7 @@ class LobbyFragment : Fragment(),
     override fun onDestroy() {
         super.onDestroy()
         startListener.dispose()
+        lobbyNotifSub.dispose()
     }
 
     private fun startGame(lobbyName: String) {
@@ -91,7 +92,7 @@ class LobbyFragment : Fragment(),
     }
 
     private fun leaveGame(lobbyName: String) {
-        var body = JSONObject()
+        val body = JSONObject()
         body.put("lobbyName", lobbyName)
         body.put("username", username)
         gameController.leaveGame(this, body)
@@ -102,36 +103,38 @@ class LobbyFragment : Fragment(),
             .addToBackStack(fragment.toString()).commit()
     }
 
-    fun loadUsers(userJsonArray: JSONArray) {
+    fun loadUsers(userJsonArray: JSONArray, mode: String) {
         for (i in 0 until userJsonArray.length()) {
             if(userJsonArray.get(i).toString().startsWith("bot:")){
                 userListAdapter.addBot(userJsonArray.get(i).toString())
             }else usernames.add(userJsonArray.get(i).toString())
         }
         if (usernames.isNotEmpty()) {
-            var startButton = v.findViewById<Button>(R.id.button_start)
-            var leaveButton = v.findViewById<Button>(R.id.button_leave)
-            var addBotButton = v.findViewById<Button>(R.id.button_addBot)
+            val startButton = v.findViewById<Button>(R.id.button_start)
+            val leaveButton = v.findViewById<Button>(R.id.button_leave)
+            val addBotButton = v.findViewById<Button>(R.id.button_addBot)
             if (usernames[0] == username) {
                 startButton.visibility = View.VISIBLE
                 startButton.isEnabled = true
                 startButton.setOnClickListener { startGame(lobbyName) }
 
-                addBotButton.visibility = View.VISIBLE
-                addBotButton.isEnabled = true
-                addBotButton.setOnClickListener {
-                    val builder = AlertDialog.Builder(context)
-                    val bots = arrayOf("bot:olivier", "bot:sebastien", "bot:olivia")
-                    builder.setTitle("Select your bot")
-                    builder.setSingleChoiceItems(bots,-1){dialogInterface,i->
-                        addBot(bots[i])
-                        dialogInterface.dismiss()
+                if (mode == "FFA") {
+                    addBotButton.visibility = View.VISIBLE
+                    addBotButton.isEnabled = true
+                    addBotButton.setOnClickListener {
+                        val builder = AlertDialog.Builder(context)
+                        val bots = arrayOf("bot:olivier", "bot:sebastien", "bot:olivia")
+                        builder.setTitle("Select your bot")
+                        builder.setSingleChoiceItems(bots,-1){dialogInterface,i->
+                            addBot(bots[i])
+                            dialogInterface.dismiss()
+                        }
+                        builder.setNeutralButton("Cancel"){dialog,_->
+                            dialog.cancel()
+                        }
+                        val mDialog = builder.create()
+                        mDialog.show()
                     }
-                    builder.setNeutralButton("Cancel"){dialog,_->
-                        dialog.cancel()
-                    }
-                    val mDialog = builder.create()
-                    mDialog.show()
                 }
             } else {
                 leaveButton.visibility = View.VISIBLE
@@ -143,7 +146,7 @@ class LobbyFragment : Fragment(),
     }
 
     private fun addBot(botName: String){
-        var lobby = JSONObject()
+        val lobby = JSONObject()
         lobby.put("username", botName)
         lobby.put("lobbyName", lobbyName)
         gameController.addBot(this, lobby)
@@ -151,7 +154,7 @@ class LobbyFragment : Fragment(),
     }
 
     fun removeBot(botName: String) {
-        var lobby = JSONObject()
+        val lobby = JSONObject()
         lobby.put("username", botName)
         lobby.put("lobbyName", lobbyName)
         gameController.removeBot(this, lobby)
