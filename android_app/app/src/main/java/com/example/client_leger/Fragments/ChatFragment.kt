@@ -127,6 +127,16 @@ class ChatFragment: Fragment() {
             activity!!.onBackPressed()
         }
 
+        v.collapse.setOnClickListener {
+            v.channelView.visibility = View.GONE
+            v.expand.visibility = View.VISIBLE
+            v.expand.isEnabled = true
+        }
+        v.expand.setOnClickListener {
+            v.expand.isEnabled = false
+            v.expand.visibility = View.GONE
+            v.channelView.visibility = View.VISIBLE
+        }
         chatListener = Communication.getChatMessageListener().subscribe{ receptMes ->
             val messages = JSONArray()
             messages.put(receptMes)
