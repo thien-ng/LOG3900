@@ -8,6 +8,7 @@ import { DrawingTools } from "./utils/drawing-tools";
 import * as bot from "./bots/bot";
 
 import * as io from 'socket.io';
+import { clearInterval } from "timers";
 
 const format = require('string-format');
 
@@ -24,7 +25,6 @@ export class ArenaSprint extends Arena {
     private pointsMult: number;
 
     private rulePtr: number;
-    private botInterval: NodeJS.Timeout;
     private drawerBot: bot.Bot;
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
@@ -58,7 +58,7 @@ export class ArenaSprint extends Arena {
 
     public startSubGame(): void {
 
-        this.resetSubGame();
+        this.initSubGame();
         this.curArenaInterval = setInterval(() => {
             console.log("[Debug] time remaining: ", this.timeRemaining);
 
@@ -94,6 +94,8 @@ export class ArenaSprint extends Arena {
         }
 
         if (this.isRightAnswer(mes.content)) {
+            clearInterval(this.drawerBot.interval);
+
             //add time,
             this.timeRemaining += this.timePerImage;
 
@@ -137,18 +139,26 @@ export class ArenaSprint extends Arena {
         }
     }
 
-    private resetSubGame(): void {
+    private initSubGame(): void {
         //show an image or build one.
-        clearInterval(this.botInterval);
-        this.botInterval = this.startBotDrawing(this.drawerBot.username, this.timePerImage);
+        this.startBotDrawing(this.drawerBot.username, this.timePerImage);
         
         this.assignRule();
 
         //reset guess left
         this.guessLeft = this.guessPerImage;
         this.socketServer.to(this.room).emit("game-guessLeft", { guessLeft: this.guessLeft });
-
     }
+
+    private resetSubGame(): void {
+        this.assignRule();
+        this.startBotDrawing(this.drawerBot.username, this.timePerImage);
+
+        //reset guess left
+        this.guessLeft = this.guessPerImage;
+        this.socketServer.to(this.room).emit("game-guessLeft", { guessLeft: this.guessLeft });
+    }
+
     protected handlePoints(): void {
         this.users.forEach(u => {
             if (!this.isUserDc(u.username)) // give points to all connected users
@@ -166,9 +176,9 @@ export class ArenaSprint extends Arena {
         this.socketServer.to(this.room).emit("game-points", {point: pts});
     }
 
-    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
+    protected startBotDrawing(botName: string, arenaTime: number): void {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
-        return this.drawerBot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
+        this.drawerBot.draw(this.room, arenaTime, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
     protected botAnnounceStart(): void {
