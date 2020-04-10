@@ -35,8 +35,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private lateinit var lobbyCards: ArrayList<Lobby>
     private lateinit var userList: ArrayList<String>
     private lateinit var spinnerGameModes: Spinner
-
-
     private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(
@@ -51,15 +49,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         lobbyCards = ArrayList()
         userList = ArrayList()
         userListAdapter = ArrayAdapter<String>(
-            context,
+            context!!,
             android.R.layout.simple_list_item_1,
             userList
         )
 
-
-
         recyclerViewGameCards = v.findViewById(R.id.recyclerView_gameCards)
-        var numberOfColumns = 2
+        val numberOfColumns = 2
         recyclerViewGameCards.layoutManager = GridLayoutManager(context, numberOfColumns)
         adapterLobbyCards =
             LobbyCardsRecyclerViewAdapter(
@@ -74,9 +70,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         buttonShowDialog.setOnClickListener { showDialog() }
 
         spinnerGameModes = v.findViewById(R.id.GameMode)
-        var gamemodes =
-            arrayListOf("Select Game Mode", "Free for all", "Sprint Solo", "Sprint Co-op")
-        var dataAdapter = ArrayAdapter(context, R.layout.gamemode_item, gamemodes)
+        val gamemodes = arrayListOf("Select Game Mode", "Free for all", "Sprint Solo", "Sprint Co-op")
+        val dataAdapter = ArrayAdapter(context!!, R.layout.gamemode_item, gamemodes)
         spinnerGameModes.adapter = dataAdapter
         spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -108,7 +103,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     if (username == user) {
                         val fragment = LobbyFragment()
                         val bundle = Bundle()
-                        bundle.putString("lobbyName", mes.getString("lobbyName"));
+                        bundle.putString("lobbyName", mes.getString("lobbyName"))
+                        bundle.putString("mode", mes.getString("mode"))
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
@@ -125,7 +121,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     if (username == user) {
                         val fragment = LobbyFragment()
                         val bundle = Bundle()
-                        bundle.putString("lobbyName", mes.getString("lobbyName"));
+                        bundle.putString("lobbyName", mes.getString("lobbyName"))
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
@@ -150,8 +146,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         return v
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        lobbyNotifSub.dispose()
+    }
+
     private fun showDialog() {
-        val d = Dialog(context)
+        val d = Dialog(context!!)
         d.setTitle("NumberPicker")
         d.setContentView(R.layout.dialog_createlobby)
         val np: NumberPicker = d.findViewById(R.id.np__numberpicker_input)
@@ -169,7 +170,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         val button: Button = d.findViewById(R.id.button_CreateLobby)
         button.setOnClickListener {
             if (validateLobbyFields(d)) {
-                var data = JSONObject()
+                val data = JSONObject()
                 data.put("username", username)
                 data.put("isPrivate", d.findViewById<Switch>(R.id.switch_private).isChecked)
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
@@ -209,7 +210,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             "JOIN"
         ) { dialog, _ ->
 
-            var lobby = JSONObject()
+            val lobby = JSONObject()
             lobby.put("username", username)
             lobby.put("isPrivate", true)
             lobby.put("lobbyName", adapterLobbyCards.getItem(adapterPosition).lobbyName)
@@ -228,7 +229,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun onJoinClick(view: View?, position: Int) {
-        var lobby = JSONObject()
+        val lobby = JSONObject()
         lobby.put("username", username)
         lobby.put("lobbyName", adapterLobbyCards.getItem(position).lobbyName)
         lobbyCardsController.joinLobby(this, lobby)

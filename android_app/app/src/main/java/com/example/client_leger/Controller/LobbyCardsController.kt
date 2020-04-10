@@ -14,6 +14,7 @@ import com.example.client_leger.models.Lobby
 import org.json.JSONArray
 import org.json.JSONObject
 
+
 class LobbyCardsController {
 
     fun joinLobby(activity: LobbyCardsFragment, body: JSONObject){
@@ -47,8 +48,8 @@ class LobbyCardsController {
             Request.Method.GET,
             Constants.SERVER_URL + Constants.ACTIVE_LOBBY_ENDPOINT + "/" + gameMode,
             null,
-            Response.Listener<JSONArray> { response ->
-                activity.loadLobbies(responseToLobbies(response, activity!!.context!!))
+            Response.Listener { response ->
+                activity.loadLobbies(responseToLobbies(response, activity.context!!))
             }, Response.ErrorListener { error ->
                 Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }
@@ -57,7 +58,7 @@ class LobbyCardsController {
     }
 
     private fun responseToLobbies(response: JSONArray, context: Context): ArrayList<Lobby>{
-        var lobbies = arrayListOf<Lobby>()
+        val lobbies = arrayListOf<Lobby>()
         for(i in 0 until response.length()){
             lobbies.add(Lobby(response.getJSONObject(i), context))
         }
