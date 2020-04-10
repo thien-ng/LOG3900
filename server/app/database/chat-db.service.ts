@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { DatabaseService } from "../database/database";
-import { IChannelMessageDB } from '../interfaces/chat'; 
+import { IChannelMessageDB } from '../interfaces/chat';
 import * as pg from "pg";
 
 @injectable()
@@ -58,10 +58,16 @@ export class ChatDbService extends DatabaseService {
                                     CAST('${account_id}' AS VARCHAR),
                                     CAST('${channel}'    AS VARCHAR));`);
     }
+
     public async leaveChannel(account_id: string, channel: string): Promise<pg.QueryResult> {
         return this.pool.query(`SELECT LOG3900.leaveChannel(
                                     CAST('${account_id}' AS VARCHAR),
                                     CAST('${channel}'    AS VARCHAR));`);
     }
 
-} 
+    public async deleteChannel(channel: string): Promise<pg.QueryResult> {
+        return this.pool.query(`SELECT LOG3900.deleteChannel(
+                                    CAST('${channel}'    AS VARCHAR));`);
+    }
+
+}

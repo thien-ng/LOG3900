@@ -158,7 +158,9 @@ describe("ChatService, Join/Leave", () => {
 
     it("Should leave channel successfully", async () => {
         //given
-        chai.spy.on(service["db"], "leaveChannel", () => { });
+        chai.spy.on(service["db"], "leaveChannel", () => {
+            return { rows: [{ leavechannel: 0 }] }
+        });
         chai.spy.on(service["db"], "getChannelsWithAccountName", () => {
             return { rows: [{ channel_id: "channel" }] }
         });
