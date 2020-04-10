@@ -160,6 +160,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var isStrokeErasing = false
     var isNormalErasing = false
     var isDrawer = false
+    private val eraserHalfSize = 4
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
     private var currentStartX = 0
@@ -281,7 +282,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val directionX = (destX - lastErasePoint!!.x) / distance
         val directionY = (destY - lastErasePoint!!.y) / distance
 
-        for (i in 0..distance.toInt()) {
+        for (i in 0..distance.toInt() step (eraserHalfSize * 4)) {
             val newX = (lastErasePoint!!.x + directionX * i).toInt()
             val newY = (lastErasePoint!!.y + directionY * i).toInt()
 
@@ -486,8 +487,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun checkForStrokesToErase(pointX: Int, pointY: Int, isStroke: Boolean) {
-        val eraserHalfSize = 4
-
         val strokeFound = (
             checkPointForErase(pointX, pointY, isStroke) ||
             checkPointForErase(pointX + eraserHalfSize, pointY, isStroke) ||
