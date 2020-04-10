@@ -191,8 +191,18 @@ class ChatFragment: Fragment() {
                     addLobbyChannel()
                     setChannel(LOBBY_CHANNEL_ID)
                 }
-            } else if (type == "delete" || type == "leave") {
+            } else if (type == "delete") {
                 if (mes.getString("lobbyName") == lobbyName) {
+                    lobbyName = ""
+                    inLobby = false
+                    if (channelId == LOBBY_CHANNEL_ID) {
+                        setChannel(DEFAULT_CHANNEL_ID)
+                    } else {
+                        loadChannels()
+                    }
+                }
+            } else if (type == "leave") {
+                if (mes.getString("username") == username) {
                     lobbyName = ""
                     inLobby = false
                     if (channelId == LOBBY_CHANNEL_ID) {
