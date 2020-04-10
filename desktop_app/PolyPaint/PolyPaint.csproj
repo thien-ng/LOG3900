@@ -182,6 +182,7 @@
     <Compile Include="Convertisseurs\PanoramicModeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SearchBarVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSubbedToVisibilityConverter.cs" />
+    <Compile Include="Convertisseurs\SelectedModeToDisplayConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToVisibleConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
