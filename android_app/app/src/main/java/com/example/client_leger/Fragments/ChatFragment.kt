@@ -204,13 +204,8 @@ class ChatFragment: Fragment() {
             }
         }
 
-        channelAddedListener = Communication.getChannelAddedListener().subscribe{ channel ->
-            activity!!.runOnUiThread {
-                notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
-                notSubChannelAdapter.setOnItemClickListener { item, _ ->
-                    controller.joinChannel(this, item.toString())
-                }
-            }
+        channelAddedListener = Communication.getChannelAddedListener().subscribe{
+            loadChannels()
         }
 
         channelRemovedListener = Communication.getChannelRemovedListener().subscribe{
