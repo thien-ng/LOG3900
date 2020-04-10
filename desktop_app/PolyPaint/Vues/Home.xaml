@@ -35,7 +35,7 @@
     </UserControl.Resources>
     <materialDesign:DialogHost IsOpen="{Binding IsInvitedDialogOpen}"
                                DialogContent="{Binding InvitedDialogContent}"
-                               CloseOnClickAway="True">
+                               CloseOnClickAway="false">
     <materialDesign:DialogHost IsOpen="{Binding IsCreateChannelDialogOpen}"
                                DialogContent="{Binding DialogContent}"
                                CloseOnClickAway="True">
@@ -83,7 +83,7 @@
                 <Button Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Command="{Binding CreateGameCommand}">
                     CREATE GAME
                 </Button>
-                <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Edit">
+                <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres">
                     <materialDesign:PopupBox.ToggleContent>
                         <materialDesign:PackIcon Kind="UserEdit" Width="40" Height="40" Margin="5" Foreground="White" />
                     </materialDesign:PopupBox.ToggleContent>
