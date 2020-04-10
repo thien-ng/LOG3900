@@ -229,9 +229,14 @@ export class ArenaFfa extends Arena {
             // if player is disconnect, increment drawer pointer
             if (this.drawPtr++ >= this.users.length) {
                 clearInterval(this.curArenaInterval);
-                return true
+                return true;
             }
             user = this.users[this.drawPtr];
+            
+            if (!user) {
+                clearInterval(this.curArenaInterval);
+                return true;
+            }
         }
         this.updateDrawerRole(user);
     }
