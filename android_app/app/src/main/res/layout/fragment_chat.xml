@@ -79,6 +79,7 @@
             android:inputType="text"
             android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/chat_send_button"
             app:layout_constraintStart_toEndOf="@id/channelView" />
 
     <Button
