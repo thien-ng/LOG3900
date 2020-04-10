@@ -125,8 +125,6 @@ class LobbyFragment : Fragment(),
 
     override fun replaceFragment(fragment: Fragment) {
         fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment).commit()
-        //fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment)
-        //    .addToBackStack(fragment.toString()).commit()
     }
 
     fun loadUsers(userJsonArray: JSONArray, mode: String) {
