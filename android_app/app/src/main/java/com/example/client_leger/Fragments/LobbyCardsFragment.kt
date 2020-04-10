@@ -66,11 +66,10 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         recyclerViewGameCards.adapter = adapterLobbyCards
 
         val buttonShowDialog: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
-        buttonShowDialog.isEnabled = false
         buttonShowDialog.setOnClickListener { showDialog() }
 
         spinnerGameModes = v.findViewById(R.id.GameMode)
-        val gamemodes = arrayListOf("Select Game Mode", "Free for all", "Sprint Solo", "Sprint Co-op")
+        val gamemodes = arrayListOf("Free for all", "Sprint Solo", "Sprint Co-op")
         val dataAdapter = ArrayAdapter(context!!, R.layout.gamemode_item, gamemodes)
         spinnerGameModes.adapter = dataAdapter
         spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -84,8 +83,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 position: Int,
                 id: Long
             ) {
-                if (position > 0)
-                    buttonShowDialog.isEnabled = true
                 lobbyCardsController.getLobbies(
                     this@LobbyCardsFragment,
                     spinnerToGameMode(position).toString()
@@ -288,9 +285,9 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
     private fun spinnerToGameMode(id: Int): GameMode {
         return when (id) {
-            1 -> GameMode.FFA
-            2 -> GameMode.SOLO
-            3 -> GameMode.COOP
+            0 -> GameMode.FFA
+            1 -> GameMode.SOLO
+            2 -> GameMode.COOP
             else -> GameMode.FFA
         }
     }
