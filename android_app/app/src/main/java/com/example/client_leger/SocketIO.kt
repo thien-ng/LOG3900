@@ -18,7 +18,8 @@ object SocketIO {
         socket.on("chat")           { Communication.updateChatMessage(it[0] as JSONObject) }
         socket.on("logging")        { Communication.updateConnection(it[0] as JSONObject) }
         socket.on("draw")           { Communication.updateDraw(it[0] as JSONObject) }
-        socket.on("channel-new")    { Communication.updateChannels((it[0] as JSONObject)["id"].toString()) }
+        socket.on("channel-new")    { Communication.channelAdded((it[0] as JSONObject)["id"].toString()) }
+        socket.on("channel-delete") { Communication.channelRemoved((it[0] as JSONObject)["channel"].toString()) }
         socket.on("game-start")     { Communication.updateGameStart() }
         socket.on("game-over")      { Communication.updateEndGame(it[0] as JSONObject) }
         socket.on("game-timer")     { Communication.updateTimer(it[0] as JSONObject) }

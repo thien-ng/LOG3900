@@ -13,6 +13,7 @@ import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_chat.view.*
@@ -41,7 +42,8 @@ class ChatFragment: Fragment() {
     private lateinit var v: View
 
     private lateinit var chatListener: Disposable
-    private lateinit var channelListener: Disposable
+    private lateinit var channelAddedListener: Disposable
+    private lateinit var channelRemovedListener: Disposable
     private lateinit var startGameSub: Disposable
     private lateinit var endGameSub: Disposable
     private lateinit var gameChatSub: Disposable
@@ -147,20 +149,16 @@ class ChatFragment: Fragment() {
         startGameSub = Communication.getGameStartListener().subscribe{
             inGame = true
             addGameChannel()
-            activity!!.runOnUiThread {
-                setChannel(GAME_CHANNEL_ID)
-            }
+            setChannel(GAME_CHANNEL_ID)
         }
 
         endGameSub = Communication.getEndGameListener().subscribe{
             inGame = false
 
-            activity!!.runOnUiThread {
-                if (channelId == GAME_CHANNEL_ID) {
-                    setChannel(DEFAULT_CHANNEL_ID)
-                } else {
-                    loadChannels()
-                }
+            if (channelId == GAME_CHANNEL_ID) {
+                setChannel(DEFAULT_CHANNEL_ID)
+            } else {
+                loadChannels()
             }
         }
 
@@ -184,36 +182,45 @@ class ChatFragment: Fragment() {
                     inLobby = true
                     lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()
-                    activity!!.runOnUiThread {
-                        setChannel(LOBBY_CHANNEL_ID)
-                    }
+                    setChannel(LOBBY_CHANNEL_ID)
                 }
             } else if (type == "join") {
                 if (mes.getString("username") == username) {
                     inLobby = true
                     lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()
-                    activity!!.runOnUiThread {
-                        setChannel(LOBBY_CHANNEL_ID)
-                    }
+                    setChannel(LOBBY_CHANNEL_ID)
                 }
             } else if (type == "delete" || type == "leave") {
                 if (mes.getString("lobbyName") == lobbyName) {
                     lobbyName = ""
                     inLobby = false
-                    activity!!.runOnUiThread {
-                        if (channelId == LOBBY_CHANNEL_ID) {
-                            setChannel(DEFAULT_CHANNEL_ID)
-                        } else {
-                            loadChannels()
-                        }
+                    if (channelId == LOBBY_CHANNEL_ID) {
+                        setChannel(DEFAULT_CHANNEL_ID)
+                    } else {
+                        loadChannels()
                     }
                 }
             }
         }
 
-        channelListener = Communication.getChannelUpdateListener().subscribe{ channel ->
-            notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
+        channelAddedListener = Communication.getChannelAddedListener().subscribe{
+            loadChannels()
+        }
+
+        channelRemovedListener = Communication.getChannelRemovedListener().subscribe{
+            activity!!.runOnUiThread {
+                var channelToRemove: Item<ViewHolder>? = null
+                for ( view in 0 until notSubChannelAdapter.itemCount) {
+                    if (notSubChannelAdapter.getItem(view).toString() == it) {
+                        channelToRemove = notSubChannelAdapter.getItem(view)
+                        break
+                    }
+                }
+                if (channelToRemove != null) {
+                    notSubChannelAdapter.remove(channelToRemove)
+                }
+            }
         }
 
         v.recyclerView_chat_log.adapter = messageAdapter
@@ -224,7 +231,8 @@ class ChatFragment: Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         chatListener.dispose()
-        channelListener.dispose()
+        channelAddedListener.dispose()
+        channelRemovedListener.dispose()
         startGameSub.dispose()
         gameChatSub.dispose()
         lobbyChatSub.dispose()
@@ -272,26 +280,28 @@ class ChatFragment: Fragment() {
         val focusable = true
         val popupWindow = PopupWindow(popupView, width, height, focusable)
 
-        popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0)
+        activity!!.runOnUiThread {
+            popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0)
 
-        popupView.setOnTouchListener { _, _ ->
-            popupWindow.dismiss()
-            true
-        }
-
-        popupView.create_channel_button.setOnClickListener {
-            var name = popupView.textInput_channelNameToCreate.text.toString()
-            name = name.trim()
-
-            if ( name.length <= 20 && name.isNotEmpty() && name != GAME_CHANNEL_ID) {
-                controller.createChannel(this, name)
+            popupView.setOnTouchListener { _, _ ->
                 popupWindow.dismiss()
-            } else {
-                Toast.makeText(
-                    this.context,
-                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID or $LOBBY_CHANNEL_ID",
-                    Toast.LENGTH_SHORT
-                ).show()
+                true
+            }
+
+            popupView.create_channel_button.setOnClickListener {
+                var name = popupView.textInput_channelNameToCreate.text.toString()
+                name = name.trim()
+
+                if ( name.length <= 20 && name.isNotEmpty() && name != GAME_CHANNEL_ID) {
+                    controller.createChannel(this, name)
+                    popupWindow.dismiss()
+                } else {
+                    Toast.makeText(
+                        this.context,
+                        "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID or $LOBBY_CHANNEL_ID",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -311,25 +321,29 @@ class ChatFragment: Fragment() {
     }
 
     fun loadChannels(search: String? = null){
-        controller.loadChannels(this, search)
+        activity!!.runOnUiThread {
+            controller.loadChannels(this, search)
+        }
     }
 
     fun setChannel(newChannelId: String) {
-        if (newChannelId != channelId) {
-            loadChannels()
-            messageAdapter.clear()
-            hideLoadHistoryButton()
-            val route =
-                when (newChannelId) {
-                    LOBBY_CHANNEL_ID -> "/game/lobby/messages/$lobbyName"
-                    GAME_CHANNEL_ID -> "/game/arena/messages/$username"
-                    else -> "/chat/messages/$newChannelId"
-                }
+        activity!!.runOnUiThread {
+            if (newChannelId != channelId) {
+                loadChannels()
+                messageAdapter.clear()
+                hideLoadHistoryButton()
+                val route =
+                    when (newChannelId) {
+                        LOBBY_CHANNEL_ID -> "/game/lobby/messages/$lobbyName"
+                        GAME_CHANNEL_ID -> "/game/arena/messages/$username"
+                        else -> "/chat/messages/$newChannelId"
+                    }
 
-            controller.showLoadHistoryButtonIfPreviousMessages(this, route)
+                controller.showLoadHistoryButtonIfPreviousMessages(this, route)
 
-            channelId = newChannelId
-            textViewChannelName.text = channelId
+                channelId = newChannelId
+                textViewChannelName.text = channelId
+            }
         }
     }
 
