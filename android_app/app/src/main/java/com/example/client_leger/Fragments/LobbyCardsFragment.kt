@@ -70,8 +70,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         buttonShowDialog.setOnClickListener { showDialog() }
 
         spinnerGameModes = v.findViewById(R.id.GameMode)
-        val gamemodes =
-            arrayListOf("Select Game Mode", "Free for all", "Sprint Solo", "Sprint Co-op")
+        val gamemodes = arrayListOf("Select Game Mode", "Free for all", "Sprint Solo", "Sprint Co-op")
         val dataAdapter = ArrayAdapter(context!!, R.layout.gamemode_item, gamemodes)
         spinnerGameModes.adapter = dataAdapter
         spinnerGameModes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
