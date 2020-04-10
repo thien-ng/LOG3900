@@ -11,8 +11,4 @@
             android:title="Game"
             android:orderInCategory="100"
             app:showAsAction="never"/>
-    <item   android:id="@+id/action_draw"
-            android:title="Draw"
-            android:orderInCategory="100"
-            app:showAsAction="never"/>
 </menu>
