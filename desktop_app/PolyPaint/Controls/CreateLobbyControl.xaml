@@ -19,7 +19,7 @@
                  Text="{Binding LobbyName}"
                  Margin="0 6 0 0"
                  FontSize="18" Grid.Row="0"/>
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Visibility="{Binding IsSizeNeeded, Converter={StaticResource BooleanToVisibilityConverter}}">
             
             <TextBlock Text="Private: " VerticalAlignment="Center" FontSize="15"/>
             <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsPrivate}" />

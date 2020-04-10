@@ -72,10 +72,12 @@ namespace PolyPaint.VueModeles
                 switch (_selectedMode)
                 {
                     case Constants.MODE_FFA:
+                        IsSizeNeeded = true;
                         fillArray(2, 9);
                         break;
 
                     case Constants.MODE_COOP:
+                        IsSizeNeeded = true;
                         fillArray(1, 4);
                         break;
 
@@ -246,13 +248,19 @@ namespace PolyPaint.VueModeles
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();
             values.username = ServerService.instance.username;
-            values.Add("isPrivate", _isPrivate);
             values.lobbyName = _lobbyName;
             if (_selectedMode == Constants.MODE_SOLO)
+            {
+                values.Add("isPrivate", true);
                 values.size = 1;
+                values.password = "solo";
+            }
             else
+            {
+                values.Add("isPrivate", _isPrivate);
                 values.size = _selectedSize;
-            values.password = _password;
+                values.password = _password;
+            }
             values.mode = _selectedMode;
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
