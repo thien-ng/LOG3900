@@ -35,10 +35,6 @@ class MainActivity : AppCompatActivity() {
                 supportFragmentManager.beginTransaction().replace(R.id.container_view_right, LobbyCardsFragment()).commit()
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.action_draw -> {
-                supportFragmentManager.beginTransaction().replace(R.id.container_view_right, GameplayFragment()).commit()
-                return@OnNavigationItemSelectedListener true
-            }
         }
         return@OnNavigationItemSelectedListener false
     }

@@ -10,6 +10,8 @@ export abstract class Bot {
     public length: number;
     public username: string;
 
+    public interval: NodeJS.Timeout;
+
     protected drawings: IDrawing[];
     protected taunts: string[];
     protected nextStroke: number;
@@ -26,24 +28,28 @@ export abstract class Bot {
 
     public abstract launchTauntStart(room: string, gameMessages: IGameplayAnnouncement[]): void;
 
-    public draw(room: string, speed: number, drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): NodeJS.Timeout {
+    public draw(room: string, speed: number, drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): void {
+        this.nextStroke = 0;
         this.setupOnDraw(drawings, mode, panoramicFirstSide);
-
         let count = 0;
-        const interval = setInterval(() => {
 
+        if (this.interval)
+            clearInterval(this.interval);
+
+        this.interval = setInterval(() => {
+            
             if (count <= this.drawings.length) {
                 const nextStroke = this.getNextStroke();
-                if (nextStroke)
+                if (nextStroke){
                     this.socket.to(room).emit("draw", nextStroke);
+                }
             } else {
-                clearInterval(interval);
+                clearInterval(this.interval);
             }
             count++;
-
+            
         }, this.calculateTimeToDrawingProportion(speed));
 
-        return interval;
     }
 
     private setupOnDraw(drawings: IDrawing[], mode: DisplayMode, panoramicFirstSide: Side): void {

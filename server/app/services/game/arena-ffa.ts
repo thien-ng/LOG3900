@@ -64,9 +64,8 @@ export class ArenaFfa extends Arena {
             return;
         }
 
-        let botInterval: NodeJS.Timeout;
         if (this.isBotDrawing)
-            botInterval= this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
+            this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
@@ -83,9 +82,9 @@ export class ArenaFfa extends Arena {
                     this.sendAnswer(this.curRule.solution);
                 }
 
-                if (botInterval) {
-                    // Stop bot drawing
-                    clearInterval(botInterval);
+                if (this.isBotDrawing) {
+                    const bot = this.botMap.get(this.users[this.drawPtr - 1].username) as MeanBot | KindBot | HumourBot;
+                    clearInterval(bot.interval);
                 }
 
                 this.botAnnounceEndSubGame();
@@ -190,11 +189,11 @@ export class ArenaFfa extends Arena {
         this.socketServer.to(drawUser.socketId).emit("game-points", {point: drawPts});
     }
 
-    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
+    protected startBotDrawing(botName: string, arenaTime: number): void {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
         const speed = this.chooseDrawingSpeed(arenaTime);
-        return bot.draw(this.room, speed, drawings, this.curRule.displayMode, this.curRule.side);
+        bot.draw(this.room, speed, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
     protected botAnnounceStart(): void {

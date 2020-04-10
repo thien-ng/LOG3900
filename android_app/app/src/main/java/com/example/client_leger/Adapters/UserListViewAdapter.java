@@ -13,7 +13,6 @@ import com.example.client_leger.R;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 
 public class UserListViewAdapter extends BaseAdapter {
@@ -25,7 +24,6 @@ public class UserListViewAdapter extends BaseAdapter {
     private ArrayList mData = new ArrayList();
     private LayoutInflater mInflater;
     private LobbyFragment lobbyFragment;
-    private TreeSet mSeparatorsSet = new TreeSet();
 
     public UserListViewAdapter(LobbyFragment lobbyFragment) {
         mInflater = LayoutInflater.from(lobbyFragment.getContext());
@@ -39,14 +37,12 @@ public class UserListViewAdapter extends BaseAdapter {
 
     public void addBot(final String item) {
         mData.add(item);
-        // save separator position
-        mSeparatorsSet.add(mData.size() - 1);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return mSeparatorsSet.contains(position) ? TYPE_BOT : TYPE_USER;
+        return getItem(position).startsWith("bot:")? TYPE_BOT : TYPE_USER;
     }
 
     @Override
@@ -73,6 +69,7 @@ public class UserListViewAdapter extends BaseAdapter {
         ViewHolder view;
         int type = getItemViewType(position);
         view = new ViewHolder();
+
         if (convertView == null) {
             switch (type) {
                 case TYPE_USER:
@@ -83,17 +80,19 @@ public class UserListViewAdapter extends BaseAdapter {
                     convertView = mInflater.inflate(R.layout.lobbybot_item, null);
                     view.myTextView = (TextView)convertView.findViewById(R.id.lobbybot_username);
                     view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
-                    view.deleteIcon.setOnClickListener(v -> {
-                        lobbyFragment.removeBot(getItem(position));
-                        removeBot(position);
-                    });
                     break;
             }
             convertView.setTag(view);
         }else {
             view = (ViewHolder)convertView.getTag();
         }
-        view.myTextView.setText( getItem(position));
+        String name = getItem(position);
+        view.myTextView.setText( name);
+        if(getItemViewType(position) == TYPE_BOT) {
+            view.deleteIcon.setOnClickListener(v -> {
+                lobbyFragment.removeBot(name);
+            });
+        }
         return convertView;
     }
 
@@ -103,10 +102,8 @@ public class UserListViewAdapter extends BaseAdapter {
         }
         notifyDataSetChanged();
     }
-    public void removeBot(int position){
-        mData.remove(position);
-        // save separator position
-        mSeparatorsSet.remove(position);
+    public void removeBot(String bot){
+        mData.remove(bot);
         notifyDataSetChanged();
     }
 
