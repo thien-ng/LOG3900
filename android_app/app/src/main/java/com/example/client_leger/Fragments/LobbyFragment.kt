@@ -84,6 +84,7 @@ class LobbyFragment : Fragment(),
     override fun onDestroy() {
         super.onDestroy()
         startListener.dispose()
+        lobbyNotifSub.dispose()
     }
 
     private fun startGame(lobbyName: String) {
