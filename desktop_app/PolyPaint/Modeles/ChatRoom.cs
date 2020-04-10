@@ -108,6 +108,19 @@ namespace PolyPaint.Modeles
         private void ReceiveMessage(JToken jsonMessage)
         {
             MessageReception message = jsonMessage.ToObject<MessageReception>();
+            if (message.channel_id == this.ID || IsLobbyChat) 
+            {
+                bool isSentByMe = message.username == ServerService.instance.username;
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Messages.Add(new MessageChat(message.username, message.content, isSentByMe, message.time));
+                });
+            }
+        }
+
+        private void ReceiveMessageHistory(JToken jsonMessage)
+        {
+            MessageReception message = jsonMessage.ToObject<MessageReception>();
             bool isSentByMe = message.username == ServerService.instance.username;
             App.Current.Dispatcher.Invoke(delegate
             {
@@ -151,7 +164,7 @@ namespace PolyPaint.Modeles
             JArray responseJson = JArray.Parse(await response.Content.ReadAsStringAsync());
 
             foreach (var item in responseJson)
-                ReceiveMessage(item);
+                ReceiveMessageHistory(item);
         }
         private async void LoadGameMessages()
         {

@@ -159,7 +159,10 @@ namespace PolyPaint.Modeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-               Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("lobbyName", _lobby.lobbyName);
+                data.Add("mode", _lobby.mode);
+                Mediator.Notify("GoToLobbyScreen", data);
             }
         }
         private async void joinPrivateLobby()
@@ -179,7 +182,10 @@ namespace PolyPaint.Modeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("lobbyName", _lobby.lobbyName);
+                data.Add("mode", _lobby.mode);
+                Mediator.Notify("GoToLobbyScreen", data);
             }
             else 
             {
