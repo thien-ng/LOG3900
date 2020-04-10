@@ -267,8 +267,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun replaceFragment(fragment: Fragment) {
-        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment)
-            .addToBackStack(fragment.toString()).commit()
+        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment).commit()
     }
 
     fun loadLobbies(lobbies: ArrayList<Lobby>) {
