@@ -153,35 +153,63 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         d.setTitle("NumberPicker")
         d.setContentView(R.layout.dialog_createlobby)
         val np: NumberPicker = d.findViewById(R.id.np__numberpicker_input)
-        np.maxValue = 9
-        np.minValue = 2
-        np.wrapSelectorWheel = true
-
         val switch: Switch = d.findViewById(R.id.switch_private)
-        switch.setOnCheckedChangeListener { _, isChecked ->
-            d.findViewById<EditText>(R.id.lobbyPassword).visibility =
-                if (isChecked) View.VISIBLE else View.GONE
-        }
-
-
         val button: Button = d.findViewById(R.id.button_CreateLobby)
-        button.setOnClickListener {
-            if (validateLobbyFields(d)) {
+        if(getCurrentGameMode() == GameMode.SOLO){
+            np.visibility = View.GONE
+            switch.visibility = View.GONE
+            button.setOnClickListener {
                 val data = JSONObject()
                 data.put("username", username)
-                data.put("isPrivate", d.findViewById<Switch>(R.id.switch_private).isChecked)
                 data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
-                data.put("size", d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value)
-                if (switch.isChecked) data.put(
-                    "password",
-                    d.findViewById<EditText>(R.id.lobbyPassword).text.trim()
-                )
-                data.put(
-                    "mode",
-                    spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString()
-                )
+                data.put("isPrivate", true)
+                data.put("mode", GameMode.SOLO)
+                data.put("size", 1)
+                data.put("password", "solo")
                 lobbyCardsController.joinLobby(this, data)
                 d.dismiss()
+
+            }
+        }else {
+            if (getCurrentGameMode() == GameMode.FFA) {
+                np.maxValue = 9
+                np.minValue = 2
+            } else if (getCurrentGameMode() == GameMode.COOP) {
+                np.maxValue = 3
+                np.minValue = 1
+            }
+
+            np.wrapSelectorWheel = true
+
+
+            switch.setOnCheckedChangeListener { _, isChecked ->
+                d.findViewById<EditText>(R.id.lobbyPassword).visibility =
+                    if (isChecked) View.VISIBLE else View.GONE
+            }
+
+
+
+            button.setOnClickListener {
+                if (validateLobbyFields(d)) {
+                    val data = JSONObject()
+                    data.put("username", username)
+                    data.put("isPrivate", d.findViewById<Switch>(R.id.switch_private).isChecked)
+                    data.put("lobbyName", d.findViewById<EditText>(R.id.lobbyname).text.trim())
+                    data.put(
+                        "size",
+                        d.findViewById<NumberPicker>(R.id.np__numberpicker_input).value
+                    )
+                    if (switch.isChecked) data.put(
+                        "password",
+                        d.findViewById<EditText>(R.id.lobbyPassword).text.trim()
+                    )
+                    data.put(
+                        "mode",
+                        spinnerToGameMode(spinnerGameModes.selectedItemPosition).toString()
+                    )
+                    lobbyCardsController.joinLobby(this, data)
+                    d.dismiss()
+                }
             }
         }
         d.show()
