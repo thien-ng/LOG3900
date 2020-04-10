@@ -13,6 +13,7 @@ import com.example.client_leger.Constants.Companion.DEFAULT_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_chat.view.*
@@ -41,7 +42,8 @@ class ChatFragment: Fragment() {
     private lateinit var v: View
 
     private lateinit var chatListener: Disposable
-    private lateinit var channelListener: Disposable
+    private lateinit var channelAddedListener: Disposable
+    private lateinit var channelRemovedListener: Disposable
     private lateinit var startGameSub: Disposable
     private lateinit var endGameSub: Disposable
     private lateinit var gameChatSub: Disposable
@@ -202,9 +204,27 @@ class ChatFragment: Fragment() {
             }
         }
 
-        channelListener = Communication.getChannelUpdateListener().subscribe{
+        channelAddedListener = Communication.getChannelAddedListener().subscribe{ channel ->
             activity!!.runOnUiThread {
-                controller.loadChannels(this)
+                notSubChannelAdapter.add(ChannelItem(channel, false, controller, this))
+                notSubChannelAdapter.setOnItemClickListener { item, _ ->
+                    controller.joinChannel(this, item.toString())
+                }
+            }
+        }
+
+        channelRemovedListener = Communication.getChannelRemovedListener().subscribe{
+            activity!!.runOnUiThread {
+                var channelToRemove: Item<ViewHolder>? = null
+                for ( view in 0 until notSubChannelAdapter.itemCount) {
+                    if (notSubChannelAdapter.getItem(view).toString() == it) {
+                        channelToRemove = notSubChannelAdapter.getItem(view)
+                        break
+                    }
+                }
+                if (channelToRemove != null) {
+                    notSubChannelAdapter.remove(channelToRemove)
+                }
             }
         }
 
@@ -216,7 +236,8 @@ class ChatFragment: Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         chatListener.dispose()
-        channelListener.dispose()
+        channelAddedListener.dispose()
+        channelRemovedListener.dispose()
         startGameSub.dispose()
         gameChatSub.dispose()
         lobbyChatSub.dispose()

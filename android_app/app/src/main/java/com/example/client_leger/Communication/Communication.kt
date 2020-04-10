@@ -13,9 +13,13 @@ object Communication {
     fun getChatMessageListener(): PublishSubject<JSONObject>{ return chatSource }
     fun updateChatMessage(obj: JSONObject) { chatSource.onNext(obj) }
 
-    private var channelSource: PublishSubject<JSONObject> = PublishSubject.create()
-    fun getChannelUpdateListener(): PublishSubject<JSONObject>{ return channelSource }
-    fun updateChannels(obj: JSONObject) { channelSource.onNext(obj) }
+    private var channelAddedSource: PublishSubject<String> = PublishSubject.create()
+    fun getChannelAddedListener(): PublishSubject<String>{ return channelAddedSource }
+    fun channelAdded(channelId: String) { channelAddedSource.onNext(channelId) }
+
+    private var channelRemovedSource: PublishSubject<String> = PublishSubject.create()
+    fun getChannelRemovedListener(): PublishSubject<String>{ return channelRemovedSource }
+    fun channelRemoved(channelId: String) { channelRemovedSource.onNext(channelId) }
 
     private var lobbySource: PublishSubject<JSONObject> = PublishSubject.create()
     fun getLobbyUpdateListener(): PublishSubject<JSONObject>{ return lobbySource }

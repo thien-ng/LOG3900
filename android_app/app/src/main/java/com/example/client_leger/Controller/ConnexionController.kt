@@ -212,7 +212,7 @@ class ConnexionController {
         requestQueue.add(jsonArrayRequest)
     }
 
-    private fun joinChannel(activity: ChatFragment, channelId: String) {
+    fun joinChannel(activity: ChatFragment, channelId: String) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
         val jsonObjectRequest = JsonObjectRequest(
