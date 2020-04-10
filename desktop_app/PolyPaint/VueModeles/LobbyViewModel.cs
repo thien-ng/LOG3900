@@ -100,15 +100,30 @@ namespace PolyPaint.VueModeles
             {
                 _isGameMaster = value;
                 ProprieteModifiee();
-                if (Mode == Constants.MODE_COOP || Mode == Constants.MODE_SOLO)
+                switch (Mode)
                 {
-                    IsAddBotPossible = false;
-                    IsStartGameVisible = true;
+                    case Constants.MODE_COOP:
+                        IsAddBotPossible = false;
+                        IsStartGameVisible = true;
+                        IsInvitePossible = true;
+                        break;
+                    case Constants.MODE_SOLO:
+                        IsAddBotPossible = false;
+                        IsStartGameVisible = true;
+                        IsInvitePossible = false;
+                        break;
+                    default:
+                        if (value)
+                        {
+                            IsAddBotPossible = true;
+                            IsInvitePossible = true;
+                        }
+                        else
+                            IsAddBotPossible = false;
+
+                        break;
                 }
-                if (value && Mode == Constants.MODE_FFA)
-                    IsAddBotPossible = true;
-                else
-                    IsAddBotPossible = false;
+                
             }
         }
 
@@ -119,6 +134,17 @@ namespace PolyPaint.VueModeles
             set
             {
                 _isAddBotPossible = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isInvitePossible;
+        public bool IsInvitePossible
+        {
+            get { return _isInvitePossible; }
+            set
+            {
+                _isInvitePossible = value;
                 ProprieteModifiee();
             }
         }
