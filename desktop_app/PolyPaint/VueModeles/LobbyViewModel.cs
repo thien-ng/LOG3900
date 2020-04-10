@@ -7,6 +7,7 @@ using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -19,12 +20,15 @@ namespace PolyPaint.VueModeles
 {
     class LobbyViewModel : BaseViewModel, IPageViewModel
     {
-        public LobbyViewModel(string lobbyname)
+        public LobbyViewModel(string lobbyname, string mode)
         {
             Usernames = new ObservableCollection<UserLobby>();
             OnlineUsers = new ObservableCollection<string>();
             this.LobbyName = lobbyname;
+            this.Mode = mode;
+            _isStartGameVisible = false;
             _searchString = "";
+            _isAddBotPossible = false;
             fetchUsername();
             getOnlineUsers();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
@@ -39,11 +43,20 @@ namespace PolyPaint.VueModeles
 
         public static string[] BotList = { "bot:sebastien", "bot:olivia", "bot:olivier" };
         public string LobbyName { get; set; }
+        public string Mode { get; set; }
         private ObservableCollection<UserLobby> _usernames;
         public ObservableCollection<UserLobby> Usernames
         {
             get { return _usernames; }
-            set { _usernames = value; ProprieteModifiee(); }
+            set 
+            { 
+                _usernames = value;
+                ProprieteModifiee();
+                if (Mode == Constants.MODE_FFA)
+                {
+                    IsStartGameVisible = (_usernames.Count < Constants.MIN_MODE_FFA) ? false : true;
+                }
+            }
         }
 
         private ObservableCollection<string> _bots;
@@ -86,6 +99,38 @@ namespace PolyPaint.VueModeles
             set
             {
                 _isGameMaster = value;
+                ProprieteModifiee();
+                if (Mode == Constants.MODE_COOP || Mode == Constants.MODE_SOLO)
+                {
+                    IsAddBotPossible = false;
+                    IsStartGameVisible = true;
+                }
+                if (value && Mode == Constants.MODE_FFA)
+                    IsAddBotPossible = true;
+                else
+                    IsAddBotPossible = false;
+            }
+        }
+
+        private bool _isAddBotPossible;
+        public bool IsAddBotPossible
+        {
+            get { return _isAddBotPossible; }
+            set
+            {
+                _isAddBotPossible = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isStartGameVisible;
+        public bool IsStartGameVisible
+        {
+            get { return _isStartGameVisible; }
+            set
+            {
+                if(IsGameMaster)
+                    _isStartGameVisible = value;
                 ProprieteModifiee();
             }
         }

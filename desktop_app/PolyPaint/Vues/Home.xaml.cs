@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.ComponentModel;
+using PolyPaint.VueModeles;
 
 namespace PolyPaint.Vues
 {
@@ -32,6 +33,8 @@ namespace PolyPaint.Vues
         public void PageLoaded(object sender, RoutedEventArgs e) 
         { 
             _window.DataContext = DataContext;
+            ((HomeViewModel)DataContext).FetchChannels();
+
         }
 
         private void onWindowClosing(object sender, CancelEventArgs e)

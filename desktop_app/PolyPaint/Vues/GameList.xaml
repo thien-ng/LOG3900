@@ -6,6 +6,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PolyPaint.Vues"
+             xmlns:converter="clr-namespace:PolyPaint.Convertisseurs"
              Background="White"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -35,7 +36,7 @@
             <materialDesign:PopupBox Grid.Column="2" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Top" PlacementMode="BottomAndAlignCentres" ToolTip="Select the game mode">
                 <materialDesign:PopupBox.ToggleContent>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="{Binding SelectedMode}" HorizontalAlignment="Center" FontSize="30" Foreground="White" />
+                        <TextBlock Text="{Binding SelectedMode, Converter={converter:SelectedModeToDisplayConverter}}" HorizontalAlignment="Center" FontSize="30" Foreground="White" />
                         <materialDesign:PackIcon HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" Width="30" Height="30" Kind="ArrowUpDownBold" />
                     </StackPanel>
                 </materialDesign:PopupBox.ToggleContent>
@@ -45,7 +46,7 @@
                     <Button Command="{Binding ModeCoop}" Content="Sprint Coop" ></Button>
                 </StackPanel>
             </materialDesign:PopupBox>
-            <Button Grid.Column="2" Grid.Row="2" Content="ADD" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
+            <Button Grid.Column="2" Grid.Row="2" Content="Create lobby" Background="{StaticResource PrimaryHueLightBrush}" Command="{Binding AddGameCommand}" BorderThickness="0"/>
             <ScrollViewer Margin="15" Grid.Row="3" Grid.Column="2"
                           VerticalScrollBarVisibility="Auto"
                           >

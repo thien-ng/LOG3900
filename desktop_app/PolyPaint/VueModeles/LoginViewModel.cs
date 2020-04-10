@@ -76,13 +76,22 @@ namespace PolyPaint.VueModeles
 
         private async void fetchProfile()
         {
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string responseString = await response.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject<User>(responseString);
-                ServerService.instance.user = data;
+                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<User>(responseString);
+                    ServerService.instance.user = data;
+                }
             }
+            catch (Exception)
+            {
+
+                MessageBox.Show("failed to connect");
+            }
+            
         }
         private async Task<JObject> LoginRequestAsync(string username, string password)
         {
@@ -131,7 +140,6 @@ namespace PolyPaint.VueModeles
                     {
                         _loginIsRunning = true;
                         IsButtonEnabled = false;
-
                         JObject res = await LoginRequestAsync(_username, Password.Password);
 
                         if (res.ContainsKey("status"))
