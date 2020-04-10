@@ -250,7 +250,7 @@ namespace PolyPaint.VueModeles
         private void goToGameView(object obj)
         {
             SwitchView = Views.Game;
-            GameViewModel = new GameViewModel();
+            GameViewModel = new GameViewModel((string)obj);
             Application.Current.Dispatcher.Invoke(delegate
             {
                 SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == ( Constants.LOBBY_CHANNEL + Lobbyname)));
