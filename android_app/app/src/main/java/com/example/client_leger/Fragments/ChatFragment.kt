@@ -147,20 +147,16 @@ class ChatFragment: Fragment() {
         startGameSub = Communication.getGameStartListener().subscribe{
             inGame = true
             addGameChannel()
-            activity!!.runOnUiThread {
-                setChannel(GAME_CHANNEL_ID)
-            }
+            setChannel(GAME_CHANNEL_ID)
         }
 
         endGameSub = Communication.getEndGameListener().subscribe{
             inGame = false
 
-            activity!!.runOnUiThread {
-                if (channelId == GAME_CHANNEL_ID) {
-                    setChannel(DEFAULT_CHANNEL_ID)
-                } else {
-                    loadChannels()
-                }
+            if (channelId == GAME_CHANNEL_ID) {
+                setChannel(DEFAULT_CHANNEL_ID)
+            } else {
+                loadChannels()
             }
         }
 
@@ -184,36 +180,32 @@ class ChatFragment: Fragment() {
                     inLobby = true
                     lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()
-                    activity!!.runOnUiThread {
-                        setChannel(LOBBY_CHANNEL_ID)
-                    }
+                    setChannel(LOBBY_CHANNEL_ID)
                 }
             } else if (type == "join") {
                 if (mes.getString("username") == username) {
                     inLobby = true
                     lobbyName = mes.getString("lobbyName")
                     addLobbyChannel()
-                    activity!!.runOnUiThread {
-                        setChannel(LOBBY_CHANNEL_ID)
-                    }
+                    setChannel(LOBBY_CHANNEL_ID)
                 }
             } else if (type == "delete" || type == "leave") {
                 if (mes.getString("lobbyName") == lobbyName) {
                     lobbyName = ""
                     inLobby = false
-                    activity!!.runOnUiThread {
-                        if (channelId == LOBBY_CHANNEL_ID) {
-                            setChannel(DEFAULT_CHANNEL_ID)
-                        } else {
-                            loadChannels()
-                        }
+                    if (channelId == LOBBY_CHANNEL_ID) {
+                        setChannel(DEFAULT_CHANNEL_ID)
+                    } else {
+                        loadChannels()
                     }
                 }
             }
         }
 
         channelListener = Communication.getChannelUpdateListener().subscribe{
-            controller.loadChannels(this)
+            activity!!.runOnUiThread {
+                controller.loadChannels(this)
+            }
         }
 
         v.recyclerView_chat_log.adapter = messageAdapter
@@ -233,11 +225,15 @@ class ChatFragment: Fragment() {
     }
 
     private fun addGameChannel() {
-        channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
+        activity!!.runOnUiThread {
+            channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
+        }
     }
 
     private fun addLobbyChannel() {
-        channelAdapter.add(ChannelItem(LOBBY_CHANNEL_ID, true, controller, this))
+        activity!!.runOnUiThread {
+            channelAdapter.add(ChannelItem(LOBBY_CHANNEL_ID, true, controller, this))
+        }
     }
 
     private fun sendInput(v: View) {
@@ -268,26 +264,28 @@ class ChatFragment: Fragment() {
         val focusable = true
         val popupWindow = PopupWindow(popupView, width, height, focusable)
 
-        popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0)
+        activity!!.runOnUiThread {
+            popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0)
 
-        popupView.setOnTouchListener { _, _ ->
-            popupWindow.dismiss()
-            true
-        }
-
-        popupView.create_channel_button.setOnClickListener {
-            var name = popupView.textInput_channelNameToCreate.text.toString()
-            name = name.trim()
-
-            if ( name.length <= 20 && name.isNotEmpty() && name != GAME_CHANNEL_ID) {
-                controller.createChannel(this, name)
+            popupView.setOnTouchListener { _, _ ->
                 popupWindow.dismiss()
-            } else {
-                Toast.makeText(
-                    this.context,
-                    "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID or $LOBBY_CHANNEL_ID",
-                    Toast.LENGTH_SHORT
-                ).show()
+                true
+            }
+
+            popupView.create_channel_button.setOnClickListener {
+                var name = popupView.textInput_channelNameToCreate.text.toString()
+                name = name.trim()
+
+                if ( name.length <= 20 && name.isNotEmpty() && name != GAME_CHANNEL_ID) {
+                    controller.createChannel(this, name)
+                    popupWindow.dismiss()
+                } else {
+                    Toast.makeText(
+                        this.context,
+                        "Channel names cannot exceed 20 characters, be empty, or named $GAME_CHANNEL_ID or $LOBBY_CHANNEL_ID",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
@@ -307,25 +305,29 @@ class ChatFragment: Fragment() {
     }
 
     fun loadChannels(search: String? = null){
-        controller.loadChannels(this, search)
+        activity!!.runOnUiThread {
+            controller.loadChannels(this, search)
+        }
     }
 
     fun setChannel(newChannelId: String) {
-        if (newChannelId != channelId) {
-            loadChannels()
-            messageAdapter.clear()
-            hideLoadHistoryButton()
-            val route =
-                when (newChannelId) {
-                    LOBBY_CHANNEL_ID -> "/game/lobby/messages/$lobbyName"
-                    GAME_CHANNEL_ID -> "/game/arena/messages/$username"
-                    else -> "/chat/messages/$newChannelId"
-                }
+        activity!!.runOnUiThread {
+            if (newChannelId != channelId) {
+                loadChannels()
+                messageAdapter.clear()
+                hideLoadHistoryButton()
+                val route =
+                    when (newChannelId) {
+                        LOBBY_CHANNEL_ID -> "/game/lobby/messages/$lobbyName"
+                        GAME_CHANNEL_ID -> "/game/arena/messages/$username"
+                        else -> "/chat/messages/$newChannelId"
+                    }
 
-            controller.showLoadHistoryButtonIfPreviousMessages(this, route)
+                controller.showLoadHistoryButtonIfPreviousMessages(this, route)
 
-            channelId = newChannelId
-            textViewChannelName.text = channelId
+                channelId = newChannelId
+                textViewChannelName.text = channelId
+            }
         }
     }
 
