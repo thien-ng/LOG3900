@@ -27,7 +27,7 @@ class LobbyCardsController {
 
             },
             Response.ErrorListener {error->
-                Toast.makeText(activity.context, error.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"

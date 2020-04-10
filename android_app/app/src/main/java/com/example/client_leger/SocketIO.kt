@@ -21,6 +21,7 @@ object SocketIO {
         socket.on("channel-new")    { Communication.channelAdded((it[0] as JSONObject)["id"].toString()) }
         socket.on("channel-delete") { Communication.channelRemoved((it[0] as JSONObject)["channel"].toString()) }
         socket.on("game-start")     { Communication.updateGameStart() }
+        socket.on("game-clear")     { Communication.updateGameClear() }
         socket.on("game-over")      { Communication.updateEndGame(it[0] as JSONObject) }
         socket.on("game-timer")     { Communication.updateTimer(it[0] as JSONObject) }
         socket.on("game-drawer")    { Communication.updateDrawer(it[0] as JSONObject) }
