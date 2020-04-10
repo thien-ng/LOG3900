@@ -170,7 +170,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var roleListener: Disposable
     private var clearListener: Disposable
     private var drawerSub: Disposable
-    private val matrixSquareSize = 100  //todo: test with smaller size
+    private val matrixSquareSize = 40
     private var lastErasePoint: Point? = null
     private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
@@ -367,7 +367,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     (segment.point.y + width).toInt() / matrixSquareSize
                 )
                 if (topLeft.x != middle.x) {
-                    matrix[topLeft.y][topLeft.x].remove(segments[segments.size - 1])
+                    matrix[topLeft.y][topLeft.x].remove(segment)
                 }
                 val topRight = Point(
                     (segment.point.x + width).toInt() / matrixSquareSize,
@@ -456,10 +456,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
     private fun checkPointForErase(pointX: Int, pointY: Int, isStroke: Boolean): Boolean {
         var strokeFound = false
-
-        if (bitmap.getPixel(pointX, pointY) == Color.WHITE) {
-            return false
-        }
 
         synchronized(matrix) {
             for (segment in matrix[pointY / matrixSquareSize][pointX / matrixSquareSize]) {
