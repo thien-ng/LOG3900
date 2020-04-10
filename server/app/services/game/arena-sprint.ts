@@ -150,6 +150,7 @@ export class ArenaSprint extends Arena {
 
     private resetSubGame(): void {
         this.assignRule();
+        this.socketServer.to(this.room).emit("game-clear");
         this.startBotDrawing(this.drawerBot.username, this.timePerImage);
 
         //reset guess left
