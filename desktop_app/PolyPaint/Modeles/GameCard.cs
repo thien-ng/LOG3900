@@ -167,30 +167,39 @@ namespace PolyPaint.Modeles
         }
         private async void joinPrivateLobby()
         {
-            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.Add("isPrivate", _lobby.isPrivate);
-            values.lobbyName = _lobby.lobbyName;
-            values.size = _lobby.size;
-            values.password = Password.Password;
-            values.mode = _lobby.mode;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            try
             {
-                Dictionary<string, string> data = new Dictionary<string, string>();
-                data.Add("lobbyName", _lobby.lobbyName);
-                data.Add("mode", _lobby.mode);
-                Mediator.Notify("GoToLobbyScreen", data);
+                string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+                dynamic values = new JObject();
+                values.username = ServerService.instance.username;
+                values.Add("isPrivate", _lobby.isPrivate);
+                values.lobbyName = _lobby.lobbyName;
+                values.size = _lobby.size;
+                values.password = Password.Password;
+                values.mode = _lobby.mode;
+                var content = JsonConvert.SerializeObject(values);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+                if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                {
+                    Dictionary<string, string> data = new Dictionary<string, string>();
+                    data.Add("lobbyName", _lobby.lobbyName);
+                    data.Add("mode", _lobby.mode);
+                    Mediator.Notify("GoToLobbyScreen", data);
+                }
+                else
+                {
+                    MessageBox.Show("Wrong password, try again.");
+                }
             }
-            else 
+            catch (Exception)
             {
+
                 MessageBox.Show("Wrong password, try again.");
             }
+            
         }
         #endregion
 
