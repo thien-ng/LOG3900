@@ -5,6 +5,26 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent" android:layout_height="match_parent">
 
+    <TextView
+            android:id="@+id/textView_gameModeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Game Mode"
+            android:textSize="32sp"
+            app:layout_constraintBottom_toTopOf="@+id/textView_Description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+            android:id="@+id/textView_Description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="description"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/userlist"
+            app:layout_constraintStart_toStartOf="@+id/textView_gameModeName" />
+
     <Button
             android:id="@+id/button_start"
             android:layout_width="wrap_content"
@@ -17,18 +37,19 @@
             android:text="Start"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     <Button
             android:id="@+id/button_leave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="44dp"
-            android:layout_marginEnd="38dp"
-            android:layout_marginRight="38dp"
-            android:visibility="invisible"
-            android:enabled="false"
-            app:backgroundTint="@color/colorPrimary"
+            android:layout_marginStart="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:enabled="true"
             android:text="Leave"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="visible"
+            app:backgroundTint="@color/colorPrimary"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     <ListView

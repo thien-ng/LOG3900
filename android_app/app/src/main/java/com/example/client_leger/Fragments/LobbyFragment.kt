@@ -3,6 +3,7 @@ package com.example.client_leger.Fragments
 import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.example.client_leger.Controller.GameController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.android.synthetic.main.fragment_lobby.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -41,8 +43,9 @@ class LobbyFragment : Fragment(),
             lobbyName = bundle.getString("lobbyName")!!
             mode = if (bundle.containsKey("mode")) bundle.getString("mode")!! else ""
         }
+        v.textView_gameModeName.text = mode
+        v.textView_Description.text = getDescription(mode)
         gameController.getUsers(this, lobbyName, mode)
-
         userListAdapter = UserListViewAdapter(this)
         val listview = v.findViewById<ListView>(R.id.userlist)
         listview.adapter = userListAdapter
@@ -92,6 +95,15 @@ class LobbyFragment : Fragment(),
             }
         }
         return v
+    }
+
+    private fun getDescription(mode: String): String {
+        return when (mode) {
+            "FFA" -> "Play against one or more players and try to accumulate the most points"
+            "SOLO" -> "Play alone and try to guess the most words"
+            "COOP" -> "Play with up to three players and try to guess the most words together"
+            else -> "description"
+        }
     }
 
     override fun onDestroy() {
@@ -155,10 +167,6 @@ class LobbyFragment : Fragment(),
                         startButton.isEnabled = true
                         startButton.setOnClickListener { startGame(lobbyName) }
                     }
-                } else {
-                    leaveButton.visibility = View.VISIBLE
-                    leaveButton.isEnabled = true
-                    leaveButton.setOnClickListener { leaveGame(lobbyName) }
                 }
             }
             userListAdapter.addUsers(usernames)
