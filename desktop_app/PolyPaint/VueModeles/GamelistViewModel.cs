@@ -180,11 +180,25 @@ namespace PolyPaint.VueModeles
                     getLobbies();
                 if(((string)data.GetValue("type") == "join"))
                 {
-                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                    try
+                    {
+                        GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                    }
+                    catch (Exception)
+                    {
+                        //fail silently
+                    }
                 }
                 if (((string)data.GetValue("type") == "leave"))
                 {
-                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                    try
+                    {
+                        GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                    }
+                    catch (Exception)
+                    {
+                        // fail silently
+                    }
                 }
             });
 
@@ -236,7 +250,10 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                Mediator.Notify("GoToLobbyScreen", _lobbyName);
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("lobbyName", _lobbyName);
+                data.Add("mode", _selectedMode);
+                Mediator.Notify("GoToLobbyScreen", data);
                 LobbyName = "";
             }
         }
