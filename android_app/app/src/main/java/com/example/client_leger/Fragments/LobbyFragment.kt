@@ -39,15 +39,13 @@ class LobbyFragment : Fragment(),
         var mode = ""
         if (bundle != null) {
             lobbyName = bundle.getString("lobbyName")!!
-            mode = bundle.getString("mode")!!
+            mode = if (bundle.containsKey("mode")) bundle.getString("mode")!! else ""
         }
         gameController.getUsers(this, lobbyName, mode)
 
         userListAdapter = UserListViewAdapter(this)
         val listview = v.findViewById<ListView>(R.id.userlist)
         listview.adapter = userListAdapter
-
-
 
         startListener = Communication.getGameStartListener().subscribe {
             activity!!.runOnUiThread {
