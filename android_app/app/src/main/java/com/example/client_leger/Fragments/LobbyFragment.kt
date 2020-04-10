@@ -24,12 +24,10 @@ class LobbyFragment : Fragment(),
     private lateinit var username: String
     private lateinit var lobbyName: String
     private var usernames: ArrayList<String> = arrayListOf()
-
-    lateinit var v: View
-
-    lateinit var userListAdapter: UserListViewAdapter
-    lateinit var startListener: Disposable
-    lateinit var lobbyNotifSub: Disposable
+    private lateinit var v: View
+    private lateinit var userListAdapter: UserListViewAdapter
+    private lateinit var startListener: Disposable
+    private lateinit var lobbyNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         v = inflater.inflate(R.layout.fragment_lobby, container, false)
@@ -44,12 +42,12 @@ class LobbyFragment : Fragment(),
         gameController.getUsers(this, lobbyName, mode)
 
         userListAdapter = UserListViewAdapter(this)
-        var listview = v.findViewById<ListView>(R.id.userlist)
+        val listview = v.findViewById<ListView>(R.id.userlist)
         listview.adapter = userListAdapter
 
 
 
-        startListener = Communication.getGameStartListener().subscribe { res ->
+        startListener = Communication.getGameStartListener().subscribe {
             activity!!.runOnUiThread {
                 replaceFragment(GameplayFragment())
             }
@@ -93,7 +91,7 @@ class LobbyFragment : Fragment(),
     }
 
     private fun leaveGame(lobbyName: String) {
-        var body = JSONObject()
+        val body = JSONObject()
         body.put("lobbyName", lobbyName)
         body.put("username", username)
         gameController.leaveGame(this, body)
@@ -111,9 +109,9 @@ class LobbyFragment : Fragment(),
             }else usernames.add(userJsonArray.get(i).toString())
         }
         if (usernames.isNotEmpty()) {
-            var startButton = v.findViewById<Button>(R.id.button_start)
-            var leaveButton = v.findViewById<Button>(R.id.button_leave)
-            var addBotButton = v.findViewById<Button>(R.id.button_addBot)
+            val startButton = v.findViewById<Button>(R.id.button_start)
+            val leaveButton = v.findViewById<Button>(R.id.button_leave)
+            val addBotButton = v.findViewById<Button>(R.id.button_addBot)
             if (usernames[0] == username) {
                 startButton.visibility = View.VISIBLE
                 startButton.isEnabled = true
@@ -147,7 +145,7 @@ class LobbyFragment : Fragment(),
     }
 
     private fun addBot(botName: String){
-        var lobby = JSONObject()
+        val lobby = JSONObject()
         lobby.put("username", botName)
         lobby.put("lobbyName", lobbyName)
         gameController.addBot(this, lobby)
@@ -155,7 +153,7 @@ class LobbyFragment : Fragment(),
     }
 
     fun removeBot(botName: String) {
-        var lobby = JSONObject()
+        val lobby = JSONObject()
         lobby.put("username", botName)
         lobby.put("lobbyName", lobbyName)
         gameController.removeBot(this, lobby)
