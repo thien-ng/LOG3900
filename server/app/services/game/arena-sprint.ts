@@ -64,8 +64,10 @@ export class ArenaSprint extends Arena {
 
             this.socketServer.to(this.room).emit("game-timer", { time: this.timeRemaining / ONE_SEC });
 
-            if (this.timeRemaining <= 0) {
+            if (this.timeRemaining <= 0 || this.guessLeft <= 0) {
                 clearInterval(this.curArenaInterval);
+                if (this.drawerBot.interval)
+                    clearInterval(this.drawerBot.interval);
                 this.sendAnswer(this.curRule.solution);
                 this.end();
             }
