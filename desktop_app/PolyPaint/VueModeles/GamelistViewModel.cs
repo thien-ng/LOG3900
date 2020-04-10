@@ -25,6 +25,7 @@ namespace PolyPaint.VueModeles
             _numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             SelectedMode = "FFA";
             IsPrivate = false;
+            _isSizeNeeded = true;
             ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
         }
 
@@ -75,11 +76,11 @@ namespace PolyPaint.VueModeles
                         break;
 
                     case Constants.MODE_COOP:
-                        fillArray(3, 5);
+                        fillArray(1, 4);
                         break;
 
                     case Constants.MODE_SOLO:
-                        fillArray(2, 2);
+                        IsSizeNeeded = false;
                         break;
 
                     default:
@@ -101,6 +102,13 @@ namespace PolyPaint.VueModeles
                 else
                     VisibilityPrivate = "Hidden";
             }
+        }
+
+        private bool _isSizeNeeded;
+        public bool IsSizeNeeded
+        {
+            get { return _isSizeNeeded; }
+            set { _isSizeNeeded = value; ProprieteModifiee(); }
         }
 
         private string _selectedSize;
@@ -240,7 +248,10 @@ namespace PolyPaint.VueModeles
             values.username = ServerService.instance.username;
             values.Add("isPrivate", _isPrivate);
             values.lobbyName = _lobbyName;
-            values.size = _selectedSize;
+            if (_selectedMode == Constants.MODE_SOLO)
+                values.size = 1;
+            else
+                values.size = _selectedSize;
             values.password = _password;
             values.mode = _selectedMode;
             var content = JsonConvert.SerializeObject(values);
