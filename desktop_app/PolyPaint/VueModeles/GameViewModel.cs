@@ -16,16 +16,22 @@ namespace PolyPaint.VueModeles
 {
     class GameViewModel: BaseViewModel, IPageViewModel
     {
-        public GameViewModel()
+        public GameViewModel(string mode)
         {
             DrawViewModel = new DessinViewModel();
             _points = new ObservableCollection<PointsDisplay>();
             _myPoints = "0";
+            Mode = mode;
+            DrawViewModel.IsDrawer = false;
+            _guessLeft = "0";
             ServerService.instance.socket.On("game-drawer", data => processRole((JObject)data));
             ServerService.instance.socket.On("game-timer", data => processTime((JObject)data));
             ServerService.instance.socket.On("game-over", data => processEndGame((JObject)data));
             ServerService.instance.socket.On("game-points", data => processPoints((JObject)data));
+            ServerService.instance.socket.On("game-guessLeft", data => processGuess((JObject)data));
+            ServerService.instance.socket.On("game-clear", processClear);
         }
+
 
         #region Public Attributes
         public DessinViewModel DrawViewModel { get; set; }
@@ -37,11 +43,20 @@ namespace PolyPaint.VueModeles
             set { _role = value; ProprieteModifiee(); }
         }
 
+        public string Mode { get; }
+
         private string _timer;
         public string Timer
         {
             get { return _timer; }
             set { _timer = value; ProprieteModifiee(); }
+        }
+
+        private string _guessLeft;
+        public string GuessLeft
+        {
+            get { return _guessLeft; }
+            set { _guessLeft = value; ProprieteModifiee(); }
         }
 
         private string _myPoints;
@@ -113,21 +128,54 @@ namespace PolyPaint.VueModeles
                 ObjectToDraw = "";
                 DrawViewModel.IsDrawer = false;
             }
-
             App.Current.Dispatcher.Invoke(delegate
             {
                 DrawViewModel.Traits.Clear();
             });
         }
 
+        private void processClear()
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                DrawViewModel.Traits.Clear();
+            });
+        }
+
+        private void processGuess(JObject guess)
+        {
+            try
+            {
+                GuessLeft = guess.GetValue("guessLeft").ToString();
+            }
+            catch (Exception)
+            {
+                GuessLeft = "0";
+            }
+        }
+
         private void processTime(JObject time)
         {
-            Timer = time.GetValue("time").ToString();
+            try
+            {
+                Timer = time.GetValue("time").ToString();
+            }
+            catch (Exception)
+            {
+                Timer = "0";
+            }
         }
 
         private void processPoints(JObject pts)
         {
-            MyPoints = pts.GetValue("point").ToString();
+            try
+            {
+                MyPoints = pts.GetValue("point").ToString();
+            }
+            catch (Exception)
+            {
+                MyPoints = "0";
+            }
         }
 
         private void processEndGame(JObject pointsReceived)
