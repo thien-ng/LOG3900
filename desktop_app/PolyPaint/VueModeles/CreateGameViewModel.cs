@@ -204,7 +204,8 @@ namespace PolyPaint.VueModeles
                                        new JProperty("clues", clues.ToArray()),
                                        new JProperty("difficulty", SelectedDifficulty.ToLower()),
                                        new JProperty("drawing", GeneratedImageStrokes),
-                                       new JProperty("displayMode", SelectedDisplayMode));
+                                       new JProperty("displayMode", SelectedDisplayMode),
+                                       new JProperty("side", SelectedPanoramicMode.ToLower()));
 
             var content = new StringContent(newGame.ToString(), Encoding.UTF8, "application/json");
 
