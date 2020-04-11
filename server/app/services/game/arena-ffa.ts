@@ -258,7 +258,14 @@ export class ArenaFfa extends Arena {
     }
 
     private checkIfEveryoneHasRightAnswer(): boolean {
-        return (this.users.length - this.dcPlayer.length -1 ) <= this.userWithCorrectAns; //-1 to ignore drawer
+        let numOfRealPlayer = 0;
+        this.users.forEach(u => {
+            if (!this.isBot(u.username)) {
+                numOfRealPlayer++;
+            }
+        });
+        
+        return (numOfRealPlayer - this.dcPlayer.length -1 ) <= this.userWithCorrectAns; //-1 to ignore drawer
     }
 
     private initBots(): void {
