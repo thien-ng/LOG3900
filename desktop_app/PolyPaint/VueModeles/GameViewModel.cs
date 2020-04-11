@@ -114,6 +114,19 @@ namespace PolyPaint.VueModeles
             ServerService.instance.socket.Emit("gameplay", gameReady);
         }
 
+        public void setup(string mode)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                DrawViewModel.Traits.Clear();
+            });
+            _myPoints = "0";
+            Mode = mode;
+            DrawViewModel.IsDrawer = false;
+            _guessLeft = "0";
+            _points = new ObservableCollection<PointsDisplay>();
+        }
+
         private void processRole(JObject role) 
         {
             if (role.GetValue("username").ToString() == ServerService.instance.username)

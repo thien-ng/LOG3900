@@ -22,7 +22,6 @@ namespace PolyPaint.VueModeles
         public LobbyViewModel LobbyViewModel { get; private set; }
 
         public GameViewModel GameViewModel { get; private set; }
-        public string Lobbyname { get; set; }
         public HomeViewModel()
         {
             Setup();
@@ -38,6 +37,8 @@ namespace PolyPaint.VueModeles
             Game
         }
 
+        public string Lobbyname { get; set; }
+        public string Mode_Invited { get; set; }
 
         private ObservableCollection<MessageChannel> _subChannels;
         public ObservableCollection<MessageChannel> SubChannels
@@ -230,6 +231,7 @@ namespace PolyPaint.VueModeles
         private void processLobbyInvite(JObject data)
         {
             LobbyInvitedTo = data.GetValue("lobbyName").ToString();
+            Mode_Invited = data.GetValue("mode").ToString();
             Application.Current.Dispatcher.Invoke(delegate
             { 
                 InvitedDialogContent = new InvitedUserControl();
@@ -249,9 +251,14 @@ namespace PolyPaint.VueModeles
         private void goToGameView(object obj)
         {
             SwitchView = Views.Game;
-            GameViewModel = new GameViewModel((string)obj);
-            Application.Current.Dispatcher.Invoke(delegate
+            App.Current.Dispatcher.Invoke(delegate
             {
+                if (GameViewModel == null)
+                    GameViewModel = new GameViewModel((string)obj);
+                else
+                {
+                    GameViewModel.setup((string)obj);
+                }
                 SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == ( Constants.LOBBY_CHANNEL + Lobbyname)));
                 SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
             });
@@ -272,6 +279,34 @@ namespace PolyPaint.VueModeles
                SubChannels.Add(new MessageChannel(lobbyChannel, true, true));
             });
             ChangeChannel(lobbyChannel);
+        }
+
+        private void joinLobbyFromInvite(string lobbyInvitedTo)
+        {
+            joinPublicLobby(lobbyInvitedTo);
+        }
+
+        private async void joinPublicLobby(string lobbyInvitedTo)
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.Add("isPrivate", false);
+            values.lobbyName = lobbyInvitedTo;
+            values.password = "";
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            {
+                Console.WriteLine("HELLOFROMINVITE");
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("lobbyName", lobbyInvitedTo);
+                data.Add("mode", Mode_Invited);
+                Mediator.Notify("GoToLobbyScreen", data);
+            }
         }
 
         public void FetchChannels()
@@ -421,6 +456,7 @@ namespace PolyPaint.VueModeles
             Mediator.Notify("GoToLoginScreen", "");
         }
 
+
         private void FilterChannels()
         {
             string path = Constants.SERVER_PATH + Constants.SEARCH_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + _searchString;
@@ -543,11 +579,12 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptInviteCommand ?? (_acceptInviteCommand = new RelayCommand(x =>
                 {
-                    Mediator.Notify("joinLobbyFromInvite", LobbyInvitedTo);
+                    joinLobbyFromInvite(LobbyInvitedTo);
                     IsInvitedDialogOpen = false;
                 }));
             }
         }
+
 
         private ICommand _declineInviteCommand;
         public ICommand DeclineInviteCommand
