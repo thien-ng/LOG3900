@@ -106,7 +106,7 @@ class GameController {
     }
 
 
-    fun removeBot(fragment: LobbyFragment, body: JSONObject) {
+    fun removePlayer(fragment: LobbyFragment, body: JSONObject) {
         val mRequestQueue = Volley.newRequestQueue(fragment.context)
 
         val mJsonObjectRequest = object : StringRequest(

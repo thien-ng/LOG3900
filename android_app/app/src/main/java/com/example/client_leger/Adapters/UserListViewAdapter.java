@@ -76,11 +76,16 @@ public class UserListViewAdapter extends BaseAdapter {
             switch (type) {
                 case TYPE_USER:
                     convertView = mInflater.inflate(R.layout.lobbyuser_item, null);
-                    view.myTextView = (TextView)convertView.findViewById(R.id.lobbyuser_username);
+                    view.myTextView = convertView.findViewById(R.id.lobbyuser_username);
+                    if (isMaster) { //todo: somehow check to see that we don't add the deleteIcon view on ourselves
+                        view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    } else {
+                        convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
+                    }
                     break;
                 case TYPE_BOT:
                     convertView = mInflater.inflate(R.layout.lobbybot_item, null);
-                    view.myTextView = (TextView)convertView.findViewById(R.id.lobbybot_username);
+                    view.myTextView = convertView.findViewById(R.id.lobbybot_username);
                     if (isMaster) {
                         view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
                     } else {
@@ -94,12 +99,8 @@ public class UserListViewAdapter extends BaseAdapter {
         }
         String name = getItem(position);
         view.myTextView.setText( name);
-        if(getItemViewType(position) == TYPE_BOT) {
-            if (isMaster) {
-                view.deleteIcon.setOnClickListener(v -> {
-                    lobbyFragment.removeBot(name);
-                });
-            }
+        if (isMaster) {
+            view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
         }
         return convertView;
     }
@@ -110,16 +111,13 @@ public class UserListViewAdapter extends BaseAdapter {
         }
         notifyDataSetChanged();
     }
-    public void removeBot(String bot){
-        mData.remove(bot);
+
+    public void removePlayer(String name){
+        mData.remove(name);
         notifyDataSetChanged();
     }
 
-    public void removeUser(String username){
-        mData.remove(username);
-        notifyDataSetChanged();
-    }
-    public class ViewHolder {
+    public static class ViewHolder {
         TextView myTextView;
         AppCompatImageView deleteIcon;
     }

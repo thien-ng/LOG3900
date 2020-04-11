@@ -86,10 +86,12 @@ class LobbyFragment() : Fragment(),
                                 startButton.visibility = View.INVISIBLE
                                 startButton.isEnabled = false
                             }
+
                             if(user.startsWith("bot:")){
-                                userListAdapter.removeBot(user)
                                 bots.add(user)
-                            } else userListAdapter.removeUser(user)
+                            }
+
+                            userListAdapter.removePlayer(user)
                         }
                     }
                 }
@@ -180,10 +182,10 @@ class LobbyFragment() : Fragment(),
         gameController.addBot(this, lobby)
     }
 
-    fun removeBot(botName: String) {
+    fun removePlayer(botName: String) {
         val lobby = JSONObject()
         lobby.put("username", botName)
         lobby.put("lobbyName", lobbyName)
-        gameController.removeBot(this, lobby)
+        gameController.removePlayer(this, lobby)
     }
 }
