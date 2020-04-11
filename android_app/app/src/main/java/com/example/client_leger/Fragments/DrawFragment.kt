@@ -159,7 +159,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var paintLine: Paint = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
-    var isDrawer = false
+    private var isDrawer = false
+    private val eraserHalfSize = 4
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
     private var currentStartX = 0
@@ -170,7 +171,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var roleListener: Disposable
     private var clearListener: Disposable
     private var drawerSub: Disposable
-    private val matrixSquareSize = 100  //todo: test with smaller size
+    private val matrixSquareSize = 32
     private var lastErasePoint: Point? = null
     private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
@@ -178,7 +179,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private lateinit var bitmapCanvas: Canvas
 
     init {
-        paintLine.isAntiAlias = true
         paintLine.color = Color.BLACK
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 16.0F
@@ -259,7 +259,11 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-            touchMoved(currentStartX, currentStartY, x, y, false)
+            if (strokeJustEnded) {
+                currentStartX = x
+                currentStartY = y
+            }
+            touchMoved(currentStartX, currentStartY, x, y)
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_UP){
@@ -313,6 +317,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             segments = ArrayList()
         }
 
+        matrix = Array((height / matrixSquareSize) + 1) {
+            Array((width / matrixSquareSize) + 1) {
+                ArrayList<Segment>()
+            }
+        }
+
         bitmapNeedsToUpdate = true
         postInvalidate()
     }
@@ -336,7 +346,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.nextSegment != null) {
             if (segment.nextSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.nextSegment!!.paint.color = Color.TRANSPARENT
-                segmentsToBeRemoved.add(segment)
+                segmentsToBeRemoved.add(segment.nextSegment!!)
                 batchErase(segment.nextSegment!!)
             }
         }
@@ -344,7 +354,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.previousSegment != null) {
             if (segment.previousSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.previousSegment!!.paint.color = Color.TRANSPARENT
-                segmentsToBeRemoved.add(segment)
+                segmentsToBeRemoved.add(segment.previousSegment!!)
                 batchErase(segment.previousSegment!!)
             }
         }
@@ -367,7 +377,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     (segment.point.y + width).toInt() / matrixSquareSize
                 )
                 if (topLeft.x != middle.x) {
-                    matrix[topLeft.y][topLeft.x].remove(segments[segments.size - 1])
+                    matrix[topLeft.y][topLeft.x].remove(segment)
                 }
                 val topRight = Point(
                     (segment.point.x + width).toInt() / matrixSquareSize,
@@ -471,10 +481,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     segment.point.y - eraserHalfSize <= pointY
                 ) {
                     segment.paint.color = Color.TRANSPARENT
+                    segmentsToBeRemoved.add(segment)
                     if (isStroke) {
                         batchErase(segment)
-                    } else {
-                        segmentsToBeRemoved.add(segment)
                     }
 
                     strokeFound = true
@@ -486,8 +495,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun checkForStrokesToErase(pointX: Int, pointY: Int, isStroke: Boolean) {
-        val eraserHalfSize = 4
-
         val strokeFound = (
             checkPointForErase(pointX, pointY, isStroke) ||
             checkPointForErase(pointX + eraserHalfSize, pointY, isStroke) ||
@@ -496,17 +503,35 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             checkPointForErase(pointX, pointY - eraserHalfSize, isStroke))
 
         if (strokeFound) {
-            bitmapNeedsToUpdate = true
+            val paintWhite = Paint()
+            paintWhite.color = Color.WHITE
+            paintWhite.style = Paint.Style.STROKE
+            paintWhite.strokeCap = Paint.Cap.ROUND
+
+            synchronized(segmentsToBeRemoved) {
+                for (segment in segmentsToBeRemoved) {
+                    paintWhite.strokeWidth = segment.paint.strokeWidth
+                    bitmapCanvas.drawPoint(segment.point.x.toFloat(), segment.point.y.toFloat(), paintWhite)
+
+                    synchronized(segments) {
+                        for (s in matrix[segment.point.y / matrixSquareSize][segment.point.x / matrixSquareSize]) {
+                            bitmapCanvas.drawPoint(s.point.x.toFloat(), s.point.y.toFloat(), s.paint)
+                        }
+                    }
+                }
+            }
+
             for (segment in segmentsToBeRemoved) {
                 removeSegmentFromMatrix(segment)
             }
+
             segmentsToBeRemoved = ArrayList()
             postInvalidate()
         }
     }
 
-    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int, isEnd: Boolean) {
-        sendStroke(startX, startY, destX, destY, isEnd)
+    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int) {
+        sendStroke(startX, startY, destX, destY, false)
         divideAndAddSegment(startX, startY, destX, destY)
         postInvalidate()
     }
@@ -548,15 +573,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun strokeReceived(obj: JSONObject) {
-        if (!isValidPoint(obj.getInt("startPosX"), obj.getInt("startPosY")) ||
-            !isValidPoint(obj.getInt("endPosX"), obj.getInt("endPosY"))) {
-            strokeJustEnded = true
-            return
-        }
-
-
         when {
             obj.getString("type") == "ink" -> {
+                if (isDrawer) {
+                    return
+                }
+
                 if (obj.getBoolean("isEnd")) {
                     strokeJustEnded = true
                     return
@@ -566,7 +588,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     bitmapNeedsToUpdate = true
                 }
 
-                paintLine.isAntiAlias = true
+                if (!isValidPoint(obj.getInt("startPosX"), obj.getInt("startPosY")) ||
+                    !isValidPoint(obj.getInt("endPosX"), obj.getInt("endPosY"))) {
+                    strokeJustEnded = true
+                    return
+                }
+
                 paintLine.color = obj.getInt("color")
                 paintLine.style = Paint.Style.STROKE
                 paintLine.strokeWidth = obj.getInt("width").toFloat()
@@ -584,6 +611,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                 )
             }
             obj.getString("type") == "eraser" -> {
+                if (!isValidPoint(obj.getInt("x"), obj.getInt("y"))) {
+                    return
+                }
                 checkForStrokesToErase(
                     obj.getInt("x"),
                     obj.getInt("y"),
