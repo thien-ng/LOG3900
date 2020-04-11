@@ -28,7 +28,7 @@ namespace PolyPaint.Modeles
             {
                 _players.Add(item);
             }
-
+            _isNotFull = true;
             _lobby = lobby;
             _mode = lobby.mode;
             _lobbyName = lobby.lobbyName;
@@ -74,6 +74,17 @@ namespace PolyPaint.Modeles
                 _players = value;
                 ActualSize = Players.Count;
                 ProprieteModifiee(nameof(Players));
+            }
+        }
+
+        private bool _isNotFull;
+        public bool IsNotFull
+        {
+            get { return _isNotFull; }
+            set
+            {
+                _isNotFull = value;
+                ProprieteModifiee();
             }
         }
 
@@ -130,6 +141,8 @@ namespace PolyPaint.Modeles
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ActualSize = _players.Count;
+            if (ActualSize == Size)
+                IsNotFull = false;
         }
 
         protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
