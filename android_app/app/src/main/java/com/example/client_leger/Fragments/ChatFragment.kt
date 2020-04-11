@@ -446,7 +446,10 @@ class ChatFragment: Fragment() {
 
             val username = if (message.isNull("username")) "" else message.getString("username")
             val content = if (message.isNull("content")) "" else message.getString("content")
-            val time = if (isNormalChannel && message.isNull("time")) "" else message.getString("time")
+            var time = ""
+            if (isNormalChannel) {
+                time = if (message.isNull("time")) "" else message.getString("time")
+            }
 
             activity!!.runOnUiThread {
                 if(curUser != username){
