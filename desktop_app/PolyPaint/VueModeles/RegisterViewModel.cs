@@ -150,7 +150,7 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.socket.On(Constants.LOGGING_EVENT, data => ReceiveMessage((JObject)data));
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                
-                            }
+                            }   
                             else
                                 await MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
                         }

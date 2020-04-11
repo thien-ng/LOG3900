@@ -25,11 +25,5 @@ namespace PolyPaint.Vues
         {
             InitializeComponent();
         }
-
-        private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            ((GameViewModel)DataContext).DrawViewModel.Width = ColumDraw.ActualWidth;
-            ((GameViewModel)DataContext).DrawViewModel.Height = RowDraw.ActualHeight;
-        }
     }
 }
