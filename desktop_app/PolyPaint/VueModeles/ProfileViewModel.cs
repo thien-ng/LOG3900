@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using Newtonsoft.Json;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
@@ -23,8 +18,8 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                _firstname = Services.ServerService.instance.user.firstName;
-                _lastname = Services.ServerService.instance.user.lastName;
+                _firstname = ServerService.instance.user.firstName;
+                _lastname = ServerService.instance.user.lastName;
                 _connections = ServerService.instance.user.connections;
                 _stats = ServerService.instance.user.stats;
                 _games = ServerService.instance.user.games;
@@ -97,7 +92,7 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-                await MessageBoxDisplayer.ShowMessageBox("failed to retrieve stats");
+                MessageBoxDisplayer.ShowMessageBox("failed to retrieve stats");
             }
 
         }

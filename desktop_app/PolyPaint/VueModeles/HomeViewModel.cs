@@ -347,7 +347,7 @@ namespace PolyPaint.VueModeles
 
             if (!response.IsSuccessStatusCode)
             {
-                await MessageBoxDisplayer.ShowMessageBox("Error while joining channel");
+                MessageBoxDisplayer.ShowMessageBox("Error while joining channel");
                 return;
             }
 
@@ -355,7 +355,7 @@ namespace PolyPaint.VueModeles
 
             if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
             {
-                await MessageBoxDisplayer.ShowMessageBox("Error parsing server response");
+                MessageBoxDisplayer.ShowMessageBox("Error parsing server response");
                 return;
             }
 
@@ -368,7 +368,7 @@ namespace PolyPaint.VueModeles
                 });
             }
             else
-                await MessageBoxDisplayer.ShowMessageBox(responseJson.GetValue("message").ToString());
+                MessageBoxDisplayer.ShowMessageBox(responseJson.GetValue("message").ToString());
         }
 
         private async void UnsubChannel(object id)
@@ -379,7 +379,7 @@ namespace PolyPaint.VueModeles
 
             if (!response.IsSuccessStatusCode)
             {
-                await MessageBoxDisplayer.ShowMessageBox("Error while leaving channel");
+                MessageBoxDisplayer.ShowMessageBox("Error while leaving channel");
                 return;
             }
 
@@ -387,7 +387,7 @@ namespace PolyPaint.VueModeles
 
             if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
             {
-                await MessageBoxDisplayer.ShowMessageBox("Error parsing server response");
+                MessageBoxDisplayer.ShowMessageBox("Error parsing server response");
                 return;
             }
 
@@ -401,7 +401,7 @@ namespace PolyPaint.VueModeles
                 _notSubChannels.Add(leftChannel);
             }
             else
-                await MessageBoxDisplayer.ShowMessageBox(responseJson.GetValue("message").ToString());
+                MessageBoxDisplayer.ShowMessageBox(responseJson.GetValue("message").ToString());
         }
 
         private void UpdateUnsubChannel(JObject channelMes) 
@@ -572,7 +572,7 @@ namespace PolyPaint.VueModeles
                 {
                     
                     if (String.Equals(NewChannelString, Constants.GAME_CHANNEL, StringComparison.OrdinalIgnoreCase))
-                        await MessageBoxDisplayer.ShowMessageBox("This channel name is used for in game chat.");
+                        MessageBoxDisplayer.ShowMessageBox("This channel name is used for in game chat.");
                     else
                         await Task.Run(() => SubToChannel(NewChannelString));
                     NewChannelString = "";

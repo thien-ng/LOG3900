@@ -62,7 +62,7 @@ namespace PolyPaint.VueModeles
         #endregion
 
         #region Methods
-        private async void ReceiveMessage(JObject jsonMessage)
+        private void ReceiveMessage(JObject jsonMessage)
         {
             var status = jsonMessage["status"].ToObject<int>();
             var message = jsonMessage["message"].ToObject<string>();
@@ -73,7 +73,10 @@ namespace PolyPaint.VueModeles
                 Mediator.Notify("GoToHomeScreen", "");
             }
             else
-                await MessageBoxDisplayer.ShowMessageBox(message);
+                App.Current.Dispatcher.Invoke(async delegate
+                {
+                    MessageBoxDisplayer.ShowMessageBox(message);
+                });
         }
 
         private async void fetchProfile()
@@ -90,7 +93,7 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-                await MessageBoxDisplayer.ShowMessageBox("Failed to connect!");
+                MessageBoxDisplayer.ShowMessageBox("Failed to connect!");
             }
             
         }
@@ -151,12 +154,12 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                             }
                             else
-                                await MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
+                                MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
                         } 
                     } catch
                     {
 
-                        await MessageBoxDisplayer.ShowMessageBox("Error while logging into server.");
+                        MessageBoxDisplayer.ShowMessageBox("Error while logging into server.");
                     }
                     finally
                     {

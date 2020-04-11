@@ -265,7 +265,7 @@ namespace PolyPaint.VueModeles
             try
             {
                 colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
-            } catch(Exception e)
+            } catch(Exception)
             {
                 colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
             }

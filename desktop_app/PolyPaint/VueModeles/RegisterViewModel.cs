@@ -72,7 +72,7 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
-        private async void ReceiveMessage(JObject jsonMessage)
+        private void ReceiveMessage(JObject jsonMessage)
         {
             var status = jsonMessage["status"].ToObject<int>();
             var message = jsonMessage["message"].ToObject<string>();
@@ -84,7 +84,7 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                await MessageBoxDisplayer.ShowMessageBox(message);
+                MessageBoxDisplayer.ShowMessageBox(message);
             }
         }
 
@@ -133,7 +133,7 @@ namespace PolyPaint.VueModeles
 
                     if (_username == null || Password.SecurePassword.Length == 0 || _firstName == null || _lastName == null)
                     {
-                        await MessageBoxDisplayer.ShowMessageBox("Please fill every parameter");
+                        MessageBoxDisplayer.ShowMessageBox("Please fill every parameter");
                         return;
                     }
 
@@ -152,12 +152,12 @@ namespace PolyPaint.VueModeles
                
                             }   
                             else
-                                await MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
+                                MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
                         }
                     }
                     catch
                     {
-                        await MessageBoxDisplayer.ShowMessageBox("Error while logging into server");
+                        MessageBoxDisplayer.ShowMessageBox("Error while logging into server");
                     }
                     finally
                     {

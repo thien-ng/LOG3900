@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PolyPaint.Utilitaires
+﻿namespace PolyPaint.Utilitaires
 {
     class Constants
     {
-        public const string SERVER_PATH             = "https://log3000-app.herokuapp.com";
+        //public const string SERVER_PATH             = "https://log3000-app.herokuapp.com";
+        public const string SERVER_PATH             = "http://67.68.221.98:3000";
         public const string ACCOUNT_PATH            = "/account";
         public const string LOGIN_PATH              = ACCOUNT_PATH + "/login";
         public const string REGISTER_PATH           = ACCOUNT_PATH + "/register";
@@ -37,8 +32,8 @@ namespace PolyPaint.Utilitaires
         public const string SEARCH_CHANNEL_PATH     = CHANNELS_PATH + "/search";
         public const string CREATE_CHANNEL_PATH     = CHANNELS_PATH + "/search";
         public const int    SUCCESS_CODE            = 200;
-        public const int    PWD_MIN_LENGTH          = 1; //TODO
-        public const int    USR_MIN_LENGTH          = 1; //TODO
+        public const int    PWD_MIN_LENGTH          = 1;
+        public const int    USR_MIN_LENGTH          = 1;
 
         public const string DEFAULT_CHANNEL         = "general";
         public const string GAME_CHANNEL            = "Game Channel";
