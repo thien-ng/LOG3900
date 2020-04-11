@@ -17,42 +17,42 @@ const ANNOUNCEMENT = "{0} has disconnected";
 
 export abstract class Arena {
 
-    protected gm : GameManagerService;
+    protected gm: GameManagerService;
 
-    protected socketServer:        io.Server;
-    protected rules:               IGameRule[];
-    protected room:                string;
-    protected curRule:             IGameRule;
-    protected userMapPoints:       Map<string, number>;
-    protected type:                GameMode;
-    
-    protected userMapReady:        Map<string, boolean>;
-    protected dcPlayer:            string[];
-    protected users:               IUser[];
-    protected isAllDc:             boolean;
+    protected socketServer: io.Server;
+    protected rules: IGameRule[];
+    protected room: string;
+    protected curRule: IGameRule;
+    protected userMapPoints: Map<string, number>;
+    protected type: GameMode;
 
-    private arenaId:               number;
-    private chronometerTimer:      number;
-    private hintPtr:               number;
-    
-    protected curArenaInterval:    NodeJS.Timeout;
-    public  chronometerInterval:   NodeJS.Timeout;
+    protected userMapReady: Map<string, boolean>;
+    protected dcPlayer: string[];
+    protected users: IUser[];
+    protected isAllDc: boolean;
 
-    public gameMessages:           IGameplayAnnouncement[];
-    
+    private arenaId: number;
+    private chronometerTimer: number;
+    private hintPtr: number;
+
+    protected curArenaInterval: NodeJS.Timeout;
+    public chronometerInterval: NodeJS.Timeout;
+
+    public gameMessages: IGameplayAnnouncement[];
+
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
-        this.users          = users;
-        this.room           = room;
-        this.socketServer   = io;
-        this.rules          = rules;
-        this.dcPlayer       = [];
-        this.curRule        = this.rules[0];
-        this.gm             = gm;
-        this.arenaId        = arenaId;
-        this.type           = type;
-        this.hintPtr        = 0;
-        this.isAllDc        = false;
-        this.gameMessages   = [];
+        this.users = users;
+        this.room = room;
+        this.socketServer = io;
+        this.rules = rules;
+        this.dcPlayer = [];
+        this.curRule = this.rules[0];
+        this.gm = gm;
+        this.arenaId = arenaId;
+        this.type = type;
+        this.hintPtr = 0;
+        this.isAllDc = false;
+        this.gameMessages = [];
 
         this.initReadyMap();
         this.setupPoints();
@@ -97,12 +97,12 @@ export abstract class Arena {
 
     public disconnectPlayer(username: string): void {
         // disconnect user from arena but does not remove from users list to be persisted in db
-        const user = this.users.find(u => {return u.username === username});
+        const user = this.users.find(u => { return u.username === username });
         if (user && user.socket) {
             this.dcPlayer.push(user.username);
             user.socket.leave(this.room);
 
-            this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true});
+            this.sendToChat({ username: "Server", content: format(ANNOUNCEMENT, user.username), isServer: true });
         }
 
         let count = 0;
@@ -111,8 +111,11 @@ export abstract class Arena {
             if (!this.isBot(u.username))
                 count++;
         });
-        if (count === 0)
+        if (count - this.dcPlayer.length === 0) {
             this.isAllDc = true;
+            clearInterval(this.curArenaInterval);
+            this.end();
+        }
     }
 
     protected checkArenaLoadingState(callback: () => void): void {
@@ -139,9 +142,9 @@ export abstract class Arena {
         console.log("[Debug] end game points are: ", pts);
         console.log("[Debug] disconnected players: ", this.dcPlayer);
 
-        this.socketServer.to(this.room).emit("game-over", {points: pts});
+        this.socketServer.to(this.room).emit("game-over", { points: pts });
 
-        this.users.forEach(u => {            
+        this.users.forEach(u => {
             if (u.socket)
                 u.socket.leave(this.room);
         });
@@ -173,15 +176,15 @@ export abstract class Arena {
                 eraser: draw.eraser,
             };
         return {
-            startPosX:  draw.startPosX,
-            startPosY:  draw.startPosY,
-            endPosX:    draw.endPosX,
-            endPosY:    draw.endPosY,
-            color:      draw.color,
-            width:      draw.width,
-            isEnd:      draw.isEnd,
-            format:     draw.format,
-            type:       draw.type,
+            startPosX: draw.startPosX,
+            startPosY: draw.startPosY,
+            endPosX: draw.endPosX,
+            endPosY: draw.endPosY,
+            color: draw.color,
+            width: draw.width,
+            isEnd: draw.isEnd,
+            format: draw.format,
+            type: draw.type,
         };
     }
 
@@ -191,7 +194,7 @@ export abstract class Arena {
 
     protected chooseRandomRule(): void {
         // May fail if there is no rules in mongodb
-        const index =  Math.floor(Math.random() * this.rules.length);
+        const index = Math.floor(Math.random() * this.rules.length);
         this.curRule = this.rules[index];
 
         // remove rules that are used already
@@ -216,7 +219,7 @@ export abstract class Arena {
     }
 
     protected setupPoints(): void {
-        this.userMapPoints  = new Map<string, number>();
+        this.userMapPoints = new Map<string, number>();
         this.users.forEach(u => {
             this.userMapPoints.set(u.username, 0);
         });
@@ -227,7 +230,7 @@ export abstract class Arena {
     }
 
     protected initBot(botName: string): MeanBot | KindBot | HumourBot {
-        switch(botName) {
+        switch (botName) {
             case Bot.mean:
                 return new MeanBot(this.socketServer, botName);
             case Bot.humour:
@@ -261,10 +264,10 @@ export abstract class Arena {
         const ptsList: IPoints[] = [];
         this.userMapPoints.forEach((pts: number, key: string) => {
             if (!this.isBot(key))
-                ptsList.push({username: key, points: pts});
+                ptsList.push({ username: key, points: pts });
         });
 
-        ptsList.sort((n1,n2) => {
+        ptsList.sort((n1, n2) => {
             if (n1.points > n2.points) return -1;
             if (n1.points < n2.points) return 1;
             return 0;
