@@ -24,7 +24,7 @@ class LobbyFragment() : Fragment(),
     FragmentChangeListener {
     private var gameController: GameController = GameController()
     private var isMaster: Boolean = false
-    private lateinit var username: String
+    lateinit var username: String
     private lateinit var lobbyName: String
     private var usernames: ArrayList<String> = arrayListOf()
     private var numOtherPlayers = 0

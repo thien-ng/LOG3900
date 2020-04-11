@@ -72,13 +72,15 @@ public class UserListViewAdapter extends BaseAdapter {
         int type = getItemViewType(position);
         view = new ViewHolder();
 
+        String name = getItem(position);
+
         if (convertView == null) {
             switch (type) {
                 case TYPE_USER:
                     convertView = mInflater.inflate(R.layout.lobbyuser_item, null);
                     view.myTextView = convertView.findViewById(R.id.lobbyuser_username);
-                    if (isMaster) { //todo: somehow check to see that we don't add the deleteIcon view on ourselves
-                        view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    if (isMaster) {
+                       view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
                     } else {
                         convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
                     }
@@ -97,10 +99,11 @@ public class UserListViewAdapter extends BaseAdapter {
         }else {
             view = (ViewHolder)convertView.getTag();
         }
-        String name = getItem(position);
+
         view.myTextView.setText( name);
         if (isMaster) {
-            view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
+            if(name.equals(lobbyFragment.username)) convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
+            else view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
         }
         return convertView;
     }
