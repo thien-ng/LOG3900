@@ -18,7 +18,7 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LobbyViewModel : BaseViewModel, IPageViewModel
+    class LobbyViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
         public LobbyViewModel(string lobbyname, string mode)
         {
@@ -37,7 +37,6 @@ namespace PolyPaint.VueModeles
 
             Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
-
 
         #region Public Attributes
 
@@ -344,7 +343,7 @@ namespace PolyPaint.VueModeles
 
         private void joingame()
         {
-            if(!IsGameMaster)
+            if (!IsGameMaster)
                 Mediator.Notify("GoToGameScreen", Mode);
         }
 
@@ -377,6 +376,13 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if (response.IsSuccessStatusCode)
                 MessageBox.Show("Invite sucessfully sent");
+        }
+
+        public void Dispose()
+        {
+            ServerService.instance.socket.Off("lobby-notif");
+            ServerService.instance.socket.Off("game-start");
+            ServerService.instance.socket.Off("lobby-kicked");
         }
 
         #endregion

@@ -241,6 +241,8 @@ namespace PolyPaint.VueModeles
 
         private void goToGameListView(object obj)
         {
+            if (LobbyViewModel != null)
+                LobbyViewModel.Dispose();
             SwitchView = Views.Gamelist;
             IsNotInLobby = true;
             Application.Current.Dispatcher.Invoke(delegate
@@ -250,19 +252,21 @@ namespace PolyPaint.VueModeles
         }
         private void goToGameView(object obj)
         {
-            SwitchView = Views.Game;
-            App.Current.Dispatcher.Invoke(delegate
+            if (LobbyViewModel != null)
+                LobbyViewModel.Dispose();
+            Task.Delay(150).ContinueWith(_ =>
             {
-                if (GameViewModel == null)
-                    GameViewModel = new GameViewModel((string)obj);
-                else
+                if (GameViewModel != null)
+                    GameViewModel.Dispose();
+                GameViewModel = new GameViewModel((string)obj);
+                App.Current.Dispatcher.Invoke(delegate
                 {
-                    GameViewModel.setup((string)obj);
-                }
-                SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == ( Constants.LOBBY_CHANNEL + Lobbyname)));
-                SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+                    SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == (Constants.LOBBY_CHANNEL + Lobbyname)));
+                    SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+                    ChangeChannel(Constants.GAME_CHANNEL);
+                });
+                SwitchView = Views.Game;
             });
-            ChangeChannel(Constants.GAME_CHANNEL);
         }
 
 
@@ -270,6 +274,9 @@ namespace PolyPaint.VueModeles
         {
             IsNotInLobby = false;
             Dictionary<string, string> data = new Dictionary<string, string>((Dictionary<string, string>)lobbyData);
+            if (LobbyViewModel != null)
+                LobbyViewModel.Dispose();
+
             LobbyViewModel = new LobbyViewModel(data["lobbyName"], data["mode"]);
             this.Lobbyname = data["lobbyName"];
             string lobbyChannel = Constants.LOBBY_CHANNEL + this.Lobbyname;
@@ -301,7 +308,6 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-                Console.WriteLine("HELLOFROMINVITE");
                 Dictionary<string, string> data = new Dictionary<string, string>();
                 data.Add("lobbyName", lobbyInvitedTo);
                 data.Add("mode", Mode_Invited);
