@@ -399,7 +399,14 @@ namespace PolyPaint.VueModeles
 
                 MessageChannel leftChannel = new MessageChannel(channelId, false, false);
                 _subChannels.Remove(_subChannels.SingleOrDefault(i => i.id == channelId));
-                _notSubChannels.Add(leftChannel);
+
+                await Application.Current.Dispatcher.Invoke(async delegate
+                {
+                    NotSubChannels.Clear();
+                    var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+                    ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
+
+                });
             }
             else
                 MessageBox.Show(responseJson.GetValue("message").ToString());
