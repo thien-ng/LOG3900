@@ -71,17 +71,27 @@
             android:id="@+id/button_addBot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="258dp"
-            android:layout_marginLeft="258dp"
-            android:layout_marginTop="13dp"
-            android:layout_marginEnd="255dp"
-            android:layout_marginRight="255dp"
-            android:layout_marginBottom="34dp"
-            android:visibility="invisible"
+            android:layout_marginStart="100dp"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="20dp"
             android:enabled="false"
             android:text="Add bot"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toStartOf="@+id/button_invitePlayer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userlist" />
+
+    <Button
+            android:id="@+id/button_invitePlayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="100dp"
+            android:layout_marginRight="100dp"
+            android:enabled="false"
+            android:text="Invite player"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_addBot"
+            app:layout_constraintTop_toTopOf="@+id/button_addBot" />
+
 </android.support.constraint.ConstraintLayout>
