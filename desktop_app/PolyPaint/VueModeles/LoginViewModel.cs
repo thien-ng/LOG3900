@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PolyPaint.Controls;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
@@ -20,9 +22,11 @@ namespace PolyPaint.VueModeles
         private bool        _isButtonEnabled;
         private bool        _loginIsRunning;
         private string      _username;
+        private MessageBoxViewModel _messageBoxViewModel;
 
         public LoginViewModel()
         {
+            _messageBoxViewModel = new MessageBoxViewModel();
             _loginIsRunning = false;
             fetchProfile();
         }
@@ -58,7 +62,7 @@ namespace PolyPaint.VueModeles
         #endregion
 
         #region Methods
-        private void ReceiveMessage(JObject jsonMessage)
+        private async void ReceiveMessage(JObject jsonMessage)
         {
             var status = jsonMessage["status"].ToObject<int>();
             var message = jsonMessage["message"].ToObject<string>();
@@ -69,9 +73,7 @@ namespace PolyPaint.VueModeles
                 Mediator.Notify("GoToHomeScreen", "");
             }
             else
-            {
-                MessageBox.Show(message);
-            }
+                await MessageBoxDisplayer.ShowMessageBox(message);
         }
 
         private async void fetchProfile()
@@ -88,8 +90,7 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-
-                MessageBox.Show("failed to connect");
+                await MessageBoxDisplayer.ShowMessageBox("Failed to connect!");
             }
             
         }
@@ -150,11 +151,12 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                             }
                             else
-                                MessageBox.Show(res.GetValue("message").ToString());
+                                await MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
                         } 
                     } catch
                     {
-                        MessageBox.Show("Error while logging into server");
+
+                        await MessageBoxDisplayer.ShowMessageBox("Error while logging into server.");
                     }
                     finally
                     {

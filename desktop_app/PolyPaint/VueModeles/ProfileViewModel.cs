@@ -88,8 +88,8 @@ namespace PolyPaint.VueModeles
                     string responseString = await response.Content.ReadAsStringAsync();
                     var data = JsonConvert.DeserializeObject<User>(responseString);
                     ServerService.instance.user = data;
-                    Firstname = Services.ServerService.instance.user.firstName;
-                    Lastname = Services.ServerService.instance.user.lastName;
+                    Firstname = ServerService.instance.user.firstName;
+                    Lastname = ServerService.instance.user.lastName;
                     Connections = ServerService.instance.user.connections;
                     Stats = ServerService.instance.user.stats;
                     Games = ServerService.instance.user.games;
@@ -97,7 +97,7 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-                MessageBox.Show("failed to retrieve stats");
+                await MessageBoxDisplayer.ShowMessageBox("failed to retrieve stats");
             }
 
         }

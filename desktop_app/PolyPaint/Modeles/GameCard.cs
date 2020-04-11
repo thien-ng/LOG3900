@@ -167,6 +167,7 @@ namespace PolyPaint.Modeles
         }
         private async void joinPrivateLobby()
         {
+            string errorMessage = "Wrong password, try again.";
             try
             {
                 string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
@@ -190,14 +191,11 @@ namespace PolyPaint.Modeles
                     Mediator.Notify("GoToLobbyScreen", data);
                 }
                 else
-                {
-                    MessageBox.Show("Wrong password, try again.");
-                }
+                    await MessageBoxDisplayer.ShowMessageBox(errorMessage);
             }
             catch (Exception)
             {
-
-                MessageBox.Show("Wrong password, try again.");
+                await MessageBoxDisplayer.ShowMessageBox(errorMessage);
             }
             
         }

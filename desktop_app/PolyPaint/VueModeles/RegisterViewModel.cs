@@ -84,7 +84,7 @@ namespace PolyPaint.VueModeles
             }
             else
             {
-                MessageBox.Show(message);
+                await MessageBoxDisplayer.ShowMessageBox(message);
             }
         }
 
@@ -133,7 +133,7 @@ namespace PolyPaint.VueModeles
 
                     if (_username == null || Password.SecurePassword.Length == 0 || _firstName == null || _lastName == null)
                     {
-                        MessageBox.Show("Please fill every parameter");
+                        await MessageBoxDisplayer.ShowMessageBox("Please fill every parameter");
                         return;
                     }
 
@@ -152,12 +152,12 @@ namespace PolyPaint.VueModeles
                
                             }
                             else
-                                MessageBox.Show(res.GetValue("message").ToString());
+                                await MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
                         }
                     }
                     catch
                     {
-                        MessageBox.Show("Error while logging into server");
+                        await MessageBoxDisplayer.ShowMessageBox("Error while logging into server");
                     }
                     finally
                     {

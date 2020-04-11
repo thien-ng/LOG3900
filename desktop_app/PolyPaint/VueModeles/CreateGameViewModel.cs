@@ -214,6 +214,7 @@ namespace PolyPaint.VueModeles
 
         private async Task Accept()
         {
+            string errorMessage = "Invalid request!";
             HttpResponseMessage result;
             switch (SelectedCreationType)
             {
@@ -222,7 +223,7 @@ namespace PolyPaint.VueModeles
 
                     if (!result.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("Invalid request");
+                        await MessageBoxDisplayer.ShowMessageBox(errorMessage);
                         return;
                     }
                     break;
@@ -234,7 +235,7 @@ namespace PolyPaint.VueModeles
 
                     if (!result.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("Invalid request");
+                        await MessageBoxDisplayer.ShowMessageBox(errorMessage);
                         return;
                     }
                     break;
@@ -293,7 +294,7 @@ namespace PolyPaint.VueModeles
 
             if (!response.IsSuccessStatusCode)
             {
-                MessageBox.Show("Error while joining channel");
+                await MessageBoxDisplayer.ShowMessageBox("Error while joining channel");
                 return;
             }
 
@@ -301,7 +302,7 @@ namespace PolyPaint.VueModeles
 
             if (!(responseJson.ContainsKey("drawPng") && responseJson.ContainsKey("drawPxl") && responseJson.ContainsKey("object")))
             {
-                MessageBox.Show("Error parsing server response");
+                await MessageBoxDisplayer.ShowMessageBox("Error parsing server response");
                 return;
             }
 
