@@ -18,6 +18,8 @@ namespace PolyPaint.VueModeles
     {
         public GameViewModel(string mode)
         {
+            if (DrawViewModel != null)
+                DrawViewModel.Dispose();
             DrawViewModel = new DessinViewModel();
             _points = new ObservableCollection<PointsDisplay>();
             _myPoints = "0";
@@ -116,6 +118,7 @@ namespace PolyPaint.VueModeles
 
         private void processRole(JObject role) 
         {
+            DrawViewModel.IsDrawer = false;
             if (role.GetValue("username").ToString() == ServerService.instance.username)
             {
                 Role = Constants.ROLE_DRAWER;
@@ -128,9 +131,11 @@ namespace PolyPaint.VueModeles
                 ObjectToDraw = "";
                 DrawViewModel.IsDrawer = false;
             }
-            App.Current.Dispatcher.Invoke(delegate
-            {
-                DrawViewModel.Traits.Clear();
+            Task.Delay(150).ContinueWith(_ => {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    DrawViewModel.Traits.Clear();
+                });
             });
         }
 
@@ -238,6 +243,7 @@ namespace PolyPaint.VueModeles
             {
                 return _okCommand ?? (_okCommand = new RelayCommand(x =>
                 {
+                    DrawViewModel.Dispose();
                     IsEndGameDialogOpen = false;
                     Mediator.Notify("LeaveLobby");
                 }));
