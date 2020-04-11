@@ -127,10 +127,12 @@ export class ArenaFfa extends Arena {
     }
 
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
-        this.users.forEach(u => {
-            if (u.username != mes.username)
-                socket.to(this.room).emit("draw", this.mapToDrawing(mes))
-        });
+        if (mes.username === this.users[this.drawPtr - 1].username) {
+            this.users.forEach(u => {
+                if (u.username != mes.username)
+                    socket.to(this.room).emit("draw", this.mapToDrawing(mes))
+            });
+        }
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
