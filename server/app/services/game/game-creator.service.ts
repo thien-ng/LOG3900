@@ -36,7 +36,7 @@ export class GameCreatorService {
         if (!configs.clues ||configs.clues.length < 1)
             throw new Error("Some clues must be included in request");
         configs.clues.forEach(c => {
-            if (/[^a-zA-Z]/.test(c))
+            if (/[^a-zA-Z ]/.test(c))
                 throw new Error("Clues must contains letters only");
         });
         if (!configs.difficulty || !(configs.difficulty.toUpperCase() in Difficulty))

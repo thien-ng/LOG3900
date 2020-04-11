@@ -226,7 +226,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
     override fun onJoinPrivateClick(view: View?, adapterPosition: Int) {
         val lobby = adapterLobbyCards.getItem(adapterPosition)
-        if(lobby.size < lobby.usernames.size) {
+        if(lobby.size > lobby.usernames.size) {
             val builder = AlertDialog.Builder(context)
             builder.setTitle("Enter password")
             val input = EditText(context)
@@ -259,7 +259,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
     override fun onJoinClick(view: View?, position: Int) {
         val lobby = adapterLobbyCards.getItem(position)
-        if(lobby.size < lobby.usernames.size) {
+        if(lobby.size > lobby.usernames.size) {
             val data = JSONObject()
             data.put("username", username)
             data.put("lobbyName", lobby.lobbyName)
