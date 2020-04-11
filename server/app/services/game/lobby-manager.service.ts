@@ -101,9 +101,7 @@ export class LobbyManagerService {
     }
 
     private isUserWhitelisted(lobby: IActiveLobby, user: IUser): boolean {
-        return (lobby != undefined) && (lobby.whitelist != undefined) && (lobby.whitelist.find((item) => {
-            item == user;
-        }) == undefined);
+        return (lobby != undefined) && (lobby.whitelist != undefined) && (lobby.whitelist.find((item) => { return item.username == user.username; }) !== undefined);
     }
 
     public join(req: IJoinLobby): string {
@@ -128,6 +126,9 @@ export class LobbyManagerService {
                 throw new Error(`${user.username} is already in lobby ${lobby.lobbyName}`);
 
             if (lobby.isPrivate && (this.isPwdMatching(req.password as string, lobby.password as string) || this.isUserWhitelisted(lobby, user)) || isBot) {
+                if (lobby.whitelist) {
+                    lobby.whitelist = lobby.whitelist.filter(u => u.username !== req.username);
+                }
                 lobby.users.push(user);
                 this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username, mode: lobby.mode } as INotifyUpdateUser);
             }
@@ -152,7 +153,7 @@ export class LobbyManagerService {
             this.lobbiesMessages.set(req.lobbyName, []);
             this.sendMessages({ lobbyName: req.lobbyName, type: LobbyNotif.create, usernames: [user.username], isPrivate: req.isPrivate, size: req.size, mode: req.mode } as INotifyLobbyUpdate);
         }
-
+        
         return `Successfully joined lobby ${req.lobbyName}`;
     }
 

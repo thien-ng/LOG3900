@@ -317,9 +317,11 @@ class ChatFragment: Fragment() {
     }
 
     fun showLoadHistoryButton() {
-        activity!!.runOnUiThread {
-            v.button_load_chat_history.isEnabled = true
-            v.button_load_chat_history.visibility = View.VISIBLE
+        if (activity != null) {
+            activity!!.runOnUiThread {
+                v.button_load_chat_history.isEnabled = true
+                v.button_load_chat_history.visibility = View.VISIBLE
+            }
         }
     }
 

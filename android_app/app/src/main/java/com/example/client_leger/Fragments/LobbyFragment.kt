@@ -3,6 +3,7 @@ package com.example.client_leger.Fragments
 import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,12 +120,11 @@ class LobbyFragment : Fragment(),
         val body = JSONObject()
         body.put("lobbyName", lobbyName)
         body.put("username", username)
-        gameController.leaveGame(this, body)
+        gameController.leaveGame(this, body, fragmentManager!!)
     }
 
     override fun replaceFragment(fragment: Fragment) {
-        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment)
-            .addToBackStack(fragment.toString()).commit()
+        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment).commit()
     }
 
     fun loadUsers(userJsonArray: JSONArray, mode: String) {

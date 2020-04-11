@@ -225,39 +225,48 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun onJoinPrivateClick(view: View?, adapterPosition: Int) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Enter password")
-        val input = EditText(context)
-        input.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
-        builder.setView(input)
+        val lobby = adapterLobbyCards.getItem(adapterPosition)
+        if(lobby.size > lobby.usernames.size) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Enter password")
+            val input = EditText(context)
+            input.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+            builder.setView(input)
 
-        builder.setPositiveButton(
-            "JOIN"
-        ) { dialog, _ ->
+            builder.setPositiveButton(
+                "JOIN"
+            ) { dialog, _ ->
 
-            val lobby = JSONObject()
-            lobby.put("username", username)
-            lobby.put("isPrivate", true)
-            lobby.put("lobbyName", adapterLobbyCards.getItem(adapterPosition).lobbyName)
-            lobby.put("password", input.text.trim())
+                val data = JSONObject()
+                data.put("username", username)
+                data.put("isPrivate", true)
+                data.put("lobbyName", lobby.lobbyName)
+                data.put("password", input.text.trim())
 
-            lobbyCardsController.joinLobby(this, lobby)
-            dialog.dismiss()
+                lobbyCardsController.joinLobby(this, data)
+                dialog.dismiss()
+            }
+
+            builder.setNeutralButton(
+                "Cancel"
+            ) { dialog, _ -> dialog.cancel() }
+
+            builder.show()
+        } else{
+            Toast.makeText(context, " The lobby is full", Toast.LENGTH_SHORT).show()
         }
-
-        builder.setNeutralButton(
-            "Cancel"
-        ) { dialog, _ -> dialog.cancel() }
-
-        builder.show()
-
     }
 
     override fun onJoinClick(view: View?, position: Int) {
-        val lobby = JSONObject()
-        lobby.put("username", username)
-        lobby.put("lobbyName", adapterLobbyCards.getItem(position).lobbyName)
-        lobbyCardsController.joinLobby(this, lobby)
+        val lobby = adapterLobbyCards.getItem(position)
+        if(lobby.size > lobby.usernames.size) {
+            val data = JSONObject()
+            data.put("username", username)
+            data.put("lobbyName", lobby.lobbyName)
+            lobbyCardsController.joinLobby(this, data)
+        } else{
+            Toast.makeText(context, " The lobby is full", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onUsersDropClick(view: View?, position: Int) {
@@ -267,8 +276,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun replaceFragment(fragment: Fragment) {
-        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment)
-            .addToBackStack(fragment.toString()).commit()
+        fragmentManager!!.beginTransaction().replace(R.id.container_view_right, fragment).commit()
     }
 
     fun loadLobbies(lobbies: ArrayList<Lobby>) {

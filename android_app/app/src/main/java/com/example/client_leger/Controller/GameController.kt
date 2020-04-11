@@ -1,5 +1,6 @@
 package com.example.client_leger.Controller
 
+import android.support.v4.app.FragmentManager
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -8,7 +9,9 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.client_leger.Constants
+import com.example.client_leger.Fragments.LobbyCardsFragment
 import com.example.client_leger.Fragments.LobbyFragment
+import com.example.client_leger.R
 import org.json.JSONObject
 
 
@@ -55,14 +58,14 @@ class GameController {
         requestQueue.add(jsonArrayRequest)
     }
 
-    fun leaveGame(fragment: LobbyFragment, body: JSONObject) {
+    fun leaveGame(fragment: LobbyFragment, body: JSONObject, fragmentManager: FragmentManager) {
         val mRequestQueue = Volley.newRequestQueue(fragment.context)
 
         val mJsonObjectRequest = object : StringRequest(
             Method.POST,
             Constants.SERVER_URL + Constants.LEAVE_LOBBY_ENDPOINT,
             Response.Listener {
-                fragment.fragmentManager!!.popBackStackImmediate()
+                fragmentManager.beginTransaction().replace(R.id.container_view_right, LobbyCardsFragment()).commit()
             },
             Response.ErrorListener { error ->
                 Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()
