@@ -24,7 +24,7 @@
 
     <materialDesign:DialogHost IsOpen="{Binding IsEndGameDialogOpen}"
                                DialogContent="{Binding DialogContent}"
-                               CloseOnClickAway="True">
+                               CloseOnClickAway="False">
         <Grid SizeChanged="Grid_SizeChanged">
         <Grid.Background>
             <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>

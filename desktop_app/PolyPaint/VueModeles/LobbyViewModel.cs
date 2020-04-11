@@ -213,8 +213,11 @@ namespace PolyPaint.VueModeles
         #region Methods
         private void kickedFromLobby()
         {
-            Mediator.Notify("LeaveLobby", "");
-            MessageBox.Show("You got kicked from lobby");
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                Mediator.Notify("LeaveLobby", "");
+                MessageBox.Show("You got kicked from lobby");
+            });
         }
 
         private async Task leaveLobby()
@@ -258,7 +261,8 @@ namespace PolyPaint.VueModeles
             {
                 fetchUsername();
             }
-            if((string)data.GetValue("type") == "leave"){
+            if((string)data.GetValue("type") == "leave" && (string)data.GetValue("lobbyName") == this.LobbyName)
+            {
                 if (data.GetValue("username").ToString().Contains("bot:"))
                 {
                     App.Current.Dispatcher.Invoke(delegate
