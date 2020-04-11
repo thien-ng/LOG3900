@@ -102,8 +102,11 @@ public class UserListViewAdapter extends BaseAdapter {
 
         view.myTextView.setText( name);
         if (isMaster) {
-            if(name.equals(lobbyFragment.username)) convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
-            else view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
+            if(name.equals(lobbyFragment.username)) view.deleteIcon.setVisibility(View.GONE);
+            else {
+                view.deleteIcon.setVisibility(View.VISIBLE);
+                view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
+            }
         }
         return convertView;
     }
