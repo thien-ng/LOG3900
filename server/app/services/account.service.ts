@@ -129,9 +129,9 @@ export class AccountService {
         });
 
         const games = this.getGameInfos(username).then((result: IGame[]) => {
-            return result.reverse;
+            return result.reverse();
         }).catch((e) => {
-            return e;
+            return [];
         });
 
         return Promise.all([noms, connections, profileStats, games]).then(async (res) => {
@@ -142,27 +142,38 @@ export class AccountService {
         });
     }
 
+    private async asyncForEach(array: any[], callback: { (id: number): Promise<void>; (arg0: any, arg1: number, arg2: any[]): void; }): Promise<any> {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array);
+        }
+    }
+
     private async getGameInfos(username: string): Promise<IGame[]> {
         const mapDate = new Map<number, IModeDate>();
         const idList: number[] = [];
-        const gameList: IGame[] = [];
 
-        (await this.database.getGameIds(username)).rows.forEach(u => {
-            mapDate.set(u.out_gamesid, { mode: u.out_mode, date: u.out_date });
-            idList.push(u.out_gamesid);
+        return this.database.getGameIds(username).then(async result => {
+
+            result.rows.forEach(u => {
+                mapDate.set(u.out_gamesid, { mode: u.out_mode, date: u.out_date });
+                idList.push(u.out_gamesid);
+            });
+
+            let gameList: IGame[] = [];
+
+            await (this.asyncForEach(idList, async (id: number) => {
+                const info = (await this.database.getGameInfo(id)).rows[0];
+                const list: IPlayer[] = [];
+                info.getgameinfo.forEach((p: IPlayer) => { list.push(p) });
+                const obj = mapDate.get(id) as IModeDate;
+                gameList.push({ mode: obj.mode, date: obj.date, players: list } as IGame);
+            }));
+
+            return gameList;
+
+        }).catch(e => {
+            return e;
         });
-
-        for await (const id of idList) {
-            const info = (await this.database.getGameInfo(id)).rows[0];
-
-            const list: IPlayer[] = [];
-            info.getgameinfo.forEach((p: IPlayer) => { list.push(p) });
-
-            const obj = mapDate.get(id) as IModeDate;
-            gameList.push({ mode: obj.mode, date: obj.date, players: list });
-        }
-
-        return gameList;
     }
 
 }
