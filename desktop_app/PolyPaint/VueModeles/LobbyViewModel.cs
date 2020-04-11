@@ -291,6 +291,8 @@ namespace PolyPaint.VueModeles
                     App.Current.Dispatcher.Invoke(delegate
                     {
                         usernames.Add(new UserLobby(item, item == ServerService.instance.username));
+                        if (Bots.Contains(item))
+                            Bots.Remove(item);
                     });
                 }
                 Usernames = usernames;

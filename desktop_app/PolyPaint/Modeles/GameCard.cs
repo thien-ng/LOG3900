@@ -37,7 +37,6 @@ namespace PolyPaint.Modeles
             IsPrivate = lobby.isPrivate;
             _isPasswordDialogOpen = false;
             _players.CollectionChanged += this.OnCollectionChanged;
-            Mediator.Subscribe("joinLobbyFromInvite", joinLobbyFromInvite);
         }
 
         #region Public Attributes
@@ -137,11 +136,7 @@ namespace PolyPaint.Modeles
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        private void joinLobbyFromInvite(object obj)
-        {
-            if ((string)obj == this.LobbyName)
-                joinPublicLobby();
-        }
+
         private async void joinPublicLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
