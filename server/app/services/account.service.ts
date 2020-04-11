@@ -115,20 +115,28 @@ export class AccountService {
         }).catch((e) => {
             return e;
         });
+
         const connections: Promise<IConnection[]> = this.database.getAccountConnectionsByUsername(username).then((result: pg.QueryResult) => {
-            return result.rows.map((row: any) => ({ username: username, isLogin: row.out_islogin, times: row.out_times }));
+            return result.rows.map((row: any) => ({ username: username, isLogin: row.out_islogin, times: row.out_times })).reverse();
         }).catch((e) => {
             return e;
         });
+
         const profileStats: Promise<IStats> = this.database.getProfileStats(username).then((result: pg.QueryResult) => {
             return result.rows.map((row: any) => ({ totalGame: row.out_nbrgame, winRate: row.out_winrate, bestScore: row.out_best, totalPlayTime: row.out_elapsedtime, avgGameTime: row.out_timegame }))[0];
         }).catch((e) => {
             return e;
         });
 
-        return Promise.all([noms, connections, profileStats]).then(async (res) => {
-            const games = await this.getGameInfos(username);
-            return { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1], stats: res[2], games: games };
+        const games = this.getGameInfos(username).then((result: IGame[]) => {
+            return result.reverse;
+        }).catch((e) => {
+            return e;
+        });
+
+        return Promise.all([noms, connections, profileStats, games]).then(async (res) => {
+
+            return { username: username, firstName: res[0].firstName, lastName: res[0].lastName, connections: res[1], stats: res[2], games: res[3] };
         }).catch((e) => {
             return e;
         });
