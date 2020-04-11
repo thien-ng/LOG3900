@@ -95,8 +95,6 @@ export class ChatService {
             list.forEach((user: IUser) => {
                 this.socket.to(user.socketId).emit("chat", mesToSend);
             });
-        } else {
-            throw new Error(`cannnot find user list from ${mes.channel_id}`);
         }
 
         // save message to DB
