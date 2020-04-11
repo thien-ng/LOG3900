@@ -171,7 +171,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var roleListener: Disposable
     private var clearListener: Disposable
     private var drawerSub: Disposable
-    private val matrixSquareSize = 50
+    private val matrixSquareSize = 32
     private var lastErasePoint: Point? = null
     private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
@@ -179,7 +179,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private lateinit var bitmapCanvas: Canvas
 
     init {
-        paintLine.isAntiAlias = true
         paintLine.color = Color.BLACK
         paintLine.style = Paint.Style.STROKE
         paintLine.strokeWidth = 16.0F
@@ -314,6 +313,12 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             segments = ArrayList()
         }
 
+        matrix = Array((height / matrixSquareSize) + 1) {
+            Array((width / matrixSquareSize) + 1) {
+                ArrayList<Segment>()
+            }
+        }
+
         bitmapNeedsToUpdate = true
         postInvalidate()
     }
@@ -323,7 +328,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun redrawPathsToBitmap() {
-        //todo: dont redraw everytime a segment is erased
         bitmap.eraseColor(Color.WHITE)
         synchronized(segments) {
             for (segment in segments) {
@@ -338,7 +342,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.nextSegment != null) {
             if (segment.nextSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.nextSegment!!.paint.color = Color.TRANSPARENT
-                segmentsToBeRemoved.add(segment)
+                segmentsToBeRemoved.add(segment.nextSegment!!)
                 batchErase(segment.nextSegment!!)
             }
         }
@@ -346,7 +350,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         if (segment.previousSegment != null) {
             if (segment.previousSegment!!.paint.color != Color.TRANSPARENT) {
                 segment.previousSegment!!.paint.color = Color.TRANSPARENT
-                segmentsToBeRemoved.add(segment)
+                segmentsToBeRemoved.add(segment.previousSegment!!)
                 batchErase(segment.previousSegment!!)
             }
         }
@@ -473,10 +477,9 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     segment.point.y - eraserHalfSize <= pointY
                 ) {
                     segment.paint.color = Color.TRANSPARENT
+                    segmentsToBeRemoved.add(segment)
                     if (isStroke) {
                         batchErase(segment)
-                    } else {
-                        segmentsToBeRemoved.add(segment)
                     }
 
                     strokeFound = true
@@ -496,10 +499,30 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             checkPointForErase(pointX, pointY - eraserHalfSize, isStroke))
 
         if (strokeFound) {
-            bitmapNeedsToUpdate = true
+            //bitmapNeedsToUpdate = true
+
+            val paintWhite = Paint()
+            paintWhite.color = Color.WHITE
+            paintWhite.style = Paint.Style.STROKE
+            paintWhite.strokeCap = Paint.Cap.ROUND
+
+            synchronized(segmentsToBeRemoved) {
+                for (segment in segmentsToBeRemoved) {
+                    paintWhite.strokeWidth = segment.paint.strokeWidth
+                    bitmapCanvas.drawPoint(segment.point.x.toFloat(), segment.point.y.toFloat(), paintWhite)
+
+                    synchronized(segments) {
+                        for (s in matrix[segment.point.y / matrixSquareSize][segment.point.x / matrixSquareSize]) {
+                            bitmapCanvas.drawPoint(s.point.x.toFloat(), s.point.y.toFloat(), s.paint)
+                        }
+                    }
+                }
+            }
+
             for (segment in segmentsToBeRemoved) {
                 removeSegmentFromMatrix(segment)
             }
+
             segmentsToBeRemoved = ArrayList()
             postInvalidate()
         }
@@ -569,7 +592,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     return
                 }
 
-                paintLine.isAntiAlias = true
                 paintLine.color = obj.getInt("color")
                 paintLine.style = Paint.Style.STROKE
                 paintLine.strokeWidth = obj.getInt("width").toFloat()
