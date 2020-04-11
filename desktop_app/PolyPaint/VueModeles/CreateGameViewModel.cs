@@ -223,7 +223,7 @@ namespace PolyPaint.VueModeles
 
                     if (!result.IsSuccessStatusCode)
                     {
-                        MessageBoxDisplayer.ShowMessageBox(errorMessage);
+                        ShowMessageBox(errorMessage);
                         return;
                     }
                     break;
@@ -235,7 +235,7 @@ namespace PolyPaint.VueModeles
 
                     if (!result.IsSuccessStatusCode)
                     {
-                        MessageBoxDisplayer.ShowMessageBox(errorMessage);
+                        ShowMessageBox(errorMessage);
                         return;
                     }
                     break;
@@ -294,7 +294,7 @@ namespace PolyPaint.VueModeles
 
             if (!response.IsSuccessStatusCode)
             {
-                MessageBoxDisplayer.ShowMessageBox("Error while joining channel");
+                ShowMessageBox("Error while joining channel");
                 return;
             }
 
@@ -302,7 +302,7 @@ namespace PolyPaint.VueModeles
 
             if (!(responseJson.ContainsKey("drawPng") && responseJson.ContainsKey("drawPxl") && responseJson.ContainsKey("object")))
             {
-                MessageBoxDisplayer.ShowMessageBox("Error parsing server response");
+                ShowMessageBox("Error parsing server response");
                 return;
             }
 
@@ -322,6 +322,14 @@ namespace PolyPaint.VueModeles
 
             if (result == true)
                 SelectedImage = new BitmapImage(new Uri(op.FileName));
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
         }
 
         #endregion

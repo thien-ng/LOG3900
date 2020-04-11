@@ -216,7 +216,7 @@ namespace PolyPaint.VueModeles
             App.Current.Dispatcher.Invoke(delegate
             {
                 Mediator.Notify("LeaveLobby", "");
-                MessageBoxDisplayer.ShowMessageBox("You got kicked from lobby");
+                ShowMessageBox("You got kicked from lobby");
             });
         }
 
@@ -373,6 +373,14 @@ namespace PolyPaint.VueModeles
             return await ServerService.instance.client.PostAsync(requestPath, byteContent);
         }
 
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
+        }
+
         #endregion
 
         #region Commands
@@ -466,7 +474,7 @@ namespace PolyPaint.VueModeles
                     var response = await InviteUserAsync((string)x);
 
                     if (response.IsSuccessStatusCode)
-                        MessageBoxDisplayer.ShowMessageBox("Invite sucessfully sent");
+                        ShowMessageBox("Invite sucessfully sent");
                 }));
             }
         }
@@ -484,7 +492,7 @@ namespace PolyPaint.VueModeles
                     var response = await kickPlayer(username);
                     if ((int)response.StatusCode == Constants.SUCCESS_CODE)
                     {
-                        MessageBoxDisplayer.ShowMessageBox("Player " + username + " kicked.");
+                        ShowMessageBox("Player " + username + " kicked.");
                     }
                 }));
             }

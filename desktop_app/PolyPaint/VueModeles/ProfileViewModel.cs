@@ -92,7 +92,10 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-                MessageBoxDisplayer.ShowMessageBox("failed to retrieve stats");
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    MessageBoxDisplayer.ShowMessageBox("failed to retrieve stats");
+                });
             }
 
         }

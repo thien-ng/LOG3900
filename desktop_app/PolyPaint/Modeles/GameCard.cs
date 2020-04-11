@@ -195,17 +195,25 @@ namespace PolyPaint.Modeles
                     Mediator.Notify("GoToLobbyScreen", data);
                 }
                 else
-                    MessageBoxDisplayer.ShowMessageBox(errorMessage);
+                    ShowMessageBox(errorMessage);
             }
             catch (Exception)
             {
-                MessageBoxDisplayer.ShowMessageBox(errorMessage);
+                ShowMessageBox(errorMessage);
             }
             finally
             {
                 IsLobbyJoined = true;
             }
             
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
         }
         #endregion
 

@@ -22,11 +22,9 @@ namespace PolyPaint.VueModeles
         private bool        _isButtonEnabled;
         private bool        _loginIsRunning;
         private string      _username;
-        private MessageBoxViewModel _messageBoxViewModel;
 
         public LoginViewModel()
         {
-            _messageBoxViewModel = new MessageBoxViewModel();
             _loginIsRunning = false;
             fetchProfile();
         }
@@ -73,9 +71,9 @@ namespace PolyPaint.VueModeles
                 Mediator.Notify("GoToHomeScreen", "");
             }
             else
-                App.Current.Dispatcher.Invoke(async delegate
+                App.Current.Dispatcher.Invoke(delegate
                 {
-                    MessageBoxDisplayer.ShowMessageBox(message);
+                    ShowMessageBox(message);
                 });
         }
 
@@ -93,7 +91,7 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-                MessageBoxDisplayer.ShowMessageBox("Failed to connect!");
+                ShowMessageBox("Failed to connect!");
             }
             
         }
@@ -129,6 +127,14 @@ namespace PolyPaint.VueModeles
             IsButtonEnabled = condition;
         }
 
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
+        }
+
         #endregion
 
         #region Commands
@@ -154,12 +160,12 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                             }
                             else
-                                MessageBoxDisplayer.ShowMessageBox(res.GetValue("message").ToString());
+                                ShowMessageBox(res.GetValue("message").ToString());
                         } 
                     } catch
                     {
 
-                        MessageBoxDisplayer.ShowMessageBox("Error while logging into server.");
+                        ShowMessageBox("Error while logging into server.");
                     }
                     finally
                     {
