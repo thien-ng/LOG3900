@@ -149,9 +149,7 @@ namespace PolyPaint.Modeles
             values.username = ServerService.instance.username;
             values.Add("isPrivate", _lobby.isPrivate);
             values.lobbyName = _lobby.lobbyName;
-            values.size = _lobby.size;
             values.password = "";
-            values.mode = _lobby.mode;
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
