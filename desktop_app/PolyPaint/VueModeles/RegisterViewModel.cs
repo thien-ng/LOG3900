@@ -72,7 +72,7 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
-        private void ReceiveMessage(JObject jsonMessage)
+        private async void ReceiveMessage(JObject jsonMessage)
         {
             var status = jsonMessage["status"].ToObject<int>();
             var message = jsonMessage["message"].ToObject<string>();
