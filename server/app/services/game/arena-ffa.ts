@@ -127,10 +127,12 @@ export class ArenaFfa extends Arena {
     }
 
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
-        this.users.forEach(u => {
-            if (u.username != mes.username)
-                socket.to(this.room).emit("draw", this.mapToDrawing(mes))
-        });
+        if (mes.username === this.users[this.drawPtr - 1].username) {
+            this.users.forEach(u => {
+                if (u.username != mes.username)
+                    socket.to(this.room).emit("draw", this.mapToDrawing(mes))
+            });
+        }
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
@@ -258,7 +260,18 @@ export class ArenaFfa extends Arena {
     }
 
     private checkIfEveryoneHasRightAnswer(): boolean {
-        return (this.users.length - this.dcPlayer.length -1 ) <= this.userWithCorrectAns; //-1 to ignore drawer
+        let numOfRealPlayer = 0;
+        this.users.forEach(u => {
+            if (!this.isBot(u.username)) {
+                numOfRealPlayer++;
+            }
+        });
+
+        if (this.isBot(this.users[this.drawPtr - 1].username)) {
+            return (numOfRealPlayer - this.dcPlayer.length) <= this.userWithCorrectAns;
+        }
+        
+        return (numOfRealPlayer - this.dcPlayer.length - 1) <= this.userWithCorrectAns; //-1 to ignore drawer
     }
 
     private initBots(): void {

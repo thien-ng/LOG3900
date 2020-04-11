@@ -67,6 +67,10 @@ export class LobbyManagerService {
 
         if (!user) throw new Error(`${username} is not found in logged users`);
 
+        if (this.checkIfUserIsAlreadyInALobby(username)){
+            throw new Error("User already in a lobby");
+        }
+
         const lobby = this.lobbyDoesExists(lobbyName);
 
         if (!lobby) throw new Error(`lobby ${lobbyName} doesn't exist`);
@@ -79,6 +83,16 @@ export class LobbyManagerService {
         }
         this.socketServer.to(user.socketId).emit("lobby-invitation", { type: LobbyNotif.invitation, lobbyName: lobbyName })
         return `${username} added to whitelist`;
+    }
+
+    private checkIfUserIsAlreadyInALobby(username: string): boolean {
+        let userFound = false;
+        this.lobbies.forEach((lobby: IActiveLobby, key: string) => {
+            if (userFound == false) {
+                userFound = lobby.users.find(u => {return u.username === username}) !== undefined;
+            }
+        });
+        return userFound;
     }
 
     public removeWhitelist(lobbyName: string, username: string): string {
@@ -117,6 +131,10 @@ export class LobbyManagerService {
         const lobby = this.lobbyDoesExists(req.lobbyName);
 
         if (lobby) {
+            // if lobbyName already exist
+            if (this.isCreateLobbyRequest(req)) {
+                throw new Error("Lobby name already exist");
+            }
 
             // Join lobby
             if (lobby.users.length > lobby.size - 1) {
@@ -224,6 +242,10 @@ export class LobbyManagerService {
             messages.push(mes);
             this.lobbiesMessages.set(mes.lobbyName, messages);
         }
+    }
+
+    private isCreateLobbyRequest(req: IJoinLobby): boolean {
+        return req.mode !== undefined && req.size !== undefined;
     }
 
     private checkUsersLeftExceptBot(lobby: IActiveLobby): boolean {
