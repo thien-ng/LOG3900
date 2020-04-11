@@ -93,6 +93,9 @@ class LobbyFragment() : Fragment(),
 
                             userListAdapter.removePlayer(user)
                         }
+                    } else {
+                        fragmentManager!!.beginTransaction().
+                            replace(R.id.container_view_right, LobbyCardsFragment()).commit()
                     }
                 }
             }
