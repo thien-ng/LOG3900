@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,25 +77,44 @@ class LobbyFragment : Fragment(),
                     }
                 }
                 "leave" -> {
+
                     val user = mes.getString("username")
+                    Log.d("user: ", user)
                     if(user != username) {
                         --numOtherPlayers
+                        Log.d("numOtherPlayers: ", "" + numOtherPlayers )
+
                         activity!!.runOnUiThread {
                             if (numOtherPlayers == 0) {
                                 val startButton = v.findViewById<Button>(R.id.button_start)
                                 startButton.visibility = View.INVISIBLE
                                 startButton.isEnabled = false
+                            }else if(isMaster()){
+                                val startButton = v.findViewById<Button>(R.id.button_start)
+                                startButton.visibility = View.VISIBLE
+                                startButton.isEnabled = true
                             }
                             if(user.startsWith("bot:")){
                                 userListAdapter.removeBot(user)
                                 bots.add(user)
                             } else userListAdapter.removeUser(user)
+
                         }
                     }
                 }
             }
         }
         return v
+    }
+
+    private fun isMaster(): Boolean {
+        var i =0;
+        while(usernames[i].startsWith("bot:")){
+            i++
+        }
+        Log.d("first not bot index:", "" + i)
+        Log.d("first not bot: ", usernames[i])
+        return usernames[i] == username
     }
 
     private fun getDescription(mode: String): String {
