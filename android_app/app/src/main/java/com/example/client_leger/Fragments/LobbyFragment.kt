@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
+import android.widget.Toast
 import com.example.client_leger.Adapters.UserListViewAdapter
 import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Controller.GameController
@@ -32,6 +33,7 @@ class LobbyFragment() : Fragment(),
     private lateinit var userListAdapter: UserListViewAdapter
     private lateinit var startListener: Disposable
     private lateinit var lobbyNotifSub: Disposable
+    private lateinit var kickNotifSub: Disposable
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         v = inflater.inflate(R.layout.fragment_lobby, container, false)
@@ -54,6 +56,12 @@ class LobbyFragment() : Fragment(),
         startListener = Communication.getGameStartListener().subscribe {
             activity!!.runOnUiThread {
                 replaceFragment(GameplayFragment())
+            }
+        }
+
+        kickNotifSub = Communication.getUpdateKickListener().subscribe{
+            activity!!.runOnUiThread {
+                Toast.makeText(context, "You have been kicked", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -116,6 +124,7 @@ class LobbyFragment() : Fragment(),
         super.onDestroy()
         startListener.dispose()
         lobbyNotifSub.dispose()
+        kickNotifSub.dispose()
     }
 
     private fun startGame(lobbyName: String) {
@@ -189,6 +198,7 @@ class LobbyFragment() : Fragment(),
         val lobby = JSONObject()
         lobby.put("username", botName)
         lobby.put("lobbyName", lobbyName)
+        lobby.put("isKicked", true)
         gameController.removePlayer(this, lobby)
     }
 }

@@ -30,6 +30,7 @@ object SocketIO {
         socket.on("game-guessLeft") { Communication.updateGuessLeft(it[0] as JSONObject) }
         socket.on("lobby-chat")     { Communication.updateLobbyChat(it[0] as JSONObject) }
         socket.on("lobby-notif")    { Communication.updateLobby(it[0] as JSONObject) }
+        socket.on("lobby-kicked")   { Communication.updateKick() }
     }
 
     fun connect(username: String) {
