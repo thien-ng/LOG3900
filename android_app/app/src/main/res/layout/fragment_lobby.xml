@@ -20,12 +20,11 @@
             android:id="@+id/textView_Description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:text="description"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/userlist"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView_gameModeName" />
 
     <Button
             android:id="@+id/button_start"
@@ -51,21 +50,30 @@
             android:text="Leave"
             android:visibility="visible"
             app:backgroundTint="@color/colorPrimary"
-            app:layout_constraintBottom_toTopOf="@+id/userlist"
+            app:layout_constraintBottom_toTopOf="@+id/textView_Players"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+            android:id="@+id/textView_Players"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="5dp"
+            android:text="Players"
+            android:textSize="32sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView_Description" />
+
     <ListView
             android:id="@+id/userlist"
-            android:layout_width="wrap_content"
+            android:layout_width="175dp"
             android:layout_height="0dp"
-            android:layout_marginStart="38dp"
-            android:layout_marginLeft="38dp"
-            android:layout_marginEnd="38dp"
-            android:layout_marginRight="38dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_start" />
+            app:layout_constraintTop_toBottomOf="@+id/textView_Players" />
 
     <Button
             android:id="@+id/button_addBot"
@@ -77,6 +85,7 @@
             android:enabled="false"
             android:text="Add bot"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_invitePlayer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userlist" />
@@ -90,6 +99,7 @@
             android:enabled="false"
             android:text="Invite player"
             android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/button_addBot"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button_addBot"
             app:layout_constraintTop_toTopOf="@+id/button_addBot" />
