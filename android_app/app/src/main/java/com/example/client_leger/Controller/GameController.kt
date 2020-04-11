@@ -2,7 +2,6 @@ package com.example.client_leger.Controller
 
 import android.app.AlertDialog
 import android.support.v4.app.FragmentManager
-import android.util.Log
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
