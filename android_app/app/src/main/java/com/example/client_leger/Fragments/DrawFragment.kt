@@ -259,6 +259,10 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
+            if (strokeJustEnded) {
+                currentStartX = x
+                currentStartY = y
+            }
             touchMoved(currentStartX, currentStartY, x, y)
             currentStartX = x
             currentStartY = y
@@ -281,7 +285,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         val directionX = (destX - lastErasePoint!!.x) / distance
         val directionY = (destY - lastErasePoint!!.y) / distance
 
-        for (i in 0..distance.toInt() step (eraserHalfSize * 4)) {
+        for (i in 0..distance.toInt()) {
             val newX = (lastErasePoint!!.x + directionX * i).toInt()
             val newY = (lastErasePoint!!.y + directionY * i).toInt()
 
