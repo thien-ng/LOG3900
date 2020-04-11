@@ -172,11 +172,9 @@ namespace PolyPaint.Modeles
                 string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
                 dynamic values = new JObject();
                 values.username = ServerService.instance.username;
-                values.Add("isPrivate", _lobby.isPrivate);
+                values.Add("isPrivate", true);
                 values.lobbyName = _lobby.lobbyName;
-                values.size = _lobby.size;
                 values.password = Password.Password;
-                values.mode = _lobby.mode;
                 var content = JsonConvert.SerializeObject(values);
                 var buffer = System.Text.Encoding.UTF8.GetBytes(content);
                 var byteContent = new ByteArrayContent(buffer);
