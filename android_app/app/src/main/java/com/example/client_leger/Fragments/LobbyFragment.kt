@@ -3,7 +3,6 @@ package com.example.client_leger.Fragments
 import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +19,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 
-class LobbyFragment : Fragment(),
+class LobbyFragment() : Fragment(),
     FragmentChangeListener {
     private var gameController: GameController = GameController()
+    private var isMaster: Boolean = false
     private lateinit var username: String
     private lateinit var lobbyName: String
     private var usernames: ArrayList<String> = arrayListOf()
@@ -40,13 +40,14 @@ class LobbyFragment : Fragment(),
         lobbyName = ""
         var mode = ""
         if (bundle != null) {
+            isMaster = bundle.getBoolean("isMaster")
             lobbyName = bundle.getString("lobbyName")!!
             mode = if (bundle.containsKey("mode")) bundle.getString("mode")!! else ""
         }
         v.textView_gameModeName.text = mode
         v.textView_Description.text = getDescription(mode)
         gameController.getUsers(this, lobbyName, mode)
-        userListAdapter = UserListViewAdapter(this)
+        userListAdapter = UserListViewAdapter(this, isMaster)
         val listview = v.findViewById<ListView>(R.id.userlist)
         listview.adapter = userListAdapter
 

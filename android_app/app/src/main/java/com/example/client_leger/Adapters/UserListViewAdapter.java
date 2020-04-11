@@ -24,10 +24,12 @@ public class UserListViewAdapter extends BaseAdapter {
     private ArrayList mData = new ArrayList();
     private LayoutInflater mInflater;
     private LobbyFragment lobbyFragment;
+    private Boolean isMaster;
 
-    public UserListViewAdapter(LobbyFragment lobbyFragment) {
+    public UserListViewAdapter(LobbyFragment lobbyFragment, boolean isMaster) {
         mInflater = LayoutInflater.from(lobbyFragment.getContext());
         this.lobbyFragment = lobbyFragment;
+        this.isMaster = isMaster;
     }
 
     public void addUser(final String item) {
@@ -79,7 +81,11 @@ public class UserListViewAdapter extends BaseAdapter {
                 case TYPE_BOT:
                     convertView = mInflater.inflate(R.layout.lobbybot_item, null);
                     view.myTextView = (TextView)convertView.findViewById(R.id.lobbybot_username);
-                    view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    if (isMaster) {
+                        view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    } else {
+                        convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
+                    }
                     break;
             }
             convertView.setTag(view);
@@ -89,9 +95,11 @@ public class UserListViewAdapter extends BaseAdapter {
         String name = getItem(position);
         view.myTextView.setText( name);
         if(getItemViewType(position) == TYPE_BOT) {
-            view.deleteIcon.setOnClickListener(v -> {
-                lobbyFragment.removeBot(name);
-            });
+            if (isMaster) {
+                view.deleteIcon.setOnClickListener(v -> {
+                    lobbyFragment.removeBot(name);
+                });
+            }
         }
         return convertView;
     }
