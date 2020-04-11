@@ -159,7 +159,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     var paintLine: Paint = Paint()
     var isStrokeErasing = false
     var isNormalErasing = false
-    var isDrawer = false
+    private var isDrawer = false
     private val eraserHalfSize = 4
     private var bitmapNeedsToUpdate = false
     private var paintScreen = Paint()
@@ -503,8 +503,6 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             checkPointForErase(pointX, pointY - eraserHalfSize, isStroke))
 
         if (strokeFound) {
-            //bitmapNeedsToUpdate = true
-
             val paintWhite = Paint()
             paintWhite.color = Color.WHITE
             paintWhite.style = Paint.Style.STROKE
