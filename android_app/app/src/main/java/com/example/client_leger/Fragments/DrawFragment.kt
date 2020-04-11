@@ -171,7 +171,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     private var roleListener: Disposable
     private var clearListener: Disposable
     private var drawerSub: Disposable
-    private val matrixSquareSize = 20
+    private val matrixSquareSize = 50
     private var lastErasePoint: Point? = null
     private var segmentsToBeRemoved = ArrayList<Segment>()
     private lateinit var matrix: Array<Array<ArrayList<Segment>>>
@@ -260,7 +260,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_MOVE) {
-            touchMoved(currentStartX, currentStartY, x, y, false)
+            touchMoved(currentStartX, currentStartY, x, y)
             currentStartX = x
             currentStartY = y
         } else if (event.actionMasked == MotionEvent.ACTION_UP){
@@ -323,6 +323,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun redrawPathsToBitmap() {
+        //todo: dont redraw everytime a segment is erased
         bitmap.eraseColor(Color.WHITE)
         synchronized(segments) {
             for (segment in segments) {
@@ -504,8 +505,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         }
     }
 
-    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int, isEnd: Boolean) {
-        sendStroke(startX, startY, destX, destY, isEnd)
+    private fun touchMoved(startX: Int, startY: Int, destX: Int, destY: Int) {
+        sendStroke(startX, startY, destX, destY, false)
         divideAndAddSegment(startX, startY, destX, destY)
         postInvalidate()
     }
