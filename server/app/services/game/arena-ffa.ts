@@ -264,8 +264,12 @@ export class ArenaFfa extends Arena {
                 numOfRealPlayer++;
             }
         });
+
+        if (this.isBot(this.users[this.drawPtr - 1].username)) {
+            return (numOfRealPlayer - this.dcPlayer.length) <= this.userWithCorrectAns;
+        }
         
-        return (numOfRealPlayer - this.dcPlayer.length -1 ) <= this.userWithCorrectAns; //-1 to ignore drawer
+        return (numOfRealPlayer - this.dcPlayer.length - 1) <= this.userWithCorrectAns; //-1 to ignore drawer
     }
 
     private initBots(): void {
