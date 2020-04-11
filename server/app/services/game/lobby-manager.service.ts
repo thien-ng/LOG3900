@@ -117,6 +117,10 @@ export class LobbyManagerService {
         const lobby = this.lobbyDoesExists(req.lobbyName);
 
         if (lobby) {
+            // if lobbyName already exist
+            if (this.isCreateLobbyRequest(req)) {
+                throw new Error("Lobby name already exist");
+            }
 
             // Join lobby
             if (lobby.users.length > lobby.size - 1) {
@@ -224,6 +228,10 @@ export class LobbyManagerService {
             messages.push(mes);
             this.lobbiesMessages.set(mes.lobbyName, messages);
         }
+    }
+
+    private isCreateLobbyRequest(req: IJoinLobby): boolean {
+        return req.mode !== undefined && req.size !== undefined;
     }
 
     private checkUsersLeftExceptBot(lobby: IActiveLobby): boolean {
