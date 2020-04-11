@@ -62,7 +62,7 @@ CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_pass
         IF NOT EXISTS( SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) THEN
             RAISE EXCEPTION 'Username is incorrect.';
         END IF;
-        IF NOT EXISTS( SELECT A.hashPwd FROM LOG3900.Account as A WHERE A.hashPwd = in_password) THEN
+        IF NOT EXISTS( SELECT A.hashPwd FROM LOG3900.Account as A WHERE A.hashPwd = in_password AND A.username = in_username) THEN
             RAISE EXCEPTION 'Password is incorrect.';
         END IF;
     END;
