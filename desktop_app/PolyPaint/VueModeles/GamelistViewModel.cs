@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.IO;
-using MaterialDesignThemes.Wpf;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json.Linq;
@@ -26,7 +25,7 @@ namespace PolyPaint.VueModeles
             SelectedMode = "FFA";
             IsPrivate = false;
             _isSizeNeeded = true;
-            ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
+            SubscribeLobbyNotif();
         }
 
         #region Public Attributes
@@ -180,6 +179,12 @@ namespace PolyPaint.VueModeles
         #endregion
 
         #region Methods
+
+        public void SubscribeLobbyNotif()
+        {
+            if (!ServerService.instance.socket.HasListeners("lobby-notif"))
+                ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
+        }
 
         private void processLobbyNotif(JObject data)
         {
