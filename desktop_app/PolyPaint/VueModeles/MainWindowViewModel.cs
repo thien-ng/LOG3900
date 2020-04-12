@@ -68,7 +68,7 @@ namespace PolyPaint.VueModeles
         {
             
             ChangeViewModel(nameof(LoginViewModel), typeof(LoginViewModel));
-            if (PageViewModels[nameof(HomeViewModel)] != null)
+            if (PageViewModels.ContainsKey(nameof(HomeViewModel)) && PageViewModels[nameof(HomeViewModel)] != null)
                 PageViewModels.Remove(nameof(HomeViewModel));
         }
 
@@ -82,9 +82,7 @@ namespace PolyPaint.VueModeles
         {
             ChangeViewModel(nameof(HomeViewModel), typeof(HomeViewModel));
             if (PageViewModels.ContainsKey(nameof(LoginViewModel)) && PageViewModels[nameof(LoginViewModel)] != null)
-            {
                 PageViewModels.Remove(nameof(LoginViewModel));
-            }
         }
 
         public override void Dispose()
