@@ -17,7 +17,9 @@
         Title="MainWindow" Height="auto" Width="auto">
     
     <materialDesign:DialogHost Identifier="RootDialog">
-        <Frame NavigationUIVisibility="Hidden" Content="{Binding CurrentPageViewModel}" />
+        <materialDesign:DialogHost Identifier="CreateGameDialog">
+            <Frame NavigationUIVisibility="Hidden" Content="{Binding CurrentPageViewModel}" />
+        </materialDesign:DialogHost>
      </materialDesign:DialogHost>
     
 </Window>
