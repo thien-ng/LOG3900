@@ -36,6 +36,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private lateinit var userList: ArrayList<String>
     private lateinit var spinnerGameModes: Spinner
     private lateinit var lobbyNotifSub: Disposable
+    private lateinit var inviteSub: Disposable
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -100,8 +101,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     if (username == user) {
                         val fragment = LobbyFragment()
                         val bundle = Bundle()
-                        bundle.putString("lobbyName", mes.getString("lobbyName"))
-                        bundle.putString("mode", mes.getString("mode"))
+                        bundle.putBoolean("isMaster", true)
+                        bundle.putSerializable("lobby", context?.let { Lobby(mes, it)})
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
@@ -118,7 +119,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     if (username == user) {
                         val fragment = LobbyFragment()
                         val bundle = Bundle()
-                        bundle.putString("lobbyName", mes.getString("lobbyName"))
+                        bundle.putBoolean("isMaster", false)
+                        bundle.putSerializable("lobby", context?.let { Lobby(mes, it)})
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
@@ -140,12 +142,36 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             }
         }
 
+        inviteSub = Communication.getInvitationUpdateListener().subscribe{mes ->
+            if (mes["type"] == "invitation") {
+                val builder = AlertDialog.Builder(context)
+                builder.setTitle("Notification")
+                builder.setMessage("You have been invited to lobby: " + mes["lobbyName"].toString());
+                builder.setPositiveButton("Accept") { dialog, _ ->
+                    val data = JSONObject()
+                    data.put("username", username)
+                    data.put("lobbyName", mes["lobbyName"].toString())
+                    data.put("isPrivate", true)
+                    data.put("password", "invited")
+                    lobbyCardsController.joinLobby(this, data)
+                }
+                builder.setNeutralButton("Cancel") { dialog, _ ->
+                    dialog.cancel()
+                }
+                activity!!.runOnUiThread {
+                    val mDialog = builder.create()
+                    mDialog.show()
+                }
+            }
+        }
+
         return v
     }
 
     override fun onDestroy() {
         super.onDestroy()
         lobbyNotifSub.dispose()
+        inviteSub.dispose()
     }
 
     private fun showDialog() {
