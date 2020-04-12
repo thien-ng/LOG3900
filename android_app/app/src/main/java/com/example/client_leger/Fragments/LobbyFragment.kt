@@ -22,6 +22,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_lobby.*
 import kotlinx.android.synthetic.main.fragment_lobby.view.*
 import kotlinx.android.synthetic.main.fragment_lobby.view.textView_FullLobby
+import kotlinx.android.synthetic.main.fragment_profil.view.*
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -54,7 +55,6 @@ class LobbyFragment() : Fragment(),
             lobby = bundle.getSerializable("lobby") as Lobby
         }
         v.textView_gameModeName.text = lobby.gameMode
-        v.textView_Description.text = getDescription(lobby.gameMode)
 
         startButton = v.findViewById<Button>(R.id.button_start)
         leaveButton = v.findViewById<Button>(R.id.button_leave)
@@ -92,9 +92,14 @@ class LobbyFragment() : Fragment(),
                                 } else userListAdapter.addUser(user)
                                 if(isMaster && lobby.gameMode == GameMode.FFA.toString()) {
                                     if (userListAdapter.count >= 2) {
+                                        v.textView_NotEnoughPlayers.visibility = View.GONE
+                                        startButton.visibility = View.VISIBLE
+                                        startButton.isEnabled = true
                                         startButton.setOnClickListener { startGame(lobby.lobbyName) }
                                     } else {
-                                        startButton.setOnClickListener {  Toast.makeText(context, "2 players required", Toast.LENGTH_SHORT).show()}
+                                        v.textView_NotEnoughPlayers.visibility = View.VISIBLE
+                                        startButton.visibility = View.GONE
+                                        startButton.isEnabled = false
                                     }
                                     if(userListAdapter.count == lobby.size){
                                         inviteButton.visibility = View.INVISIBLE
@@ -200,13 +205,17 @@ class LobbyFragment() : Fragment(),
     private fun setMasterView(mode:String){
         v.textView_WaitingForLeader.visibility = View.GONE
         v.textView_FullLobby.visibility = View.GONE
-        startButton.visibility = View.VISIBLE
-        startButton.isEnabled = true
+        v.textView_NotEnoughPlayers.visibility = View.GONE
+
         if (mode == "FFA") {
             if(userListAdapter.count >= 2){
+                startButton.visibility = View.VISIBLE
+                startButton.isEnabled = true
                 startButton.setOnClickListener { startGame(lobby.lobbyName) }
             }else{
-                startButton.setOnClickListener { Toast.makeText(context, "2 players required", Toast.LENGTH_SHORT).show() }
+                startButton.visibility = View.INVISIBLE
+                startButton.isEnabled = false
+                v.textView_NotEnoughPlayers.visibility = View.VISIBLE
             }
             addBotButton.visibility = View.VISIBLE
             addBotButton.isEnabled = true
@@ -225,6 +234,7 @@ class LobbyFragment() : Fragment(),
                 mDialog.show()
             }
         }else{
+            startButton.visibility = View.VISIBLE
             startButton.isEnabled = true
             startButton.setOnClickListener { startGame(lobby.lobbyName) }
         }
