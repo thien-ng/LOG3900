@@ -241,8 +241,12 @@ namespace PolyPaint.VueModeles
 
         private void goToGameListView(object obj)
         {
-            if (LobbyViewModel != null)
-                LobbyViewModel.Dispose();
+            LobbyViewModel.Dispose();
+            LobbyViewModel = null;
+
+            GameViewModel.Dispose();
+            GameViewModel = null;
+
             SwitchView = Views.Gamelist;
             IsNotInLobby = true;
             Application.Current.Dispatcher.Invoke(delegate
@@ -253,7 +257,10 @@ namespace PolyPaint.VueModeles
         private void goToGameView(object obj)
         {
             if (LobbyViewModel != null)
+            {
                 LobbyViewModel.Dispose();
+                LobbyViewModel = null;
+            }
             Task.Delay(150).ContinueWith(_ =>
             {
                 if (GameViewModel != null)
@@ -275,7 +282,10 @@ namespace PolyPaint.VueModeles
             IsNotInLobby = false;
             Dictionary<string, string> data = new Dictionary<string, string>((Dictionary<string, string>)lobbyData);
             if (LobbyViewModel != null)
+            {
                 LobbyViewModel.Dispose();
+                LobbyViewModel = null;
+            }
 
             LobbyViewModel = new LobbyViewModel(data["lobbyName"], data["mode"]);
             this.Lobbyname = data["lobbyName"];

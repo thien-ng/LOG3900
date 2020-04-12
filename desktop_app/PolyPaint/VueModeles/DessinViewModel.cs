@@ -416,7 +416,7 @@ namespace PolyPaint.VueModeles
             previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             ServerService.instance.socket.Off("draw");
         }

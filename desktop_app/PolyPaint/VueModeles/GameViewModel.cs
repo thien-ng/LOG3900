@@ -19,7 +19,10 @@ namespace PolyPaint.VueModeles
         public GameViewModel(string mode)
         {
             if (DrawViewModel != null)
+            {
                 DrawViewModel.Dispose();
+                DrawViewModel = null;
+            }
             DrawViewModel = new DessinViewModel();
             _points = new ObservableCollection<PointsDisplay>();
             _myPoints = "0";
@@ -131,7 +134,7 @@ namespace PolyPaint.VueModeles
                 ObjectToDraw = "";
                 DrawViewModel.IsDrawer = false;
             }
-            Task.Delay(150).ContinueWith(_ => {
+            Task.Delay(200).ContinueWith(_ => {
                 App.Current.Dispatcher.Invoke(delegate
                 {
                     DrawViewModel.Traits.Clear();
@@ -210,9 +213,10 @@ namespace PolyPaint.VueModeles
 
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Console.WriteLine("dispose");
+            DrawViewModel = null;
             ServerService.instance.socket.Off("game-drawer");
             ServerService.instance.socket.Off("game-timer");
             ServerService.instance.socket.Off("game-over");
