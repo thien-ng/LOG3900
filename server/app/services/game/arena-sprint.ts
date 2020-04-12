@@ -22,10 +22,13 @@ export class ArenaSprint extends Arena {
     private wordGuessedRight: number;
     private guessPerImage: number;
     private timePerImage: number;
+    private drawSpeed: number;
     private pointsMult: number;
 
     private rulePtr: number;
     private drawerBot: bot.Bot;
+
+    private subInterval: NodeJS.Timeout;
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
@@ -37,6 +40,7 @@ export class ArenaSprint extends Arena {
 
     private assignRule(): void {
         this.curRule = this.rules[this.rulePtr++];
+        this.setSubGameDifficulty(this.curRule.difficulty);
         if (this.rulePtr >= this.rules.length) {
             this.rulePtr = 0;
         }
@@ -66,6 +70,7 @@ export class ArenaSprint extends Arena {
 
             if (this.timeRemaining <= 0 || this.guessLeft <= 0) {
                 clearInterval(this.curArenaInterval);
+                clearInterval(this.subInterval);
                 if (this.drawerBot.interval)
                     clearInterval(this.drawerBot.interval);
                 this.sendAnswer(this.curRule.solution);
@@ -96,8 +101,9 @@ export class ArenaSprint extends Arena {
         }
 
         if (this.isRightAnswer(mes.content)) {
+            clearInterval(this.subInterval);
             //add time,
-            this.timeRemaining += this.timePerImage;
+            this.timeRemaining += Math.floor(this.timePerImage / 2);
 
             //anounce
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true });
@@ -119,29 +125,60 @@ export class ArenaSprint extends Arena {
         switch (diff) {
             case Difficulty.HARD:
                 this.guessPerImage = 2;
-                this.timePerImage = 15 * ONE_SEC;
                 this.timeRemaining = 20 * ONE_SEC;
-                this.pointsMult = 14;
                 break;
             case Difficulty.MEDIUM:
                 this.guessPerImage = 3;
-                this.timePerImage = 10 * ONE_SEC;
                 this.timeRemaining = 30 * ONE_SEC;
-                this.pointsMult = 10;
                 break;
             case Difficulty.EASY:
             default:
                 this.guessPerImage = 4;
-                this.timePerImage = 8 * ONE_SEC;
                 this.timeRemaining = 40 * ONE_SEC;
-                this.pointsMult = 6;
                 break;
         }
     }
 
+    private setSubGameDifficulty(diff: Difficulty): void {
+        switch (diff) {
+            case Difficulty.HARD:
+                this.guessPerImage = 2;
+                this.timePerImage = 14 * ONE_SEC;
+                this.pointsMult = 14;
+                this.drawSpeed = 10 * ONE_SEC;
+                break;
+            case Difficulty.MEDIUM:
+                this.timePerImage = 16 * ONE_SEC;
+                this.pointsMult = 10;
+                this.drawSpeed = 7 * ONE_SEC;
+                break;
+            case Difficulty.EASY:
+            default:
+                this.timePerImage = 20 * ONE_SEC;
+                this.pointsMult = 6;
+                this.drawSpeed = 5 * ONE_SEC;
+                break;
+        }
+    }
+
+    private startDrawingTimer(): void {
+        let counter = 0;
+        this.subInterval = setInterval(() => {
+            
+            if (counter >= this.timePerImage) {
+                clearInterval(this.subInterval);
+                this.resetSubGame();
+            }
+
+            counter += 1000;
+        }, ONE_SEC);
+        
+    }
+
     private initSubGame(): void {
         //show an image or build one.
-        this.startBotDrawing(this.drawerBot.username, this.timePerImage);
+        this.startDrawingTimer();
+        this.startBotDrawing(this.drawerBot.username, this.drawSpeed);
         
         this.assignRule();
 
@@ -152,8 +189,9 @@ export class ArenaSprint extends Arena {
 
     private resetSubGame(): void {
         this.assignRule();
+        this.startDrawingTimer();
         this.socketServer.to(this.room).emit("game-clear");
-        this.startBotDrawing(this.drawerBot.username, this.timePerImage);
+        this.startBotDrawing(this.drawerBot.username, this.drawSpeed);
 
         //reset guess left
         this.guessLeft = this.guessPerImage;
