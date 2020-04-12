@@ -2,7 +2,7 @@ import { injectable, inject } from "inversify";
 import { LobbyManagerService } from "./lobby-manager.service";
 import { ArenaFfa } from "./arena-ffa";
 import { ArenaSprint } from "./arena-sprint";
-import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt, IGameplayAnnouncement } from "../../interfaces/game";
+import { IActiveLobby, IGameplayChat, IGameplayDraw, GameMode, IPoints, IGameplayReady, IUserPt, IGameplayAnnouncement, LobbyNotif } from "../../interfaces/game";
 import { RulesDbService } from "../../database/rules-db.service";
 import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
@@ -96,14 +96,16 @@ export class GameManagerService {
 
         const arena = this.createArenaAccordingToMode(this.arenaId, lobby, room, rules);
 
+        this.socketServer.emit("lobby-notif", { lobbyName: lobby.lobbyName, type: LobbyNotif.delete, mode: lobby.mode });
+
         this.lobServ.lobbies.delete(lobby.lobbyName);
         this.lobServ.lobbiesMessages.delete(lobby.lobbyName);
 
         this.arenas.set(this.arenaId, arena);
         this.arenaId++;
 
-        this.socketServer.in(room).emit("game-start");
 
+        this.socketServer.in(room).emit("game-start");
         arena.start();
     }
 
