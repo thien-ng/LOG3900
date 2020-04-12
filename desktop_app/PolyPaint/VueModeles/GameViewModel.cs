@@ -134,11 +134,9 @@ namespace PolyPaint.VueModeles
                 ObjectToDraw = "";
                 DrawViewModel.IsDrawer = false;
             }
-            Task.Delay(200).ContinueWith(_ => {
-                App.Current.Dispatcher.Invoke(delegate
-                {
-                    DrawViewModel.Traits.Clear();
-                });
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                DrawViewModel.Traits.Clear();
             });
         }
 
