@@ -285,8 +285,6 @@ namespace PolyPaint.VueModeles
         public override void Dispose()
         {
             ServerService.instance.socket.Off("lobby-notif");
-
-            base.Dispose();
         }
 
         #endregion

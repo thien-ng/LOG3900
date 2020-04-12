@@ -278,7 +278,10 @@ namespace PolyPaint.VueModeles
             Task.Delay(150).ContinueWith(_ =>
             {
                 if (GameViewModel != null)
+                {
                     GameViewModel.Dispose();
+                    GameViewModel = null;
+                }
                 GameViewModel = new GameViewModel((string)obj);
                 App.Current.Dispatcher.Invoke(delegate
                 {
@@ -312,12 +315,7 @@ namespace PolyPaint.VueModeles
             ChangeChannel(lobbyChannel);
         }
 
-        private void joinLobbyFromInvite(string lobbyInvitedTo)
-        {
-            joinPublicLobby(lobbyInvitedTo);
-        }
-
-        private async void joinPublicLobby(string lobbyInvitedTo)
+        private async void joinLobbyFromInvite(string lobbyInvitedTo)
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();

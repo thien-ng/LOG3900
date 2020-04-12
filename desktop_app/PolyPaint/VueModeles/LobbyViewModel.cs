@@ -211,11 +211,8 @@ namespace PolyPaint.VueModeles
         #region Methods
         private void kickedFromLobby()
         {
-            App.Current.Dispatcher.Invoke(delegate
-            {
                 Mediator.Notify("LeaveLobby", "");
                 MessageBox.Show("You got kicked from lobby");
-            });
         }
 
         private async Task leaveLobby()
