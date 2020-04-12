@@ -36,6 +36,8 @@
             android:enabled="false"
             android:text="Start"
             android:visibility="invisible"
+            app:backgroundTint="#FFFFFF"
+            android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -104,6 +106,8 @@
             android:enabled="false"
             android:text="Add bot"
             android:visibility="invisible"
+            app:backgroundTint="#FFFFFF"
+            android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toStartOf="@+id/button_invitePlayer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userlist" />
@@ -117,6 +121,8 @@
             android:enabled="false"
             android:text="Invite player"
             android:visibility="invisible"
+            app:backgroundTint="#FFFFFF"
+            android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button_addBot"
             app:layout_constraintTop_toTopOf="@+id/button_addBot" />

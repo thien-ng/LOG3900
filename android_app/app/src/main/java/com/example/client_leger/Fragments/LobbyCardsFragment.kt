@@ -126,7 +126,17 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     } else {
                         if (mes.getString("mode") == getCurrentGameMode().toString()) {
                             activity!!.runOnUiThread {
-                                adapterLobbyCards.updateUser(mes.getString("lobbyName"), user)
+                                adapterLobbyCards.updateUserJoin(mes.getString("lobbyName"), user)
+                            }
+                        }
+                    }
+                }
+                "leave"->{
+                    val user = mes.getString("username")
+                    if (username != user) {
+                        if (mes.getString("mode") == getCurrentGameMode().toString()) {
+                            activity!!.runOnUiThread {
+                                adapterLobbyCards.updateUserLeave(mes.getString("lobbyName"), user)
                             }
                         }
                     }

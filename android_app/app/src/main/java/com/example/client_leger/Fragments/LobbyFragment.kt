@@ -2,6 +2,7 @@ package com.example.client_leger.Fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +46,7 @@ class LobbyFragment() : Fragment(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         v = inflater.inflate(R.layout.fragment_lobby, container, false)
+        activity!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.GONE
         username = activity!!.intent.getStringExtra("username")
         val bundle = this.arguments
         if (bundle != null) {
@@ -153,6 +155,7 @@ class LobbyFragment() : Fragment(),
     }
 
     override fun onDestroy() {
+        activity!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.VISIBLE
         super.onDestroy()
         startListener.dispose()
         lobbyNotifSub.dispose()
