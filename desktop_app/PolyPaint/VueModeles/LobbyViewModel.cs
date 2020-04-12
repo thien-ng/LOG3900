@@ -379,7 +379,7 @@ namespace PolyPaint.VueModeles
                 MessageBox.Show("Invite sucessfully sent");
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             ServerService.instance.socket.Off("lobby-notif");
             ServerService.instance.socket.Off("game-start");

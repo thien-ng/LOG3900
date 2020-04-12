@@ -259,6 +259,7 @@ namespace PolyPaint.VueModeles
             }
 
             GamelistViewModel.SubscribeLobbyNotif();
+            GamelistViewModel.getLobbies();
 
             SwitchView = Views.Gamelist;
             IsNotInLobby = true;

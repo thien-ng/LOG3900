@@ -215,7 +215,7 @@ namespace PolyPaint.VueModeles
 
         public override void Dispose()
         {
-            Console.WriteLine("dispose");
+            DrawViewModel.Dispose();
             DrawViewModel = null;
             ServerService.instance.socket.Off("game-drawer");
             ServerService.instance.socket.Off("game-timer");
@@ -247,7 +247,6 @@ namespace PolyPaint.VueModeles
             {
                 return _okCommand ?? (_okCommand = new RelayCommand(x =>
                 {
-                    DrawViewModel.Dispose();
                     IsEndGameDialogOpen = false;
                     Mediator.Notify("LeaveLobby");
                 }));

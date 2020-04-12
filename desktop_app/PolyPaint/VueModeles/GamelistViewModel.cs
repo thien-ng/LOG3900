@@ -226,7 +226,7 @@ namespace PolyPaint.VueModeles
                 Numbers.Add(i);
             }
         }
-        private async void getLobbies()
+        public async void getLobbies()
         {
             await App.Current.Dispatcher.Invoke(async delegate
              {
