@@ -428,6 +428,7 @@ namespace PolyPaint.VueModeles
                 {
                     _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
                     _subChannels.Add(new MessageChannel(channelId, true, false));
+                    ChangeChannel(channelId);
                 });
             }
             else
