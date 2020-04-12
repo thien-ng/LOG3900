@@ -7,7 +7,6 @@ using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -18,7 +17,7 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LobbyViewModel : BaseViewModel, IPageViewModel
+    class LobbyViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
         public LobbyViewModel(string lobbyname, string mode)
         {
@@ -37,7 +36,6 @@ namespace PolyPaint.VueModeles
 
             Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
-
 
         #region Public Attributes
 
@@ -213,11 +211,8 @@ namespace PolyPaint.VueModeles
         #region Methods
         private void kickedFromLobby()
         {
-            App.Current.Dispatcher.Invoke(delegate
-            {
                 Mediator.Notify("LeaveLobby", "");
                 ShowMessageBox("You got kicked from lobby");
-            });
         }
 
         private async Task leaveLobby()
@@ -288,6 +283,8 @@ namespace PolyPaint.VueModeles
                     App.Current.Dispatcher.Invoke(delegate
                     {
                         usernames.Add(new UserLobby(item, item == ServerService.instance.username));
+                        if (Bots.Contains(item))
+                            Bots.Remove(item);
                     });
                 }
                 Usernames = usernames;
@@ -340,7 +337,7 @@ namespace PolyPaint.VueModeles
 
         private void joingame()
         {
-            if(!IsGameMaster)
+            if (!IsGameMaster)
                 Mediator.Notify("GoToGameScreen", Mode);
         }
 
@@ -379,6 +376,13 @@ namespace PolyPaint.VueModeles
             {
                 MessageBoxDisplayer.ShowMessageBox(message);
             });
+        }
+
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off("lobby-notif");
+            ServerService.instance.socket.Off("game-start");
+            ServerService.instance.socket.Off("lobby-kicked");
         }
 
         #endregion

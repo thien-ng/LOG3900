@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace PolyPaint.VueModeles
 {
-    class MainWindowViewModel : BaseViewModel
+    class MainWindowViewModel : BaseViewModel, IDisposable  
     {
         public MainWindowViewModel()
         {
@@ -68,6 +68,8 @@ namespace PolyPaint.VueModeles
         {
             
             ChangeViewModel(nameof(LoginViewModel), typeof(LoginViewModel));
+            if (PageViewModels.ContainsKey(nameof(HomeViewModel)) && PageViewModels[nameof(HomeViewModel)] != null)
+                PageViewModels.Remove(nameof(HomeViewModel));
         }
 
         private void OnGoToRegisterScreen(object obj)
@@ -79,8 +81,14 @@ namespace PolyPaint.VueModeles
         private void OnGoToHomeScreen(object obj)
         {
             ChangeViewModel(nameof(HomeViewModel), typeof(HomeViewModel));
+            if (PageViewModels.ContainsKey(nameof(LoginViewModel)) && PageViewModels[nameof(LoginViewModel)] != null)
+                PageViewModels.Remove(nameof(LoginViewModel));
         }
 
+        public override void Dispose()
+        {
+            _pageViewModels = null;
+        }
         #endregion
     }
 }

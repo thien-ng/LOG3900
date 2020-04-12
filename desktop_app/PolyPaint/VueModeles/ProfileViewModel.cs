@@ -73,7 +73,7 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
-        private async void fetchProfile()
+        public async void fetchProfile()
         {
             try
             {
