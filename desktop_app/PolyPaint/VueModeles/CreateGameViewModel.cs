@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -214,6 +215,9 @@ namespace PolyPaint.VueModeles
 
         private async Task Accept()
         {
+            if (IsGameCreationIncorrect()) 
+                return;
+
             string errorMessage = "Invalid request!";
             HttpResponseMessage result;
             switch (SelectedCreationType)
@@ -245,6 +249,39 @@ namespace PolyPaint.VueModeles
 
             JObject res = new JObject(new JProperty("IsAccept", true));
             DialogHost.CloseDialogCommand.Execute(res, null);
+        }
+
+        private Boolean IsGameCreationIncorrect() 
+        {
+            List<string> clues = new List<string>();
+            foreach (var hint in Hints)
+                clues.Add(hint.Hint);
+
+            if (string.IsNullOrEmpty(ObjectName) || Regex.IsMatch(ObjectName.ToString(), "[^a-zA-Z ]"))
+            {
+                ShowMessageBox("Word or solution should be alphabetic");
+                return true;
+            }
+            if (clues.Count <= 0) 
+            {
+                ShowMessageBox("Atleast one hint needs to be provided");
+                return true;
+            }
+            else
+            {
+                foreach (var clue in clues)
+                    if (string.IsNullOrEmpty(clue) || Regex.IsMatch(clue.ToString(), "[^a-zA-Z ]")) 
+                    {
+                        ShowMessageBox("Hints should be alphabetic");
+                        return true;
+                    }
+            }
+            if (GeneratedImageStrokes == null || GeneratedImageStrokes.Count <= 0) 
+            {
+                ShowMessageBox("A drawing should be provided");
+                return true;
+            }
+            return false;
         }
 
         private void RemoveHint(object x)
