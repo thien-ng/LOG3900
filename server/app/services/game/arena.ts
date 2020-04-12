@@ -53,7 +53,7 @@ export abstract class Arena {
         this.hintPtr = 0;
         this.isAllDc = false;
         this.gameMessages = [];
-
+        
         this.initReadyMap();
         this.setupPoints();
     }

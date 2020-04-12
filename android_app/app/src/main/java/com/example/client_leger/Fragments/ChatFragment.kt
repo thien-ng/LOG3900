@@ -62,12 +62,14 @@ class ChatFragment: Fragment() {
 
         recyclerViewChannels.setHasFixedSize(true)
         channelAdapter = GroupAdapter()
+        channelAdapter.setOnItemClickListener { item, _ -> setChannel(item.toString()) }
         val manager = LinearLayoutManager(this.context)
         recyclerViewChannels.layoutManager = manager
         recyclerViewChannels.adapter = channelAdapter
 
         recyclerViewNotSubChannels.setHasFixedSize(true)
         notSubChannelAdapter = GroupAdapter()
+        notSubChannelAdapter.setOnItemClickListener { item, _ -> controller.joinChannel(this, item.toString()) }
         val managerNotSub = LinearLayoutManager(this.context)
         recyclerViewNotSubChannels.layoutManager = managerNotSub
         recyclerViewNotSubChannels.adapter = notSubChannelAdapter
@@ -148,6 +150,7 @@ class ChatFragment: Fragment() {
 
         startGameSub = Communication.getGameStartListener().subscribe{
             inGame = true
+            inLobby = false
             addGameChannel()
             setChannel(GAME_CHANNEL_ID)
         }
@@ -173,26 +176,27 @@ class ChatFragment: Fragment() {
         }
 
         lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->
-            val type = mes.getString("type")
-            if (type == "create") {
-                val user = mes.getJSONArray("usernames").getString(0)
-                //First user should always be the lobby creator.
+            val type = if (mes.isNull("type")) "" else mes.getString("type")
+            val firstUser = if (mes.isNull("usernames")) "" else mes.getJSONArray("usernames").getString(0)
+            val user = if (mes.isNull("username")) "" else mes.getString("username")
+            val lobby = if (mes.isNull("lobbyName")) "" else mes.getString("lobbyName")
 
-                if (username == user) {
+            if (type == "create") {
+                if (username == firstUser) {
                     inLobby = true
-                    lobbyName = mes.getString("lobbyName")
+                    lobbyName = lobby
                     addLobbyChannel()
                     setChannel(LOBBY_CHANNEL_ID)
                 }
             } else if (type == "join") {
-                if (mes.getString("username") == username) {
+                if (user == username) {
                     inLobby = true
-                    lobbyName = mes.getString("lobbyName")
+                    lobbyName = lobby
                     addLobbyChannel()
                     setChannel(LOBBY_CHANNEL_ID)
                 }
             } else if (type == "delete") {
-                if (mes.getString("lobbyName") == lobbyName) {
+                if (lobby == lobbyName) {
                     lobbyName = ""
                     inLobby = false
                     if (channelId == LOBBY_CHANNEL_ID) {
@@ -202,14 +206,13 @@ class ChatFragment: Fragment() {
                     }
                 }
             } else if (type == "leave") {
-                if (mes.getString("username") == username) {
+                if (user == username) {
                     lobbyName = ""
                     inLobby = false
                     if (channelId == LOBBY_CHANNEL_ID) {
                         setChannel(DEFAULT_CHANNEL_ID)
-                    } else {
-                        loadChannels()
                     }
+                    loadChannels()
                 }
             }
         }
@@ -339,6 +342,12 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
+        if (newChannelId == LOBBY_CHANNEL_ID && !inLobby)
+            return
+
+        if (newChannelId == GAME_CHANNEL_ID && !inGame)
+            return
+
         activity!!.runOnUiThread {
             if (newChannelId != channelId) {
                 loadChannels()
@@ -387,9 +396,9 @@ class ChatFragment: Fragment() {
     }
 
     private fun receiveGameMessage(mes: JSONObject) {
-        val user = mes.getString("username")
-        val content = mes.getString("content")
-        val isServer = mes.getBoolean("isServer")
+        val user = if (mes.isNull("username")) "" else mes.getString("username")
+        val content = if (mes.isNull("content")) "" else mes.getString("content")
+        val isServer = if (mes.isNull("isServer")) false else mes.getBoolean("isServer")
 
         activity!!.runOnUiThread {
             if (channelId == GAME_CHANNEL_ID) {
@@ -409,9 +418,9 @@ class ChatFragment: Fragment() {
     }
 
     private fun receiveLobbyMessage(mes: JSONObject) {
-        val user = mes.getString("username")
-        val content = mes.getString("content")
-        val lobby = mes.getString("lobbyName")
+        val user = if (mes.isNull("username")) "" else mes.getString("username")
+        val content = if (mes.isNull("content")) "" else mes.getString("content")
+        val lobby = if (mes.isNull("lobbyName")) "" else mes.getString("lobbyName")
 
         activity!!.runOnUiThread {
             if (channelId == LOBBY_CHANNEL_ID && lobby == lobbyName) {
@@ -433,19 +442,21 @@ class ChatFragment: Fragment() {
         for (i in 0 until messages.length()){
             val message = messages.getJSONObject(i)
 
+            val id = if (message.isNull("channel_id")) "" else message.getString("channel_id")
+
             if (channel != null) {
                 if (channel != channelId) {
                     continue
                 }
-            } else if (message.getString("channel_id") != channelId) {
+            } else if (id != channelId) {
                 continue
             }
 
-            val username = message.getString("username")
-            val content = message.getString("content")
+            val username = if (message.isNull("username")) "" else message.getString("username")
+            val content = if (message.isNull("content")) "" else message.getString("content")
             var time = ""
             if (isNormalChannel) {
-                time = message.getString("time")
+                time = if (message.isNull("time")) "" else message.getString("time")
             }
 
             activity!!.runOnUiThread {
