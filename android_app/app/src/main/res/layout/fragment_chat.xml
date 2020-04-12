@@ -13,7 +13,7 @@
     <LinearLayout
             android:id="@+id/layout_channelName"
             android:layout_width="0dp"
-            android:layout_height="35dp"
+            android:layout_height="45dp"
             android:background="@drawable/right_bottom_border_background"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -32,7 +32,7 @@
         <TextView
                 android:id="@+id/textView_channelName"
                 android:layout_width="0dp"
-                android:layout_height="35dp"
+                android:layout_height="45dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="channelName"
@@ -53,14 +53,14 @@
             app:layout_constraintTop_toBottomOf="@+id/layout_channelName"
             tools:ignore="MissingPrefix">
 
-        <Button
+        <TextView
                 android:id="@+id/button_load_chat_history"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:text="Show previous messages"
+                android:text="@string/Show_previous_messages"
                 app:backgroundTint="#ED7070" />
 
         <android.support.v7.widget.RecyclerView
