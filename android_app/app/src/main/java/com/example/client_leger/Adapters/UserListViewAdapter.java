@@ -24,10 +24,12 @@ public class UserListViewAdapter extends BaseAdapter {
     private ArrayList mData = new ArrayList();
     private LayoutInflater mInflater;
     private LobbyFragment lobbyFragment;
+    private Boolean isMaster;
 
-    public UserListViewAdapter(LobbyFragment lobbyFragment) {
+    public UserListViewAdapter(LobbyFragment lobbyFragment, boolean isMaster) {
         mInflater = LayoutInflater.from(lobbyFragment.getContext());
         this.lobbyFragment = lobbyFragment;
+        this.isMaster = isMaster;
     }
 
     public void addUser(final String item) {
@@ -70,28 +72,41 @@ public class UserListViewAdapter extends BaseAdapter {
         int type = getItemViewType(position);
         view = new ViewHolder();
 
+        String name = getItem(position);
+
         if (convertView == null) {
             switch (type) {
                 case TYPE_USER:
                     convertView = mInflater.inflate(R.layout.lobbyuser_item, null);
-                    view.myTextView = (TextView)convertView.findViewById(R.id.lobbyuser_username);
+                    view.myTextView = convertView.findViewById(R.id.lobbyuser_username);
+                    if (isMaster) {
+                       view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    } else {
+                        convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
+                    }
                     break;
                 case TYPE_BOT:
                     convertView = mInflater.inflate(R.layout.lobbybot_item, null);
-                    view.myTextView = (TextView)convertView.findViewById(R.id.lobbybot_username);
-                    view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    view.myTextView = convertView.findViewById(R.id.lobbybot_username);
+                    if (isMaster) {
+                        view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    } else {
+                        convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
+                    }
                     break;
             }
             convertView.setTag(view);
         }else {
             view = (ViewHolder)convertView.getTag();
         }
-        String name = getItem(position);
+
         view.myTextView.setText( name);
-        if(getItemViewType(position) == TYPE_BOT) {
-            view.deleteIcon.setOnClickListener(v -> {
-                lobbyFragment.removeBot(name);
-            });
+        if (isMaster) {
+            if(name.equals(lobbyFragment.username)) view.deleteIcon.setVisibility(View.GONE);
+            else {
+                view.deleteIcon.setVisibility(View.VISIBLE);
+                view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
+            }
         }
         return convertView;
     }
@@ -102,16 +117,13 @@ public class UserListViewAdapter extends BaseAdapter {
         }
         notifyDataSetChanged();
     }
-    public void removeBot(String bot){
-        mData.remove(bot);
+
+    public void removePlayer(String name){
+        mData.remove(name);
         notifyDataSetChanged();
     }
 
-    public void removeUser(String username){
-        mData.remove(username);
-        notifyDataSetChanged();
-    }
-    public class ViewHolder {
+    public static class ViewHolder {
         TextView myTextView;
         AppCompatImageView deleteIcon;
     }
