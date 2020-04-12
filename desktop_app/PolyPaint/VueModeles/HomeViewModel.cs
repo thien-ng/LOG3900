@@ -17,13 +17,18 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class HomeViewModel : BaseViewModel, IPageViewModel
+    class HomeViewModel : BaseViewModel, IPageViewModel, IDisposable
     { 
         public LobbyViewModel LobbyViewModel { get; private set; }
 
         public GameViewModel GameViewModel { get; private set; }
+        public GamelistViewModel GamelistViewModel { get; }
+        public ProfileViewModel ProfileViewModel { get; }
         public HomeViewModel()
         {
+            GamelistViewModel = new GamelistViewModel();
+            ProfileViewModel = new ProfileViewModel();
+
             Setup();
         }
 
@@ -475,6 +480,7 @@ namespace PolyPaint.VueModeles
             ServerService.instance.username = "";
             ServerService.instance.user = null;
             Mediator.Notify("GoToLoginScreen", "");
+            Dispose();
         }
 
 
@@ -521,6 +527,26 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
         }
 
+        public override void Dispose()
+        {
+            Console.WriteLine("dispose");
+            GameViewModel = null;
+            LobbyViewModel = null;
+            ServerService.instance.socket.Off("channel-new");
+            ServerService.instance.socket.Off("lobby-invitation");
+            Mediator.Unsubscribe("ChangeChannel", ChangeChannel);
+            Mediator.Unsubscribe("SubToChannel", SubToChannel);
+            Mediator.Unsubscribe("UnsubChannel", UnsubChannel);
+            Mediator.Unsubscribe("GoToLobbyScreen", goToLobbyView);
+            Mediator.Unsubscribe("GoToGameScreen", goToGameView);
+            Mediator.Unsubscribe("LeaveLobby", goToGameListView);
+            GC.Collect();
+        }
+        ~HomeViewModel()
+        {
+            Console.WriteLine("dewtc");
+        }
+
         #endregion
 
         #region Commands
@@ -530,6 +556,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
+                
                 return _disconnectCommand ?? (_disconnectCommand = new RelayCommand(x => Disconnect()));
             }
         }
@@ -663,6 +690,7 @@ namespace PolyPaint.VueModeles
 
             //await getGameCards();
         }
+
 
 
         #endregion
