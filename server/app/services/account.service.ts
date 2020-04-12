@@ -81,6 +81,9 @@ export class AccountService {
         if (regis.password.length < 1 || regis.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
         }
+        if (!/^[a-zA-Z0-9]+$/.test(regis.password)) {
+            throw new Error("password must be alphanumeric");
+        }
         if (regis.firstName.length < 1 || regis.firstName.length > 100) {
             throw new Error("first name length should be between 1 and 100");
         }
@@ -106,6 +109,9 @@ export class AccountService {
         }
         if (login.password.length < 1 || login.password.length > 20) {
             throw new Error("password length should be between 1 and 20");
+        }
+        if (!/^[a-zA-Z0-9]+$/.test(login.password)) {
+            throw new Error("password must be alphanumeric");
         }
     }
 
