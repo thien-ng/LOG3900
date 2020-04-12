@@ -101,9 +101,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     if (username == user) {
                         val fragment = LobbyFragment()
                         val bundle = Bundle()
-                        bundle.putString("lobbyName", mes.getString("lobbyName"))
                         bundle.putBoolean("isMaster", true)
-                        bundle.putString("mode", mes.getString("mode"))
+                        bundle.putSerializable("lobby", context?.let { Lobby(mes, it)})
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {
@@ -120,8 +119,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     if (username == user) {
                         val fragment = LobbyFragment()
                         val bundle = Bundle()
-                        bundle.putString("lobbyName", mes.getString("lobbyName"))
                         bundle.putBoolean("isMaster", false)
+                        bundle.putSerializable("lobby", context?.let { Lobby(mes, it)})
                         fragment.arguments = bundle
                         replaceFragment(fragment)
                     } else {

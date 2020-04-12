@@ -45,7 +45,7 @@ class GameController {
             Constants.SERVER_URL + Constants.USERS_LOBBY_ENDPOINT + lobbyName,
             null,
             Response.Listener { response ->
-                fragment.loadUsers(response, mode)
+                fragment.setView(response, mode)
             }, Response.ErrorListener { error ->
                 Toast.makeText(
                     fragment.context,
