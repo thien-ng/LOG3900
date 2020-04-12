@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace PolyPaint.VueModeles
 {
-    class GamelistViewModel : BaseViewModel
+    class GamelistViewModel : BaseViewModel, IDisposable
     {
         public GamelistViewModel()
         {
@@ -275,6 +275,13 @@ namespace PolyPaint.VueModeles
                 Mediator.Notify("GoToLobbyScreen", data);
                 LobbyName = "";
             }
+        }
+
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off("lobby-notif");
+
+            base.Dispose();
         }
 
         #endregion
