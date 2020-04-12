@@ -1,6 +1,8 @@
 package com.example.client_leger
 
 import android.content.Context
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -11,7 +13,9 @@ import com.android.volley.toolbox.Volley
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.example.client_leger.Fragments.*
+import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_registration.*
@@ -253,6 +257,100 @@ class ConnexionController {
         joinChannel(activity, channelId)
     }
 
+    private fun checkForSubChannelsToAddOrRemove(activity: ChatFragment, response: JSONArray) {
+        val channelsToRemove = mutableListOf<Item<ViewHolder>>()
+        for (channel in 0 until activity.channelAdapter.itemCount) {
+            val channelName = activity.channelAdapter.getItem(channel).toString()
+            if (channelName == GAME_CHANNEL_ID && activity.inGame ||
+                channelName == LOBBY_CHANNEL_ID && activity.inLobby)
+                continue
+            var isStillThere = false
+            for (i in 0 until response.length()) {
+                if (channelName == response.getJSONObject(i).getString("id")) {
+                    isStillThere = true
+                    break
+                }
+            }
+            if (!isStillThere) {
+                channelsToRemove.add(activity.channelAdapter.getItem(channel))
+            }
+        }
+
+        for (channelToRemove in channelsToRemove) {
+            activity.channelAdapter.remove(channelToRemove)
+        }
+
+        val channelsToAdd = mutableListOf<Int>()
+        for (i in 0 until response.length()) {
+            val channelName = response.getJSONObject(i).getString("id")
+            var isThere = false
+            for (channel in 0 until activity.channelAdapter.itemCount) {
+                if (channelName == activity.channelAdapter.getItem(channel).toString()) {
+                    isThere = true
+                    break
+                }
+            }
+            if (!isThere) {
+                channelsToAdd.add(i)
+            }
+        }
+
+        for (channelIndexToAdd in channelsToAdd) {
+            activity.channelAdapter.add(ChannelItem(
+                response.getJSONObject(channelIndexToAdd).getString("id"),
+                true,
+                this,
+                activity)
+            )
+        }
+    }
+
+    private fun checkForUnSubChannelsToAddOrRemove(activity: ChatFragment, response: JSONArray) {
+        val channelsToRemove = mutableListOf<Item<ViewHolder>>()
+        for (channel in 0 until activity.notSubChannelAdapter.itemCount) {
+            val channelName = activity.notSubChannelAdapter.getItem(channel).toString()
+            var isStillThere = false
+            for (i in 0 until response.length()) {
+                if (channelName == response.getJSONObject(i).getString("id")) {
+                    isStillThere = true
+                    break
+                }
+            }
+            if (!isStillThere) {
+                channelsToRemove.add(activity.notSubChannelAdapter.getItem(channel))
+            }
+        }
+
+        for (channelToRemove in channelsToRemove) {
+            activity.notSubChannelAdapter.remove(channelToRemove)
+        }
+
+        val channelsToAdd = mutableListOf<Int>()
+        for (i in 0 until response.length()) {
+            val channelName = response.getJSONObject(i).getString("id")
+            var isThere = false
+            for (channel in 0 until activity.notSubChannelAdapter.itemCount) {
+                if (channelName == activity.notSubChannelAdapter.getItem(channel).toString()) {
+                    isThere = true
+                    break
+                }
+            }
+            if (!isThere) {
+                channelsToAdd.add(i)
+            }
+        }
+
+        Log.w("testing", "channelsToAdd.size: " + channelsToAdd.size)
+        for (channelIndexToAdd in channelsToAdd) {
+            activity.notSubChannelAdapter.add(ChannelItem(
+                response.getJSONObject(channelIndexToAdd).getString("id"),
+                false,
+                this,
+                activity)
+            )
+        }
+    }
+
     fun loadChannels(activity: ChatFragment, search: String? = null) {
         val requestQueue = Volley.newRequestQueue(activity.context)
 
@@ -262,44 +360,7 @@ class ConnexionController {
                 Constants.SERVER_URL + "/chat/channels/sub/" + activity.username ,
                 null,
                 Response.Listener{response ->
-
-                    when {
-                        activity.inGame -> {
-                            val channelsToRemove = GroupAdapter<ViewHolder>()
-                            for ( view in 0 until activity.channelAdapter.itemCount) {
-                                if (activity.channelAdapter.getItem(view).toString() != GAME_CHANNEL_ID) {
-                                    channelsToRemove.add(activity.channelAdapter.getItem(view))
-                                }
-                            }
-                            for (view in 0 until channelsToRemove.itemCount) {
-                                activity.channelAdapter.remove(channelsToRemove.getItem(view))
-                            }
-                        }
-                        activity.inLobby -> {
-                            val channelsToRemove = GroupAdapter<ViewHolder>()
-                            for ( view in 0 until activity.channelAdapter.itemCount) {
-                                if (activity.channelAdapter.getItem(view).toString() != LOBBY_CHANNEL_ID) {
-                                    channelsToRemove.add(activity.channelAdapter.getItem(view))
-                                }
-                            }
-                            for (view in 0 until channelsToRemove.itemCount) {
-                                activity.channelAdapter.remove(channelsToRemove.getItem(view))
-                            }
-                        }
-                        else -> {
-                            activity.channelAdapter.clear()
-                        }
-                    }
-
-                    for (i in 0 until response.length()) {
-                        val channelId = response.getJSONObject(i)
-                        activity.channelAdapter.add(ChannelItem(channelId.getString("id"), true, this, activity))
-
-                        activity.channelAdapter.setOnItemClickListener { item, _ ->
-
-                            activity.setChannel(item.toString())
-                        }
-                    }
+                    checkForSubChannelsToAddOrRemove(activity, response)
                 },Response.ErrorListener{ error ->
                     Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
                 }
@@ -312,6 +373,7 @@ class ConnexionController {
                 Constants.SERVER_URL + "/chat/channels/notsub/" + activity.username ,
                 null,
                 Response.Listener {response ->
+                    //checkForUnSubChannelsToAddOrRemove(activity, response)
                     activity.notSubChannelAdapter.clear()
                     for (i in 0 until response.length()) {
                         val channelId = response.getJSONObject(i)

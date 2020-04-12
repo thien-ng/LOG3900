@@ -62,12 +62,14 @@ class ChatFragment: Fragment() {
 
         recyclerViewChannels.setHasFixedSize(true)
         channelAdapter = GroupAdapter()
+        channelAdapter.setOnItemClickListener { item, _ -> setChannel(item.toString()) }
         val manager = LinearLayoutManager(this.context)
         recyclerViewChannels.layoutManager = manager
         recyclerViewChannels.adapter = channelAdapter
 
         recyclerViewNotSubChannels.setHasFixedSize(true)
         notSubChannelAdapter = GroupAdapter()
+        notSubChannelAdapter.setOnItemClickListener { item, _ -> controller.joinChannel(this, item.toString()) }
         val managerNotSub = LinearLayoutManager(this.context)
         recyclerViewNotSubChannels.layoutManager = managerNotSub
         recyclerViewNotSubChannels.adapter = notSubChannelAdapter
@@ -208,9 +210,8 @@ class ChatFragment: Fragment() {
                     inLobby = false
                     if (channelId == LOBBY_CHANNEL_ID) {
                         setChannel(DEFAULT_CHANNEL_ID)
-                    } else {
-                        loadChannels()
                     }
+                    loadChannels()
                 }
             }
         }
