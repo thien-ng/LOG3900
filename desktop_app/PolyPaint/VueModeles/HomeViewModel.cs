@@ -602,6 +602,10 @@ namespace PolyPaint.VueModeles
                 return _switchViewCommand ?? (_switchViewCommand = new RelayCommand(x =>
                 {
                     SwitchView = SwitchView == Views.Gamelist ? Views.Profile : Views.Gamelist;
+                    if (SwitchView == Views.Gamelist)
+                        GamelistViewModel.getLobbies();
+                    if (SwitchView == Views.Profile)
+                        ProfileViewModel.fetchProfile();
                     SwitchViewButton = SwitchViewButton == "Profile" ? "GameList" : "Profile";
                     SwitchViewButtonTooltip = SwitchViewButtonTooltip == "Access to profile" ? "Access to gameList" : "Access to profile";
                     if (!FrontEnabled && !BackEnabled)
