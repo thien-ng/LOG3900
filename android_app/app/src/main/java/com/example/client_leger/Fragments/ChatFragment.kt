@@ -150,6 +150,7 @@ class ChatFragment: Fragment() {
 
         startGameSub = Communication.getGameStartListener().subscribe{
             inGame = true
+            inLobby = false
             addGameChannel()
             setChannel(GAME_CHANNEL_ID)
         }
@@ -341,6 +342,12 @@ class ChatFragment: Fragment() {
     }
 
     fun setChannel(newChannelId: String) {
+        if (newChannelId == LOBBY_CHANNEL_ID && !inLobby)
+            return
+
+        if (newChannelId == GAME_CHANNEL_ID && !inGame)
+            return
+
         activity!!.runOnUiThread {
             if (newChannelId != channelId) {
                 loadChannels()
@@ -391,7 +398,7 @@ class ChatFragment: Fragment() {
     private fun receiveGameMessage(mes: JSONObject) {
         val user = if (mes.isNull("username")) "" else mes.getString("username")
         val content = if (mes.isNull("content")) "" else mes.getString("content")
-        val isServer = if (mes.isNull("isServer")) false else mes.getBoolean("content")
+        val isServer = if (mes.isNull("isServer")) false else mes.getBoolean("isServer")
 
         activity!!.runOnUiThread {
             if (channelId == GAME_CHANNEL_ID) {

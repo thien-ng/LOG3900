@@ -1,8 +1,6 @@
 package com.example.client_leger
 
 import android.content.Context
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -13,8 +11,6 @@ import com.android.volley.toolbox.Volley
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
 import com.example.client_leger.Fragments.*
-import com.xwray.groupie.Group
-import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -340,13 +336,12 @@ class ConnexionController {
             }
         }
 
-        Log.w("testing", "channelsToAdd.size: " + channelsToAdd.size)
-        for (channelIndexToAdd in channelsToAdd) {
-            activity.notSubChannelAdapter.add(ChannelItem(
-                response.getJSONObject(channelIndexToAdd).getString("id"),
-                false,
-                this,
-                activity)
+        for (i in channelsToAdd) {
+            activity.notSubChannelAdapter.add(
+                ChannelItem(response.getJSONObject(i).getString("id"),
+                    false,
+                    this,
+                    activity)
             )
         }
     }
@@ -360,6 +355,7 @@ class ConnexionController {
                 Constants.SERVER_URL + "/chat/channels/sub/" + activity.username ,
                 null,
                 Response.Listener{response ->
+                    activity.channelAdapter.notifyDataSetChanged()
                     checkForSubChannelsToAddOrRemove(activity, response)
                 },Response.ErrorListener{ error ->
                     Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
@@ -373,15 +369,8 @@ class ConnexionController {
                 Constants.SERVER_URL + "/chat/channels/notsub/" + activity.username ,
                 null,
                 Response.Listener {response ->
-                    //checkForUnSubChannelsToAddOrRemove(activity, response)
-                    activity.notSubChannelAdapter.clear()
-                    for (i in 0 until response.length()) {
-                        val channelId = response.getJSONObject(i)
-                        activity.notSubChannelAdapter.add(ChannelItem(channelId.getString("id"), false, this, activity))
-                        activity.notSubChannelAdapter.setOnItemClickListener { item, _ ->
-                            joinChannel(activity, item.toString())
-                        }
-                    }
+                    activity.notSubChannelAdapter.notifyDataSetChanged()
+                    checkForUnSubChannelsToAddOrRemove(activity, response)
                 },Response.ErrorListener{ error ->
                     Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
                 }
