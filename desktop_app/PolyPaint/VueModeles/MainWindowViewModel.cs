@@ -81,6 +81,10 @@ namespace PolyPaint.VueModeles
         private void OnGoToHomeScreen(object obj)
         {
             ChangeViewModel(nameof(HomeViewModel), typeof(HomeViewModel));
+            if (PageViewModels.ContainsKey(nameof(LoginViewModel)) && PageViewModels[nameof(LoginViewModel)] != null)
+            {
+                PageViewModels.Remove(nameof(LoginViewModel));
+            }
         }
 
         public override void Dispose()

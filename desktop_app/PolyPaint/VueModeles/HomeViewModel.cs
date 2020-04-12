@@ -555,7 +555,6 @@ namespace PolyPaint.VueModeles
 
         public override void Dispose()
         {
-            Console.WriteLine("dispose");
             GameViewModel = null;
             LobbyViewModel = null;
             ServerService.instance.socket.Off("channel-new");
@@ -567,10 +566,6 @@ namespace PolyPaint.VueModeles
             Mediator.Unsubscribe("GoToGameScreen", goToGameView);
             Mediator.Unsubscribe("LeaveLobby", goToGameListView);
             GC.Collect();
-        }
-        ~HomeViewModel()
-        {
-            Console.WriteLine("dewtc");
         }
 
         #endregion
