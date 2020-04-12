@@ -32,7 +32,7 @@ export class ArenaSprint extends Arena {
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
-
+        
         this.setDifficulty(rules[0].difficulty);
         this.wordGuessedRight = 0;
         this.rulePtr = 0;
@@ -44,6 +44,18 @@ export class ArenaSprint extends Arena {
         if (this.rulePtr >= this.rules.length) {
             this.rulePtr = 0;
         }
+    }
+
+    private shuffleRule(): void {
+        for (let i = this.rules.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.rules[i], this.rules[j]] = [this.rules[j], this.rules[i]];
+        }
+        const list: string[] = [];
+        this.rules.forEach(r => {
+            list.push(r.solution);
+        });
+        this.curRule = this.rules[0];
     }
 
     public start(): void {
@@ -61,7 +73,6 @@ export class ArenaSprint extends Arena {
     }
 
     public startSubGame(): void {
-
         this.initSubGame();
         this.curArenaInterval = setInterval(() => {
             console.log("[Debug] time remaining: ", this.timeRemaining);
@@ -177,6 +188,7 @@ export class ArenaSprint extends Arena {
 
     private initSubGame(): void {
         //show an image or build one.
+        this.shuffleRule();
         this.startDrawingTimer();
         this.startBotDrawing(this.drawerBot.username, this.drawSpeed);
         
