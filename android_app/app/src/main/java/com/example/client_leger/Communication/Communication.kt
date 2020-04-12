@@ -25,6 +25,14 @@ object Communication {
     fun getLobbyUpdateListener(): PublishSubject<JSONObject>{ return lobbySource }
     fun updateLobby(obj: JSONObject) { lobbySource.onNext(obj) }
 
+    private var invitationSource: PublishSubject<JSONObject> = PublishSubject.create()
+    fun getInvitationUpdateListener(): PublishSubject<JSONObject>{ return lobbySource }
+    fun updateInvitation(obj: JSONObject) { lobbySource.onNext(obj) }
+
+    private var kickedSource: PublishSubject<JSONObject> = PublishSubject.create()
+    fun getUpdateKickListener(): PublishSubject<JSONObject>{ return kickedSource }
+    fun updateKick() { kickedSource.onNext(JSONObject()) }
+
     private var lobbyChat: PublishSubject<JSONObject> = PublishSubject.create()
     fun getLobbyChatListener(): PublishSubject<JSONObject>{ return lobbyChat }
     fun updateLobbyChat(obj: JSONObject) { lobbyChat.onNext(obj) }
