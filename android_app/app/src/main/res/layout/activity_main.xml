@@ -25,6 +25,7 @@
         </FrameLayout>
 
         <FrameLayout
+                android:background="@drawable/gradient"
                 android:id="@+id/container_view_right"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
