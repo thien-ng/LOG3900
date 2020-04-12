@@ -212,7 +212,7 @@ namespace PolyPaint.VueModeles
         private void kickedFromLobby()
         {
                 Mediator.Notify("LeaveLobby", "");
-                MessageBox.Show("You got kicked from lobby");
+                ShowMessageBox("You got kicked from lobby");
         }
 
         private async Task leaveLobby()
@@ -232,7 +232,7 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private async Task kickPlayer(string username)
+        private async Task<HttpResponseMessage> kickPlayer(string username)
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
             dynamic values = new JObject();
@@ -243,11 +243,7 @@ namespace PolyPaint.VueModeles
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
-            {
-                MessageBox.Show("Player " + username + " kicked.");
-            }
+            return await ServerService.instance.client.PostAsync(requestPath, byteContent);
         }
 
         private void refreshUserList(JObject data)
@@ -361,7 +357,7 @@ namespace PolyPaint.VueModeles
             if(response.IsSuccessStatusCode)
                 Bots.Remove(SelectedBot);
         }
-        private async Task InviteUserAsync(string x)
+        private async Task<HttpResponseMessage> InviteUserAsync(string x)
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_INVITE_PATH;
             dynamic values = new JObject();
@@ -371,9 +367,15 @@ namespace PolyPaint.VueModeles
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if (response.IsSuccessStatusCode)
-                MessageBox.Show("Invite sucessfully sent");
+            return await ServerService.instance.client.PostAsync(requestPath, byteContent);
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
         }
 
         public override void Dispose()
@@ -430,7 +432,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _openBotControlCommand ?? (_openBotControlCommand = new RelayCommand(async x =>
+                return _openBotControlCommand ?? (_openBotControlCommand = new RelayCommand(x =>
                 {
                     DialogContent = new CreateBotControl();
                     IsCreateBotDialogOpen = true;
@@ -473,7 +475,10 @@ namespace PolyPaint.VueModeles
                 return _inviteUserCommand ?? (_inviteUserCommand = new RelayCommand(async x =>
                 {
                     IsInviteUserDialogOpen = false;
-                    await Task.Run(() => InviteUserAsync((string)x));
+                    var response = await InviteUserAsync((string)x);
+
+                    if (response.IsSuccessStatusCode)
+                        ShowMessageBox("Invite sucessfully sent");
                 }));
             }
         }
@@ -486,7 +491,13 @@ namespace PolyPaint.VueModeles
             {
                 return _removeUserCommand ?? (_removeUserCommand = new RelayCommand(async x => 
                 {
-                    await Task.Run(() => kickPlayer((string)x));
+                    string username = (string)x;
+
+                    var response = await kickPlayer(username);
+                    if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                    {
+                        ShowMessageBox("Player " + username + " kicked.");
+                    }
                 }));
             }
         }

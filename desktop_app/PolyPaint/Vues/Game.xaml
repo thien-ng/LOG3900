@@ -25,19 +25,19 @@
     <materialDesign:DialogHost IsOpen="{Binding IsEndGameDialogOpen}"
                                DialogContent="{Binding DialogContent}"
                                CloseOnClickAway="False">
-        <Grid SizeChanged="Grid_SizeChanged">
+        <Grid>
         <Grid.Background>
             <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
         </Grid.Background>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40"/>
-            <ColumnDefinition x:Name="ColumDraw" Width="*"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition x:Name="RowDraw" Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal"

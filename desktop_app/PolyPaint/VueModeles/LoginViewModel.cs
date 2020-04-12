@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PolyPaint.Controls;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
@@ -71,9 +73,10 @@ namespace PolyPaint.VueModeles
 
             }
             else
-            {
-                MessageBox.Show(message);
-            }
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    ShowMessageBox(message);
+                });
         }
 
         private async void fetchProfile()
@@ -90,8 +93,7 @@ namespace PolyPaint.VueModeles
             }
             catch (Exception)
             {
-
-                MessageBox.Show("failed to connect");
+                ShowMessageBox("Failed to connect!");
             }
             
         }
@@ -131,6 +133,14 @@ namespace PolyPaint.VueModeles
         {
             ServerService.instance.socket.Off(Constants.LOGGING_EVENT);
         }
+        
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
+        }
 
         #endregion
 
@@ -157,11 +167,12 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                             }
                             else
-                                MessageBox.Show(res.GetValue("message").ToString());
+                                ShowMessageBox(res.GetValue("message").ToString());
                         } 
                     } catch
                     {
-                        MessageBox.Show("Error while logging into server");
+
+                        ShowMessageBox("Error while logging into server.");
                     }
                     finally
                     {

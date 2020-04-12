@@ -8,12 +8,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -29,6 +26,8 @@ namespace PolyPaint.Modeles
                 _players.Add(item);
             }
             _isNotFull = true;
+
+            IsLobbyJoined = true;
             _lobby = lobby;
             _mode = lobby.mode;
             _lobbyName = lobby.lobbyName;
@@ -135,6 +134,13 @@ namespace PolyPaint.Modeles
             }
         }
 
+        private bool _isLobbyJoined;
+        public bool IsLobbyJoined
+        {
+            get { return _isLobbyJoined; }
+            set { _isLobbyJoined = value; ProprieteModifiee(); }
+        }
+
         #endregion
 
         #region Methods
@@ -170,9 +176,11 @@ namespace PolyPaint.Modeles
                 data.Add("mode", _lobby.mode);
                 Mediator.Notify("GoToLobbyScreen", data);
             }
+            IsLobbyJoined = true;
         }
         private async void joinPrivateLobby()
         {
+            string errorMessage = "Wrong password, try again.";
             try
             {
                 string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
@@ -194,16 +202,25 @@ namespace PolyPaint.Modeles
                     Mediator.Notify("GoToLobbyScreen", data);
                 }
                 else
-                {
-                    MessageBox.Show("Wrong password, try again.");
-                }
+                    ShowMessageBox(errorMessage);
             }
             catch (Exception)
             {
-
-                MessageBox.Show("Wrong password, try again.");
+                ShowMessageBox(errorMessage);
+            }
+            finally
+            {
+                IsLobbyJoined = true;
             }
             
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
         }
         #endregion
 
@@ -216,6 +233,7 @@ namespace PolyPaint.Modeles
             {
                 return _joinLobbyCommand ?? (_joinLobbyCommand = new RelayCommand(x =>
                 {
+                    IsLobbyJoined = false;
                     if (IsPrivate)
                     {
                         DialogContent = new LobbyPasswordControl();

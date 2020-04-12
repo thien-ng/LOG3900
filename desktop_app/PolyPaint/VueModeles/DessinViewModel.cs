@@ -26,15 +26,6 @@ namespace PolyPaint.VueModeles
         /// 
         public DessinViewModel()
         {
-            Width = 1000;
-            Height = 800;
-            Setup();
-        }
-
-        public DessinViewModel(int width, int height)
-        {
-            Width = width;
-            Height = height;
             Setup();
         }
 
@@ -82,19 +73,6 @@ namespace PolyPaint.VueModeles
         {
             get { return _traits; }
             set { _traits = value; ProprieteModifiee(); }
-        }
-
-        private double _width;
-        public double Width { 
-            get { return _width; } 
-            set { _width = value; ProprieteModifiee(); } 
-        }
-
-        private double _height;
-        public double Height
-        {
-            get { return _height; }
-            set { _height = value; ProprieteModifiee(); }
         }
 
         // Commandes sur lesquels la vue pourra se connecter.
@@ -287,7 +265,7 @@ namespace PolyPaint.VueModeles
             try
             {
                 colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
-            } catch(Exception e)
+            } catch(Exception)
             {
                 colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
             }
