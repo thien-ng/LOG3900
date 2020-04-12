@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="Info_disclaimer">This information will not be shared.\nUsers will only see your username and your avatar</string>
     <string name="create_account"><u>Create an account</u></string>
+    <string name="Show_previous_messages"><u>Show previous messages</u></string>
+
 </resources>

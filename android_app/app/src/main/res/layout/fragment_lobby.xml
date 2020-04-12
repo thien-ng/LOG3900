@@ -49,7 +49,7 @@
             android:enabled="true"
             android:text="Leave"
             android:visibility="visible"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimaryDark"
             app:layout_constraintBottom_toTopOf="@+id/textView_Players"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -75,6 +75,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView_Players" />
 
+    <TextView
+            android:id="@+id/textView_WaitingForLeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waiting for leader to start the game"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userlist" />
+
     <Button
             android:id="@+id/button_addBot"
             android:layout_width="wrap_content"
@@ -85,7 +95,6 @@
             android:enabled="false"
             android:text="Add bot"
             android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_invitePlayer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userlist" />
@@ -99,7 +108,6 @@
             android:enabled="false"
             android:text="Invite player"
             android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/button_addBot"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button_addBot"
             app:layout_constraintTop_toTopOf="@+id/button_addBot" />
