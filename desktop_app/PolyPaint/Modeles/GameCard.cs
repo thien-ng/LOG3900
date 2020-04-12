@@ -25,7 +25,6 @@ namespace PolyPaint.Modeles
             {
                 _players.Add(item);
             }
-            _isNotFull = true;
 
             IsLobbyJoined = true;
             _lobby = lobby;
@@ -33,6 +32,7 @@ namespace PolyPaint.Modeles
             _lobbyName = lobby.lobbyName;
             Size = lobby.size;
             _actualSize = _players.Count;
+            _isNotFull = _actualSize == Size ? false : true;
             IsPrivate = lobby.isPrivate;
             _isPasswordDialogOpen = false;
             _players.CollectionChanged += this.OnCollectionChanged;

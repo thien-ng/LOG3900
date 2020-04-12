@@ -96,7 +96,7 @@
                             </ScrollViewer>
                             <Button Margin="10" Grid.Row="2" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Join Lobby" Command="{Binding JoinLobbyCommand}" FontSize="15">
                         <Button.IsEnabled>
-                            <MultiBinding Converter="{converter:MutliBooleanConverter}">
+                            <MultiBinding Converter="{StaticResource MultiBooleanConverter}">
                                 <Binding Path="IsNotFull"/>
                                 <Binding Path="IsLobbyJoined"/>
                             </MultiBinding>
