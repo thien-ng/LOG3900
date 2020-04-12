@@ -183,6 +183,7 @@
     <Compile Include="Convertisseurs\IsFirstToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSelectedToOpacityConverter.cs" />
     <Compile Include="Convertisseurs\ModeToGuessleftVisibilityConverter.cs" />
+    <Compile Include="Convertisseurs\MultiBooleanConverter.cs" />
     <Compile Include="Convertisseurs\PanoramicModeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SearchBarVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSubbedToVisibilityConverter.cs" />

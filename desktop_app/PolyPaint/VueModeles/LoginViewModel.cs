@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LoginViewModel : BaseViewModel, IPageViewModel
+    class LoginViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
         private ICommand    _login;
         private ICommand    _goToRegister;
@@ -69,6 +69,8 @@ namespace PolyPaint.VueModeles
                 ServerService.instance.username = _username;
                 fetchProfile();
                 Mediator.Notify("GoToHomeScreen", "");
+                Dispose();
+
             }
             else
                 App.Current.Dispatcher.Invoke(delegate
@@ -127,6 +129,11 @@ namespace PolyPaint.VueModeles
             IsButtonEnabled = condition;
         }
 
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off(Constants.LOGGING_EVENT);
+        }
+        
         private void ShowMessageBox(string message)
         {
             App.Current.Dispatcher.Invoke(delegate

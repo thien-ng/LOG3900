@@ -16,11 +16,11 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToolTip.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate x:Key="GameList" DataType="{x:Type model:GamelistViewModel}">
-                <local:GameList />
+                <local:GameList DataContext="{Binding GamelistViewModel}" />
             </DataTemplate>
 
             <DataTemplate x:Key="Profile" DataType="{x:Type model:ProfileViewModel}">
-                <local:Profile/>
+                <local:Profile DataContext="{Binding ProfileViewModel}"/>
             </DataTemplate>
 
             <DataTemplate x:Key="Lobby" DataType="{x:Type model:LobbyViewModel}">

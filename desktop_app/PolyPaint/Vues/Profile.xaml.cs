@@ -24,8 +24,6 @@ namespace PolyPaint.Vues
         public Profile()
         {
             InitializeComponent();
-            if (DataContext == null)
-                DataContext = new ProfileViewModel();
         }
     }
 }

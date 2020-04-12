@@ -24,8 +24,6 @@ namespace PolyPaint.Vues
         public GameList()
         {
             InitializeComponent();
-            if (DataContext == null)
-            DataContext = new GamelistViewModel();
         }
     }
 }
