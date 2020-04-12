@@ -14,10 +14,13 @@ import com.example.client_leger.Communication.Communication
 import com.example.client_leger.Controller.GameController
 import com.example.client_leger.Interface.FragmentChangeListener
 import com.example.client_leger.R
+import com.example.client_leger.models.Game
 import com.example.client_leger.models.GameMode
 import com.example.client_leger.models.Lobby
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.android.synthetic.main.fragment_lobby.*
 import kotlinx.android.synthetic.main.fragment_lobby.view.*
+import kotlinx.android.synthetic.main.fragment_lobby.view.textView_FullLobby
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -90,6 +93,15 @@ class LobbyFragment() : Fragment(),
                                         startButton.setOnClickListener { startGame(lobby.lobbyName) }
                                     } else {
                                         startButton.setOnClickListener {  Toast.makeText(context, "2 players required", Toast.LENGTH_SHORT).show()}
+                                    }
+                                    if(userListAdapter.count == lobby.size){
+                                        inviteButton.visibility = View.INVISIBLE
+                                        inviteButton.isEnabled = false
+                                        if(lobby.gameMode == GameMode.FFA.toString()){
+                                            addBotButton.visibility = View.INVISIBLE
+                                            addBotButton.isEnabled = false
+                                        }
+                                        textView_FullLobby.visibility = View.VISIBLE
                                     }
                                 }
                             }
@@ -184,6 +196,7 @@ class LobbyFragment() : Fragment(),
     }
     private fun setMasterView(mode:String){
         v.textView_WaitingForLeader.visibility = View.GONE
+        v.textView_FullLobby.visibility = View.GONE
         startButton.visibility = View.VISIBLE
         startButton.isEnabled = true
         if (mode == "FFA") {
