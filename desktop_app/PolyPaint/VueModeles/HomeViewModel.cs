@@ -255,7 +255,7 @@ namespace PolyPaint.VueModeles
             if (GameViewModel != null)
             {
                 GameViewModel.Dispose();
-                LobbyViewModel = null;
+                GameViewModel = null;
             }
 
             GamelistViewModel.SubscribeLobbyNotif();
