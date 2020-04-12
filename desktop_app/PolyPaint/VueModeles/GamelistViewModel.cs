@@ -243,7 +243,7 @@ namespace PolyPaint.VueModeles
              });
 
         }
-        private async void createLobby()
+        private async Task<HttpResponseMessage> createLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();
@@ -266,15 +266,8 @@ namespace PolyPaint.VueModeles
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
-            {
-                Dictionary<string, string> data = new Dictionary<string, string>();
-                data.Add("lobbyName", _lobbyName);
-                data.Add("mode", _selectedMode);
-                Mediator.Notify("GoToLobbyScreen", data);
-                LobbyName = "";
-            }
+            return await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            
         }
 
         #endregion
@@ -301,7 +294,16 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    await Task.Run(() => createLobby());
+                    var response = await createLobby();
+
+                    if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                    {
+                        Dictionary<string, string> data = new Dictionary<string, string>();
+                        data.Add("lobbyName", _lobbyName);
+                        data.Add("mode", _selectedMode);
+                        Mediator.Notify("GoToLobbyScreen", data);
+                        LobbyName = "";
+                    }
                     IsCreateGameDialogOpen = false;
                 }));
             }
