@@ -81,7 +81,7 @@ export class LobbyManagerService {
         else {
             lobby.whitelist = [user];
         }
-        this.socketServer.to(user.socketId).emit("lobby-invitation", { type: LobbyNotif.invitation, lobbyName: lobbyName })
+        this.socketServer.to(user.socketId).emit("lobby-invitation", { type: LobbyNotif.invitation, lobbyName: lobbyName, mode: lobbyName })
         return `${username} added to whitelist`;
     }
 
