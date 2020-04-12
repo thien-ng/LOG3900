@@ -241,11 +241,16 @@ namespace PolyPaint.VueModeles
 
         private void goToGameListView(object obj)
         {
-            LobbyViewModel.Dispose();
-            LobbyViewModel = null;
-
-            GameViewModel.Dispose();
-            GameViewModel = null;
+            if (LobbyViewModel != null)
+            {
+                LobbyViewModel.Dispose();
+                LobbyViewModel = null;
+            }
+            if (GameViewModel != null)
+            {
+                GameViewModel.Dispose();
+                LobbyViewModel = null;
+            }
 
             SwitchView = Views.Gamelist;
             IsNotInLobby = true;
