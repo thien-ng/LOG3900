@@ -138,7 +138,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
 
     public void updateUser(@NotNull String lobbyName, @NotNull String username) {
         int id = getItemId(lobbyName);
-        if (id > 0) {
+        if (id >= 0) {
             getItem(id).getUsernames().add(username);
             notifyItemChanged(id);
         }
