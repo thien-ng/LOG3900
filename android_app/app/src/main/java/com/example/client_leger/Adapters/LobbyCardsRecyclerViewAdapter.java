@@ -149,7 +149,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         }
     }
 
-    public void updateUser(@NotNull String lobbyName, @NotNull String username) {
+    public void updateUserJoin(@NotNull String lobbyName, @NotNull String username) {
         int id = getItemId(lobbyName);
         if (id >= 0) {
             getItem(id).getUsernames().add(username);
@@ -157,6 +157,13 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         }
     }
 
+    public void updateUserLeave(@NotNull String lobbyName, @NotNull String username) {
+        int id = getItemId(lobbyName);
+        if (id >= 0) {
+            getItem(id).getUsernames().remove(username);
+            notifyItemChanged(id);
+        }
+    }
     // allows clicks events to be ca
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
