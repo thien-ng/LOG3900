@@ -43,6 +43,18 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
         Lobby currLobby = mData.get(position);
         holder.myTextView.setText(currLobby.getLobbyName());
         holder.usersListView.setAdapter(currLobby.getAdapter());
+        int totalHeight = 0;
+        for (int i = 0; i < currLobby.getAdapter().getCount(); i++) {
+            View listItem = currLobby.getAdapter().getView(i, null, holder.usersListView);
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params =  holder.usersListView.getLayoutParams();
+        params.height = totalHeight + ( holder.usersListView.getDividerHeight() * (currLobby.getAdapter().getCount() - 1));
+        holder.usersListView.setLayoutParams(params);
+        holder.usersListView.requestLayout();
+
         holder.lobbySize.setText(currLobby.getUsernames().size() + "/" + currLobby.getSize() + " players");
         if (currLobby.getPrivate()) {
             holder.joinPrivateButton.setEnabled(true);
@@ -79,6 +91,7 @@ public class LobbyCardsRecyclerViewAdapter extends RecyclerView.Adapter<LobbyCar
             usersListView = itemView.findViewById(R.id.listView_users);
             joinButton = itemView.findViewById(R.id.button_join);
             joinPrivateButton = itemView.findViewById(R.id.button_joinPrivate);
+
 
             joinButton.setOnClickListener(this);
             joinPrivateButton.setOnClickListener(this);
