@@ -49,7 +49,7 @@
             android:enabled="true"
             android:text="Leave"
             android:visibility="visible"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@color/colorPrimaryDark"
             app:layout_constraintBottom_toTopOf="@+id/textView_Players"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
