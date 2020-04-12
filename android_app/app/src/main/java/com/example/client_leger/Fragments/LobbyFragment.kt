@@ -175,12 +175,15 @@ class LobbyFragment() : Fragment(),
                 leaveButton.setOnClickListener { leaveGame(lobby.lobbyName) }
                 if (isMaster) {
                     setMasterView(mode)
+                }else{
+                    v.textView_WaitingForLeader.visibility = View.VISIBLE
                 }
             }
             userListAdapter.addUsers(usernames)
         }
     }
     private fun setMasterView(mode:String){
+        v.textView_WaitingForLeader.visibility = View.GONE
         startButton.visibility = View.VISIBLE
         startButton.isEnabled = true
         if (mode == "FFA") {
