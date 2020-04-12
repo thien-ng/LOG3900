@@ -123,11 +123,11 @@ namespace PolyPaint.Modeles
             }
         }
 
-        private bool _isJoiningLobby;
+        private bool _isLobbyJoined;
         public bool IsLobbyJoined
         {
-            get { return _isJoiningLobby; }
-            set { _isJoiningLobby = value; ProprieteModifiee(); }
+            get { return _isLobbyJoined; }
+            set { _isLobbyJoined = value; ProprieteModifiee(); }
         }
 
         #endregion
