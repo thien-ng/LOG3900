@@ -1,5 +1,4 @@
-﻿using PolyPaint.VueModeles;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PolyPaint.Vues
+namespace PolyPaint.Controls
 {
     /// <summary>
-    /// Logique d'interaction pour Game.xaml
+    /// Interaction logic for CustomMessageBoxControl.xaml
     /// </summary>
-    public partial class Game : UserControl
+    public partial class CustomMessageBoxControl : UserControl
     {
-        public Game()
+        public CustomMessageBoxControl()
         {
             InitializeComponent();
         }
