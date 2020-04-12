@@ -13,7 +13,7 @@ using PolyPaint.Utilitaires;
 
 namespace PolyPaint.VueModeles
 {
-    class DessinViewModel : BaseViewModel, IPageViewModel
+    class DessinViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
 
 
@@ -96,7 +96,6 @@ namespace PolyPaint.VueModeles
 
         private void Setup()
         {
-            IsDrawer = true;
 
             ServerService.instance.socket.On("draw", data => ReceiveDrawing((JObject)data));
 
@@ -108,6 +107,7 @@ namespace PolyPaint.VueModeles
             AjusterPointe();
 
             Traits = editeur.traits;
+            IsDrawer = true;
 
             // Pour chaque commande, on effectue la liaison avec des méthodes du modèle.
             // Pour les commandes suivantes, il est toujours possible des les activer.
@@ -348,28 +348,39 @@ namespace PolyPaint.VueModeles
 
         private void MergeStrokes(DrawingAttributes attr)
         {
-            StylusPointCollection points = new StylusPointCollection();
-            StrokeCollection strokesToRemove = new StrokeCollection();
-
-            foreach (CustomStroke trait in Traits)
+            try
             {
-                if (trait.uid == currentStrokeId)
+                StylusPointCollection points = new StylusPointCollection();
+                StrokeCollection strokesToRemove = new StrokeCollection();
+
+                foreach (CustomStroke trait in Traits)
                 {
-                    points.Add(trait.StylusPoints);
-                    strokesToRemove.Add(trait);
+                    if (trait.uid == currentStrokeId)
+                    {
+                        points.Add(trait.StylusPoints);
+                        strokesToRemove.Add(trait);
+                    }
                 }
+
+                CustomStroke fullStroke = new CustomStroke(points, attr);
+                fullStroke.uid = currentStrokeId;
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Traits.Add(fullStroke);
+                    Traits.Remove(strokesToRemove);
+                });
+
+                currentStrokeId = Guid.NewGuid();
+
             }
-
-            CustomStroke fullStroke = new CustomStroke(points, attr);
-            fullStroke.uid = currentStrokeId;
-
-            App.Current.Dispatcher.Invoke(delegate
+            catch (Exception)
             {
-                Traits.Add(fullStroke);
-                Traits.Remove(strokesToRemove);
-            });
-
-            currentStrokeId = Guid.NewGuid();
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Traits.Clear();
+                });
+            }
         }
 
         public void OnEndOfStroke(InkCanvas sender, MouseEventArgs e)
@@ -381,6 +392,11 @@ namespace PolyPaint.VueModeles
 
             IsDrawing = false;
             previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+        }
+
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off("draw");
         }
 
         #endregion

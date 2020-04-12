@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.IO;
-using MaterialDesignThemes.Wpf;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json.Linq;
@@ -17,7 +16,7 @@ using System.Linq;
 
 namespace PolyPaint.VueModeles
 {
-    class GamelistViewModel : BaseViewModel
+    class GamelistViewModel : BaseViewModel, IDisposable
     {
         public GamelistViewModel()
         {
@@ -26,7 +25,7 @@ namespace PolyPaint.VueModeles
             SelectedMode = "FFA";
             IsPrivate = false;
             _isSizeNeeded = true;
-            ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
+            SubscribeLobbyNotif();
         }
 
         #region Public Attributes
@@ -181,6 +180,12 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
+        public void SubscribeLobbyNotif()
+        {
+            if (!ServerService.instance.socket.HasListeners("lobby-notif"))
+                ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
+        }
+
         private void processLobbyNotif(JObject data)
         {
             App.Current.Dispatcher.Invoke(delegate
@@ -221,7 +226,7 @@ namespace PolyPaint.VueModeles
                 Numbers.Add(i);
             }
         }
-        private async void getLobbies()
+        public async void getLobbies()
         {
             await App.Current.Dispatcher.Invoke(async delegate
              {
@@ -268,6 +273,11 @@ namespace PolyPaint.VueModeles
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return await ServerService.instance.client.PostAsync(requestPath, byteContent);
             
+        }
+
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off("lobby-notif");
         }
 
         #endregion

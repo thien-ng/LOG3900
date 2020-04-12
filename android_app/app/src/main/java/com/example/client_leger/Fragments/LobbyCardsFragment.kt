@@ -21,6 +21,7 @@ import com.example.client_leger.models.GameMode
 import com.example.client_leger.models.Lobby
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_createlobby.*
+import kotlinx.android.synthetic.main.fragment_gamecards.view.*
 import org.json.JSONObject
 
 
@@ -84,6 +85,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 position: Int,
                 id: Long
             ) {
+                v.textView_Description.text= getDescription(spinnerToGameMode(position))
                 lobbyCardsController.getLobbies(
                     this@LobbyCardsFragment,
                     spinnerToGameMode(position).toString()
@@ -182,6 +184,14 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         super.onDestroy()
         lobbyNotifSub.dispose()
         inviteSub.dispose()
+    }
+
+    private fun getDescription(mode: GameMode): String {
+        return when (mode) {
+            GameMode.FFA -> "Play against one or more players and try to accumulate the most points"
+            GameMode.SOLO -> "Play alone and try to guess the most words"
+            GameMode.COOP -> "Play with up to three players and try to guess the most words together"
+        }
     }
 
     private fun showDialog() {

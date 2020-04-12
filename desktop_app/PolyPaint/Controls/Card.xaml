@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converter="clr-namespace:PolyPaint.Convertisseurs"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PolyPaint.Controls"
              mc:Ignorable="d"
@@ -93,7 +94,14 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ScrollViewer>
-                    <Button Margin="10" Grid.Row="2" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Join Lobby" Command="{Binding JoinLobbyCommand}" IsEnabled="{Binding IsLobbyJoined}" FontSize="15"/>
+                            <Button Margin="10" Grid.Row="2" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Content="Join Lobby" Command="{Binding JoinLobbyCommand}" FontSize="15">
+                        <Button.IsEnabled>
+                            <MultiBinding Converter="{StaticResource MultiBooleanConverter}">
+                                <Binding Path="IsNotFull"/>
+                                <Binding Path="IsLobbyJoined"/>
+                            </MultiBinding>
+                        </Button.IsEnabled>
+                        </Button>
                 </Grid>
             </materialDesign:Flipper.BackContent>
         </materialDesign:Flipper>

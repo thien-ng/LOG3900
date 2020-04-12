@@ -13,7 +13,7 @@ using PolyPaint.Modeles;
 
 namespace PolyPaint.VueModeles
 {
-    class RegisterViewModel : BaseViewModel, IPageViewModel
+    class RegisterViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
         private ICommand _goToLogin;
         private ICommand _register;
@@ -81,6 +81,7 @@ namespace PolyPaint.VueModeles
                 ServerService.instance.username = _username;
                 fetchProfile();
                 Mediator.Notify("GoToHomeScreen", "");
+                Dispose();
             }
             else
             {
@@ -119,6 +120,11 @@ namespace PolyPaint.VueModeles
             return JObject.Parse(responseString);
         }
 
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off(Constants.LOGGING_EVENT);
+        }
+        
         private void ShowMessageBox(string message)
         {
             App.Current.Dispatcher.Invoke(delegate

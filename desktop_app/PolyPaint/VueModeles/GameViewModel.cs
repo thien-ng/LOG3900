@@ -10,10 +10,15 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class GameViewModel: BaseViewModel, IPageViewModel
+    class GameViewModel: BaseViewModel, IPageViewModel, IDisposable
     {
         public GameViewModel(string mode)
         {
+            if (DrawViewModel != null)
+            {
+                DrawViewModel.Dispose();
+                DrawViewModel = null;
+            }
             DrawViewModel = new DessinViewModel();
             _points = new ObservableCollection<PointsDisplay>();
             _myPoints = "0";
@@ -27,7 +32,6 @@ namespace PolyPaint.VueModeles
             ServerService.instance.socket.On("game-guessLeft", data => processGuess((JObject)data));
             ServerService.instance.socket.On("game-clear", processClear);
         }
-
 
         #region Public Attributes
         public DessinViewModel DrawViewModel { get; set; }
@@ -110,8 +114,10 @@ namespace PolyPaint.VueModeles
             ServerService.instance.socket.Emit("gameplay", gameReady);
         }
 
+
         private void processRole(JObject role) 
         {
+            DrawViewModel.IsDrawer = false;
             if (role.GetValue("username").ToString() == ServerService.instance.username)
             {
                 Role = Constants.ROLE_DRAWER;
@@ -199,6 +205,19 @@ namespace PolyPaint.VueModeles
             }
             
 
+        }
+
+        public override void Dispose()
+        {
+            DrawViewModel.Dispose();
+            DrawViewModel = null;
+            ServerService.instance.socket.Off("game-drawer");
+            ServerService.instance.socket.Off("game-timer");
+            ServerService.instance.socket.Off("game-over");
+            ServerService.instance.socket.Off("game-points");
+            ServerService.instance.socket.Off("game-guessLeft");
+            ServerService.instance.socket.Off("game-clear");
+            ServerService.instance.socket.Off("gameplay");
         }
         #endregion
 
