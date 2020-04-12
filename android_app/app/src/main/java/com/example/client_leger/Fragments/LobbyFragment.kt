@@ -150,15 +150,6 @@ class LobbyFragment() : Fragment(),
         return isMaster
     }
 
-    private fun getDescription(mode: String): String {
-        return when (mode) {
-            "FFA" -> "Play against one or more players and try to accumulate the most points"
-            "SOLO" -> "Play alone and try to guess the most words"
-            "COOP" -> "Play with up to three players and try to guess the most words together"
-            else -> "description"
-        }
-    }
-
     override fun onDestroy() {
         activity!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.VISIBLE
         super.onDestroy()

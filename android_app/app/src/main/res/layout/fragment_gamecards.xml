@@ -35,10 +35,22 @@
                 android:textSize="45sp"
                 android:popupBackground="@android:color/transparent"
                 android:overlapAnchor="false"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toTopOf="@+id/textView_Description" />
 
+        <TextView
+                android:id="@+id/textView_Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="11dp"
+                android:layout_marginLeft="15dp"
+                android:paddingLeft="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Description"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/appCompatImageView" />
         <Button
                 android:id="@+id/button_showCreateLobbyDialog"
                 android:layout_width="wrap_content"
