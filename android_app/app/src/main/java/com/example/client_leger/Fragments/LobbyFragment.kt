@@ -96,7 +96,9 @@ class LobbyFragment() : Fragment(),
                                         v.textView_NotEnoughPlayers.visibility = View.GONE
                                         startButton.visibility = View.VISIBLE
                                         startButton.isEnabled = true
-                                        startButton.setOnClickListener { startGame(lobby.lobbyName) }
+                                        startButton.setOnClickListener { startButton.isEnabled = false
+                                            startGame(lobby.lobbyName)
+                                        }
                                     } else {
                                         v.textView_NotEnoughPlayers.visibility = View.VISIBLE
                                         startButton.visibility = View.GONE
@@ -206,7 +208,10 @@ class LobbyFragment() : Fragment(),
             if(userListAdapter.count >= 2){
                 startButton.visibility = View.VISIBLE
                 startButton.isEnabled = true
-                startButton.setOnClickListener { startGame(lobby.lobbyName) }
+                startButton.setOnClickListener {
+                    startButton.isEnabled = false
+                    startGame(lobby.lobbyName)
+                }
             }else{
                 startButton.visibility = View.INVISIBLE
                 startButton.isEnabled = false
@@ -231,7 +236,9 @@ class LobbyFragment() : Fragment(),
         }else{
             startButton.visibility = View.VISIBLE
             startButton.isEnabled = true
-            startButton.setOnClickListener { startGame(lobby.lobbyName) }
+            startButton.setOnClickListener {
+                startButton.isEnabled = false
+                startGame(lobby.lobbyName) }
         }
         if(mode != "SOLO") {
             inviteButton.visibility = View.VISIBLE
