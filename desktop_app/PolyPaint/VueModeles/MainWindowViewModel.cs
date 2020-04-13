@@ -1,6 +1,4 @@
-﻿using PolyPaint.Services;
-using PolyPaint.Utilitaires;
-using Quobject.SocketIoClientDotNet.Client;
+﻿using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 
@@ -18,12 +16,6 @@ namespace PolyPaint.VueModeles
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
             Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
             Mediator.Subscribe("GoToHomeScreen", OnGoToHomeScreen);
-
-            Socket socket = IO.Socket(Constants.SERVER_PATH);
-            socket.On(Socket.EVENT_CONNECT, () =>
-            {
-                ServerService.instance.socket = socket;
-            });
         }
 
         #region Attributes

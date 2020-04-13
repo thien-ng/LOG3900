@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="PolyPaint.Vues.Login"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:wpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      mc:Ignorable="d" 
+      Background="White"
+      d:DesignHeight="450" d:DesignWidth="800">
+
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="3*" />
+
+        </Grid.RowDefinitions>
+        <Grid.Background>
+            <ImageBrush ImageSource="pack://application:,,,/Polypaint;component/Resources/trianglify-lowres.png"/>
+        </Grid.Background>
+        <Rectangle wpf:HintAssist.Hint="Enter server IP" Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Fill="White" StrokeThickness="0" Stroke="{StaticResource SecondaryAccentBrush}">
+        </Rectangle>
+
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="10 0" Text="{Binding ServerPath}" />
+
+        <Image Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Width="350" Source="pack://application:,,,/Polypaint;component/Resources/logo.png"/>
+        <Button Grid.Column="1" Grid.Row="3" Margin="0 15" IsDefault="True" Style="{StaticResource MaterialDesignRaisedDarkButton}" BorderBrush="{StaticResource PrimaryHueLightBrush}" Background="{StaticResource PrimaryHueLightBrush}" Width="100" Command="{Binding SubmitIp}" IsEnabled="{Binding IsButtonEnabled}" >
+            CHOOSE
+        </Button>
+    </Grid>
+</UserControl>

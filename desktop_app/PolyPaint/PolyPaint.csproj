@@ -254,6 +254,9 @@
     <Compile Include="Vues\Lobby.xaml.cs">
       <DependentUpon>Lobby.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\Login - Copy.xaml.cs">
+      <DependentUpon>Login - Copy.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
@@ -357,6 +360,10 @@
     <Page Include="Vues\Lobby.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vues\Login - Copy.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\Login.xaml">
       <SubType>Designer</SubType>
