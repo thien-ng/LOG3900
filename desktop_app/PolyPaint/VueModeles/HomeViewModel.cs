@@ -275,7 +275,7 @@ namespace PolyPaint.VueModeles
                 LobbyViewModel.Dispose();
                 LobbyViewModel = null;
             }
-            Task.Delay(150).ContinueWith(_ =>
+            Task.Delay(500).ContinueWith(_ =>
             {
                 if (GameViewModel != null)
                 {
