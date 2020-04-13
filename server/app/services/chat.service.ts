@@ -52,7 +52,7 @@ export class ChatService {
             this.channelMapUsersList.set(chan.id, list);
         });
 
-        this.getUserId(name).then((id: number) => { this.usernameMapUserId.set(name, id) });
+        this.getUserId(name).then((id: number) => { this.usernameMapUserId.set(name, id) }).catch(e=>{console.error(e.message);});
         this.usernameMapSocketId.set(user.username, user.socketId);
     }
 
@@ -74,7 +74,7 @@ export class ChatService {
         return this.db.getAccountIdByUsername(username).then((result: pg.QueryResult) => {
             const res: IUserId[] = result.rows.map((row: any) => ({ id: row.id }));
             return res[0].id;
-        });
+        }).catch(e=>{console.error(e.message);});
     }
 
     public sendMessages(mes: IReceptMes): void {
