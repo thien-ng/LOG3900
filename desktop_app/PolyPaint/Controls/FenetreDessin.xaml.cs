@@ -59,10 +59,5 @@ namespace PolyPaint.Controls
         {
             ((DessinViewModel)DataContext).OnEndOfStroke(surfaceDessin, e);
         }
-
-        public void test(object sender, MouseEventArgs e)
-        {
-            Console.WriteLine("leave");
-        }
     }
 }
