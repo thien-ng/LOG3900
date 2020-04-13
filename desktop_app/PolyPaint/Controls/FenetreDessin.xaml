@@ -8,8 +8,6 @@
         xmlns:convertisseurs="clr-namespace:PolyPaint.Convertisseurs"       
         xmlns:vues="clr-namespace:PolyPaint.Vues"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Width="{Binding Width}"
-        Height="{Binding Height}"
         mc:Ignorable="d">
 
     <Grid.Resources>

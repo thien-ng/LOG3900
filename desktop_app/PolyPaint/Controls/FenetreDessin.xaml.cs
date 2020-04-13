@@ -38,6 +38,13 @@ namespace PolyPaint.Controls
                                            p.X >= 0 && p.X <= surfaceDessin.ActualWidth &&
                                            p.Y >= 0 && p.Y <= surfaceDessin.ActualHeight;
 
+            bool isLBPressedOutsideCanvas = e.LeftButton == MouseButtonState.Pressed &&
+                                           (p.X < 0 || p.X > surfaceDessin.ActualWidth ||
+                                           p.Y < 0 || p.Y > surfaceDessin.ActualHeight);
+
+            if (((DessinViewModel)DataContext).IsDrawing && isLBPressedOutsideCanvas)
+                ((DessinViewModel)DataContext).MouseOutOfBounds(surfaceDessin, e);
+
             if (isLBPressedInsideCanvas)
                 ((DessinViewModel)DataContext).MouseMove(surfaceDessin, e);
         }
@@ -51,6 +58,11 @@ namespace PolyPaint.Controls
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             ((DessinViewModel)DataContext).OnEndOfStroke(surfaceDessin, e);
+        }
+
+        public void test(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("leave");
         }
     }
 }
