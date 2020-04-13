@@ -16,6 +16,7 @@
             android:hint="lobby name" />
 
     <TextView
+            android:id="@+id/textView_PlayerLimit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
