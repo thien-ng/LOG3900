@@ -87,8 +87,14 @@ export class AccountService {
         if (regis.firstName.length < 1 || regis.firstName.length > 100) {
             throw new Error("first name length should be between 1 and 100");
         }
+        if (!/^[a-zA-Z]+$/.test(regis.firstName)) {
+            throw new Error("first name must be alphabetic");
+        }
         if (regis.lastName.length < 1 || regis.lastName.length > 100) {
             throw new Error("last name length should be between 1 and 100");
+        }
+        if (!/^[a-zA-Z]+$/.test(regis.lastName)) {
+            throw new Error("last name must be alphabetic");
         }
         if (regis.avatar)
             this.verifyAvatar(regis.avatar);
