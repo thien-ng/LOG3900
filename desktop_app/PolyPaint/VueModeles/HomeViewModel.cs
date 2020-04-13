@@ -708,7 +708,7 @@ namespace PolyPaint.VueModeles
                 {
                     var view = new CreateGameControl { DataContext = new CreateGameViewModel() };
 
-                    await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+                    await DialogHost.Show(view, "CreateGameDialog", ClosingEventHandler);
                 }));
             }
         }
