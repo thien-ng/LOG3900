@@ -243,75 +243,96 @@ namespace PolyPaint.VueModeles
 
         private void DrawingEraser(InkCanvas sender, MouseEventArgs e)
         {
-            string eraserType;
-            int? eraserWidth = null;
-
-            if (editeur.OutilSelectionne == "efface_segment")
+            try
             {
-                eraserType = "point";
-                eraserWidth = editeur.TailleTrait;
+                string eraserType;
+                int? eraserWidth = null;
+
+                if (editeur.OutilSelectionne == "efface_segment")
+                {
+                    eraserType = "point";
+                    eraserWidth = editeur.TailleTrait;
+                }
+                else
+                    eraserType = "stroke";
+
+                JObject eraser = new JObject(new JProperty("event", "draw"),
+                                             new JProperty("username", ServerService.instance.username),
+                                             new JProperty("type", "eraser"),
+                                             new JProperty("x", e.GetPosition(sender).X),
+                                             new JProperty("y", e.GetPosition(sender).Y),
+                                             new JProperty("eraser", eraserType));
+
+                if (eraserWidth != null)
+                    eraser.Add("width", eraserWidth);
+
+                ServerService.instance.socket.Emit("gameplay", eraser);
             }
-            else
-                eraserType = "stroke";
-
-            JObject eraser = new JObject(new JProperty("event", "draw"),
-                                         new JProperty("username", ServerService.instance.username),
-                                         new JProperty("type", "eraser"),
-                                         new JProperty("x", e.GetPosition(sender).X),
-                                         new JProperty("y", e.GetPosition(sender).Y),
-                                         new JProperty("eraser", eraserType));
-
-            if (eraserWidth != null)
-                eraser.Add("width", eraserWidth);
-
-            ServerService.instance.socket.Emit("gameplay", eraser);
+            catch (Exception)
+            {
+                // fail silently
+            }
         } 
 
         private void ReceiveDrawingInk(JObject data)
         {
-            
-
-            double? X1 = (double?)data.GetValue("startPosX");
-            double? X2 = (double?)data.GetValue("endPosX");
-            double? Y1 = (double?)data.GetValue("startPosY");
-            double? Y2 = (double?)data.GetValue("endPosY");
-
-            if (!(X1.HasValue && X2.HasValue && Y1.HasValue && Y2.HasValue))
-                return;
-
-            StylusPointCollection coll = new StylusPointCollection();
-            coll.Add(new StylusPoint(X1.Value, Y1.Value));
-            coll.Add(new StylusPoint(X2.Value, Y2.Value));
-
-            DrawingAttributes attr = new DrawingAttributes();
-            attr.Color = (Color)ColorConverter.ConvertFromString((string)data.GetValue("color"));
-            attr.Height = (double)data.GetValue("width");
-            attr.Width = attr.Height;
-            attr.StylusTip = (string)data.GetValue("format") == "circle" ? StylusTip.Ellipse : StylusTip.Rectangle;
-
-            CustomStroke str = new CustomStroke(coll, attr);
-            str.uid = currentStrokeId;
-
-            App.Current.Dispatcher.Invoke(delegate
+            try
             {
-                Traits.Add(str);
-            });
 
-            if ((bool)data.GetValue("isEnd"))
-                MergeStrokes(attr);
+                double? X1 = (double?)data.GetValue("startPosX");
+                double? X2 = (double?)data.GetValue("endPosX");
+                double? Y1 = (double?)data.GetValue("startPosY");
+                double? Y2 = (double?)data.GetValue("endPosY");
+
+                if (!(X1.HasValue && X2.HasValue && Y1.HasValue && Y2.HasValue))
+                    return;
+
+                StylusPointCollection coll = new StylusPointCollection();
+                coll.Add(new StylusPoint(X1.Value, Y1.Value));
+                coll.Add(new StylusPoint(X2.Value, Y2.Value));
+
+                DrawingAttributes attr = new DrawingAttributes();
+                attr.Color = (Color)ColorConverter.ConvertFromString((string)data.GetValue("color"));
+                attr.Height = (double)data.GetValue("width");
+                attr.Width = attr.Height;
+                attr.StylusTip = (string)data.GetValue("format") == "circle" ? StylusTip.Ellipse : StylusTip.Rectangle;
+
+                CustomStroke str = new CustomStroke(coll, attr);
+                str.uid = currentStrokeId;
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Traits.Add(str);
+                });
+
+                if ((bool)data.GetValue("isEnd"))
+                    MergeStrokes(attr);
+            }
+            catch (Exception)
+            {
+                // fail silently
+            }
+            
         }
 
         private void ReceiveEraseStroke(JObject data)
         {
-            double x = (double)data.GetValue("x");
-            double y = (double)data.GetValue("y");
-
-            StrokeCollection coll = Traits.HitTest(new Point(x, y), eraserDiameter);
-
-            App.Current.Dispatcher.Invoke(delegate
+            try
             {
-                Traits.Remove(coll);
-            });
+                double x = (double)data.GetValue("x");
+                double y = (double)data.GetValue("y");
+
+                StrokeCollection coll = Traits.HitTest(new Point(x, y), eraserDiameter);
+
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    Traits.Remove(coll);
+                });
+            }
+            catch (Exception)
+            {
+                // fail silently
+            }
         }
 
         private void ReceiveErasePoint(JObject data)
@@ -393,13 +414,20 @@ namespace PolyPaint.VueModeles
 
         public void OnEndOfStroke(InkCanvas sender, MouseEventArgs e)
         {
-            IsEndOfStroke = true;
+            try
+            {
+                IsEndOfStroke = true;
 
-            if (editeur.OutilSelectionne == "crayon")
-                DrawingInk(sender, e);
+                if (editeur.OutilSelectionne == "crayon")
+                    DrawingInk(sender, e);
 
-            IsDrawing = false;
-            previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+                IsDrawing = false;
+                previousPos = new Dictionary<string, double?> { { "X", null }, { "Y", null } };
+            }
+            catch (Exception)
+            {
+                // fail silently
+            }
         }
 
         public override void Dispose()

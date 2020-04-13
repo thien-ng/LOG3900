@@ -285,6 +285,14 @@ namespace PolyPaint.VueModeles
             
         }
 
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
+        }
+
         public override void Dispose()
         {
             ServerService.instance.socket.Off("lobby-notif");
@@ -301,6 +309,8 @@ namespace PolyPaint.VueModeles
             {
                 return _addGameCommand ?? (_addGameCommand = new RelayCommand(x =>
                 {
+                    SelectedSize = "";
+                    LobbyName = "";
                     DialogContent = new CreateLobbyControl();
                     IsCreateGameDialogOpen = true;
                 }));
@@ -323,6 +333,12 @@ namespace PolyPaint.VueModeles
                         data.Add("mode", _selectedMode);
                         Mediator.Notify("GoToLobbyScreen", data);
                         LobbyName = "";
+                    }
+                    else if (!response.IsSuccessStatusCode)
+                    {
+                        var message = await response.Content.ReadAsStringAsync();
+                        ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                        ShowMessageBox(serverMessage.message);
                     }
                     IsCreateGameDialogOpen = false;
                 }));

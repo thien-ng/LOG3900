@@ -198,6 +198,7 @@
     <Compile Include="Convertisseurs\SentByServerToVisibleConverter.cs" />
     <Compile Include="Modeles\Connection.cs" />
     <Compile Include="Modeles\Editeur.cs" />
+    <Compile Include="Modeles\ErrorServerMessage.cs" />
     <Compile Include="Modeles\Game.cs" />
     <Compile Include="Modeles\GameCard.cs" />
     <Compile Include="Modeles\Lobby.cs" />

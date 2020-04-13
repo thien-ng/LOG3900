@@ -1,6 +1,7 @@
 ﻿
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
@@ -216,7 +217,6 @@ namespace PolyPaint.VueModeles
         {
             if (IsGameCreationIncorrect()) 
                 return;
-
             string errorMessage = "Invalid request!";
             HttpResponseMessage result;
             switch (SelectedCreationType)
@@ -340,7 +340,9 @@ namespace PolyPaint.VueModeles
 
             if (!response.IsSuccessStatusCode)
             {
-                ShowMessageBox("Error while joining channel");
+                var message = await response.Content.ReadAsStringAsync();
+                ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                ShowMessageBox(serverMessage.message);
                 return;
             }
 

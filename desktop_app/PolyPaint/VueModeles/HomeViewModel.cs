@@ -336,24 +336,38 @@ namespace PolyPaint.VueModeles
 
         private async void joinLobbyFromInvite(string lobbyInvitedTo)
         {
-            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.Add("isPrivate", false);
-            values.lobbyName = lobbyInvitedTo;
-            values.password = "";
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            try
             {
-                Dictionary<string, string> data = new Dictionary<string, string>();
-                data.Add("lobbyName", lobbyInvitedTo);
-                data.Add("mode", Mode_Invited);
-                Mediator.Notify("GoToLobbyScreen", data);
+                string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+                dynamic values = new JObject();
+                values.username = ServerService.instance.username;
+                values.Add("isPrivate", false);
+                values.lobbyName = lobbyInvitedTo;
+                values.password = "";
+                var content = JsonConvert.SerializeObject(values);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    Dictionary<string, string> data = new Dictionary<string, string>();
+                    data.Add("lobbyName", lobbyInvitedTo);
+                    data.Add("mode", Mode_Invited);
+                    Mediator.Notify("GoToLobbyScreen", data);
+                }
+                else if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
             }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+            
         }
 
         public void FetchChannels()
@@ -363,16 +377,22 @@ namespace PolyPaint.VueModeles
                  SubChannels.Clear();
                  NotSubChannels.Clear();
 
+                try
+                {
+                     var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+                     var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
 
-                 var subChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-                 var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+                     ProcessChannelRequest(subChannelReq, SubChannels, true);
+                     ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
 
-                 ProcessChannelRequest(subChannelReq, SubChannels, true);
-                 ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
+                     ChangeChannel(Constants.DEFAULT_CHANNEL);
+                    _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
 
-                 ChangeChannel(Constants.DEFAULT_CHANNEL);
-                _subChannels.SingleOrDefault(i => i.id == Constants.DEFAULT_CHANNEL).isSelected = true;
-
+                }
+                catch (Exception e)
+                {
+                    ShowMessageBox(e.Message);
+                }
             });
 
         }
@@ -397,102 +417,136 @@ namespace PolyPaint.VueModeles
                     }
                 }
             }
+            else if(!response.IsSuccessStatusCode)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                ShowMessageBox(serverMessage.message);
+            }
         }
 
         private void ChangeChannel(object id)
         {
             string channelId = (string)id;
 
-
-            if (channelId != _selectedChannel.ID || channelId == Constants.DEFAULT_CHANNEL)
+            try
             {
-                MessageChannel channel;
+                if (channelId != _selectedChannel.ID || channelId == Constants.DEFAULT_CHANNEL)
+                {
+                    MessageChannel channel;
 
-                channel = _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID);
+                    channel = _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID);
 
-                if (channel != null)
-                    channel.isSelected = false;
+                    if (channel != null)
+                        channel.isSelected = false;
 
-                _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
-                _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
-                IsPreviousMessageButtonVisible = _selectedChannel.IsPreviousMessageButtonVisible;
-                ProprieteModifiee("Messages");
-                ProprieteModifiee("MessagesGame");
+                    _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
+                    _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
+                    IsPreviousMessageButtonVisible = _selectedChannel.IsPreviousMessageButtonVisible;
+                    ProprieteModifiee("Messages");
+                    ProprieteModifiee("MessagesGame");
 
+                }
             }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+
         }
 
         private async void SubToChannel(object id)
         {
             string channelId = (string)id;
             string requestPath = Constants.SERVER_PATH + Constants.JOIN_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + channelId;
-            var response = await ServerService.instance.client.PutAsync(requestPath, new StringContent(""));
 
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                ShowMessageBox("Error while joining channel");
-                return;
-            }
+                var response = await ServerService.instance.client.PutAsync(requestPath, new StringContent(""));
 
-            JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
-            {
-                ShowMessageBox("Error parsing server response");
-                return;
-            }
-
-            if (responseJson.GetValue("status").ToString() == "200")
-            {
-                Application.Current.Dispatcher.Invoke(delegate
+                if (!response.IsSuccessStatusCode)
                 {
-                    _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
-                    _subChannels.Add(new MessageChannel(channelId, true, false));
-                    ChangeChannel(channelId);
-                });
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                    return;
+                }
+
+                JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+                if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
+                {
+                    ShowMessageBox("Error parsing server response");
+                    return;
+                }
+
+                if (responseJson.GetValue("status").ToString() == "200")
+                {
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
+                        _subChannels.Add(new MessageChannel(channelId, true, false));
+                        ChangeChannel(channelId);
+                    });
+                }
+                else
+                    ShowMessageBox(responseJson.GetValue("message").ToString());
             }
-            else
-                ShowMessageBox(responseJson.GetValue("message").ToString());
+            catch (Exception  e)
+            {
+                ShowMessageBox(e.Message);
+            }
+            
         }
 
         private async void UnsubChannel(object id)
         {
             string channelId = (string)id;
             string requestPath = Constants.SERVER_PATH + Constants.LEAVE_CHANNEL_PATH + "/" + ServerService.instance.username + "/" + channelId;
-            var response = await ServerService.instance.client.DeleteAsync(requestPath);
 
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                ShowMessageBox("Error while leaving channel");
-                return;
-            }
+                var response = await ServerService.instance.client.DeleteAsync(requestPath);
 
-            JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
-            {
-                ShowMessageBox("Error parsing server response");
-                return;
-            }
-
-            if (responseJson.GetValue("status").ToString() == "200")
-            {
-                if (_selectedChannel.ID == channelId)
-                    ChangeChannel(Constants.DEFAULT_CHANNEL);
-
-                MessageChannel leftChannel = new MessageChannel(channelId, false, false);
-                _subChannels.Remove(_subChannels.SingleOrDefault(i => i.id == channelId));
-
-                await Application.Current.Dispatcher.Invoke(async delegate
+                if (!response.IsSuccessStatusCode)
                 {
-                    NotSubChannels.Clear();
-                    var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
-                    ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                    return;
+                }
 
-                });
+                JObject responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+                if (!(responseJson.ContainsKey("status") && responseJson.ContainsKey("message")))
+                {
+                    ShowMessageBox("Error parsing server response");
+                    return;
+                }
+
+                if (responseJson.GetValue("status").ToString() == "200")
+                {
+                    if (_selectedChannel.ID == channelId)
+                        ChangeChannel(Constants.DEFAULT_CHANNEL);
+
+                    MessageChannel leftChannel = new MessageChannel(channelId, false, false);
+                    _subChannels.Remove(_subChannels.SingleOrDefault(i => i.id == channelId));
+
+                    await Application.Current.Dispatcher.Invoke(async delegate
+                    {
+                        NotSubChannels.Clear();
+                        var notSubChannelReq = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.NOT_SUB_CHANNELS_PATH + "/" + ServerService.instance.username);
+                        ProcessChannelRequest(notSubChannelReq, NotSubChannels, false);
+
+                    });
+                }
+                else
+                    ShowMessageBox(responseJson.GetValue("message").ToString());
             }
-            else
-                ShowMessageBox(responseJson.GetValue("message").ToString());
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
         }
 
         private void UpdateUnsubChannel(JObject channelMes) 
@@ -513,7 +567,7 @@ namespace PolyPaint.VueModeles
                 { 
                     _notSubChannels.Remove(_notSubChannels.Where(i => i.id == channelId).Single());
                 }
-                catch(InvalidOperationException e) 
+                catch(InvalidOperationException) 
                 {
                     // Fade away silently
                 }
@@ -563,15 +617,28 @@ namespace PolyPaint.VueModeles
         private async void declineInvite(string lobbyInvitedTo)
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_REFUSE_INVITE_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.lobbyName = lobbyInvitedTo;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-        }
+            try
+            {
+                dynamic values = new JObject();
+                values.username = ServerService.instance.username;
+                values.lobbyName = lobbyInvitedTo;
+                var content = JsonConvert.SerializeObject(values);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+        }     
 
         public override void Dispose()
         {
