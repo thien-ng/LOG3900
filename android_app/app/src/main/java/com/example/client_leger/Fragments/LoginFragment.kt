@@ -30,7 +30,6 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         v = inflater.inflate(R.layout.fragment_login, container, false)
-
         v.login_button.isEnabled = true
         v.login_button.setOnClickListener {
             if (validateLoginFields(v)) {
@@ -96,6 +95,7 @@ class LoginFragment : Fragment(), FragmentChangeListener {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
+        activity!!.finish()
     }
 
     private fun validateLoginFields(v: View):Boolean{
