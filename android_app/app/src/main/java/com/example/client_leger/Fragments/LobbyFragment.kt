@@ -61,6 +61,7 @@ class LobbyFragment() : Fragment(),
         addBotButton = v.findViewById<Button>(R.id.button_addBot)
         inviteButton = v.findViewById<Button>(R.id.button_invitePlayer)
 
+        leaveButton.isEnabled = true
         gameController.getUsers(this, lobby.lobbyName, lobby.gameMode)
         userListAdapter = UserListViewAdapter(this, isMaster)
         val listview = v.findViewById<ListView>(R.id.userlist)
@@ -183,7 +184,10 @@ class LobbyFragment() : Fragment(),
                 } else usernames.add(userJsonArray.get(i).toString())
             }
             if (usernames.isNotEmpty()) {
-                leaveButton.setOnClickListener { leaveGame(lobby.lobbyName) }
+                leaveButton.setOnClickListener {
+                    leaveButton.isEnabled = false
+                    leaveGame(lobby.lobbyName)
+                }
                 if (isMaster) {
                     setMasterView(mode)
                 }else{

@@ -22,6 +22,7 @@ import com.example.client_leger.models.Lobby
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_createlobby.*
 import kotlinx.android.synthetic.main.fragment_gamecards.view.*
+import kotlinx.android.synthetic.main.lobbycard_layout.*
 import org.json.JSONObject
 
 
@@ -38,13 +39,9 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     private lateinit var spinnerGameModes: Spinner
     private lateinit var lobbyNotifSub: Disposable
     private lateinit var inviteSub: Disposable
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val v = inflater.inflate(R.layout.fragment_gamecards, container, false)
+    private lateinit var v: View
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        v = inflater.inflate(R.layout.fragment_gamecards, container, false)
         username = activity!!.intent.getStringExtra("username")
         lobbyCardsController = LobbyCardsController()
         connexionController = ConnexionController()
@@ -68,7 +65,10 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         recyclerViewGameCards.adapter = adapterLobbyCards
 
         val buttonShowDialog: Button = v.findViewById(R.id.button_showCreateLobbyDialog)
-        buttonShowDialog.setOnClickListener { showDialog() }
+        buttonShowDialog.setOnClickListener {
+            buttonShowDialog.isEnabled = false
+            showDialog()
+        }
 
         spinnerGameModes = v.findViewById(R.id.GameMode)
         val gamemodes = arrayListOf("Free for all", "Sprint Solo", "Sprint Co-op")
@@ -98,7 +98,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             when (mes.getString("type")) {
                 "create" -> {
                     val user = mes.getJSONArray("usernames").getString(0)
-                    //First user should always be the lobby creator.
 
                     if (username == user) {
                         val fragment = LobbyFragment()
@@ -106,6 +105,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         bundle.putBoolean("isMaster", true)
                         bundle.putSerializable("lobby", context?.let { Lobby(mes, it)})
                         fragment.arguments = bundle
+
                         replaceFragment(fragment)
                     } else {
                         if(mes.getString("mode") == getCurrentGameMode().toString()){
@@ -124,7 +124,10 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                         bundle.putBoolean("isMaster", false)
                         bundle.putSerializable("lobby", context?.let { Lobby(mes, it)})
                         fragment.arguments = bundle
+
+
                         replaceFragment(fragment)
+
                     } else {
                         if (mes.getString("mode") == getCurrentGameMode().toString()) {
                             activity!!.runOnUiThread {
@@ -214,7 +217,6 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 data.put("password", "solo")
                 lobbyCardsController.joinLobby(this, data)
                 d.dismiss()
-
             }
         }else {
             if (getCurrentGameMode() == GameMode.FFA) {
@@ -255,10 +257,15 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     )
                     lobbyCardsController.joinLobby(this, data)
                     d.dismiss()
+
                 }
+
             }
         }
+        d.setOnDismissListener {
+            v.findViewById<Button>(R.id.button_showCreateLobbyDialog).isEnabled = true }
         d.show()
+
     }
 
     private fun getCurrentGameMode(): GameMode{
@@ -271,6 +278,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun onJoinPrivateClick(view: View?, adapterPosition: Int) {
+        view!!.findViewById<Button>(R.id.button_joinPrivate).isEnabled = false
         val lobby = adapterLobbyCards.getItem(adapterPosition)
         if(lobby.size > lobby.usernames.size) {
             val builder = AlertDialog.Builder(context)
@@ -301,9 +309,13 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         } else{
             Toast.makeText(context, " The lobby is full", Toast.LENGTH_SHORT).show()
         }
+        view!!.findViewById<Button>(R.id.button_joinPrivate).isEnabled = true
+
+
     }
 
     override fun onJoinClick(view: View?, position: Int) {
+        button_join.isEnabled = false
         val lobby = adapterLobbyCards.getItem(position)
         if(lobby.size > lobby.usernames.size) {
             val data = JSONObject()
@@ -313,9 +325,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         } else{
             Toast.makeText(context, " The lobby is full", Toast.LENGTH_SHORT).show()
         }
-        view!!.findViewById<Button>(R.id.button_join).isEnabled = false
-
-        view!!.findViewById<Button>(R.id.button_join).isEnabled = true
+        button_join.isEnabled = true
     }
 
     override fun onUsersDropClick(view: View?, position: Int) {
