@@ -218,18 +218,32 @@ namespace PolyPaint.VueModeles
         private async Task leaveLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.lobbyName = LobbyName;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            try
             {
-                Mediator.Notify("LeaveLobby", "");
+                dynamic values = new JObject();
+                values.username = ServerService.instance.username;
+                values.lobbyName = LobbyName;
+                var content = JsonConvert.SerializeObject(values);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    Mediator.Notify("LeaveLobby", "");
+                }
+                else if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
             }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+            
         }
 
         private async Task<HttpResponseMessage> kickPlayer(string username)
@@ -248,21 +262,29 @@ namespace PolyPaint.VueModeles
 
         private void refreshUserList(JObject data)
         {
-            if((string)data.GetValue("lobbyName") == this.LobbyName && ((string)data.GetValue("type") == "join"))
+            try
             {
-                fetchUsername();
-            }
-            if((string)data.GetValue("type") == "leave" && (string)data.GetValue("lobbyName") == this.LobbyName)
-            {
-                if (data.GetValue("username").ToString().Contains("bot:"))
+                if ((string)data.GetValue("lobbyName") == this.LobbyName && ((string)data.GetValue("type") == "join"))
                 {
-                    App.Current.Dispatcher.Invoke(delegate
-                    {
-                        Bots.Add(data.GetValue("username").ToString());
-                    });
+                    fetchUsername();
                 }
-                fetchUsername();
+                if ((string)data.GetValue("type") == "leave" && (string)data.GetValue("lobbyName") == this.LobbyName)
+                {
+                    if (data.GetValue("username").ToString().Contains("bot:"))
+                    {
+                        App.Current.Dispatcher.Invoke(delegate
+                        {
+                            Bots.Add(data.GetValue("username").ToString());
+                        });
+                    }
+                    fetchUsername();
+                }
             }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+            
         }
         private async void fetchUsername()
         {
@@ -271,25 +293,38 @@ namespace PolyPaint.VueModeles
                 Usernames.Clear();
             });
             ObservableCollection<UserLobby> usernames = new ObservableCollection<UserLobby>();
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-                String responseData = streamReader.ReadToEnd();
-
-                var myData = JsonConvert.DeserializeObject<List<String>>(responseData);
-                foreach (var item in myData)
+                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USERS_LOBBY_PATH + LobbyName);
+                if (response.IsSuccessStatusCode)
                 {
-                    App.Current.Dispatcher.Invoke(delegate
+                    StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+                    String responseData = streamReader.ReadToEnd();
+
+                    var myData = JsonConvert.DeserializeObject<List<String>>(responseData);
+                    foreach (var item in myData)
                     {
-                        usernames.Add(new UserLobby(item, item == ServerService.instance.username));
-                        if (Bots.Contains(item))
-                            Bots.Remove(item);
-                    });
+                        App.Current.Dispatcher.Invoke(delegate
+                        {
+                            usernames.Add(new UserLobby(item, item == ServerService.instance.username));
+                            if (Bots.Contains(item))
+                                Bots.Remove(item);
+                        });
+                    }
+                    Usernames = usernames;
+                    string firstUser = findFirstNotBot(Usernames);
+                    IsGameMaster = ServerService.instance.username == firstUser;
                 }
-                Usernames = usernames;
-                string firstUser = findFirstNotBot(Usernames);
-                IsGameMaster = ServerService.instance.username == firstUser;
+                else if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
             }
         }
 
@@ -307,32 +342,60 @@ namespace PolyPaint.VueModeles
         {
             OnlineUsers.Clear();
             ObservableCollection<string> usernames = new ObservableCollection<string>();
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.ONLINE_USERS_PATH + SearchString);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
-                String responseData = streamReader.ReadToEnd();
-
-                var myData = JsonConvert.DeserializeObject<List<String>>(responseData);
-                foreach (var item in myData)
+                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.ONLINE_USERS_PATH + SearchString);
+                if (response.IsSuccessStatusCode)
                 {
-                    App.Current.Dispatcher.Invoke(delegate
+                    StreamReader streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+                    String responseData = streamReader.ReadToEnd();
+
+                    var myData = JsonConvert.DeserializeObject<List<String>>(responseData);
+                    foreach (var item in myData)
                     {
-                        if(item!=ServerService.instance.username)
-                            usernames.Add(item);
-                    });
+                        App.Current.Dispatcher.Invoke(delegate
+                        {
+                            if (item != ServerService.instance.username)
+                                usernames.Add(item);
+                        });
+                    }
+                    OnlineUsers = usernames;
                 }
-                OnlineUsers = usernames;
+                else if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
             }
+            catch (Exception e )
+            {
+                ShowMessageBox(e.Message);
+            }
+            
         }
 
         private async Task startGame()
         {
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                Mediator.Notify("GoToGameScreen", Mode);
+                if (response.IsSuccessStatusCode)
+                {
+                    Mediator.Notify("GoToGameScreen", Mode);
+                }
+                else if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
             }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+            
         }
 
         private void joingame()
@@ -344,18 +407,32 @@ namespace PolyPaint.VueModeles
         private async Task processBotRequest()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
-            dynamic values = new JObject();
-            values.username = SelectedBot;
-            values.Add("isPrivate", false);
-            values.lobbyName = this.LobbyName;
-            values.password = "";
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if(response.IsSuccessStatusCode)
-                Bots.Remove(SelectedBot);
+            try
+            {
+                dynamic values = new JObject();
+                values.username = SelectedBot;
+                values.Add("isPrivate", false);
+                values.lobbyName = this.LobbyName;
+                values.password = "";
+                var content = JsonConvert.SerializeObject(values);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+                if (response.IsSuccessStatusCode)
+                    Bots.Remove(SelectedBot);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
+            }
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+            
         }
         private async Task<HttpResponseMessage> InviteUserAsync(string x)
         {
@@ -475,10 +552,25 @@ namespace PolyPaint.VueModeles
                 return _inviteUserCommand ?? (_inviteUserCommand = new RelayCommand(async x =>
                 {
                     IsInviteUserDialogOpen = false;
-                    var response = await InviteUserAsync((string)x);
+                    try
+                    {
+                        var response = await InviteUserAsync((string)x);
 
-                    if (response.IsSuccessStatusCode)
-                        ShowMessageBox("Invite sucessfully sent");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            ShowMessageBox("Invite sucessfully sent");
+                        }
+                        else if (!response.IsSuccessStatusCode)
+                        {
+                            var message = await response.Content.ReadAsStringAsync();
+                            ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                            ShowMessageBox(serverMessage.message);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        ShowMessageBox(e.Message);
+                    }
                 }));
             }
         }
@@ -491,13 +583,27 @@ namespace PolyPaint.VueModeles
             {
                 return _removeUserCommand ?? (_removeUserCommand = new RelayCommand(async x => 
                 {
-                    string username = (string)x;
-
-                    var response = await kickPlayer(username);
-                    if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                    try
                     {
-                        ShowMessageBox("Player " + username + " kicked.");
+                        string username = (string)x;
+
+                        var response = await kickPlayer(username);
+                        if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                        {
+                            ShowMessageBox("Player " + username + " kicked.");
+                        }
+                        else if (!response.IsSuccessStatusCode)
+                        {
+                            var message = await response.Content.ReadAsStringAsync();
+                            ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                            ShowMessageBox(serverMessage.message);
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        ShowMessageBox(e.Message);
+                    }
+                    
                 }));
             }
         }
