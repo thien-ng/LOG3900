@@ -242,6 +242,9 @@
     <Compile Include="Vues\Chat.xaml.cs">
       <DependentUpon>Chat.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vues\ChooseIP.xaml.cs">
+      <DependentUpon>ChooseIP.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vues\Game.xaml.cs">
       <DependentUpon>Game.xaml</DependentUpon>
     </Compile>
@@ -253,9 +256,6 @@
     </Compile>
     <Compile Include="Vues\Lobby.xaml.cs">
       <DependentUpon>Lobby.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Vues\Login - Copy.xaml.cs">
-      <DependentUpon>Login - Copy.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Login.xaml.cs">
       <DependentUpon>Login.xaml</DependentUpon>
@@ -345,6 +345,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Vues\ChooseIP.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\Game.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -360,10 +364,6 @@
     <Page Include="Vues\Lobby.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Vues\Login - Copy.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Vues\Login.xaml">
       <SubType>Designer</SubType>
