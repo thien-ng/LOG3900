@@ -1,11 +1,13 @@
 package com.example.client_leger.Fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.example.client_leger.*
 import com.example.client_leger.Communication.Communication
@@ -255,6 +257,13 @@ class ChatFragment: Fragment() {
         endGameSub.dispose()
     }
 
+    private fun closeKeyboard() {
+        if ( activity!!.currentFocus != null){
+            val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken, 0)
+        }
+    }
+
     private fun addGameChannel() {
         activity!!.runOnUiThread {
             channelAdapter.add(ChannelItem(GAME_CHANNEL_ID, true, controller, this))
@@ -284,6 +293,7 @@ class ChatFragment: Fragment() {
                 }
             }
 
+            closeKeyboard()
             v.chat_message_editText.text.clear()
         }
     }
