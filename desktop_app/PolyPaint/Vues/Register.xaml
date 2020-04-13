@@ -109,7 +109,7 @@
 
 
         <StackPanel Grid.Column="1" Grid.Row="7" Orientation="Vertical" VerticalAlignment="Center">
-            <Button Margin="0,20,0,10" BorderBrush="{StaticResource SecondaryAccentBrush}" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Width="150" Command="{Binding Register}" >
+            <Button Margin="0,20,0,10" IsDefault="True" BorderBrush="{StaticResource SecondaryAccentBrush}" Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Width="150" Command="{Binding Register}" >
                 _Create my account
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}" >

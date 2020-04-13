@@ -17,14 +17,18 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class HomeViewModel : BaseViewModel, IPageViewModel
+    class HomeViewModel : BaseViewModel, IPageViewModel, IDisposable
     { 
         public LobbyViewModel LobbyViewModel { get; private set; }
 
         public GameViewModel GameViewModel { get; private set; }
-        public string Lobbyname { get; set; }
+        public GamelistViewModel GamelistViewModel { get; }
+        public ProfileViewModel ProfileViewModel { get; }
         public HomeViewModel()
         {
+            GamelistViewModel = new GamelistViewModel();
+            ProfileViewModel = new ProfileViewModel();
+
             Setup();
         }
 
@@ -38,6 +42,8 @@ namespace PolyPaint.VueModeles
             Game
         }
 
+        public string Lobbyname { get; set; }
+        public string Mode_Invited { get; set; }
 
         private ObservableCollection<MessageChannel> _subChannels;
         public ObservableCollection<MessageChannel> SubChannels
@@ -231,6 +237,7 @@ namespace PolyPaint.VueModeles
         private void processLobbyInvite(JObject data)
         {
             LobbyInvitedTo = data.GetValue("lobbyName").ToString();
+            Mode_Invited = data.GetValue("mode").ToString();
             Application.Current.Dispatcher.Invoke(delegate
             { 
                 InvitedDialogContent = new InvitedUserControl();
@@ -240,6 +247,20 @@ namespace PolyPaint.VueModeles
 
         private void goToGameListView(object obj)
         {
+            if (LobbyViewModel != null)
+            {
+                LobbyViewModel.Dispose();
+                LobbyViewModel = null;
+            }
+            if (GameViewModel != null)
+            {
+                GameViewModel.Dispose();
+                GameViewModel = null;
+            }
+
+            GamelistViewModel.SubscribeLobbyNotif();
+            GamelistViewModel.getLobbies();
+
             SwitchView = Views.Gamelist;
             IsNotInLobby = true;
             Application.Current.Dispatcher.Invoke(delegate
@@ -249,14 +270,27 @@ namespace PolyPaint.VueModeles
         }
         private void goToGameView(object obj)
         {
-            SwitchView = Views.Game;
-            GameViewModel = new GameViewModel((string)obj);
-            Application.Current.Dispatcher.Invoke(delegate
+            if (LobbyViewModel != null)
             {
-                SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == ( Constants.LOBBY_CHANNEL + Lobbyname)));
-                SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+                LobbyViewModel.Dispose();
+                LobbyViewModel = null;
+            }
+            Task.Delay(150).ContinueWith(_ =>
+            {
+                if (GameViewModel != null)
+                {
+                    GameViewModel.Dispose();
+                    GameViewModel = null;
+                }
+                GameViewModel = new GameViewModel((string)obj);
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == (Constants.LOBBY_CHANNEL + Lobbyname)));
+                    SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+                    ChangeChannel(Constants.GAME_CHANNEL);
+                });
+                SwitchView = Views.Game;
             });
-            ChangeChannel(Constants.GAME_CHANNEL);
         }
 
 
@@ -264,6 +298,12 @@ namespace PolyPaint.VueModeles
         {
             IsNotInLobby = false;
             Dictionary<string, string> data = new Dictionary<string, string>((Dictionary<string, string>)lobbyData);
+            if (LobbyViewModel != null)
+            {
+                LobbyViewModel.Dispose();
+                LobbyViewModel = null;
+            }
+
             LobbyViewModel = new LobbyViewModel(data["lobbyName"], data["mode"]);
             this.Lobbyname = data["lobbyName"];
             string lobbyChannel = Constants.LOBBY_CHANNEL + this.Lobbyname;
@@ -273,6 +313,28 @@ namespace PolyPaint.VueModeles
                SubChannels.Add(new MessageChannel(lobbyChannel, true, true));
             });
             ChangeChannel(lobbyChannel);
+        }
+
+        private async void joinLobbyFromInvite(string lobbyInvitedTo)
+        {
+            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+            dynamic values = new JObject();
+            values.username = ServerService.instance.username;
+            values.Add("isPrivate", false);
+            values.lobbyName = lobbyInvitedTo;
+            values.password = "";
+            var content = JsonConvert.SerializeObject(values);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+            var byteContent = new ByteArrayContent(buffer);
+            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            {
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("lobbyName", lobbyInvitedTo);
+                data.Add("mode", Mode_Invited);
+                Mediator.Notify("GoToLobbyScreen", data);
+            }
         }
 
         public void FetchChannels()
@@ -366,6 +428,7 @@ namespace PolyPaint.VueModeles
                 {
                     _notSubChannels.Remove(_notSubChannels.SingleOrDefault(i => i.id == channelId));
                     _subChannels.Add(new MessageChannel(channelId, true, false));
+                    ChangeChannel(channelId);
                 });
             }
             else
@@ -443,7 +506,9 @@ namespace PolyPaint.VueModeles
             ServerService.instance.username = "";
             ServerService.instance.user = null;
             Mediator.Notify("GoToLoginScreen", "");
+            Dispose();
         }
+
 
         private void FilterChannels()
         {
@@ -488,6 +553,21 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
         }
 
+        public override void Dispose()
+        {
+            GameViewModel = null;
+            LobbyViewModel = null;
+            ServerService.instance.socket.Off("channel-new");
+            ServerService.instance.socket.Off("lobby-invitation");
+            Mediator.Unsubscribe("ChangeChannel", ChangeChannel);
+            Mediator.Unsubscribe("SubToChannel", SubToChannel);
+            Mediator.Unsubscribe("UnsubChannel", UnsubChannel);
+            Mediator.Unsubscribe("GoToLobbyScreen", goToLobbyView);
+            Mediator.Unsubscribe("GoToGameScreen", goToGameView);
+            Mediator.Unsubscribe("LeaveLobby", goToGameListView);
+            GC.Collect();
+        }
+        
         private void ShowMessageBox(string message)
         {
             App.Current.Dispatcher.Invoke(delegate
@@ -505,6 +585,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
+                
                 return _disconnectCommand ?? (_disconnectCommand = new RelayCommand(x => Disconnect()));
             }
         }
@@ -530,6 +611,10 @@ namespace PolyPaint.VueModeles
                 return _switchViewCommand ?? (_switchViewCommand = new RelayCommand(x =>
                 {
                     SwitchView = SwitchView == Views.Gamelist ? Views.Profile : Views.Gamelist;
+                    if (SwitchView == Views.Gamelist)
+                        GamelistViewModel.getLobbies();
+                    if (SwitchView == Views.Profile)
+                        ProfileViewModel.fetchProfile();
                     SwitchViewButton = SwitchViewButton == "Profile" ? "GameList" : "Profile";
                     SwitchViewButtonTooltip = SwitchViewButtonTooltip == "Access to profile" ? "Access to gameList" : "Access to profile";
                     if (!FrontEnabled && !BackEnabled)
@@ -575,11 +660,12 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptInviteCommand ?? (_acceptInviteCommand = new RelayCommand(x =>
                 {
-                    Mediator.Notify("joinLobbyFromInvite", LobbyInvitedTo);
+                    joinLobbyFromInvite(LobbyInvitedTo);
                     IsInvitedDialogOpen = false;
                 }));
             }
         }
+
 
         private ICommand _declineInviteCommand;
         public ICommand DeclineInviteCommand
@@ -637,6 +723,7 @@ namespace PolyPaint.VueModeles
 
             //await getGameCards();
         }
+
 
 
         #endregion
