@@ -33,7 +33,6 @@ class ConnexionController {
             Response.Listener { response ->
                 if(response["status"].toString().toInt() == 200) {
                     SocketIO.connect(body.get("username").toString())
-                    activity.login_button.isEnabled = true
                 }
                 else {
                     Toast.makeText(

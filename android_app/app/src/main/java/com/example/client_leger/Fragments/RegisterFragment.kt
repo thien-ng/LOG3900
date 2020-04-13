@@ -29,10 +29,11 @@ class RegisterFragment : Fragment() {
     private var controller = ConnexionController()
     private lateinit var connexionListener: Disposable
     lateinit var username: String
+    private lateinit var v: View
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragment_registration, container, false)
+        v = inflater.inflate(R.layout.fragment_registration, container, false)
 
         v.register_button.isEnabled = true
 
@@ -78,6 +79,8 @@ class RegisterFragment : Fragment() {
                 Toast.makeText(activity, mes.getString("message").toString(), Toast.LENGTH_SHORT).show()
                 if (mes.getString("status").toInt() == 200) {
                     connect(username)
+                }else{
+                    v.register_button.isEnabled = true
                 }
             }
         }
@@ -87,6 +90,11 @@ class RegisterFragment : Fragment() {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        v.register_button.isEnabled = true
     }
 
     override fun onDestroy() {

@@ -13,6 +13,7 @@ import com.example.client_leger.Constants
 import com.example.client_leger.Fragments.LobbyCardsFragment
 import com.example.client_leger.Fragments.LobbyFragment
 import com.example.client_leger.R
+import kotlinx.android.synthetic.main.fragment_lobby.*
 import org.json.JSONObject
 
 
@@ -32,6 +33,7 @@ class GameController {
                     "Not enough players",
                     Toast.LENGTH_SHORT
                 ).show()
+                fragment.button_start.isEnabled = true
             })
 
         requestQueue.add(jsonObjectRequest)
