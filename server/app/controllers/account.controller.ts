@@ -56,6 +56,8 @@ export class AccountController {
         this.router.get('/avatar/:username', async (req: Request, res: Response, next: NextFunction) => {
             this.accountService.getAvatar(req.params.username).then((result: string) => {
                 res.json(result);
+            }).catch(e=>{
+            console.error(e.message);
             });
         });
 
@@ -88,7 +90,9 @@ export class AccountController {
         this.router.get('/user/info/:username', async (req: Request, res: Response, next: NextFunction) => {
             this.accountService.getUserInfo(req.params.username).then((user: IInfoUser) => {
                 res.json(user);
-            })
+            }).catch(e=>{
+                console.error(e.message);
+            });
         });
     }
 }

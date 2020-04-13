@@ -79,7 +79,11 @@
                 </Button>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right"  Visibility="{Binding IsNotInLobby, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Button Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right" Style="{StaticResource MaterialDesignIconButton}"  Visibility="{Binding IsInGame, Converter={StaticResource BooleanToVisibilityConverter}}" ToolTip="disconnect" Command="{Binding DisconnectCommand}">
+                    <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Width="30" Height="30" Kind="PowerStandby" Foreground="Red"/>
+                </Button>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right"  Visibility="{Binding IsNotInLobby, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Button Background="{StaticResource PrimaryHueLightBrush}" BorderThickness="0" Command="{Binding CreateGameCommand}">
                     CREATE GAME
                 </Button>

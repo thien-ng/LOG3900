@@ -134,6 +134,13 @@ namespace PolyPaint.VueModeles
             set { _frontEnabled = value; ProprieteModifiee(); }
         }
 
+        private bool _isInGame;
+        public bool IsInGame
+        {
+            get { return _isInGame; }
+            set { _isInGame = value; ProprieteModifiee(); }
+        }
+
         private bool _backEnabled;
         public bool BackEnabled
         {
@@ -236,6 +243,7 @@ namespace PolyPaint.VueModeles
             _searchString = "";
             _lobbyInvitedTo = "";
             _isPreviousMessageButtonVisible = true;
+            _isInGame = false;
 
             ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
             ServerService.instance.socket.On("channel-delete", data => RemoveUnsubChannel((JObject)data));
@@ -265,7 +273,7 @@ namespace PolyPaint.VueModeles
                 GameViewModel.Dispose();
                 GameViewModel = null;
             }
-
+            IsInGame = false;
             GamelistViewModel.SubscribeLobbyNotif();
             GamelistViewModel.getLobbies();
 
@@ -300,6 +308,7 @@ namespace PolyPaint.VueModeles
                     ChangeChannel(Constants.GAME_CHANNEL);
                 });
                 SwitchView = Views.Game;
+                IsInGame = true;
             });
         }
 
