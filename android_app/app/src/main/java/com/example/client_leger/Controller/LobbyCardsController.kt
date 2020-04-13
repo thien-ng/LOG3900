@@ -49,7 +49,8 @@ class LobbyCardsController {
             Constants.SERVER_URL + Constants.ACTIVE_LOBBY_ENDPOINT + "/" + gameMode,
             null,
             Response.Listener { response ->
-                activity.loadLobbies(responseToLobbies(response, activity.context!!))
+                if (activity.context != null)
+                    activity.loadLobbies(responseToLobbies(response, activity.context!!))
             }, Response.ErrorListener { error ->
                 Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }

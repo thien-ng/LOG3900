@@ -158,29 +158,45 @@ namespace PolyPaint.Modeles
 
         private async void joinPublicLobby()
         {
-            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.Add("isPrivate", _lobby.isPrivate);
-            values.lobbyName = _lobby.lobbyName;
-            values.password = "";
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            try
             {
-                Dictionary<string, string> data = new Dictionary<string, string>();
-                data.Add("lobbyName", _lobby.lobbyName);
-                data.Add("mode", _lobby.mode);
-                Mediator.Notify("GoToLobbyScreen", data);
+                string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+                dynamic values = new JObject();
+                values.username = ServerService.instance.username;
+                values.Add("isPrivate", _lobby.isPrivate);
+                values.lobbyName = _lobby.lobbyName;
+                values.password = "";
+                var content = JsonConvert.SerializeObject(values);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+                if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                {
+                    Dictionary<string, string> data = new Dictionary<string, string>();
+                    data.Add("lobbyName", _lobby.lobbyName);
+                    data.Add("mode", _lobby.mode);
+                    Mediator.Notify("GoToLobbyScreen", data);
+                }
+                else if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
             }
-            IsLobbyJoined = true;
+            catch (Exception e)
+            {
+                ShowMessageBox(e.Message);
+            }
+            finally
+            {
+                IsLobbyJoined = true;
+            }
+            
         }
         private async void joinPrivateLobby()
         {
-            string errorMessage = "Wrong password, try again.";
             try
             {
                 string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
@@ -201,12 +217,16 @@ namespace PolyPaint.Modeles
                     data.Add("mode", _lobby.mode);
                     Mediator.Notify("GoToLobbyScreen", data);
                 }
-                else
-                    ShowMessageBox(errorMessage);
+                else if (!response.IsSuccessStatusCode)
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(message);
+                    ShowMessageBox(serverMessage.message);
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                ShowMessageBox(errorMessage);
+                ShowMessageBox(e.Message);
             }
             finally
             {

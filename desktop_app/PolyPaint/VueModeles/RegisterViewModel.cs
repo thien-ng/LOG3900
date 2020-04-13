@@ -84,9 +84,7 @@ namespace PolyPaint.VueModeles
                 Dispose();
             }
             else
-            {
                 ShowMessageBox(message);
-            }
         }
 
         private async void fetchProfile()
@@ -142,17 +140,17 @@ namespace PolyPaint.VueModeles
             {
                 return _register ?? (_register = new RelayCommand(async x =>
                 {
-                    if (_registerIsRunning)
-                        return;
-
-                    if (_username == null || Password.SecurePassword.Length == 0 || _firstName == null || _lastName == null)
-                    {
-                        ShowMessageBox("Please fill every parameter");
-                        return;
-                    }
-
                     try
                     {
+                        if (_registerIsRunning)
+                            return;
+
+                        if (_username == null || Password.SecurePassword == null || _firstName == null || _lastName == null)
+                        {
+                            ShowMessageBox("Please fill every parameter");
+                            return;
+                    }
+
                         _registerIsRunning = true;
 
                         JObject res = await RegisterRequestAsync(_username,Password.Password, _firstName, _lastName);

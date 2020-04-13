@@ -203,10 +203,12 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
         val d = Dialog(context!!)
         d.setTitle("NumberPicker")
         d.setContentView(R.layout.dialog_createlobby)
+        val playerLimit: TextView =  d.findViewById(R.id.textView_PlayerLimit)
         val np: NumberPicker = d.findViewById(R.id.np__numberpicker_input)
         val switch: Switch = d.findViewById(R.id.switch_private)
         val button: Button = d.findViewById(R.id.button_CreateLobby)
         if(getCurrentGameMode() == GameMode.SOLO){
+            playerLimit.visibility = View.GONE
             np.visibility = View.GONE
             switch.visibility = View.GONE
             button.setOnClickListener {
