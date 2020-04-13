@@ -32,8 +32,12 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
             .commit()
 
         endGameSub = Communication.getEndGameListener().subscribe{ res ->
-            activity!!.runOnUiThread {
-                showRankingPopup(res)
+            if (!res.isNull("points")) {
+                activity!!.runOnUiThread {
+                    showRankingPopup(res)
+                }
+            } else {
+                replaceFragment(LobbyCardsFragment())
             }
         }
 
@@ -73,7 +77,6 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
         tableRow.addView(title3)
 
         rankingView.tableView_ranks.addView(tableRow)
-
         val ranks = res.getJSONArray("points")
 
         for (i in 0 until ranks.length()) {
