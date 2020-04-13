@@ -92,6 +92,11 @@ class RegisterFragment : Fragment() {
         startActivity(intent)
     }
 
+    override fun onResume() {
+        super.onResume()
+        v.register_button.isEnabled = true
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         connexionListener.dispose()
