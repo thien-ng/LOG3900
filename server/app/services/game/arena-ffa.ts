@@ -196,7 +196,7 @@ export class ArenaFfa extends Arena {
         // pts = 20 * ratio_found
         const drawName = this.users[this.drawPtr - 1].username;
         const drawPts = this.userMapPoints.get(drawName) as number;
-        const drawNewPts = Math.floor(INIT_DRAW_PTS * this.calculateRatio());
+        const drawNewPts = Math.floor(INIT_DRAW_PTS * (1 - this.calculateRatio()));
         this.userMapPoints.set(drawName, drawNewPts + drawPts);
     }
     
