@@ -171,12 +171,16 @@ class ChatFragment: Fragment() {
 
         gameChatSub = Communication.getGameChatListener().subscribe { mes ->
             receiveGameMessage(mes)
-            v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+            activity!!.runOnUiThread {
+                v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+            }
         }
 
         lobbyChatSub = Communication.getLobbyChatListener().subscribe { mes ->
             receiveLobbyMessage(mes)
-            v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+            activity!!.runOnUiThread {
+                v.recyclerView_chat_log.smoothScrollToPosition(messageAdapter.itemCount)
+            }
         }
 
         lobbyNotifSub = Communication.getLobbyUpdateListener().subscribe { mes ->

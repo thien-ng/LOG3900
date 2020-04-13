@@ -128,7 +128,8 @@ class GameController {
                 fragmentManager.beginTransaction().replace(R.id.container_view_right, LobbyCardsFragment()).commit()
             },
             Response.ErrorListener { error ->
-                Toast.makeText(fragment.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
+                if (fragment.context != null)
+                    Toast.makeText(fragment.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"

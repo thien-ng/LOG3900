@@ -314,6 +314,8 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
     }
 
     private fun clearStrokes() {
+        paintLine.color = Color.BLACK
+
         synchronized(segments) {
             segments = ArrayList()
         }
