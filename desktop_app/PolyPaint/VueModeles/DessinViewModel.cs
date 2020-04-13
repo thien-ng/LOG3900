@@ -174,6 +174,7 @@ namespace PolyPaint.VueModeles
 
                 previousPos["X"] = null;
                 previousPos["Y"] = null;
+                IsEndOfStroke = false;
             }
         }
 
@@ -206,6 +207,7 @@ namespace PolyPaint.VueModeles
 
         public void ReceiveDrawing(JObject data) 
         {
+            Console.WriteLine(data);
             if (!data.ContainsKey("type")) return;
 
             switch ((string)data.GetValue("type"))
@@ -239,6 +241,8 @@ namespace PolyPaint.VueModeles
                                           new JProperty("type", "ink"));
 
             ServerService.instance.socket.Emit("gameplay", drawing);
+
+            ReceiveDrawing(drawing);
         }
 
         private void DrawingEraser(InkCanvas sender, MouseEventArgs e)

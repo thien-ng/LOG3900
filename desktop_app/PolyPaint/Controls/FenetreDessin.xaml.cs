@@ -59,5 +59,10 @@ namespace PolyPaint.Controls
         {
             ((DessinViewModel)DataContext).OnEndOfStroke(surfaceDessin, e);
         }
+
+        private void surfaceDessin_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
+        {
+            ((DessinViewModel)DataContext).Traits.Remove(e.Stroke);
+        }
     }
 }
