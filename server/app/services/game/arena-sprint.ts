@@ -132,7 +132,8 @@ export class ArenaSprint extends Arena {
             this.resetSubGame();
 
         } else {
-            this.guessLeft--;
+            if (this.guessLeft > 0)
+                this.guessLeft--;
             this.socketServer.to(this.room).emit("game-guessLeft", { guessLeft: this.guessLeft });
         }
     }
