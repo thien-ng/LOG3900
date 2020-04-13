@@ -51,7 +51,7 @@ export class GameCreatorService {
         configs.solution = configs.solution.toLocaleLowerCase();
         const clues: string [] = [];
         configs.clues.forEach(c => {
-            clues.push(c.toLocaleLowerCase());
+            clues.push(c.toLocaleLowerCase().trim());
         })
         configs.clues = clues;
     }

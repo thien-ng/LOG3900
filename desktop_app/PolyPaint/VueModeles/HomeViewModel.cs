@@ -275,7 +275,7 @@ namespace PolyPaint.VueModeles
                 LobbyViewModel.Dispose();
                 LobbyViewModel = null;
             }
-            Task.Delay(150).ContinueWith(_ =>
+            Task.Delay(500).ContinueWith(_ =>
             {
                 if (GameViewModel != null)
                 {
@@ -286,7 +286,9 @@ namespace PolyPaint.VueModeles
                 App.Current.Dispatcher.Invoke(delegate
                 {
                     SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == (Constants.LOBBY_CHANNEL + Lobbyname)));
-                    SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+                    MessageChannel gameChannel = new MessageChannel(Constants.GAME_CHANNEL, true, false);
+                    if (!SubChannels.Contains(gameChannel))
+                        SubChannels.Add(gameChannel);
                     ChangeChannel(Constants.GAME_CHANNEL);
                 });
                 SwitchView = Views.Game;
@@ -708,7 +710,7 @@ namespace PolyPaint.VueModeles
                 {
                     var view = new CreateGameControl { DataContext = new CreateGameViewModel() };
 
-                    await DialogHost.Show(view, "RootDialog", ClosingEventHandler);
+                    await DialogHost.Show(view, "CreateGameDialog", ClosingEventHandler);
                 }));
             }
         }

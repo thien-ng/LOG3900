@@ -223,7 +223,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 np.maxValue = 9
                 np.minValue = 2
             } else if (getCurrentGameMode() == GameMode.COOP) {
-                np.maxValue = 3
+                np.maxValue = 4
                 np.minValue = 1
             }
 

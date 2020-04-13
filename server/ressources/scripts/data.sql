@@ -14,9 +14,6 @@ SELECT LOG3900.registerAccount('r', 'r', 'fucka', 'youa');
 SELECT LOG3900.registerAccount('t', 't', 'fucka', 'youa');
 SELECT LOG3900.registerAccount('y', 'y', 'fucka', 'youa');
 
-
-INSERT INTO log3900.accountChannel VALUES(1, 'pute');
-INSERT INTO log3900.accountChannel VALUES(2, 'pute');
 INSERT INTO log3900.accountChannel VALUES(2, 'channel');
 
 SELECT LOG3900.registerGame('FFA', '23/03/2020 16:32:35', 40, 'username', '[{"username": "username", "point":50}, {"username": "asd", "point":69}]');
