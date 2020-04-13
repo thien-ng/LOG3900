@@ -36,7 +36,7 @@ class ProfileController {
                     error ->
                 Toast.makeText(
                     fragment.context,
-                    error.message,
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
 
