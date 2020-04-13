@@ -2,6 +2,7 @@ package com.example.client_leger.Fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.GridLayoutManager
@@ -10,6 +11,7 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.example.client_leger.Adapters.LobbyCardsRecyclerViewAdapter
 import com.example.client_leger.Communication.Communication
@@ -220,7 +222,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                 lobbyCardsController.joinLobby(this, data)
                 d.dismiss()
             }
-        }else {
+        } else {
             if (getCurrentGameMode() == GameMode.FFA) {
                 np.maxValue = 9
                 np.minValue = 2
@@ -231,13 +233,10 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
 
             np.wrapSelectorWheel = true
 
-
             switch.setOnCheckedChangeListener { _, isChecked ->
                 d.findViewById<EditText>(R.id.lobbyPassword).visibility =
                     if (isChecked) View.VISIBLE else View.GONE
             }
-
-
 
             button.setOnClickListener {
                 if (validateLobbyFields(d)) {
@@ -259,25 +258,28 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
                     )
                     lobbyCardsController.joinLobby(this, data)
                     d.dismiss()
-
+                    closeKeyboard()
                 }
-
             }
         }
         d.setOnDismissListener {
+            closeKeyboard()
             v.findViewById<Button>(R.id.button_showCreateLobbyDialog).isEnabled = true }
         d.show()
+    }
 
+    private fun closeKeyboard() {
+        if ( activity!!.currentFocus != null){
+            val imm: InputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(activity!!.currentFocus!!.windowToken, 0)
+        }
     }
 
     private fun getCurrentGameMode(): GameMode{
         return spinnerToGameMode(spinnerGameModes.selectedItemPosition)
     }
 
-    override fun onItemClick(view: View?, position: Int) {
-
-
-    }
+    override fun onItemClick(view: View?, position: Int) { }
 
     override fun onJoinPrivateClick(view: View?, adapterPosition: Int) {
         view!!.findViewById<Button>(R.id.button_joinPrivate).isEnabled = false

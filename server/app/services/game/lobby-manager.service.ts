@@ -155,7 +155,7 @@ export class LobbyManagerService {
                 this.sendMessages({ lobbyName: lobby.lobbyName, type: LobbyNotif.join, username: user.username, mode: lobby.mode } as INotifyUpdateUser);
             }
             else
-                throw new Error(`Wrong password for lobby ${req.lobbyName}`);
+                throw new Error(`Wrong password, try again!`);
         } else {
 
             // Create Lobby
