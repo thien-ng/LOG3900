@@ -16,6 +16,15 @@
             tools:context=".LogPageActivity"
             tools:showIn="@layout/activity_logpage">
 
+        <ImageView
+                android:layout_width="194dp"
+                android:layout_height="129dp"
+                android:src="@drawable/logo"
+                app:layout_constraintBottom_toTopOf="@+id/register_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
                 android:id="@+id/register_title"
                 android:layout_width="wrap_content"
@@ -24,7 +33,7 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginRight="24dp"
-                android:text="Create your Pinture Account"
+                android:text="Create your Pïntùré Account"
                 android:textSize="40dp"
                 app:layout_constraintBottom_toBottomOf="@id/register_avatarFrame"
                 app:layout_constraintEnd_toEndOf="parent"

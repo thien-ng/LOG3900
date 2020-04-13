@@ -54,7 +54,6 @@ class LobbyFragment() : Fragment(),
             isMaster = bundle.getBoolean("isMaster")
             lobby = bundle.getSerializable("lobby") as Lobby
         }
-        v.textView_gameModeName.text = lobby.gameMode
 
         startButton = v.findViewById<Button>(R.id.button_start)
         leaveButton = v.findViewById<Button>(R.id.button_leave)

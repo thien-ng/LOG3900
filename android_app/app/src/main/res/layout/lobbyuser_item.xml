@@ -9,6 +9,7 @@
             android:id="@+id/lobbyuser_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             android:gravity="left"
             android:padding="5dip"
             android:textSize="24sp" />
