@@ -51,7 +51,7 @@ class GameController {
             }, Response.ErrorListener { error ->
                 Toast.makeText(
                     fragment.context,
-                    error.message,
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
 
@@ -85,7 +85,7 @@ class GameController {
             }, Response.ErrorListener { error ->
                 Toast.makeText(
                     fragment.context,
-                    error.message,
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -104,7 +104,7 @@ class GameController {
                 Toast.makeText(fragment.context, "Invitation sent", Toast.LENGTH_SHORT).show()
             },
             Response.ErrorListener { error ->
-                Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(fragment.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"
@@ -128,7 +128,7 @@ class GameController {
                 fragmentManager.beginTransaction().replace(R.id.container_view_right, LobbyCardsFragment()).commit()
             },
             Response.ErrorListener { error ->
-                Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(fragment.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"
@@ -151,7 +151,7 @@ class GameController {
             Response.Listener {
             },
             Response.ErrorListener { error ->
-                Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(fragment.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"
@@ -175,7 +175,7 @@ class GameController {
             Response.Listener {
             },
             Response.ErrorListener { error ->
-                Toast.makeText(fragment.context, error.toString(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(fragment.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"

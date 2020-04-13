@@ -5,11 +5,13 @@ import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.client_leger.Constants.Companion.GAME_CHANNEL_ID
 import com.example.client_leger.Constants.Companion.LOBBY_CHANNEL_ID
+import com.example.client_leger.Controller.Utils
 import com.example.client_leger.Fragments.*
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
@@ -41,10 +43,10 @@ class ConnexionController {
                     activity.login_button.isEnabled = true
                 }
             },
-            Response.ErrorListener {
+            Response.ErrorListener {error->
                 Toast.makeText(
                     applicationContext,
-                    "Something went wrong...",
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
                 activity.login_button.isEnabled = true
@@ -60,6 +62,8 @@ class ConnexionController {
         }
         mRequestQueue!!.add(mJsonObjectRequest)
     }
+
+
 
     fun registerUser(activity: RegisterFragment, applicationContext: Context, body: JSONObject){
         val mRequestQueue = Volley.newRequestQueue(applicationContext)
@@ -82,10 +86,10 @@ class ConnexionController {
                     activity.register_button.isEnabled = true
                 }
             },
-            Response.ErrorListener {
+            Response.ErrorListener {error ->
                 Toast.makeText(
                     applicationContext,
-                    "Something went wrong...",
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
                 activity.register_button.isEnabled = true
@@ -119,7 +123,7 @@ class ConnexionController {
                     error ->
                 Toast.makeText(
                     activity.context,
-                    error.message,
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -143,7 +147,7 @@ class ConnexionController {
                     error ->
                 Toast.makeText(
                     activity.context,
-                    error.message,
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -173,7 +177,7 @@ class ConnexionController {
                     error ->
                 Toast.makeText (
                     activity.context,
-                    error.message,
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -202,7 +206,7 @@ class ConnexionController {
                     error ->
                 Toast.makeText (
                     activity.context,
-                    error.message,
+                    Utils.getErrorMessage(error),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -221,7 +225,7 @@ class ConnexionController {
             Response.Listener {
                 activity.setChannel(channelId)
             },Response.ErrorListener{ error ->
-                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }
         )
         requestQueue.add(jsonObjectRequest)
@@ -242,7 +246,7 @@ class ConnexionController {
                     activity.loadChannels()
                 }
             },Response.ErrorListener{ error ->
-                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }
         )
         requestQueue.add(jsonObjectRequest)
@@ -357,7 +361,7 @@ class ConnexionController {
                     activity.channelAdapter.notifyDataSetChanged()
                     checkForSubChannelsToAddOrRemove(activity, response)
                 },Response.ErrorListener{ error ->
-                    Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
                 }
             )
             requestQueue.add(subRequest)
@@ -371,7 +375,7 @@ class ConnexionController {
                     activity.notSubChannelAdapter.notifyDataSetChanged()
                     checkForUnSubChannelsToAddOrRemove(activity, response)
                 },Response.ErrorListener{ error ->
-                    Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
                 }
             )
             requestQueueNotSub.add(notSubRequest)
@@ -401,7 +405,7 @@ class ConnexionController {
                         }
                     }
                 },Response.ErrorListener{ error ->
-                    Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
                 }
             )
             requestQueue.add(subRequest)
