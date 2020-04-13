@@ -158,6 +158,25 @@ namespace PolyPaint.VueModeles
             AttributsDessin.Height = editeur.TailleTrait;
         }
 
+        public void MouseOutOfBounds(InkCanvas sender, MouseEventArgs e)
+        {
+            if (editeur.OutilSelectionne == "crayon")
+            {
+                if (previousPos["X"] == null || previousPos["Y"] == null)
+                    return;
+
+                previousPos["X"] = e.GetPosition(sender).X;
+                previousPos["Y"] = e.GetPosition(sender).Y;
+
+                IsEndOfStroke = true;
+
+                DrawingInk(sender, e);
+
+                previousPos["X"] = null;
+                previousPos["Y"] = null;
+            }
+        }
+
         public void MouseMove(InkCanvas sender, MouseEventArgs e)
         {
             if (!IsDrawing) return;
@@ -250,14 +269,19 @@ namespace PolyPaint.VueModeles
 
         private void ReceiveDrawingInk(JObject data)
         {
-            double X1 = (double)data.GetValue("startPosX");
-            double X2 = (double)data.GetValue("endPosX");
-            double Y1 = (double)data.GetValue("startPosY");
-            double Y2 = (double)data.GetValue("endPosY");
+            
+
+            double? X1 = (double?)data.GetValue("startPosX");
+            double? X2 = (double?)data.GetValue("endPosX");
+            double? Y1 = (double?)data.GetValue("startPosY");
+            double? Y2 = (double?)data.GetValue("endPosY");
+
+            if (!(X1.HasValue && X2.HasValue && Y1.HasValue && Y2.HasValue))
+                return;
 
             StylusPointCollection coll = new StylusPointCollection();
-            coll.Add(new StylusPoint(X1, Y1));
-            coll.Add(new StylusPoint(X2, Y2));
+            coll.Add(new StylusPoint(X1.Value, Y1.Value));
+            coll.Add(new StylusPoint(X2.Value, Y2.Value));
 
             DrawingAttributes attr = new DrawingAttributes();
             attr.Color = (Color)ColorConverter.ConvertFromString((string)data.GetValue("color"));
