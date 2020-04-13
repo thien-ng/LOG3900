@@ -149,7 +149,13 @@ namespace PolyPaint.VueModeles
                         {
                             ShowMessageBox("Please fill every parameter");
                             return;
-                    }
+                        }
+
+                        if (!Password.Password.Equals(PasswordConfirm.Password))
+                        {
+                            ShowMessageBox("Passwords doesnt match");
+                            return;
+                        }
 
                         _registerIsRunning = true;
 
