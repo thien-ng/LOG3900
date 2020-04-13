@@ -60,6 +60,7 @@ class LobbyFragment() : Fragment(),
         addBotButton = v.findViewById<Button>(R.id.button_addBot)
         inviteButton = v.findViewById<Button>(R.id.button_invitePlayer)
 
+        leaveButton.isEnabled = true
         gameController.getUsers(this, lobby.lobbyName, lobby.gameMode)
         userListAdapter = UserListViewAdapter(this, isMaster)
         val listview = v.findViewById<ListView>(R.id.userlist)
@@ -94,7 +95,9 @@ class LobbyFragment() : Fragment(),
                                         v.textView_NotEnoughPlayers.visibility = View.GONE
                                         startButton.visibility = View.VISIBLE
                                         startButton.isEnabled = true
-                                        startButton.setOnClickListener { startGame(lobby.lobbyName) }
+                                        startButton.setOnClickListener { startButton.isEnabled = false
+                                            startGame(lobby.lobbyName)
+                                        }
                                     } else {
                                         v.textView_NotEnoughPlayers.visibility = View.VISIBLE
                                         startButton.visibility = View.GONE
@@ -122,12 +125,8 @@ class LobbyFragment() : Fragment(),
                                 if (user.startsWith("bot:")) {
                                     bots.add(user)
                                 }
-                                userListAdapter.removePlayer(user)
-
-                                if (checkIsMaster()) {
-                                    setMasterView(lobby.gameMode)
-                                }
-
+                                userListAdapter.removePlayer(user, username)
+                                setMasterView(lobby.gameMode)
                             }
                         } else {
                             fragmentManager!!.beginTransaction()
@@ -140,7 +139,7 @@ class LobbyFragment() : Fragment(),
         return v
     }
 
-    private fun checkIsMaster():Boolean {
+    fun checkIsMaster():Boolean {
         var i =0;
         while(userListAdapter.getItem(i).startsWith("bot:")){
             i++
@@ -182,7 +181,10 @@ class LobbyFragment() : Fragment(),
                 } else usernames.add(userJsonArray.get(i).toString())
             }
             if (usernames.isNotEmpty()) {
-                leaveButton.setOnClickListener { leaveGame(lobby.lobbyName) }
+                leaveButton.setOnClickListener {
+                    leaveButton.isEnabled = false
+                    leaveGame(lobby.lobbyName)
+                }
                 if (isMaster) {
                     setMasterView(mode)
                 }else{
@@ -201,7 +203,10 @@ class LobbyFragment() : Fragment(),
             if(userListAdapter.count >= 2){
                 startButton.visibility = View.VISIBLE
                 startButton.isEnabled = true
-                startButton.setOnClickListener { startGame(lobby.lobbyName) }
+                startButton.setOnClickListener {
+                    startButton.isEnabled = false
+                    startGame(lobby.lobbyName)
+                }
             }else{
                 startButton.visibility = View.INVISIBLE
                 startButton.isEnabled = false
@@ -226,7 +231,9 @@ class LobbyFragment() : Fragment(),
         }else{
             startButton.visibility = View.VISIBLE
             startButton.isEnabled = true
-            startButton.setOnClickListener { startGame(lobby.lobbyName) }
+            startButton.setOnClickListener {
+                startButton.isEnabled = false
+                startGame(lobby.lobbyName) }
         }
         if(mode != "SOLO") {
             inviteButton.visibility = View.VISIBLE

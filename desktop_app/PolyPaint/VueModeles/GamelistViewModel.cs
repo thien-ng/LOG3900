@@ -71,16 +71,19 @@ namespace PolyPaint.VueModeles
                 switch (_selectedMode)
                 {
                     case Constants.MODE_FFA:
+                        ModeInfo = "Play against one or more players and try to accumulate the most points";
                         IsSizeNeeded = true;
                         fillArray(2, 9);
                         break;
 
                     case Constants.MODE_COOP:
+                        ModeInfo = "Play with up to three players and try to guess the most words together";
                         IsSizeNeeded = true;
                         fillArray(1, 4);
                         break;
 
                     case Constants.MODE_SOLO:
+                        ModeInfo = "Play alone and try to guess the most words";
                         IsSizeNeeded = false;
                         break;
 
@@ -89,6 +92,13 @@ namespace PolyPaint.VueModeles
                         break;
                 }
             }
+        }
+
+        private string _modeInfo;
+        public string ModeInfo
+        {
+            get { return _modeInfo; }
+            set { _modeInfo = value; ProprieteModifiee(); }
         }
 
         private bool _isPrivate;

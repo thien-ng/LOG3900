@@ -26,8 +26,8 @@ class LobbyCardsController {
             Response.Listener {
 
             },
-            Response.ErrorListener { _ ->
-                Toast.makeText(activity.context, "A lobby with this name already exists.", Toast.LENGTH_SHORT).show()
+            Response.ErrorListener { error ->
+                Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }) {
             override fun getBodyContentType(): String {
                 return "application/json"
@@ -51,7 +51,7 @@ class LobbyCardsController {
             Response.Listener { response ->
                 activity.loadLobbies(responseToLobbies(response, activity.context!!))
             }, Response.ErrorListener { error ->
-                Toast.makeText(activity.context, error.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity.context, Utils.getErrorMessage(error), Toast.LENGTH_SHORT).show()
             }
         )
         requestQueue.add(jsonObjectRequest)

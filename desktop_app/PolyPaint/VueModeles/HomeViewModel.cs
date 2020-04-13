@@ -65,6 +65,13 @@ namespace PolyPaint.VueModeles
             get { return _selectedChannel.Messages; }
         }
 
+        private bool _isPreviousMessageButtonVisible;
+        public bool IsPreviousMessageButtonVisible
+        {
+            get { return _isPreviousMessageButtonVisible; }
+            set { _isPreviousMessageButtonVisible = value; ProprieteModifiee(); }
+        }
+
         public ObservableCollection<MessageGame> MessagesGame
         {
             get { return _selectedChannel.MessagesGame; }
@@ -125,6 +132,13 @@ namespace PolyPaint.VueModeles
         {
             get { return _frontEnabled; }
             set { _frontEnabled = value; ProprieteModifiee(); }
+        }
+
+        private bool _isInGame;
+        public bool IsInGame
+        {
+            get { return _isInGame; }
+            set { _isInGame = value; ProprieteModifiee(); }
         }
 
         private bool _backEnabled;
@@ -228,6 +242,8 @@ namespace PolyPaint.VueModeles
             _backEnabled = false;
             _searchString = "";
             _lobbyInvitedTo = "";
+            _isPreviousMessageButtonVisible = true;
+            _isInGame = false;
 
             ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
             ServerService.instance.socket.On("channel-delete", data => RemoveUnsubChannel((JObject)data));
@@ -257,7 +273,7 @@ namespace PolyPaint.VueModeles
                 GameViewModel.Dispose();
                 GameViewModel = null;
             }
-
+            IsInGame = false;
             GamelistViewModel.SubscribeLobbyNotif();
             GamelistViewModel.getLobbies();
 
@@ -292,6 +308,7 @@ namespace PolyPaint.VueModeles
                     ChangeChannel(Constants.GAME_CHANNEL);
                 });
                 SwitchView = Views.Game;
+                IsInGame = true;
             });
         }
 
@@ -398,6 +415,7 @@ namespace PolyPaint.VueModeles
 
                 _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
                 _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
+                IsPreviousMessageButtonVisible = _selectedChannel.IsPreviousMessageButtonVisible;
                 ProprieteModifiee("Messages");
                 ProprieteModifiee("MessagesGame");
 
@@ -697,6 +715,19 @@ namespace PolyPaint.VueModeles
                         await Task.Run(() => SubToChannel(NewChannelString));
                     NewChannelString = "";
                     IsCreateChannelDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _loadMessagesCommand;
+        public ICommand LoadMessagesCommand
+        {
+            get
+            {
+                return _loadMessagesCommand ?? (_loadMessagesCommand = new RelayCommand(x =>
+                {
+                    _selectedChannel.LoadChannelMessages();
+                    IsPreviousMessageButtonVisible = _selectedChannel.IsPreviousMessageButtonVisible;
                 }));
             }
         }

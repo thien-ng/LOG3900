@@ -88,7 +88,14 @@ export abstract class Bot {
                 this.sortPanoramic();
                 break;
         }
+		this.eraseEnd();
     }
+	
+	protected eraseEnd(): void {
+		for (let i = 0; i < this.drawings.length; i++) {
+            this.drawings[i].isEnd = false;
+        }
+	}
 
     protected sortPanoramic(): void { //bubble sort
         for (let i = 0; i < this.drawings.length - 1; i++) {
