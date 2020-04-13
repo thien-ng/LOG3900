@@ -286,7 +286,9 @@ namespace PolyPaint.VueModeles
                 App.Current.Dispatcher.Invoke(delegate
                 {
                     SubChannels.Remove(_subChannels.SingleOrDefault(i => i.id == (Constants.LOBBY_CHANNEL + Lobbyname)));
-                    SubChannels.Add(new MessageChannel(Constants.GAME_CHANNEL, true, false));
+                    MessageChannel gameChannel = new MessageChannel(Constants.GAME_CHANNEL, true, false);
+                    if (!SubChannels.Contains(gameChannel))
+                        SubChannels.Add(gameChannel);
                     ChangeChannel(Constants.GAME_CHANNEL);
                 });
                 SwitchView = Views.Game;
