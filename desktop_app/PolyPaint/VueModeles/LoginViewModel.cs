@@ -26,7 +26,6 @@ namespace PolyPaint.VueModeles
         public LoginViewModel()
         {
             _loginIsRunning = false;
-            fetchProfile();
         }
 
         #region Public Attributes
@@ -84,11 +83,16 @@ namespace PolyPaint.VueModeles
             try
             {
                 var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
+                string responseString = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseString = await response.Content.ReadAsStringAsync();
                     var data = JsonConvert.DeserializeObject<User>(responseString);
                     ServerService.instance.user = data;
+                }
+                else if (!response.IsSuccessStatusCode)
+                {
+                    ErrorServerMessage serverMessage = JsonConvert.DeserializeObject<ErrorServerMessage>(responseString);
+                    ShowMessageBox(serverMessage.message);
                 }
             }
             catch (Exception)
