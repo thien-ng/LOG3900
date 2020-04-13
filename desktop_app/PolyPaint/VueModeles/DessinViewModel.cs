@@ -207,7 +207,6 @@ namespace PolyPaint.VueModeles
 
         public void ReceiveDrawing(JObject data) 
         {
-            Console.WriteLine(data);
             if (!data.ContainsKey("type")) return;
 
             switch ((string)data.GetValue("type"))
