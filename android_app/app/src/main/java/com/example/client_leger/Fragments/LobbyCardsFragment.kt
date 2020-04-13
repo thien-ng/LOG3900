@@ -308,6 +308,8 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             builder.show()
         } else{
             Toast.makeText(context, " The lobby is full", Toast.LENGTH_SHORT).show()
+            view!!.findViewById<Button>(R.id.button_joinPrivate).isEnabled = true
+
         }
         view!!.findViewById<Button>(R.id.button_joinPrivate).isEnabled = true
 
@@ -315,7 +317,7 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
     }
 
     override fun onJoinClick(view: View?, position: Int) {
-        button_join.isEnabled = false
+        view!!.findViewById<Button>(R.id.button_join).isEnabled = false
         val lobby = adapterLobbyCards.getItem(position)
         if(lobby.size > lobby.usernames.size) {
             val data = JSONObject()
@@ -323,9 +325,10 @@ class LobbyCardsFragment : Fragment(), LobbyCardsRecyclerViewAdapter.ItemClickLi
             data.put("lobbyName", lobby.lobbyName)
             lobbyCardsController.joinLobby(this, data)
         } else{
+            view!!.findViewById<Button>(R.id.button_join).isEnabled = true
             Toast.makeText(context, " The lobby is full", Toast.LENGTH_SHORT).show()
         }
-        button_join.isEnabled = true
+
     }
 
     override fun onUsersDropClick(view: View?, position: Int) {
