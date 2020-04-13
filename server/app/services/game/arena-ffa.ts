@@ -119,7 +119,7 @@ export class ArenaFfa extends Arena {
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
         if (mes.event === EventType.ready)
             this.handleGameplayReady(mes);
-            
+
         if (this.isGameStart === true) {
             switch(mes.event) {
                 case EventType.draw:
@@ -136,7 +136,7 @@ export class ArenaFfa extends Arena {
         if (mes.username === this.users[this.drawPtr - 1].username) {
             this.users.forEach(u => {
                 if (u.username != mes.username)
-                    socket.to(this.room).emit("draw", this.mapToDrawing(mes))
+                    socket.to(u.socketId).emit("draw", this.mapToDrawing(mes))
             });
         }
     }
