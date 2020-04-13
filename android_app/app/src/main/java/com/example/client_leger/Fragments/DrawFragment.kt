@@ -40,7 +40,7 @@ class DrawFragment: Fragment() {
             this.activity!!.intent.getStringExtra("username")
         )
 
-        canvasView.layoutParams = LinearLayout.LayoutParams(1000, 750)
+        canvasView.layoutParams = LinearLayout.LayoutParams(1000, 800)
 
         fragmentView.ConstraintLayout_canvasView.addView(canvasView)
 
@@ -239,6 +239,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
 
         if (!isValidPoint(x, y)) {
             strokeJustEnded = true
+            sendStroke(x, y, x, y, true)
 
             return true
         }
