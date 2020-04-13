@@ -12,6 +12,7 @@ import { clearInterval } from "timers";
 
 const format = require('string-format');
 
+const HINT_TUTORIAL = "You may request a hint by writing: '!hint' in the chat.";
 const ANNOUNCEMENT = "{0} has found the answer";
 const ONE_SEC = 1000;
 
@@ -77,6 +78,7 @@ export class ArenaSprint extends Arena {
 
     public startSubGame(): void {
         this.isGameStart = true;
+        this.sendToChat({username: "Server", content: HINT_TUTORIAL, isServer: true});
         this.initSubGame();
         this.curArenaInterval = setInterval(() => {
             console.log("[Debug] time remaining: ", this.timeRemaining);
@@ -130,7 +132,8 @@ export class ArenaSprint extends Arena {
             this.resetSubGame();
 
         } else {
-            this.guessLeft--;
+            if (this.guessLeft > 0)
+                this.guessLeft--;
             this.socketServer.to(this.room).emit("game-guessLeft", { guessLeft: this.guessLeft });
         }
     }
