@@ -36,8 +36,8 @@
             <TextBlock Margin="10,0,10,0"  Text="{Binding Lastname}" VerticalAlignment="Center" FontSize="25" Foreground="White"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Right">
-            <TextBlock Text="{Binding Username}" FontSize="25" Foreground="White" VerticalAlignment="Bottom" />
-            <materialDesign:PackIcon Kind="EditOutline" VerticalAlignment="Bottom" Height="30" Width="30" Foreground="White" />
+            <TextBlock Text="Username: " FontSize="25" Foreground="White" VerticalAlignment="Bottom"/>
+            <TextBlock Text="{Binding Username}" Margin="0,0,5,0" FontSize="25" Foreground="White" VerticalAlignment="Bottom" />
         </StackPanel>
         <Border Grid.ColumnSpan="3" Grid.Row="2" BorderThickness="0,0,0,1" BorderBrush="White" />
         <TextBlock Text="Match history: " Foreground="White" FontSize="20" Grid.Row="3" Grid.Column="0"/>

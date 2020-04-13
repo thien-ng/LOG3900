@@ -18,7 +18,7 @@
     
     <materialDesign:DialogHost Identifier="RootDialog">
         <materialDesign:DialogHost Identifier="CreateGameDialog">
-            <Frame NavigationUIVisibility="Hidden" Content="{Binding CurrentPageViewModel}" />
+            <Frame Navigating="Frame_Navigated"  NavigationUIVisibility="Hidden" Content="{Binding CurrentPageViewModel}" />
         </materialDesign:DialogHost>
      </materialDesign:DialogHost>
     

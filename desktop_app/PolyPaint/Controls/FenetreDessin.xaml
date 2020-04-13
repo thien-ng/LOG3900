@@ -121,6 +121,7 @@
             <Border BorderThickness="5,5,0,0">
                 <InkCanvas ClipToBounds="True" Grid.Column="0" Grid.Row="0" Name="surfaceDessin"
                            IsEnabled="{Binding IsDrawer}"
+                           StrokeCollected="surfaceDessin_StrokeCollected"
                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                            PreviewMouseLeftButtonDown="OnMouseDown"
                            PreviewMouseLeftButtonUp="OnMouseUp"

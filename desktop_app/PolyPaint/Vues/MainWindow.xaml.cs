@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Navigation;
 
 namespace PolyPaint.Vues
 {
@@ -18,6 +19,12 @@ namespace PolyPaint.Vues
             base.OnClosed(e);
 
             Application.Current.Shutdown();
+        }
+
+        private void Frame_Navigated(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.NavigationMode == NavigationMode.Back)
+                e.Cancel = true;
         }
     }
 }
