@@ -8,10 +8,9 @@ namespace PolyPaint.VueModeles
     {
         public MainWindowViewModel()
         {
-            // Add available pages and set page
-            PageViewModels[nameof(LoginViewModel)] = new LoginViewModel();
+            PageViewModels[nameof(ChooseIPViewModel)] = new ChooseIPViewModel();
 
-            CurrentPageViewModel = PageViewModels[nameof(LoginViewModel)];
+            CurrentPageViewModel = PageViewModels[nameof(ChooseIPViewModel)];
 
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
             Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);

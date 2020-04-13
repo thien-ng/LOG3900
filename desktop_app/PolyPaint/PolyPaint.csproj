@@ -227,6 +227,7 @@
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
     <Compile Include="VueModeles\BaseViewModel.cs" />
+    <Compile Include="VueModeles\ChooseIPViewModel.cs" />
     <Compile Include="VueModeles\CreateGameDrawViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\GamelistViewModel.cs" />

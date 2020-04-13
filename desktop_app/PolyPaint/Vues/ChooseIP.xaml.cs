@@ -1,26 +1,12 @@
-﻿using PolyPaint.VueModeles;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace PolyPaint.Vues
 {
-    /// <summary>
-    /// Interaction logic for Login.xaml
-    /// </summary>
-    public partial class Login : UserControl
+    public partial class ChooseIP : UserControl
     {
-        public Login()
+        public ChooseIP()
         {
             InitializeComponent();
-        }
-
-        private void PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (DataContext != null)
-            { 
-                ((LoginViewModel)DataContext).Password = ((PasswordBox)sender);
-                ((LoginViewModel)DataContext).OnPasswordPropertyChanged();
-            }
         }
     }
 }
