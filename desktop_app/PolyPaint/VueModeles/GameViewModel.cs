@@ -122,18 +122,29 @@ namespace PolyPaint.VueModeles
         private void processRole(JObject role) 
         {
             DrawViewModel.IsDrawer = false;
-            if (role.GetValue("username").ToString() == ServerService.instance.username)
+            try
             {
-                Role = Constants.ROLE_DRAWER;
-                ObjectToDraw = role.GetValue("object").ToString();
-                DrawViewModel.IsDrawer = true;
+                if (role.ContainsKey("username"))
+                {
+                    if (role.GetValue("username").ToString() == ServerService.instance.username)
+                    {
+                        Role = Constants.ROLE_DRAWER;
+                        ObjectToDraw = role.GetValue("object").ToString();
+                        DrawViewModel.IsDrawer = true;
+                    }
+                    else
+                    {
+                        Role = Constants.ROLE_GUESSER;
+                        ObjectToDraw = "";
+                        DrawViewModel.IsDrawer = false;
+                    }
+                }
             }
-            else
+            catch (Exception e)
             {
-                Role = Constants.ROLE_GUESSER;
-                ObjectToDraw = "";
-                DrawViewModel.IsDrawer = false;
+                ShowMessageBox(e.Message);
             }
+            
             App.Current.Dispatcher.Invoke(delegate
             {
                 DrawViewModel.Traits.Clear();
@@ -152,7 +163,8 @@ namespace PolyPaint.VueModeles
         {
             try
             {
-                GuessLeft = guess.GetValue("guessLeft").ToString();
+                if (guess.ContainsKey("guessLeft"))
+                    GuessLeft = guess.GetValue("guessLeft").ToString();
             }
             catch (Exception)
             {
@@ -164,7 +176,8 @@ namespace PolyPaint.VueModeles
         {
             try
             {
-                Timer = time.GetValue("time").ToString();
+                if (time.ContainsKey("time"))
+                    Timer = time.GetValue("time").ToString();
             }
             catch (Exception)
             {
@@ -176,7 +189,8 @@ namespace PolyPaint.VueModeles
         {
             try
             {
-                MyPoints = pts.GetValue("point").ToString();
+                if (pts.ContainsKey("points"))
+                    MyPoints = pts.GetValue("point").ToString();
             }
             catch (Exception)
             {
@@ -188,27 +202,40 @@ namespace PolyPaint.VueModeles
         {
             try
             {
-                JArray a = (JArray)pointsReceived["points"];
+                if (pointsReceived.ContainsKey("points"))
+                {
+                    JArray a = (JArray)pointsReceived["points"];
 
-                IList<Points> points = a.ToObject<IList<Points>>();
-                int i = 1;
-                foreach (var item in points)
-                {
-                    PointsDisplay temp = new PointsDisplay(item.username, item.points, i++);
-                    Points.Add(temp);
+                    IList<Points> points = a.ToObject<IList<Points>>();
+                    int i = 1;
+                    foreach (var item in points)
+                    {
+                        PointsDisplay temp = new PointsDisplay(item.username, item.points, i++);
+                        Points.Add(temp);
+                    }
+                    App.Current.Dispatcher.Invoke(delegate
+                    {
+                        DialogContent = new EndGameControl();
+                        IsEndGameDialogOpen = true;
+                    });
                 }
-                App.Current.Dispatcher.Invoke(delegate
+                else
                 {
-                    DialogContent = new EndGameControl();
-                    IsEndGameDialogOpen = true;
-                });
+                    ShowMessageBox("Game cancelled");
+                }
             }
             catch (Exception)
             {
                 Mediator.Notify("LeaveLobby");
             }
-            
+        }
 
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
         }
 
         public override void Dispose()
