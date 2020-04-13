@@ -84,9 +84,7 @@ namespace PolyPaint.VueModeles
                 Dispose();
             }
             else
-            {
                 ShowMessageBox(message);
-            }
         }
 
         private async void fetchProfile()
