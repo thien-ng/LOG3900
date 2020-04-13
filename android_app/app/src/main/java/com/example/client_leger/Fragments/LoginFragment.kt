@@ -25,11 +25,11 @@ class LoginFragment : Fragment(), FragmentChangeListener {
 
     private var controller = ConnexionController()
     private lateinit var connexionListener: Disposable
+    private lateinit var v: View
     lateinit var username: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragment_login, container, false)
-
+        v = inflater.inflate(R.layout.fragment_login, container, false)
         v.login_button.isEnabled = true
         v.login_button.setOnClickListener {
             if (validateLoginFields(v)) {
@@ -68,6 +68,8 @@ class LoginFragment : Fragment(), FragmentChangeListener {
             if (::username.isInitialized) {
                 if (mes.getString("status").toInt() == 200) {
                     connect(username)
+                }else{
+                   v.login_button.isEnabled = true
                 }
             }
         }
@@ -93,6 +95,11 @@ class LoginFragment : Fragment(), FragmentChangeListener {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        v.login_button.isEnabled = true
     }
 
     private fun validateLoginFields(v: View):Boolean{

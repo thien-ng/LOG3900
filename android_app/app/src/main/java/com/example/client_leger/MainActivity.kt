@@ -1,5 +1,6 @@
 package com.example.client_leger
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
@@ -13,7 +14,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         bottomNavigationView.setOnNavigationItemSelectedListener(onNavigationListener)
         supportFragmentManager.beginTransaction().replace(R.id.container_view_left, chatFragment).commit()
         bottomNavigationView.selectedItemId = R.id.action_game
@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         SocketIO.disconnect()
-
         finish()
     }
 
