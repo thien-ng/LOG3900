@@ -7,8 +7,7 @@ import org.json.JSONObject
 class Utils {
     companion object {
         fun getErrorMessage(error: VolleyError): String {
-            val jsonError = error.networkResponse.data.toString()
-            Log.d("error",jsonError)
+            val jsonError = String(error.networkResponse.data)
             val responseObject = JSONObject(jsonError)
             return responseObject.optString("message")
         }
