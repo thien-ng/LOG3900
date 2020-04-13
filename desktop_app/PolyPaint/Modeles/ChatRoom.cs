@@ -82,7 +82,6 @@ namespace PolyPaint.Modeles
         {
             IsPreviousMessageButtonVisible = true;
             IsInGameChat = false;
-            //LoadMessages();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
         }
 

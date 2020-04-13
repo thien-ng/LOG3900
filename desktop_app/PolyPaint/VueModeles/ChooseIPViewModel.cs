@@ -11,7 +11,7 @@ namespace PolyPaint.VueModeles
     class ChooseIPViewModel: BaseViewModel, IPageViewModel
     {
 
-        private Regex IP_REGEX = new Regex(@"(^https?://){1}(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$");
+        private Regex IP_REGEX = new Regex(@"(^http://){1}(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$");
         private Regex URL_REGEX = new Regex(@"(^https?://.*)$");
 
 
@@ -36,10 +36,7 @@ namespace PolyPaint.VueModeles
             try
             {
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                if (response.StatusCode == HttpStatusCode.OK)
-                    return true;
-                else
-                    return false;
+                return response.StatusCode == HttpStatusCode.OK;
             }
             catch (WebException)
             {
