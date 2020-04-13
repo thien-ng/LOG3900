@@ -130,6 +130,19 @@
             <chat:MessageList/>
         </Grid>
 
+        <TextBlock Grid.Column="1" 
+                   Padding="0,15,0,15" 
+                   Visibility="{Binding IsPreviousMessageButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                   HorizontalAlignment="Center">
+            <Hyperlink Foreground="{StaticResource SecondaryAccentBrush}" 
+                       TextDecorations="underline" 
+                       Cursor="Hand" 
+                       Command="{Binding LoadMessagesCommand}">
+                Load Previous Messages
+            </Hyperlink>
+        </TextBlock>
+
+
         <Grid Grid.Row="2" 
               Grid.Column="1"
               MinHeight="60"

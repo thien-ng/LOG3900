@@ -1,7 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PolyPaint.Controls;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
@@ -9,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 

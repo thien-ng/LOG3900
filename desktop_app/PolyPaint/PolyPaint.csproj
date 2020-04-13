@@ -227,6 +227,7 @@
     <Compile Include="Utilitaires\Mediator.cs" />
     <Compile Include="Utilitaires\RelayCommand.cs" />
     <Compile Include="VueModeles\BaseViewModel.cs" />
+    <Compile Include="VueModeles\ChooseIPViewModel.cs" />
     <Compile Include="VueModeles\CreateGameDrawViewModel.cs" />
     <Compile Include="VueModeles\DessinViewModel.cs" />
     <Compile Include="VueModeles\GamelistViewModel.cs" />
@@ -241,6 +242,9 @@
     <Compile Include="VueModeles\MainWindowViewModel.cs" />
     <Compile Include="Vues\Chat.xaml.cs">
       <DependentUpon>Chat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vues\ChooseIP.xaml.cs">
+      <DependentUpon>ChooseIP.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vues\Game.xaml.cs">
       <DependentUpon>Game.xaml</DependentUpon>
@@ -342,6 +346,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Vues\ChooseIP.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vues\Game.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
