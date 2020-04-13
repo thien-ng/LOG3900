@@ -15,6 +15,7 @@ import { Difficulty } from "../../interfaces/creator";
 const format = require('string-format');
 
 const ANNOUNCEMENT = "{0} has found the answer";
+const HINT_TUTORIAL = "It is the a bot's turn, you may write '!hint' in the chat to request a hint.";
 const ONE_SEC = 1000;
 const TOTAL_TIME = 30000;
 const INIT_DRAW_PTS = 20;
@@ -25,14 +26,11 @@ export class ArenaFfa extends Arena {
 
     private curTime: number;
     private userWithCorrectAns: number;
-
     private isEveryoneHasRightAnswer: boolean;
-
     private isBotDrawing: boolean;
-
     private botMap: Map<string, MeanBot | KindBot | HumourBot>;
-
     private isGameStart: boolean;
+    private userWithAnswer: Map<string, boolean>;    
 
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server | undefined, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io as io.Server, rules, gm)
@@ -43,6 +41,7 @@ export class ArenaFfa extends Arena {
         this.isBotDrawing = false;
         this.botMap = new Map<string, MeanBot | KindBot | HumourBot>();
         this.isGameStart = false;
+        this.initUserWithAnswerMap();
     }
 
     public start(): void {
@@ -68,8 +67,10 @@ export class ArenaFfa extends Arena {
             return;
         }
 
-        if (this.isBotDrawing)
+        if (this.isBotDrawing) {
+            this.sendToChat({username: "Server", content: HINT_TUTORIAL, isServer: true});
             this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
+        }
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
@@ -110,6 +111,7 @@ export class ArenaFfa extends Arena {
         this.userWithCorrectAns = 0;
         this.isEveryoneHasRightAnswer = false;
         this.isBotDrawing = false;
+        this.initUserWithAnswerMap();
 
         this.chooseRandomRule();
         if (this.attributeRoles())
@@ -119,7 +121,7 @@ export class ArenaFfa extends Arena {
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
         if (mes.event === EventType.ready)
             this.handleGameplayReady(mes);
-            
+
         if (this.isGameStart === true) {
             switch(mes.event) {
                 case EventType.draw:
@@ -136,7 +138,7 @@ export class ArenaFfa extends Arena {
         if (mes.username === this.users[this.drawPtr - 1].username) {
             this.users.forEach(u => {
                 if (u.username != mes.username)
-                    socket.to(this.room).emit("draw", this.mapToDrawing(mes))
+                    socket.to(u.socketId).emit("draw", this.mapToDrawing(mes))
             });
         }
     }
@@ -154,6 +156,13 @@ export class ArenaFfa extends Arena {
         if (this.isRightAnswer(answer) && this.isNotCurrentDrawer(mes.username)) {
             const encAnswer = this.encryptAnswer(mes.content);
             
+            if (this.isUserHasAnswerAlready(mes.username)) {
+                this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
+                return;
+            }
+
+            this.userWithAnswer.set(mes.username, true);
+            
             this.sendToChat({username: mes.username, content: encAnswer, isServer: false});
             this.sendToChat({username: "Server", content: format(ANNOUNCEMENT, mes.username), isServer: true});
             
@@ -170,6 +179,10 @@ export class ArenaFfa extends Arena {
         } else {
             this.sendToChat({username: mes.username, content: mes.content, isServer: false});
         }
+    }
+
+    private isUserHasAnswerAlready(username: string): boolean {
+        return this.userWithAnswer.get(username) as boolean;
     }
 
     protected updatePoints(username: string, time: number, ratio: number): void {
@@ -291,6 +304,13 @@ export class ArenaFfa extends Arena {
 
     private isNotCurrentDrawer(username: string): boolean {        
         return this.users[this.drawPtr - 1].username !== username;
+    }
+
+    private initUserWithAnswerMap(): void {
+        this.userWithAnswer = new Map<string, boolean>();
+        this.users.forEach(u => {
+            this.userWithAnswer.set(u.username, false);
+        });
     }
 
 }

@@ -8,7 +8,6 @@ export class DrawingTools {
 
         strokes.forEach(stroke => {
             
-            const col: number = parseInt(stroke.color.replace("#","0x"), 16);
             const w: number = stroke.width;
 
             let startX = stroke.points[0].x;
@@ -22,7 +21,7 @@ export class DrawingTools {
                 endX = stroke.points[i].x;
                 endY = stroke.points[i].y;
 
-                const drawing: IDrawing = this.buildDrawing(col, w, startX, startY, endX, endY, isEnd);
+                const drawing: IDrawing = this.buildDrawing(stroke.color, w, startX, startY, endX, endY, isEnd);
                 
                 drawings.push(drawing);
 
@@ -35,7 +34,7 @@ export class DrawingTools {
         return drawings;
     }
 
-    private static buildDrawing(col: number, w: number, sx: number, sy: number, ex: number, ey: number, end: boolean): IDrawing {
+    private static buildDrawing(col: string, w: number, sx: number, sy: number, ex: number, ey: number, end: boolean): IDrawing {
         return {
             startPosX: sx,
             startPosY: sy,

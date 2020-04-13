@@ -65,6 +65,13 @@ namespace PolyPaint.VueModeles
             get { return _selectedChannel.Messages; }
         }
 
+        private bool _isPreviousMessageButtonVisible;
+        public bool IsPreviousMessageButtonVisible
+        {
+            get { return _isPreviousMessageButtonVisible; }
+            set { _isPreviousMessageButtonVisible = value; ProprieteModifiee(); }
+        }
+
         public ObservableCollection<MessageGame> MessagesGame
         {
             get { return _selectedChannel.MessagesGame; }
@@ -235,6 +242,7 @@ namespace PolyPaint.VueModeles
             _backEnabled = false;
             _searchString = "";
             _lobbyInvitedTo = "";
+            _isPreviousMessageButtonVisible = true;
             _isInGame = false;
 
             ServerService.instance.socket.On("channel-new", data => UpdateUnsubChannel((JObject)data));
@@ -434,6 +442,7 @@ namespace PolyPaint.VueModeles
 
                     _selectedChannel = new ChatRoom((string)id, _subChannels.SingleOrDefault(i => i.id == channelId).isLobbyChat);
                     _subChannels.SingleOrDefault(i => i.id == _selectedChannel.ID).isSelected = true;
+                    IsPreviousMessageButtonVisible = _selectedChannel.IsPreviousMessageButtonVisible;
                     ProprieteModifiee("Messages");
                     ProprieteModifiee("MessagesGame");
 
@@ -773,6 +782,19 @@ namespace PolyPaint.VueModeles
                         await Task.Run(() => SubToChannel(NewChannelString));
                     NewChannelString = "";
                     IsCreateChannelDialogOpen = false;
+                }));
+            }
+        }
+
+        private ICommand _loadMessagesCommand;
+        public ICommand LoadMessagesCommand
+        {
+            get
+            {
+                return _loadMessagesCommand ?? (_loadMessagesCommand = new RelayCommand(x =>
+                {
+                    _selectedChannel.LoadChannelMessages();
+                    IsPreviousMessageButtonVisible = _selectedChannel.IsPreviousMessageButtonVisible;
                 }));
             }
         }

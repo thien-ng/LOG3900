@@ -67,6 +67,7 @@
                 android:id="@+id/recyclerView_chat_log"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                app:reverseLayout="true"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
     </LinearLayout>
 

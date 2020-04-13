@@ -1,6 +1,4 @@
-﻿using PolyPaint.Services;
-using PolyPaint.Utilitaires;
-using Quobject.SocketIoClientDotNet.Client;
+﻿using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 
@@ -10,20 +8,13 @@ namespace PolyPaint.VueModeles
     {
         public MainWindowViewModel()
         {
-            // Add available pages and set page
-            PageViewModels[nameof(LoginViewModel)] = new LoginViewModel();
+            PageViewModels[nameof(ChooseIPViewModel)] = new ChooseIPViewModel();
 
-            CurrentPageViewModel = PageViewModels[nameof(LoginViewModel)];
+            CurrentPageViewModel = PageViewModels[nameof(ChooseIPViewModel)];
 
             Mediator.Subscribe("GoToLoginScreen", OnGoToLoginScreen);
             Mediator.Subscribe("GoToRegisterScreen", OnGoToRegisterScreen);
             Mediator.Subscribe("GoToHomeScreen", OnGoToHomeScreen);
-
-            Socket socket = IO.Socket(Constants.SERVER_PATH);
-            socket.On(Socket.EVENT_CONNECT, () =>
-            {
-                ServerService.instance.socket = socket;
-            });
         }
 
         #region Attributes

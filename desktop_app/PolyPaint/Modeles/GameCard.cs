@@ -275,6 +275,8 @@ namespace PolyPaint.Modeles
                 return _sendPasswordCommand ?? (_sendPasswordCommand = new RelayCommand(x =>
                 {
                     joinPrivateLobby();
+                    this.IsPasswordDialogOpen = false;
+
                 }));
             }
         }
@@ -287,6 +289,8 @@ namespace PolyPaint.Modeles
                 return _cancelPasswordCommand ?? (_cancelPasswordCommand = new RelayCommand(x =>
                 {
                     this.IsPasswordDialogOpen = false;
+                    IsLobbyJoined = true;
+
                 }));
             }
         }

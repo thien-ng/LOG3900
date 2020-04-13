@@ -17,9 +17,7 @@ import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_chat.view.*
-import kotlinx.android.synthetic.main.fragment_chat.view.chat_message_editText
 import kotlinx.android.synthetic.main.popup_create_channel.view.*
-import kotlinx.android.synthetic.main.fragment_chat.view.textView_channelName
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -57,7 +55,11 @@ class ChatFragment: Fragment() {
         recyclerViewNotSubChannels = v.recyclerView_notSubChannels
         recyclerViewChatLog = v.recyclerView_chat_log
         textViewChannelName = v.textView_channelName
+
         messageAdapter = GroupAdapter()
+        val layoutManager = LinearLayoutManager(this.context)
+        layoutManager.stackFromEnd = true
+        recyclerViewChatLog.layoutManager = layoutManager
         username = activity!!.intent.getStringExtra("username")
 
         recyclerViewChannels.setHasFixedSize(true)

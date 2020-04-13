@@ -94,7 +94,7 @@ export interface IDrawing {
     startPosY:      number,
     endPosX:        number,
     endPosY:        number,
-    color:          number,
+    color:          string,
     width:          number,
     isEnd:          boolean,
     format:         Format,
