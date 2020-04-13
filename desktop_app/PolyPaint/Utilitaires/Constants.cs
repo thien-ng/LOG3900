@@ -2,7 +2,7 @@
 {
     class Constants
     {
-        public const string SERVER_PATH = "https://log3000-app.herokuapp.com";
+        public const string SERVER_PATH = "http://67.68.221.98:3000";
         public const string ACCOUNT_PATH            = "/account";
         public const string LOGIN_PATH              = ACCOUNT_PATH + "/login";
         public const string REGISTER_PATH           = ACCOUNT_PATH + "/register";

@@ -207,7 +207,7 @@ namespace PolyPaint.VueModeles
         {
             string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
-            int color = int.Parse(editeur.CouleurSelectionnee.Remove(0,1), System.Globalization.NumberStyles.HexNumber);
+            //int color = int.Parse(editeur.CouleurSelectionnee.Remove(0,1), System.Globalization.NumberStyles.HexNumber);
 
             JObject drawing = new JObject(new JProperty("event", "draw"),
                                           new JProperty("username", ServerService.instance.username),
@@ -215,7 +215,7 @@ namespace PolyPaint.VueModeles
                                           new JProperty("startPosY", previousPos["Y"]),
                                           new JProperty("endPosX", e.GetPosition(sender).X),
                                           new JProperty("endPosY", e.GetPosition(sender).Y),
-                                          new JProperty("color", color),
+                                          new JProperty("color", editeur.CouleurSelectionnee),
                                           new JProperty("width", editeur.TailleTrait),
                                           new JProperty("isEnd", IsEndOfStroke),
                                           new JProperty("format", format),
@@ -261,22 +261,21 @@ namespace PolyPaint.VueModeles
             coll.Add(new StylusPoint(X1, Y1));
             coll.Add(new StylusPoint(X2, Y2));
 
-            byte[] colorBytes;
-            try
-            {
-                colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
-            } catch(Exception)
-            {
-                colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
-            }
+            //byte[] colorBytes;
+            //try
+            //{
+            //    colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
+            //} catch(Exception)
+            //{
+            //    colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
+            //}
 
-            if (!BitConverter.IsLittleEndian) 
-                Array.Reverse(colorBytes);
+            //if (!BitConverter.IsLittleEndian) 
+            //    Array.Reverse(colorBytes);
 
-            Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[3], colorBytes[2], colorBytes[1], colorBytes[0]) : (Color)ColorConverter.ConvertFromString("#FF000000");
-
+            //Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[3], colorBytes[2], colorBytes[1], colorBytes[0]) : (Color)ColorConverter.ConvertFromString("#FF000000");
             DrawingAttributes attr = new DrawingAttributes();
-            attr.Color = color;
+            attr.Color = (Color)ColorConverter.ConvertFromString((string)data.GetValue("color"));
             attr.Height = (double)data.GetValue("width");
             attr.Width = attr.Height;
             attr.StylusTip = (string)data.GetValue("format") == "circle" ? StylusTip.Ellipse : StylusTip.Rectangle;
