@@ -32,6 +32,8 @@ export class ArenaFfa extends Arena {
 
     private botMap: Map<string, MeanBot | KindBot | HumourBot>;
 
+    private isGameStart: boolean;
+
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server | undefined, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io as io.Server, rules, gm)
 
@@ -40,6 +42,7 @@ export class ArenaFfa extends Arena {
         this.isEveryoneHasRightAnswer = false;
         this.isBotDrawing = false;
         this.botMap = new Map<string, MeanBot | KindBot | HumourBot>();
+        this.isGameStart = false;
     }
 
     public start(): void {
@@ -58,6 +61,7 @@ export class ArenaFfa extends Arena {
     }
 
     private startSubGame(): void {
+        this.isGameStart = true;
 
         if (this.resetSubGame()) {
             this.end();
@@ -113,16 +117,18 @@ export class ArenaFfa extends Arena {
     }
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
-        switch(mes.event) {
-            case EventType.draw:
-                this.handleGameplayDraw(socket, mes as IGameplayDraw | IGameplayEraser);
-                break;
-            case EventType.chat:
-                this.handleGameplayChat(mes as IGameplayChat);
-                break;
-            case EventType.ready:
-                this.handleGameplayReady(mes as IGameplayReady);
-                break;
+        if (this.isGameStart === true) {
+            switch(mes.event) {
+                case EventType.draw:
+                    this.handleGameplayDraw(socket, mes as IGameplayDraw | IGameplayEraser);
+                    break;
+                case EventType.chat:
+                    this.handleGameplayChat(mes as IGameplayChat);
+                    break;
+                case EventType.ready:
+                    this.handleGameplayReady(mes as IGameplayReady);
+                    break;
+            }   
         }
     }
 

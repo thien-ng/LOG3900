@@ -30,12 +30,15 @@ export class ArenaSprint extends Arena {
 
     private subInterval: NodeJS.Timeout;
 
+    private isGameStart: boolean;
+
     public constructor(type: GameMode, arenaId: number, users: IUser[], room: string, io: io.Server, rules: IGameRule[], gm: GameManagerService) {
         super(type, arenaId, users, room, io, rules, gm)
         
         this.setDifficulty(rules[0].difficulty);
         this.wordGuessedRight = 0;
         this.rulePtr = 0;
+        this.isGameStart = false;
     }
 
     private assignRule(): void {
@@ -73,6 +76,7 @@ export class ArenaSprint extends Arena {
     }
 
     public startSubGame(): void {
+        this.isGameStart = true;
         this.initSubGame();
         this.curArenaInterval = setInterval(() => {
             console.log("[Debug] time remaining: ", this.timeRemaining);
@@ -93,13 +97,15 @@ export class ArenaSprint extends Arena {
     }
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady): void {
-        switch (mes.event) {
-            case EventType.chat:
-                this.handleGameplayChat(mes as IGameplayChat);
-                break;
-            case EventType.ready:
-                this.handleGameplayReady(mes as IGameplayReady);
-                break;
+        if (this.isGameStart === true) {
+            switch (mes.event) {
+                case EventType.chat:
+                    this.handleGameplayChat(mes as IGameplayChat);
+                    break;
+                case EventType.ready:
+                    this.handleGameplayReady(mes as IGameplayReady);
+                    break;
+            }
         }
     }
 
