@@ -21,8 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         SocketIO.disconnect()
-        val intent = Intent(this, LogPageActivity::class.java)
-        startActivity(intent)
         finish()
     }
 

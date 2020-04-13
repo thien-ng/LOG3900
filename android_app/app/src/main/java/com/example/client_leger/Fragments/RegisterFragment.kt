@@ -90,7 +90,6 @@ class RegisterFragment : Fragment() {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
-        activity!!.finish()
     }
 
     override fun onDestroy() {

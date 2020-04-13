@@ -95,7 +95,11 @@ class LoginFragment : Fragment(), FragmentChangeListener {
         val intent = Intent(activity, MainActivity::class.java)
         intent.putExtra("username", username)
         startActivity(intent)
-        activity!!.finish()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        v.login_button.isEnabled = true
     }
 
     private fun validateLoginFields(v: View):Boolean{
