@@ -74,7 +74,7 @@ export class ChatService {
         return this.db.getAccountIdByUsername(username).then((result: pg.QueryResult) => {
             const res: IUserId[] = result.rows.map((row: any) => ({ id: row.id }));
             return res[0].id;
-        }).catch(e=>{console.error(e.message);});
+        }).catch(e=>{console.error(e.message); throw e;});
     }
 
     public sendMessages(mes: IReceptMes): void {
