@@ -232,7 +232,7 @@ describe("LobbyManagerService", () => {
         
         //then
         try {service.join(req)}
-        catch(e) {chai.expect(e.message).to.equal("Wrong password for lobby name")};
+        catch(e) {chai.expect(e.message).to.equal("Wrong password, try again!")};
         const lobby = service["lobbies"].get("name") as IActiveLobby;
         chai.expect(lobby.users.length).to.equal(1);
         chai.expect(spy).have.been.called();

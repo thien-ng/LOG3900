@@ -100,14 +100,21 @@
                        FontSize="25"/>
 
         </StackPanel>
-        <TextBlock Text="{Binding Timer}"
+        <StackPanel Grid.Column="1"
+                    Grid.Row="1" 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+                <TextBlock Text="Time left: " 
+                       FontSize="25"
+                           Margin="0,0,23,0"
+                       Foreground="White"/>
+                <TextBlock Text="{Binding Timer}"
                    FontSize="25"
                    Foreground="White"
                    HorizontalAlignment="Right"
-                   Grid.Column="1"
-                   Grid.Row="1"/>
-
-        <control:FenetreDessin  DataContext="{Binding DrawViewModel}"
+                   />
+        </StackPanel>
+            <control:FenetreDessin  DataContext="{Binding DrawViewModel}"
                                 Grid.Column="1"
                                 Grid.Row="2"/>
         
