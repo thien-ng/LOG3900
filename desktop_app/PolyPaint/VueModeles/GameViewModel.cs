@@ -189,7 +189,7 @@ namespace PolyPaint.VueModeles
         {
             try
             {
-                if (pts.ContainsKey("points"))
+                if (pts.ContainsKey("point"))
                     MyPoints = pts.GetValue("point").ToString();
             }
             catch (Exception)
