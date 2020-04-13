@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -169,9 +170,9 @@ namespace PolyPaint.VueModeles
             List<string> clues = new List<string>();
 
             foreach (var hint in Hints)
-                clues.Add(hint.Hint);
+                clues.Add(hint.Hint.Trim());
 
-            var newGame = new JObject( new JProperty("solution", Solution),
+            var newGame = new JObject( new JProperty("solution", Solution.Trim()),
                                        new JProperty("clues", clues.ToArray()),
                                        new JProperty("difficulty", SelectedDifficulty.ToLower()),
                                        new JProperty("drawing", drawing),
@@ -196,10 +197,10 @@ namespace PolyPaint.VueModeles
             foreach (var hint in Hints)
             {
                 if (hint.Hint.Length > 0)
-                clues.Add(hint.Hint);
+                clues.Add(hint.Hint.Trim());
             }
 
-            var newGame = new JObject(new JProperty("solution", ObjectName),
+            var newGame = new JObject(new JProperty("solution", ObjectName.Trim()),
                                        new JProperty("clues", clues.ToArray()),
                                        new JProperty("difficulty", SelectedDifficulty.ToLower()),
                                        new JProperty("drawing", GeneratedImageStrokes),
@@ -213,6 +214,9 @@ namespace PolyPaint.VueModeles
 
         private async Task Accept()
         {
+            if (IsGameCreationIncorrect()) 
+                return;
+
             string errorMessage = "Invalid request!";
             HttpResponseMessage result;
             switch (SelectedCreationType)
@@ -244,6 +248,49 @@ namespace PolyPaint.VueModeles
 
             JObject res = new JObject(new JProperty("IsAccept", true));
             DialogHost.CloseDialogCommand.Execute(res, null);
+        }
+
+        private Boolean IsGameCreationIncorrect() 
+        {
+            List<string> clues = new List<string>();
+            foreach (var hint in Hints)
+                clues.Add(hint.Hint.Trim());
+
+            string solution = (ObjectName == null) ? Solution : ObjectName ;
+            if (solution == null && SelectedCreationType == CreationType.Assisted2) 
+            {
+                ShowMessageBox("Generate an image first");
+                return true;
+            }
+
+            if (string.IsNullOrEmpty(solution) || Regex.IsMatch(solution.ToString().Trim(), "[^a-zA-Z ]"))
+            {
+                ShowMessageBox("Word or solution should be alphabetic");
+                return true;
+            }
+            solution = solution.Trim();
+
+            if (clues.Count == 1 && string.IsNullOrEmpty(clues[0])) 
+            {
+                ShowMessageBox("Atleast one hint needs to be provided");
+                return true;
+            }
+
+            foreach (var clue in clues)
+                if (string.IsNullOrEmpty(clue) || Regex.IsMatch(clue.ToString(), "[^a-zA-Z ]")) 
+                {
+                    ShowMessageBox("Hints should be alphabetic");
+                    return true;
+                }
+
+            JArray drawing = (DrawViewModel.GetDrawing().Count == 0) ? GeneratedImageStrokes : DrawViewModel.GetDrawing();
+
+            if (SelectedCreationType != CreationType.Assisted1 && (drawing == null || drawing.Count <= 0)) 
+            {
+                ShowMessageBox("A drawing should be provided");
+                return true;
+            }
+            return false;
         }
 
         private void RemoveHint(object x)
@@ -304,7 +351,6 @@ namespace PolyPaint.VueModeles
                 ShowMessageBox("Error parsing server response");
                 return;
             }
-
             GeneratedImageStrokes = (JArray)responseJson.GetValue("drawPxl");
             Base64ImageData = responseJson.GetValue("drawPng").ToString().Split(',')[1];
             ObjectName = responseJson.GetValue("object").ToString();

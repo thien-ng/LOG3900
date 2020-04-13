@@ -72,9 +72,16 @@ namespace PolyPaint.Modeles
         private void Setup()
         {
             IsInGameChat = false;
-            LoadMessages();
+            //LoadMessages();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
         }
+
+        public void LoadChannelMessages()
+        {
+            if (ID != Constants.GAME_CHANNEL && !IsLobbyChat)
+                LoadMessages();
+        }
+
         public void SendMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))

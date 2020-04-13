@@ -24,7 +24,7 @@ object SocketIO {
 
         socket.on("game-start")         { Communication.updateGameStart() }
         socket.on("game-clear")         { Communication.updateGameClear() }
-        socket.on("game-over")          { Communication.updateEndGame(it[0] as JSONObject) }
+        socket.on("game-over")          { Communication.updateEndGame( if (it.isNotEmpty()) it[0] as JSONObject else JSONObject()) }
         socket.on("game-timer")         { Communication.updateTimer(it[0] as JSONObject) }
         socket.on("game-drawer")        { Communication.updateDrawer(it[0] as JSONObject) }
         socket.on("game-chat")          { Communication.updateGameChat(it[0] as JSONObject) }

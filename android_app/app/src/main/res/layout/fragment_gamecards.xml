@@ -33,7 +33,7 @@
                 android:layout_marginLeft="11dp"
                 android:textColor="@android:color/white"
                 android:textSize="45sp"
-                android:popupBackground="@android:color/transparent"
+                android:popupBackground="#80000000"
                 android:overlapAnchor="false"
                 app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
                 app:layout_constraintBottom_toTopOf="@+id/textView_Description" />

@@ -594,7 +594,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
                     return
                 }
 
-                paintLine.color = obj.getInt("color")
+                paintLine.color = Color.parseColor(obj.getString("color"))
                 paintLine.style = Paint.Style.STROKE
                 paintLine.strokeWidth = obj.getInt("width").toFloat()
                 paintLine.strokeCap =
@@ -634,7 +634,7 @@ class DrawCanvas(ctx: Context, attr: AttributeSet?, private var username: String
         obj.put("startPosY", startPointY)
         obj.put("endPosX", finishPointX)
         obj.put("endPosY", finishPointY)
-        obj.put("color", paintLine.color)
+        obj.put("color", java.lang.String.format("#%06X", 0xFFFFFF and paintLine.color))
         obj.put("width", paintLine.strokeWidth)
         obj.put("isEnd", isEnd)
         obj.put("format", if (paintLine.strokeCap == Paint.Cap.ROUND) "circle" else "square")

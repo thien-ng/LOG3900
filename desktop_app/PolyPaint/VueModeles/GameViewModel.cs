@@ -6,6 +6,7 @@ using PolyPaint.Utilitaires;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
@@ -108,10 +109,13 @@ namespace PolyPaint.VueModeles
         #region Methods
         private void setupGame()
         {
-            var gameReady = new JObject(
+            Task.Delay(200).ContinueWith(_ =>
+            {
+                var gameReady = new JObject(
                 new JProperty("event", "ready"),
                 new JProperty("username", ServerService.instance.username));
-            ServerService.instance.socket.Emit("gameplay", gameReady);
+                ServerService.instance.socket.Emit("gameplay", gameReady);
+            });
         }
 
 
