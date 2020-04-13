@@ -1,6 +1,7 @@
 package com.example.client_leger.Adapters;
 
 import android.support.v7.widget.AppCompatImageView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,7 +103,10 @@ public class UserListViewAdapter extends BaseAdapter {
 
         view.myTextView.setText( name);
         if (isMaster) {
-            if(name.equals(lobbyFragment.username)) view.deleteIcon.setVisibility(View.GONE);
+            view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+            if(name.equals(lobbyFragment.username)){
+                view.deleteIcon.setVisibility(View.GONE);
+            }
             else {
                 view.deleteIcon.setVisibility(View.VISIBLE);
                 view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
@@ -118,8 +122,9 @@ public class UserListViewAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void removePlayer(String name){
+    public void removePlayer(String name, String clientName){
         mData.remove(name);
+        isMaster = lobbyFragment.checkIsMaster();
         notifyDataSetChanged();
     }
 

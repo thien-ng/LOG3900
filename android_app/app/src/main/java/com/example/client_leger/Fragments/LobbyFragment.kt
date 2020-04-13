@@ -126,12 +126,8 @@ class LobbyFragment() : Fragment(),
                                 if (user.startsWith("bot:")) {
                                     bots.add(user)
                                 }
-                                userListAdapter.removePlayer(user)
-
-                                if (checkIsMaster()) {
-                                    setMasterView(lobby.gameMode)
-                                }
-
+                                userListAdapter.removePlayer(user, username)
+                                setMasterView(lobby.gameMode)
                             }
                         } else {
                             fragmentManager!!.beginTransaction()
@@ -144,7 +140,7 @@ class LobbyFragment() : Fragment(),
         return v
     }
 
-    private fun checkIsMaster():Boolean {
+    fun checkIsMaster():Boolean {
         var i =0;
         while(userListAdapter.getItem(i).startsWith("bot:")){
             i++
