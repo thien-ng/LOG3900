@@ -55,7 +55,7 @@
 
             <TextView
                     android:id="@+id/lockImage"
-                    android:layout_width="40dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:drawableLeft="@drawable/ic_lock_white_24dp"
                     android:padding="3dip"
@@ -75,7 +75,7 @@
                     android:textColor="@android:color/white"
                     android:textSize="24sp"
                     app:layout_constraintBottom_toBottomOf="@+id/lockImage"
-                    app:layout_constraintStart_toEndOf="@+id/lockImage"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/lockImage"
                     app:layout_constraintVertical_bias="1.0" />
 
