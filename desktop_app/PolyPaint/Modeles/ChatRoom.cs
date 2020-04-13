@@ -32,6 +32,13 @@ namespace PolyPaint.Modeles
 
         private bool _isInGameChat;
 
+        private bool _isPreviousMessageButtonVisible;
+        public bool IsPreviousMessageButtonVisible
+        {
+            get { return _isPreviousMessageButtonVisible; }
+            set { _isPreviousMessageButtonVisible = value; ProprieteModifiee(); }
+        }
+
         public bool IsInGameChat {
             get { return _isInGameChat; } 
             set { _isInGameChat = value; ProprieteModifiee(); }
@@ -57,6 +64,7 @@ namespace PolyPaint.Modeles
 
         private void SetupGameChat()
         {
+            IsPreviousMessageButtonVisible = false;
             IsInGameChat = true;
             LoadGameMessages();
             ServerService.instance.socket.On("game-chat", data => ReceiveGameMessage((JObject)data));
@@ -64,6 +72,7 @@ namespace PolyPaint.Modeles
 
         private void SetupLobbyChat()
         {
+            IsPreviousMessageButtonVisible = false;
             IsInGameChat = false;
             LoadMessages();
             ServerService.instance.socket.On("lobby-chat", data => ReceiveMessage((JObject)data));
@@ -71,6 +80,7 @@ namespace PolyPaint.Modeles
 
         private void Setup()
         {
+            IsPreviousMessageButtonVisible = true;
             IsInGameChat = false;
             //LoadMessages();
             ServerService.instance.socket.On("chat", data => ReceiveMessage((JObject)data));
@@ -79,7 +89,10 @@ namespace PolyPaint.Modeles
         public void LoadChannelMessages()
         {
             if (ID != Constants.GAME_CHANNEL && !IsLobbyChat)
+            {
                 LoadMessages();
+                IsPreviousMessageButtonVisible = false;
+            }
         }
 
         public void SendMessage(string message)

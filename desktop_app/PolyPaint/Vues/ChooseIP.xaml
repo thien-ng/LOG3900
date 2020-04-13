@@ -31,7 +31,9 @@
         <Rectangle Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" Fill="White" StrokeThickness="0" Stroke="{StaticResource SecondaryAccentBrush}">
         </Rectangle>
 
-        <TextBox wpf:HintAssist.Hint="Enter server IP" x:Name="serverPath" Grid.Row="2" Grid.Column="1" Margin="10 0"/>
+        <TextBox wpf:HintAssist.Hint="Enter server IP" x:Name="serverPath" Grid.Row="2" Grid.Column="1" Margin="10 0" FontSize="14" FontWeight="Light">
+            https://log3000-app.herokuapp.com
+        </TextBox>
 
         <Image Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Width="350" Source="pack://application:,,,/Polypaint;component/Resources/logo.png"/>
         <Button Grid.Column="1" 
