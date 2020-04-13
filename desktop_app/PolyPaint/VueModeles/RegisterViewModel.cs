@@ -147,7 +147,7 @@ namespace PolyPaint.VueModeles
                         if (_registerIsRunning)
                             return;
 
-                        if (_username == null || Password.SecurePassword.Length == 0 || _firstName == null || _lastName == null)
+                        if (_username == null || Password.SecurePassword == null || _firstName == null || _lastName == null)
                         {
                             ShowMessageBox("Please fill every parameter");
                             return;
