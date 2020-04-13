@@ -207,8 +207,6 @@ namespace PolyPaint.VueModeles
         {
             string format = editeur.PointeSelectionnee == "ronde" ? "circle" : "square";
 
-            //int color = int.Parse(editeur.CouleurSelectionnee.Remove(0,1), System.Globalization.NumberStyles.HexNumber);
-
             JObject drawing = new JObject(new JProperty("event", "draw"),
                                           new JProperty("username", ServerService.instance.username),
                                           new JProperty("startPosX", previousPos["X"]),
@@ -261,19 +259,6 @@ namespace PolyPaint.VueModeles
             coll.Add(new StylusPoint(X1, Y1));
             coll.Add(new StylusPoint(X2, Y2));
 
-            //byte[] colorBytes;
-            //try
-            //{
-            //    colorBytes = BitConverter.GetBytes((uint)data.GetValue("color"));
-            //} catch(Exception)
-            //{
-            //    colorBytes = BitConverter.GetBytes((int)data.GetValue("color"));
-            //}
-
-            //if (!BitConverter.IsLittleEndian) 
-            //    Array.Reverse(colorBytes);
-
-            //Color color = colorBytes.Length == 4 ? Color.FromArgb(colorBytes[3], colorBytes[2], colorBytes[1], colorBytes[0]) : (Color)ColorConverter.ConvertFromString("#FF000000");
             DrawingAttributes attr = new DrawingAttributes();
             attr.Color = (Color)ColorConverter.ConvertFromString((string)data.GetValue("color"));
             attr.Height = (double)data.GetValue("width");
