@@ -117,6 +117,9 @@ export class ArenaFfa extends Arena {
     }
 
     public receiveInfo(socket: io.Socket, mes: IGameplayChat | IGameplayDraw | IGameplayReady | IGameplayEraser): void {
+        if (mes.event === EventType.ready)
+            this.handleGameplayReady(mes);
+            
         if (this.isGameStart === true) {
             switch(mes.event) {
                 case EventType.draw:
@@ -124,9 +127,6 @@ export class ArenaFfa extends Arena {
                     break;
                 case EventType.chat:
                     this.handleGameplayChat(mes as IGameplayChat);
-                    break;
-                case EventType.ready:
-                    this.handleGameplayReady(mes as IGameplayReady);
                     break;
             }   
         }
