@@ -33,7 +33,7 @@ namespace PolyPaint.Utilitaires
                 return new ValidationResult(false,
                   $"Username must be alphanumeric");
             }
-            if ((username.Length <= Constants.USR_MIN_LENGTH) || (username.Length >= 20))
+            if ((username.Length < Constants.USR_MIN_LENGTH) || (username.Length >= 20))
             { 
                 return new ValidationResult(false,
                   $"Username must have between 1 and 20 characters");
@@ -65,7 +65,7 @@ namespace PolyPaint.Utilitaires
                 return new ValidationResult(false,
                   $"Channel name must be alphanumeric");
             }
-            if ((name.Length <= Constants.USR_MIN_LENGTH) || (name.Length >= 20))
+            if ((name.Length < Constants.USR_MIN_LENGTH) || (name.Length >= 20))
             {
                 return new ValidationResult(false,
                   $"Channel name must have between 1 and 20 characters");

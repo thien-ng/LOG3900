@@ -31,12 +31,12 @@ export class GameCreatorService {
     }
 
     private verifyConfigs(configs: IManuel1): void {
-        if (!configs.solution || /[^a-zA-Z]/.test(configs.solution))
+        if (!configs.solution || /[^a-zA-Z ]/.test(configs.solution))
             throw new Error("Solution must contains letters only");
         if (!configs.clues ||configs.clues.length < 1)
             throw new Error("Some clues must be included in request");
         configs.clues.forEach(c => {
-            if (/[^a-zA-Z]/.test(c))
+            if (/[^a-zA-Z ]/.test(c))
                 throw new Error("Clues must contains letters only");
         });
         if (!configs.difficulty || !(configs.difficulty.toUpperCase() in Difficulty))

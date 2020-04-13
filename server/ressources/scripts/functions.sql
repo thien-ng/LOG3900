@@ -31,12 +31,38 @@ CREATE OR REPLACE FUNCTION LOG3900.registerAccount(in_username VARCHAR(20), in_p
     END;
 $$LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION LOG3900.setAvatar(in_username VARCHAR(20), new_avatar TEXT) RETURNS VOID AS $$
+    BEGIN
+        IF NOT EXISTS (SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) then
+            RAISE EXCEPTION 'Username doesnt exist';
+        END IF;
+        UPDATE LOG3900.Account
+        SET avatar = new_avatar
+        WHERE username = in_username;
+
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.getAvatar(in_username VARCHAR(20))
+    RETURNS TABLE  (avatar_out TEXT ) AS $$
+    BEGIN
+        IF NOT EXISTS (SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) then
+            RAISE EXCEPTION 'Username doesnt exist';
+        END IF;
+        RETURN QUERY
+        SELECT LOG3900.Account.avatar AS avatar_out
+        FROM LOG3900.Account
+        WHERE LOG3900.Account.username = in_username;
+
+    END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION LOG3900.loginAccount(in_username VARCHAR(20), in_password VARCHAR(100)) RETURNS void AS $$
     BEGIN
         IF NOT EXISTS( SELECT A.username FROM LOG3900.Account as A WHERE A.username = in_username) THEN
             RAISE EXCEPTION 'Username is incorrect.';
         END IF;
-        IF NOT EXISTS( SELECT A.hashPwd FROM LOG3900.Account as A WHERE A.hashPwd = in_password) THEN
+        IF NOT EXISTS( SELECT A.hashPwd FROM LOG3900.Account as A WHERE A.hashPwd = in_password AND A.username = in_username) THEN
             RAISE EXCEPTION 'Password is incorrect.';
         END IF;
     END;
@@ -107,15 +133,32 @@ CREATE OR REPLACE FUNCTION LOG3900.joinChannel(in_account_un VARCHAR(20), in_cha
 $$LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION LOG3900.leaveChannel(in_account_un VARCHAR(20), in_channel_id VARCHAR(20)) RETURNS INTEGER AS $$
     DECLARE
         delete_id INTEGER;
+        num_sub   INTEGER;
+        is_delete INTEGER;
     BEGIN
         SELECT account.id FROM log3900.account WHERE username = in_account_un INTO delete_id;
 
         DELETE FROM LOG3900.accountChannel as acc
         WHERE acc.account_id = delete_id
         AND acc.channel_id = in_channel_id;
+
+        SELECT COUNT(ac.account_id) FROM LOG3900.accountChannel as ac WHERE ac.channel_id = in_channel_id INTO num_sub;
+        is_delete = 0;
+        IF num_sub = 0 THEN
+            is_delete = 1;
+        END IF;
+
+        RETURN is_delete;
+    END;
+$$LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION LOG3900.deleteChannel(delete_channel_id VARCHAR(20)) RETURNS VOID AS $$
+    BEGIN
+        DELETE FROM LOG3900.Channel
+        WHERE LOG3900.Channel.id = delete_channel_id;
     END;
 $$LANGUAGE plpgsql;
 

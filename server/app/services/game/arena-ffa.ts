@@ -64,9 +64,8 @@ export class ArenaFfa extends Arena {
             return;
         }
 
-        let botInterval: NodeJS.Timeout;
         if (this.isBotDrawing)
-            botInterval= this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
+            this.startBotDrawing(this.users[this.drawPtr - 1].username, TOTAL_TIME);
 
         let timer = 0;
         this.curArenaInterval = setInterval(() => {
@@ -83,9 +82,9 @@ export class ArenaFfa extends Arena {
                     this.sendAnswer(this.curRule.solution);
                 }
 
-                if (botInterval) {
-                    // Stop bot drawing
-                    clearInterval(botInterval);
+                if (this.isBotDrawing) {
+                    const bot = this.botMap.get(this.users[this.drawPtr - 1].username) as MeanBot | KindBot | HumourBot;
+                    clearInterval(bot.interval);
                 }
 
                 this.botAnnounceEndSubGame();
@@ -128,10 +127,12 @@ export class ArenaFfa extends Arena {
     }
 
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
-        this.users.forEach(u => {
-            if (u.username != mes.username)
-                socket.to(this.room).emit("draw", this.mapToDrawing(mes))
-        });
+        if (mes.username === this.users[this.drawPtr - 1].username) {
+            this.users.forEach(u => {
+                if (u.username != mes.username)
+                    socket.to(this.room).emit("draw", this.mapToDrawing(mes))
+            });
+        }
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
@@ -190,11 +191,11 @@ export class ArenaFfa extends Arena {
         this.socketServer.to(drawUser.socketId).emit("game-points", {point: drawPts});
     }
 
-    protected startBotDrawing(botName: string, arenaTime: number): NodeJS.Timeout {
+    protected startBotDrawing(botName: string, arenaTime: number): void {
         const drawings: IDrawing[] = DrawingTools.prepareGameRule(this.curRule.drawing);
         const bot = this.botMap.get(botName) as Bot;
         const speed = this.chooseDrawingSpeed(arenaTime);
-        return bot.draw(this.room, speed, drawings, this.curRule.displayMode, this.curRule.side);
+        bot.draw(this.room, speed, drawings, this.curRule.displayMode, this.curRule.side);
     }
 
     protected botAnnounceStart(): void {
@@ -230,9 +231,14 @@ export class ArenaFfa extends Arena {
             // if player is disconnect, increment drawer pointer
             if (this.drawPtr++ >= this.users.length) {
                 clearInterval(this.curArenaInterval);
-                return true
+                return true;
             }
             user = this.users[this.drawPtr];
+            
+            if (!user) {
+                clearInterval(this.curArenaInterval);
+                return true;
+            }
         }
         this.updateDrawerRole(user);
     }
@@ -254,7 +260,18 @@ export class ArenaFfa extends Arena {
     }
 
     private checkIfEveryoneHasRightAnswer(): boolean {
-        return (this.users.length - this.dcPlayer.length -1 ) <= this.userWithCorrectAns; //-1 to ignore drawer
+        let numOfRealPlayer = 0;
+        this.users.forEach(u => {
+            if (!this.isBot(u.username)) {
+                numOfRealPlayer++;
+            }
+        });
+
+        if (this.isBot(this.users[this.drawPtr - 1].username)) {
+            return (numOfRealPlayer - this.dcPlayer.length) <= this.userWithCorrectAns;
+        }
+        
+        return (numOfRealPlayer - this.dcPlayer.length - 1) <= this.userWithCorrectAns; //-1 to ignore drawer
     }
 
     private initBots(): void {

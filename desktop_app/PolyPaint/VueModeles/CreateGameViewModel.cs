@@ -204,7 +204,8 @@ namespace PolyPaint.VueModeles
                                        new JProperty("clues", clues.ToArray()),
                                        new JProperty("difficulty", SelectedDifficulty.ToLower()),
                                        new JProperty("drawing", GeneratedImageStrokes),
-                                       new JProperty("displayMode", SelectedDisplayMode));
+                                       new JProperty("displayMode", SelectedDisplayMode),
+                                       new JProperty("side", SelectedPanoramicMode.ToLower()));
 
             var content = new StringContent(newGame.ToString(), Encoding.UTF8, "application/json");
 
@@ -213,6 +214,7 @@ namespace PolyPaint.VueModeles
 
         private async Task Accept()
         {
+            string errorMessage = "Invalid request!";
             HttpResponseMessage result;
             switch (SelectedCreationType)
             {
@@ -221,7 +223,7 @@ namespace PolyPaint.VueModeles
 
                     if (!result.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("Invalid request");
+                        ShowMessageBox(errorMessage);
                         return;
                     }
                     break;
@@ -233,7 +235,7 @@ namespace PolyPaint.VueModeles
 
                     if (!result.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("Invalid request");
+                        ShowMessageBox(errorMessage);
                         return;
                     }
                     break;
@@ -292,7 +294,7 @@ namespace PolyPaint.VueModeles
 
             if (!response.IsSuccessStatusCode)
             {
-                MessageBox.Show("Error while joining channel");
+                ShowMessageBox("Error while joining channel");
                 return;
             }
 
@@ -300,7 +302,7 @@ namespace PolyPaint.VueModeles
 
             if (!(responseJson.ContainsKey("drawPng") && responseJson.ContainsKey("drawPxl") && responseJson.ContainsKey("object")))
             {
-                MessageBox.Show("Error parsing server response");
+                ShowMessageBox("Error parsing server response");
                 return;
             }
 
@@ -320,6 +322,14 @@ namespace PolyPaint.VueModeles
 
             if (result == true)
                 SelectedImage = new BitmapImage(new Uri(op.FileName));
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
         }
 
         #endregion

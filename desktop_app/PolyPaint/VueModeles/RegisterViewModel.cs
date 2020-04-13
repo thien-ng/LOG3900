@@ -13,7 +13,7 @@ using PolyPaint.Modeles;
 
 namespace PolyPaint.VueModeles
 {
-    class RegisterViewModel : BaseViewModel, IPageViewModel
+    class RegisterViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
         private ICommand _goToLogin;
         private ICommand _register;
@@ -81,10 +81,11 @@ namespace PolyPaint.VueModeles
                 ServerService.instance.username = _username;
                 fetchProfile();
                 Mediator.Notify("GoToHomeScreen", "");
+                Dispose();
             }
             else
             {
-                MessageBox.Show(message);
+                ShowMessageBox(message);
             }
         }
 
@@ -118,6 +119,19 @@ namespace PolyPaint.VueModeles
 
             return JObject.Parse(responseString);
         }
+
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off(Constants.LOGGING_EVENT);
+        }
+        
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
+        }
         #endregion
 
         #region Commands
@@ -133,7 +147,7 @@ namespace PolyPaint.VueModeles
 
                     if (_username == null || Password.SecurePassword.Length == 0 || _firstName == null || _lastName == null)
                     {
-                        MessageBox.Show("Please fill every parameter");
+                        ShowMessageBox("Please fill every parameter");
                         return;
                     }
 
@@ -150,14 +164,14 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.socket.On(Constants.LOGGING_EVENT, data => ReceiveMessage((JObject)data));
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                
-                            }
+                            }   
                             else
-                                MessageBox.Show(res.GetValue("message").ToString());
+                                ShowMessageBox(res.GetValue("message").ToString());
                         }
                     }
                     catch
                     {
-                        MessageBox.Show("Error while logging into server");
+                        ShowMessageBox("Error while logging into server");
                     }
                     finally
                     {

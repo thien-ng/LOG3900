@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PolyPaint.Controls;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
 using PolyPaint.Utilitaires;
@@ -13,7 +15,7 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LoginViewModel : BaseViewModel, IPageViewModel
+    class LoginViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
         private ICommand    _login;
         private ICommand    _goToRegister;
@@ -67,22 +69,33 @@ namespace PolyPaint.VueModeles
                 ServerService.instance.username = _username;
                 fetchProfile();
                 Mediator.Notify("GoToHomeScreen", "");
+                Dispose();
+
             }
             else
-            {
-                MessageBox.Show(message);
-            }
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    ShowMessageBox(message);
+                });
         }
 
         private async void fetchProfile()
         {
-            var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string responseString = await response.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject<User>(responseString);
-                ServerService.instance.user = data;
+                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<User>(responseString);
+                    ServerService.instance.user = data;
+                }
             }
+            catch (Exception)
+            {
+                ShowMessageBox("Failed to connect!");
+            }
+            
         }
         private async Task<JObject> LoginRequestAsync(string username, string password)
         {
@@ -116,6 +129,19 @@ namespace PolyPaint.VueModeles
             IsButtonEnabled = condition;
         }
 
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off(Constants.LOGGING_EVENT);
+        }
+        
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
+        }
+
         #endregion
 
         #region Commands
@@ -131,7 +157,6 @@ namespace PolyPaint.VueModeles
                     {
                         _loginIsRunning = true;
                         IsButtonEnabled = false;
-
                         JObject res = await LoginRequestAsync(_username, Password.Password);
 
                         if (res.ContainsKey("status"))
@@ -142,11 +167,12 @@ namespace PolyPaint.VueModeles
                                 ServerService.instance.socket.Emit(Constants.LOGIN_EVENT, _username);
                             }
                             else
-                                MessageBox.Show(res.GetValue("message").ToString());
+                                ShowMessageBox(res.GetValue("message").ToString());
                         } 
                     } catch
                     {
-                        MessageBox.Show("Error while logging into server");
+
+                        ShowMessageBox("Error while logging into server.");
                     }
                     finally
                     {

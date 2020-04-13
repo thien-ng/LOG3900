@@ -5,44 +5,62 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/right_border_background"
         android:clipToPadding="false"
         android:focusableInTouchMode="true"
-        android:background="@drawable/right_border_background"
         tools:context=".Chat">
 
-    <TextView
-            android:id="@+id/textView_channelName"
+    <LinearLayout
+            android:id="@+id/layout_channelName"
             android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:gravity="center"
-            android:text="channelName"
-            android:textColor="#F44336"
-            android:textSize="24sp"
+            android:layout_height="45dp"
             android:background="@drawable/right_bottom_border_background"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/ConstraintLayout_chat"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/expand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:enabled="false"
+                android:background="@drawable/ic_arrow_forward_accent_24dp"
+                android:gravity="center" />
+
+        <TextView
+                android:id="@+id/textView_channelName"
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="channelName"
+                android:textColor="#F44336"
+                android:textSize="24sp" />
+    </LinearLayout>
 
     <LinearLayout
             android:id="@+id/ConstraintLayout_chat"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:orientation="vertical"
             android:layout_marginBottom="2dp"
+            android:orientation="vertical"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/channelView"
-            app:layout_constraintTop_toBottomOf="@+id/textView_channelName">
+            app:layout_constraintTop_toBottomOf="@+id/layout_channelName"
+            tools:ignore="MissingPrefix">
 
-        <Button
+        <TextView
                 android:id="@+id/button_load_chat_history"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:text="Show previous messages"
+                android:text="@string/Show_previous_messages"
                 app:backgroundTint="#ED7070" />
 
         <android.support.v7.widget.RecyclerView
@@ -62,7 +80,7 @@
             android:text=""
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/chat_send_button"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/channelView" />
 
     <Button
             android:id="@+id/chat_send_button"
@@ -78,21 +96,43 @@
             android:id="@+id/channelView"
             android:layout_width="175dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/chat_message_editText"
+            android:background="@drawable/channel_gradient"
+            app:layout_constraintBottom_toBottomOf="@+id/chat_message_editText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/channel_gradient">
+            app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-            <Button
-                    android:id="@+id/disconnect_button"
-                    android:layout_width="wrap_content"
+            <android.support.constraint.ConstraintLayout
+                    android:layout_width="175dp"
                     android:layout_height="wrap_content"
-                    android:text="Disconnect" />
+                    android:orientation="horizontal">
+
+                <Button
+                        android:id="@+id/disconnect_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:text="Disconnect"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                        android:id="@+id/collapse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:background="@drawable/ic_arrow_back_white_24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
 
             <LinearLayout
                     android:layout_width="match_parent"
@@ -141,5 +181,4 @@
                     android:layout_height="match_parent" />
         </LinearLayout>
     </LinearLayout>
-
 </android.support.constraint.ConstraintLayout>

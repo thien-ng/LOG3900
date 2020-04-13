@@ -16,11 +16,11 @@ import * as swaggerUI from 'swagger-ui-express';
 
 const swaggerOptions = {
     swaggerDefinition: {
-      info: {
-        title: "Projet de Pinture",
-        description: "Server Express",
-        version: "1.0.0",
-      }
+        info: {
+            title: "Projet de Pinture",
+            description: "Server Express",
+            version: "1.0.0",
+        }
     },
     apis: [
         process.cwd() + "/app/controllers/*.ts"
@@ -42,7 +42,7 @@ export class Application {
         @inject(Types.GameCreatorController) private gameCreatorController: GameCreatorController,
     ) {
         this.app = express();
-    
+
         this.config();
 
         this.bindRoutes();
@@ -51,8 +51,8 @@ export class Application {
     private config(): void {
         // Middlewares configuration
         this.app.use(logger('dev'));
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use(bodyParser.json({ limit: '50mb' }));
+        this.app.use(bodyParser.urlencoded({ extended: true, limit: '50mb', parameterLimit: 1000000 }));
         this.app.use(cookieParser());
         this.app.use(cors());
         this.app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swagDoc));

@@ -152,6 +152,9 @@
     <Compile Include="Controls\CreateLobbyControl.xaml.cs">
       <DependentUpon>CreateLobbyControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CustomMessageBoxControl.xaml.cs">
+      <DependentUpon>CustomMessageBoxControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\EndGameControl.xaml.cs">
       <DependentUpon>EndGameControl.xaml</DependentUpon>
     </Compile>
@@ -179,9 +182,12 @@
     <Compile Include="Convertisseurs\CreationTypeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsFirstToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSelectedToOpacityConverter.cs" />
+    <Compile Include="Convertisseurs\ModeToGuessleftVisibilityConverter.cs" />
+    <Compile Include="Convertisseurs\MultiBooleanConverter.cs" />
     <Compile Include="Convertisseurs\PanoramicModeToVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\SearchBarVisibilityConverter.cs" />
     <Compile Include="Convertisseurs\IsSubbedToVisibilityConverter.cs" />
+    <Compile Include="Convertisseurs\SelectedModeToDisplayConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToVisibleConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToBorderRadiusConverter.cs" />
     <Compile Include="Convertisseurs\SentByMeToColorConverter.cs" />
@@ -215,6 +221,7 @@
     <Compile Include="Utilitaires\Constants.cs" />
     <Compile Include="Utilitaires\EventRaiser.cs" />
     <Compile Include="Utilitaires\EventArgs.cs" />
+    <Compile Include="Utilitaires\MessageBoxDisplayer.cs" />
     <Compile Include="Utilitaires\Rules.cs" />
     <Compile Include="Utilitaires\IPageViewModel.cs" />
     <Compile Include="Utilitaires\Mediator.cs" />
@@ -227,6 +234,7 @@
     <Compile Include="VueModeles\HomeViewModel.cs" />
     <Compile Include="VueModeles\CreateGameViewModel.cs" />
     <Compile Include="VueModeles\LobbyViewModel.cs" />
+    <Compile Include="VueModeles\MessageBoxViewModel.cs" />
     <Compile Include="VueModeles\ProfileViewModel.cs" />
     <Compile Include="VueModeles\RegisterViewModel.cs" />
     <Compile Include="VueModeles\LoginViewModel.cs" />
@@ -287,6 +295,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\CreateLobbyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\CustomMessageBoxControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

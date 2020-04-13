@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS LOG3900.Account (
     hashPwd     VARCHAR(100) NOT NULL,
     FirstName   VARCHAR(100) NOT NULL,
     LastName    VARCHAR(100) NOT NULL,
-    avatar      BYTEA DEFAULT NULL
+    avatar      TEXT DEFAULT NULL
 );
 
 CREATE TABLE IF NOT EXISTS LOG3900.Game (
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS LOG3900.Messages (
     parent_id   INTEGER     REFERENCES LOG3900.Messages,
     ts          VARCHAR(8)  NOT NULL,
     content     TEXT        NOT NULL,
-    channel_id  VARCHAR(20) NOT NULL REFERENCES LOG3900.Channel,
+    channel_id  VARCHAR(20) NOT NULL REFERENCES LOG3900.Channel ON DELETE CASCADE,
     account_id  INT         NOT NULL REFERENCES LOG3900.Account
 );
 CREATE INDEX ON LOG3900.Messages (parent_id, id);

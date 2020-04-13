@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.ComponentModel;
+using PolyPaint.VueModeles;
 
 namespace PolyPaint.Vues
 {

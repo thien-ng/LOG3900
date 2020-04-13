@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PolyPaint.Utilitaires
+﻿namespace PolyPaint.Utilitaires
 {
     class Constants
     {
-        public const string SERVER_PATH             = "https://log3000-app.herokuapp.com";
+        public const string SERVER_PATH = "https://log3000-app.herokuapp.com";
         public const string ACCOUNT_PATH            = "/account";
         public const string LOGIN_PATH              = ACCOUNT_PATH + "/login";
         public const string REGISTER_PATH           = ACCOUNT_PATH + "/register";
         public const string CHAT_MESSAGES_PATH      = "/chat/messages/";
-        public const string LOBBY_MESSAGES_PATH      = "/game/lobby/messages/";
+        public const string LOBBY_MESSAGES_PATH     = "/game/lobby/messages/";
         public const string GAME_MESSAGES_PATH      = "/game/arena/messages/";
         public const string CHANNELS_PATH           = "/chat/channels";
         public const string USER_INFO_PATH          = ACCOUNT_PATH + "/user/info/";
@@ -37,8 +31,8 @@ namespace PolyPaint.Utilitaires
         public const string SEARCH_CHANNEL_PATH     = CHANNELS_PATH + "/search";
         public const string CREATE_CHANNEL_PATH     = CHANNELS_PATH + "/search";
         public const int    SUCCESS_CODE            = 200;
-        public const int    PWD_MIN_LENGTH          = 1; //TODO
-        public const int    USR_MIN_LENGTH          = 1; //TODO
+        public const int    PWD_MIN_LENGTH          = 1;
+        public const int    USR_MIN_LENGTH          = 1;
 
         public const string DEFAULT_CHANNEL         = "general";
         public const string GAME_CHANNEL            = "Game Channel";
@@ -50,6 +44,9 @@ namespace PolyPaint.Utilitaires
         public const string MODE_FFA                = "FFA";
         public const string MODE_SOLO               = "SOLO";
         public const string MODE_COOP               = "COOP";
+
+        public const int MIN_MODE_FFA               = 2;
+        public const int MIN_MODE_COOP              = 1;
 
         public const string ROLE_DRAWER             = "Drawer";
         public const string ROLE_GUESSER            = "Guesser";

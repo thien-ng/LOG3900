@@ -8,12 +8,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -29,15 +26,16 @@ namespace PolyPaint.Modeles
                 _players.Add(item);
             }
 
+            IsLobbyJoined = true;
             _lobby = lobby;
             _mode = lobby.mode;
             _lobbyName = lobby.lobbyName;
             Size = lobby.size;
             _actualSize = _players.Count;
+            _isNotFull = _actualSize == Size ? false : true;
             IsPrivate = lobby.isPrivate;
             _isPasswordDialogOpen = false;
             _players.CollectionChanged += this.OnCollectionChanged;
-            Mediator.Subscribe("joinLobbyFromInvite", joinLobbyFromInvite);
         }
 
         #region Public Attributes
@@ -75,6 +73,17 @@ namespace PolyPaint.Modeles
                 _players = value;
                 ActualSize = Players.Count;
                 ProprieteModifiee(nameof(Players));
+            }
+        }
+
+        private bool _isNotFull;
+        public bool IsNotFull
+        {
+            get { return _isNotFull; }
+            set
+            {
+                _isNotFull = value;
+                ProprieteModifiee();
             }
         }
 
@@ -125,23 +134,28 @@ namespace PolyPaint.Modeles
             }
         }
 
+        private bool _isLobbyJoined;
+        public bool IsLobbyJoined
+        {
+            get { return _isLobbyJoined; }
+            set { _isLobbyJoined = value; ProprieteModifiee(); }
+        }
+
         #endregion
 
         #region Methods
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ActualSize = _players.Count;
+            if (ActualSize == Size)
+                IsNotFull = false;
         }
 
         protected virtual void ProprieteModifiee([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        private void joinLobbyFromInvite(object obj)
-        {
-            if ((string)obj == this.LobbyName)
-                joinPublicLobby();
-        }
+
         private async void joinPublicLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
@@ -149,9 +163,7 @@ namespace PolyPaint.Modeles
             values.username = ServerService.instance.username;
             values.Add("isPrivate", _lobby.isPrivate);
             values.lobbyName = _lobby.lobbyName;
-            values.size = _lobby.size;
             values.password = "";
-            values.mode = _lobby.mode;
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
@@ -159,32 +171,56 @@ namespace PolyPaint.Modeles
             var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
             if ((int)response.StatusCode == Constants.SUCCESS_CODE)
             {
-               Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
+                Dictionary<string, string> data = new Dictionary<string, string>();
+                data.Add("lobbyName", _lobby.lobbyName);
+                data.Add("mode", _lobby.mode);
+                Mediator.Notify("GoToLobbyScreen", data);
             }
+            IsLobbyJoined = true;
         }
         private async void joinPrivateLobby()
         {
-            string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
-            dynamic values = new JObject();
-            values.username = ServerService.instance.username;
-            values.Add("isPrivate", _lobby.isPrivate);
-            values.lobbyName = _lobby.lobbyName;
-            values.size = _lobby.size;
-            values.password = Password.Password;
-            values.mode = _lobby.mode;
-            var content = JsonConvert.SerializeObject(values);
-            var buffer = System.Text.Encoding.UTF8.GetBytes(content);
-            var byteContent = new ByteArrayContent(buffer);
-            byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+            string errorMessage = "Wrong password, try again.";
+            try
             {
-                Mediator.Notify("GoToLobbyScreen", _lobby.lobbyName);
+                string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
+                dynamic values = new JObject();
+                values.username = ServerService.instance.username;
+                values.Add("isPrivate", true);
+                values.lobbyName = _lobby.lobbyName;
+                values.password = Password.Password;
+                var content = JsonConvert.SerializeObject(values);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var byteContent = new ByteArrayContent(buffer);
+                byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
+                if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                {
+                    Dictionary<string, string> data = new Dictionary<string, string>();
+                    data.Add("lobbyName", _lobby.lobbyName);
+                    data.Add("mode", _lobby.mode);
+                    Mediator.Notify("GoToLobbyScreen", data);
+                }
+                else
+                    ShowMessageBox(errorMessage);
             }
-            else 
+            catch (Exception)
             {
-                MessageBox.Show("Wrong password, try again.");
+                ShowMessageBox(errorMessage);
             }
+            finally
+            {
+                IsLobbyJoined = true;
+            }
+            
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
         }
         #endregion
 
@@ -197,6 +233,7 @@ namespace PolyPaint.Modeles
             {
                 return _joinLobbyCommand ?? (_joinLobbyCommand = new RelayCommand(x =>
                 {
+                    IsLobbyJoined = false;
                     if (IsPrivate)
                     {
                         DialogContent = new LobbyPasswordControl();

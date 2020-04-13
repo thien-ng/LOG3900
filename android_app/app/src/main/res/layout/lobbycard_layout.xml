@@ -2,7 +2,6 @@
 
 <android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         style="@style/Widget.MaterialComponents.CardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,16 +26,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/default_avatar"
-                app:layout_constraintBottom_toBottomOf="@+id/textView_gameDifficulty"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView_gameDifficulty"
-                app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
                 android:id="@+id/textView_gameType"
                 android:layout_width="wrap_content"
@@ -44,64 +33,45 @@
                 android:layout_centerInParent="true"
                 android:text="Free for All"
                 android:textSize="15sp"
-                app:layout_constraintBottom_toTopOf="@+id/textView_gameDifficulty"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView_gameName" />
-
-        <TextView
-                android:id="@+id/textView_Difficulty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="Difficulty :"
-                android:textSize="15sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView_gameType" />
-
-        <TextView
-                android:id="@+id/textView_gameDifficulty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="Medium"
-                android:textSize="15sp"
-                app:layout_constraintStart_toEndOf="@+id/textView_Difficulty"
-                app:layout_constraintTop_toBottomOf="@+id/textView_gameType" />
 
         <Button
                 android:id="@+id/button_join"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:text="Join"
                 android:textSize="15sp"
                 android:visibility="invisible"
-                android:enabled="false"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView_Difficulty" />
+                app:layout_constraintTop_toTopOf="@+id/button_joinPrivate" />
 
         <android.support.design.button.MaterialButton
                 android:id="@+id/button_joinPrivate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:enabled="false"
                 android:text="Join"
                 android:textSize="15sp"
+                android:visibility="invisible"
                 app:icon="@drawable/ic_lock_white_24dp"
                 app:iconPadding="0dp"
-                android:visibility="invisible"
-                android:enabled="false"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView_Difficulty" />
+                app:layout_constraintTop_toBottomOf="@+id/textView_gameType" />
 
         <GridLayout
                 android:id="@+id/layout_userlist"
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/button_join"
-                app:layout_constraintTop_toBottomOf="@+id/imageView">
+                app:layout_constraintTop_toTopOf="@+id/button_join">
 
             <LinearLayout
                     android:id="@+id/view_expandUsers"
@@ -129,8 +99,8 @@
 
             <ListView
                     android:id="@+id/listView_users"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="150dp"
+                    android:layout_height="0dp"
                     android:layout_row="1"
                     android:layout_column="0" />
 

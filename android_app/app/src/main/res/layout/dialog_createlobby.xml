@@ -14,11 +14,19 @@
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
             android:hint="lobby name" />
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_marginTop="16dp"
+            android:text="Player limit"
+            android:gravity="center_horizontal" />
+
     <NumberPicker
             android:id="@+id/np__numberpicker_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"/>
@@ -52,4 +60,5 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"/>
+
 </LinearLayout>

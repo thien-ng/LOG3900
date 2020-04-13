@@ -16,8 +16,7 @@
             android:stretchColumns="1">
 
         <TableRow
-                android:layout_height="0dp"
-                android:layout_weight="5">
+                android:layout_weight="2">
 
             <android.support.constraint.ConstraintLayout
                     android:layout_width="fill_parent"
@@ -53,40 +52,34 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="right"
                         android:autoSizeMaxTextSize="60sp"
                         android:autoSizeMinTextSize="12sp"
                         android:autoSizeStepGranularity="2sp"
                         android:autoSizeTextType="uniform"
+                        android:gravity="right"
                         android:padding="3dip"
                         android:text="@{user.name}"
                         android:textColor="@android:color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent" />
             </android.support.constraint.ConstraintLayout>
         </TableRow>
 
         <View
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="1dp"
                 android:background="@android:color/white" />
 
         <TableRow
-                android:layout_height="0dp"
-                android:layout_weight="37">
+                android:layout_weight="1">
+
             <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
-                    android:padding="10dp">
-                <android.support.v7.widget.AppCompatImageView
-                        android:id="@+id/lockImageView"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                    android:gravity="center_vertical">
 
-
-                        android:background="@drawable/ic_lock_white_24dp" />
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -96,35 +89,58 @@
                         android:autoSizeMinTextSize="12sp"
                         android:autoSizeStepGranularity="2sp"
                         android:autoSizeTextType="uniform"
+                        android:drawableLeft="@drawable/ic_lock_white_24dp"
                         android:padding="3dip"
-                        android:text="@{user.FName}"
-                        android:textColor="@android:color/white"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="1dp"
-                        android:layout_marginLeft="1dp"
-                        android:autoSizeMaxTextSize="60sp"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeStepGranularity="2sp"
-                        android:autoSizeTextType="uniform"
-                        android:padding="3dip"
-                        android:text="@{user.LName}"
-                        android:textColor="@android:color/white"/>
+                        android:text="@{user.FName + ` `+ user.LName}"
+                        android:textColor="@android:color/white" />
+
             </LinearLayout>
-
 
         </TableRow>
 
         <View
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="1dp"
                 android:background="@android:color/white" />
 
         <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="0dp"
-                android:layout_weight="60">
+                android:layout_weight="10">
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                <TextView
+                        android:id="@+id/title_MatchHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_margin="5dp"
+                        android:text="Match history:"
+                        android:textColor="@android:color/white" />
+
+                <ListView
+                        android:id="@+id/matchHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_below="@+id/title_MatchHistory"
+                        android:layout_marginTop="14dp" />
+
+            </RelativeLayout>
+        </TableRow>
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/white" />
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_weight="7">
 
             <android.support.constraint.ConstraintLayout
                     android:layout_width="fill_parent"
@@ -141,22 +157,77 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                <LinearLayout
+                        android:id="@+id/stats"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dip"
+                        android:background="@drawable/white_border"
+                        android:orientation="vertical"
+                        android:padding="10dip"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:paddingRight="100dp"
+                            android:drawableLeft="@drawable/ic_access_time_white_24dp"
+                            android:text="@{`Average game lenght: ` + user.stats.avgGameTime + ` seconds`}"
+                            android:textColor="@android:color/white" />
+
+                    <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:drawableLeft="@drawable/ic_games_white_24dp"
+                            android:text="@{`Total games played: `+ user.stats.totalGame}"
+                            android:textColor="@android:color/white" />
+
+                    <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:drawableLeft="@drawable/ic_all_inclusive_white_24dp"
+                            android:text="@{`Total time played: `+ user.stats.totalPlayTime + ` seconds`}"
+                            android:textColor="@android:color/white" />
+
+                    <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:drawableLeft="@drawable/ic_star_white_24dp"
+                            android:text="@{`Best solo score: `+ user.stats.bestScore}"
+                            android:textColor="@android:color/white" />
+
+                    <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:drawableLeft="@drawable/ic_emoji_events_24px"
+                            android:text="@{`Win loss ratio: ` + user.stats.winRate}"
+                            android:textColor="@android:color/white" />
+                </LinearLayout>
+
                 <TextView
                         android:id="@+id/view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
                         android:text="Last connexion"
-                        android:textSize="20sp"
                         android:textColor="@android:color/white"
-                        app:layout_constraintStart_toEndOf="@+id/textView"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:textSize="20sp"
+                        app:layout_constraintStart_toStartOf="@+id/stats"
+                        app:layout_constraintTop_toBottomOf="@id/stats" />
 
                 <ListView
                         android:id="@+id/listView"
                         android:layout_width="wrap_content"
-                        android:layout_height="fill_parent"
+                        android:layout_height="200dp"
+                        android:layout_margin="20dp"
                         app:layout_constraintStart_toEndOf="@+id/view"
-                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+                        app:layout_constraintTop_toBottomOf="@+id/stats" />
 
 
             </android.support.constraint.ConstraintLayout>

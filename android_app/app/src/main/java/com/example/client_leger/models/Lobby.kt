@@ -5,9 +5,9 @@ import android.content.Context
 import android.widget.ArrayAdapter
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.Serializable
 
-
-class Lobby(jsonObject: JSONObject, context: Context) {
+class Lobby(jsonObject: JSONObject, context: Context) : Serializable{
     var lobbyName: String = jsonObject.getString("lobbyName")
     var usernames: ArrayList<String>
     var private: Boolean

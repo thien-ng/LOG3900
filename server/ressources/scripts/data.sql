@@ -1,5 +1,4 @@
 INSERT INTO log3900.channel VALUES('general', DEFAULT);
-INSERT INTO log3900.channel VALUES('pute', DEFAULT);
 INSERT INTO log3900.channel VALUES('george', DEFAULT);
 INSERT INTO log3900.channel VALUES('channel', DEFAULT);
 

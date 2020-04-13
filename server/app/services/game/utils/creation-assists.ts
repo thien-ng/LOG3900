@@ -43,7 +43,7 @@ export class CreationAssist2 {
                 if(j > 0)
                     ctx.lineTo(x, y);
                     
-                points.push({x: x*3 + 120, y: y*3 + 120});
+                points.push({x: x*2 + 120, y: y*2 + 120});
             }
             ctx.stroke();
             points = this.dilate(points);
@@ -66,8 +66,33 @@ export class CreationAssist2 {
 
             const eq = this.calculateEquation(prevPts, tempPts);
 
+            //if points are alligned on x
+            if (prevPts.x === tempPts.x) {
+
+                //if prev is above temp
+                if (prevPts.y - tempPts.y < 0) {
+                    let y = prevPts.y;
+                    while (y < tempPts.y) {
+                        newPts.push({x: prevPts.x, y: y});
+                        y += 10;
+                    }
+                }
+                //if prev is below temp
+                else if (prevPts.y - tempPts.y > 0) {
+                    let y = prevPts.y;
+                    while (y > tempPts.y) {
+                        newPts.push({x: prevPts.x, y: y});
+                        y -= 10;
+                    }
+                }
+                //if prev and temp are at the exact same location
+                else {
+                    newPts.push({x: prevPts.x, y: prevPts.y});
+                }
+
+            }
             //if point prev is left side of temp
-            if (prevPts.x - tempPts.x <= 0) {
+            else if (prevPts.x - tempPts.x < 0) {
                 let x = prevPts.x;
                 while (x < tempPts.x) {
                     const y = this.findY(eq[0], eq[1], x);

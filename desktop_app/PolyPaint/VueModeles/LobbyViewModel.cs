@@ -17,14 +17,17 @@ using System.Windows.Input;
 
 namespace PolyPaint.VueModeles
 {
-    class LobbyViewModel : BaseViewModel, IPageViewModel
+    class LobbyViewModel : BaseViewModel, IPageViewModel, IDisposable
     {
-        public LobbyViewModel(string lobbyname)
+        public LobbyViewModel(string lobbyname, string mode)
         {
             Usernames = new ObservableCollection<UserLobby>();
             OnlineUsers = new ObservableCollection<string>();
             this.LobbyName = lobbyname;
+            this.Mode = mode;
+            _isStartGameVisible = false;
             _searchString = "";
+            _isAddBotPossible = false;
             fetchUsername();
             getOnlineUsers();
             ServerService.instance.socket.On("lobby-notif", data => refreshUserList((JObject)data));
@@ -34,16 +37,24 @@ namespace PolyPaint.VueModeles
             Bots = new ObservableCollection<string> { "bot:sebastien", "bot:olivia", "bot:olivier" };
         }
 
-
         #region Public Attributes
 
         public static string[] BotList = { "bot:sebastien", "bot:olivia", "bot:olivier" };
         public string LobbyName { get; set; }
+        public string Mode { get; set; }
         private ObservableCollection<UserLobby> _usernames;
         public ObservableCollection<UserLobby> Usernames
         {
             get { return _usernames; }
-            set { _usernames = value; ProprieteModifiee(); }
+            set 
+            { 
+                _usernames = value;
+                ProprieteModifiee();
+                if (Mode == Constants.MODE_FFA)
+                {
+                    IsStartGameVisible = (_usernames.Count < Constants.MIN_MODE_FFA) ? false : true;
+                }
+            }
         }
 
         private ObservableCollection<string> _bots;
@@ -86,6 +97,64 @@ namespace PolyPaint.VueModeles
             set
             {
                 _isGameMaster = value;
+                ProprieteModifiee();
+                switch (Mode)
+                {
+                    case Constants.MODE_COOP:
+                        IsAddBotPossible = false;
+                        IsStartGameVisible = true;
+                        IsInvitePossible = true;
+                        break;
+                    case Constants.MODE_SOLO:
+                        IsAddBotPossible = false;
+                        IsStartGameVisible = true;
+                        IsInvitePossible = false;
+                        break;
+                    default:
+                        if (value)
+                        {
+                            IsAddBotPossible = true;
+                            IsInvitePossible = true;
+                        }
+                        else
+                            IsAddBotPossible = false;
+
+                        break;
+                }
+                
+            }
+        }
+
+        private bool _isAddBotPossible;
+        public bool IsAddBotPossible
+        {
+            get { return _isAddBotPossible; }
+            set
+            {
+                _isAddBotPossible = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isInvitePossible;
+        public bool IsInvitePossible
+        {
+            get { return _isInvitePossible; }
+            set
+            {
+                _isInvitePossible = value;
+                ProprieteModifiee();
+            }
+        }
+
+        private bool _isStartGameVisible;
+        public bool IsStartGameVisible
+        {
+            get { return _isStartGameVisible; }
+            set
+            {
+                if(IsGameMaster)
+                    _isStartGameVisible = value;
                 ProprieteModifiee();
             }
         }
@@ -142,8 +211,8 @@ namespace PolyPaint.VueModeles
         #region Methods
         private void kickedFromLobby()
         {
-            Mediator.Notify("LeaveLobby", "");
-            MessageBox.Show("You got kicked from lobby");
+                Mediator.Notify("LeaveLobby", "");
+                ShowMessageBox("You got kicked from lobby");
         }
 
         private async Task leaveLobby()
@@ -163,7 +232,7 @@ namespace PolyPaint.VueModeles
             }
         }
 
-        private async Task kickPlayer(string username)
+        private async Task<HttpResponseMessage> kickPlayer(string username)
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_LEAVE_PATH;
             dynamic values = new JObject();
@@ -174,11 +243,7 @@ namespace PolyPaint.VueModeles
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
-            {
-                MessageBox.Show("Player " + username + " kicked.");
-            }
+            return await ServerService.instance.client.PostAsync(requestPath, byteContent);
         }
 
         private void refreshUserList(JObject data)
@@ -187,7 +252,8 @@ namespace PolyPaint.VueModeles
             {
                 fetchUsername();
             }
-            if((string)data.GetValue("type") == "leave"){
+            if((string)data.GetValue("type") == "leave" && (string)data.GetValue("lobbyName") == this.LobbyName)
+            {
                 if (data.GetValue("username").ToString().Contains("bot:"))
                 {
                     App.Current.Dispatcher.Invoke(delegate
@@ -217,6 +283,8 @@ namespace PolyPaint.VueModeles
                     App.Current.Dispatcher.Invoke(delegate
                     {
                         usernames.Add(new UserLobby(item, item == ServerService.instance.username));
+                        if (Bots.Contains(item))
+                            Bots.Remove(item);
                     });
                 }
                 Usernames = usernames;
@@ -263,14 +331,14 @@ namespace PolyPaint.VueModeles
             var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.START_GAME_PATH + LobbyName);
             if (response.IsSuccessStatusCode)
             {
-                Mediator.Notify("GoToGameScreen");
+                Mediator.Notify("GoToGameScreen", Mode);
             }
         }
 
         private void joingame()
         {
-            if(!IsGameMaster)
-                Mediator.Notify("GoToGameScreen");
+            if (!IsGameMaster)
+                Mediator.Notify("GoToGameScreen", Mode);
         }
 
         private async Task processBotRequest()
@@ -289,7 +357,7 @@ namespace PolyPaint.VueModeles
             if(response.IsSuccessStatusCode)
                 Bots.Remove(SelectedBot);
         }
-        private async Task InviteUserAsync(string x)
+        private async Task<HttpResponseMessage> InviteUserAsync(string x)
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_INVITE_PATH;
             dynamic values = new JObject();
@@ -299,9 +367,22 @@ namespace PolyPaint.VueModeles
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if (response.IsSuccessStatusCode)
-                MessageBox.Show("Invite sucessfully sent");
+            return await ServerService.instance.client.PostAsync(requestPath, byteContent);
+        }
+
+        private void ShowMessageBox(string message)
+        {
+            App.Current.Dispatcher.Invoke(delegate
+            {
+                MessageBoxDisplayer.ShowMessageBox(message);
+            });
+        }
+
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off("lobby-notif");
+            ServerService.instance.socket.Off("game-start");
+            ServerService.instance.socket.Off("lobby-kicked");
         }
 
         #endregion
@@ -351,7 +432,7 @@ namespace PolyPaint.VueModeles
         {
             get
             {
-                return _openBotControlCommand ?? (_openBotControlCommand = new RelayCommand(async x =>
+                return _openBotControlCommand ?? (_openBotControlCommand = new RelayCommand(x =>
                 {
                     DialogContent = new CreateBotControl();
                     IsCreateBotDialogOpen = true;
@@ -394,7 +475,10 @@ namespace PolyPaint.VueModeles
                 return _inviteUserCommand ?? (_inviteUserCommand = new RelayCommand(async x =>
                 {
                     IsInviteUserDialogOpen = false;
-                    await Task.Run(() => InviteUserAsync((string)x));
+                    var response = await InviteUserAsync((string)x);
+
+                    if (response.IsSuccessStatusCode)
+                        ShowMessageBox("Invite sucessfully sent");
                 }));
             }
         }
@@ -407,7 +491,13 @@ namespace PolyPaint.VueModeles
             {
                 return _removeUserCommand ?? (_removeUserCommand = new RelayCommand(async x => 
                 {
-                    await Task.Run(() => kickPlayer((string)x));
+                    string username = (string)x;
+
+                    var response = await kickPlayer(username);
+                    if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                    {
+                        ShowMessageBox("Player " + username + " kicked.");
+                    }
                 }));
             }
         }

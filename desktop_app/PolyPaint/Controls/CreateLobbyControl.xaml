@@ -19,13 +19,13 @@
                  Text="{Binding LobbyName}"
                  Margin="0 6 0 0"
                  FontSize="18" Grid.Row="0"/>
-        <StackPanel Orientation="Horizontal" Grid.Row="1">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Visibility="{Binding IsSizeNeeded, Converter={StaticResource BooleanToVisibilityConverter}}">
             
             <TextBlock Text="Private: " VerticalAlignment="Center" FontSize="15"/>
             <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsPrivate}" />
             <TextBox Margin="10,2,2,2" VerticalAlignment="Top" wpf:HintAssist.Hint="Password" FontSize="16" Style="{DynamicResource MaterialDesignFloatingHintTextBox}" Text="{Binding Password}" Visibility="{Binding VisibilityPrivate, Mode=TwoWay}"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="2">
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Visibility="{Binding IsSizeNeeded, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="Player limit: " FontSize="15" VerticalAlignment="Center" />
             <ComboBox
     wpf:ComboBoxAssist.ShowSelectedItem="True"

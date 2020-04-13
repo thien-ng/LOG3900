@@ -2,6 +2,7 @@ package com.example.client_leger.Fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.view.*
 import android.widget.PopupWindow
@@ -20,9 +21,11 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
     private lateinit var endGameSub: Disposable
     private var colorList = arrayListOf("#FF90EE90", "#FFFFA500", "#FFFF0000", "#FFD3D3D3")
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragment_gameplay, container, false)
+    private lateinit var v: View
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        v = inflater.inflate(R.layout.fragment_gameplay, container, false)
+        activity!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.GONE
         fragmentManager!!.beginTransaction()
             .replace(R.id.container_view_top, GameplayMenuFragment(), "menu")
             .replace(R.id.container_view_canvas, DrawFragment(), "draw")
@@ -43,12 +46,8 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
             rankingView,
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            true
+            false
         )
-
-        popupWindow.setOnDismissListener {
-            replaceFragment(LobbyCardsFragment())
-        }
 
         var tableRow = TableRow(this.context)
         tableRow.layoutParams = TableRow.LayoutParams(
@@ -121,9 +120,12 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
         }
 
         popupWindow.showAtLocation(rankingView, Gravity.CENTER, 0, 0)
+        rankingView.button_ok.isEnabled = true
 
         rankingView.button_ok.setOnClickListener {
             popupWindow.dismiss()
+            replaceFragment(LobbyCardsFragment())
+            rankingView.visibility = View.GONE
         }
     }
 
@@ -139,6 +141,7 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
     }
 
     override fun onDestroy() {
+        activity!!.findViewById<BottomNavigationView>(R.id.bottomNavigationView).visibility = View.VISIBLE
         super.onDestroy()
         endGameSub.dispose()
     }

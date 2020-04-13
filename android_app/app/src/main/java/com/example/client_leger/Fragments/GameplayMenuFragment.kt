@@ -1,5 +1,6 @@
 package com.example.client_leger.Fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -20,7 +21,9 @@ class GameplayMenuFragment: Fragment() {
     private lateinit var timerSub:  Disposable
     private lateinit var drawerSub: Disposable
     private lateinit var gamePoints: Disposable
+    private lateinit var guessLeft: Disposable
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_gameplay_menu, container, false)
 
@@ -35,13 +38,18 @@ class GameplayMenuFragment: Fragment() {
         timerSub = Communication.getTimerListener().subscribe { res ->
             activity!!.runOnUiThread {
                 v.timer.text = "Time left: " + res.getString("time")
-
             }
         }
 
         gamePoints = Communication.getGamePointsListener().subscribe { res ->
             activity!!.runOnUiThread {
                 v.points.text = "Your points: " + res.getInt("point").toString()
+            }
+        }
+
+        guessLeft = Communication.getGuessLeftListener().subscribe {
+            activity!!.runOnUiThread {
+                v.guessLeft.text = "Your number of guesses left: " + it.getInt("guessLeft").toString()
             }
         }
 
@@ -65,5 +73,6 @@ class GameplayMenuFragment: Fragment() {
         timerSub.dispose()
         drawerSub.dispose()
         gamePoints.dispose()
+        guessLeft.dispose()
     }
 }

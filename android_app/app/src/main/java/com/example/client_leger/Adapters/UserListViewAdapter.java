@@ -13,7 +13,6 @@ import com.example.client_leger.R;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 
 
 public class UserListViewAdapter extends BaseAdapter {
@@ -25,11 +24,12 @@ public class UserListViewAdapter extends BaseAdapter {
     private ArrayList mData = new ArrayList();
     private LayoutInflater mInflater;
     private LobbyFragment lobbyFragment;
-    private TreeSet mSeparatorsSet = new TreeSet();
+    private Boolean isMaster;
 
-    public UserListViewAdapter(LobbyFragment lobbyFragment) {
+    public UserListViewAdapter(LobbyFragment lobbyFragment, boolean isMaster) {
         mInflater = LayoutInflater.from(lobbyFragment.getContext());
         this.lobbyFragment = lobbyFragment;
+        this.isMaster = isMaster;
     }
 
     public void addUser(final String item) {
@@ -39,14 +39,12 @@ public class UserListViewAdapter extends BaseAdapter {
 
     public void addBot(final String item) {
         mData.add(item);
-        // save separator position
-        mSeparatorsSet.add(mData.size() - 1);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return mSeparatorsSet.contains(position) ? TYPE_BOT : TYPE_USER;
+        return getItem(position).startsWith("bot:")? TYPE_BOT : TYPE_USER;
     }
 
     @Override
@@ -73,27 +71,43 @@ public class UserListViewAdapter extends BaseAdapter {
         ViewHolder view;
         int type = getItemViewType(position);
         view = new ViewHolder();
+
+        String name = getItem(position);
+
         if (convertView == null) {
             switch (type) {
                 case TYPE_USER:
                     convertView = mInflater.inflate(R.layout.lobbyuser_item, null);
-                    view.myTextView = (TextView)convertView.findViewById(R.id.lobbyuser_username);
+                    view.myTextView = convertView.findViewById(R.id.lobbyuser_username);
+                    if (isMaster) {
+                       view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    } else {
+                        convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
+                    }
                     break;
                 case TYPE_BOT:
                     convertView = mInflater.inflate(R.layout.lobbybot_item, null);
-                    view.myTextView = (TextView)convertView.findViewById(R.id.lobbybot_username);
-                    view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
-                    view.deleteIcon.setOnClickListener(v -> {
-                        lobbyFragment.removeBot(getItem(position));
-                        removeBot(position);
-                    });
+                    view.myTextView = convertView.findViewById(R.id.lobbybot_username);
+                    if (isMaster) {
+                        view.deleteIcon = convertView.findViewById(R.id.deleteIcon);
+                    } else {
+                        convertView.findViewById(R.id.deleteIcon).setVisibility(View.GONE);
+                    }
                     break;
             }
             convertView.setTag(view);
         }else {
             view = (ViewHolder)convertView.getTag();
         }
-        view.myTextView.setText( getItem(position));
+
+        view.myTextView.setText( name);
+        if (isMaster) {
+            if(name.equals(lobbyFragment.username)) view.deleteIcon.setVisibility(View.GONE);
+            else {
+                view.deleteIcon.setVisibility(View.VISIBLE);
+                view.deleteIcon.setOnClickListener(v -> lobbyFragment.removePlayer(name));
+            }
+        }
         return convertView;
     }
 
@@ -103,18 +117,13 @@ public class UserListViewAdapter extends BaseAdapter {
         }
         notifyDataSetChanged();
     }
-    public void removeBot(int position){
-        mData.remove(position);
-        // save separator position
-        mSeparatorsSet.remove(position);
+
+    public void removePlayer(String name){
+        mData.remove(name);
         notifyDataSetChanged();
     }
 
-    public void removeUser(String username){
-        mData.remove(username);
-        notifyDataSetChanged();
-    }
-    public class ViewHolder {
+    public static class ViewHolder {
         TextView myTextView;
         AppCompatImageView deleteIcon;
     }

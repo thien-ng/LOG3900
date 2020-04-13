@@ -1,23 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PolyPaint.Modeles;
 using PolyPaint.Services;
+using PolyPaint.Utilitaires;
 
 namespace PolyPaint.VueModeles
 {
-    class ProfileViewModel
+    class ProfileViewModel: BaseViewModel
     {
         
         public ProfileViewModel()
         {
             _username = Services.ServerService.instance.username;
-            if(ServerService.instance.user != null)
+            if(ServerService.instance.user == null)
             {
-                _firstname = Services.ServerService.instance.user.firstName;
-                _lastname = Services.ServerService.instance.user.lastName;
+                fetchProfile();
+            }
+            else
+            {
+                _firstname = ServerService.instance.user.firstName;
+                _lastname = ServerService.instance.user.lastName;
                 _connections = ServerService.instance.user.connections;
                 _stats = ServerService.instance.user.stats;
                 _games = ServerService.instance.user.games;
@@ -29,36 +31,75 @@ namespace PolyPaint.VueModeles
         public string Username
         {
             get { return _username; }
+            set { _username = value; ProprieteModifiee(); }
         }
 
         string _firstname;
         public string Firstname
         {
             get { return _firstname; }
+            set { _firstname = value; ProprieteModifiee(); }
         }
         string _lastname;
         public string Lastname
         {
             get { return _lastname; }
+            set { _lastname = value; ProprieteModifiee(); }
         }
 
         public Connection[] _connections;
         public Connection[] Connections
         {
             get { return _connections; }
+            set { _connections = value; ProprieteModifiee(); }
         }
-        #endregion
 
         private Stats _stats;
         public Stats Stats 
         {
             get { return _stats; }
+            set { _stats = value; ProprieteModifiee(); }
         }
 
         private Game[] _games;
         public Game[] Games 
         {
             get { return _games; }
+            set { _games = value; ProprieteModifiee(); }
         }
+
+        #endregion
+
+
+        #region Methods
+
+        public async void fetchProfile()
+        {
+            try
+            {
+                var response = await ServerService.instance.client.GetAsync(Constants.SERVER_PATH + Constants.USER_INFO_PATH + ServerService.instance.username);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<User>(responseString);
+                    ServerService.instance.user = data;
+                    Firstname = ServerService.instance.user.firstName;
+                    Lastname = ServerService.instance.user.lastName;
+                    Connections = ServerService.instance.user.connections;
+                    Stats = ServerService.instance.user.stats;
+                    Games = ServerService.instance.user.games;
+                }
+            }
+            catch (Exception)
+            {
+                App.Current.Dispatcher.Invoke(delegate
+                {
+                    MessageBoxDisplayer.ShowMessageBox("failed to retrieve stats");
+                });
+            }
+
+        }
+
+        #endregion
     }
 }

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.IO;
-using MaterialDesignThemes.Wpf;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json.Linq;
@@ -17,7 +16,7 @@ using System.Linq;
 
 namespace PolyPaint.VueModeles
 {
-    class GamelistViewModel : BaseViewModel
+    class GamelistViewModel : BaseViewModel, IDisposable
     {
         public GamelistViewModel()
         {
@@ -25,7 +24,8 @@ namespace PolyPaint.VueModeles
             _numbers = new ObservableCollection<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             SelectedMode = "FFA";
             IsPrivate = false;
-            ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
+            _isSizeNeeded = true;
+            SubscribeLobbyNotif();
         }
 
         #region Public Attributes
@@ -71,15 +71,17 @@ namespace PolyPaint.VueModeles
                 switch (_selectedMode)
                 {
                     case Constants.MODE_FFA:
+                        IsSizeNeeded = true;
                         fillArray(2, 9);
                         break;
 
                     case Constants.MODE_COOP:
-                        fillArray(3, 5);
+                        IsSizeNeeded = true;
+                        fillArray(1, 4);
                         break;
 
                     case Constants.MODE_SOLO:
-                        fillArray(2, 2);
+                        IsSizeNeeded = false;
                         break;
 
                     default:
@@ -101,6 +103,13 @@ namespace PolyPaint.VueModeles
                 else
                     VisibilityPrivate = "Hidden";
             }
+        }
+
+        private bool _isSizeNeeded;
+        public bool IsSizeNeeded
+        {
+            get { return _isSizeNeeded; }
+            set { _isSizeNeeded = value; ProprieteModifiee(); }
         }
 
         private string _selectedSize;
@@ -171,6 +180,12 @@ namespace PolyPaint.VueModeles
 
         #region Methods
 
+        public void SubscribeLobbyNotif()
+        {
+            if (!ServerService.instance.socket.HasListeners("lobby-notif"))
+                ServerService.instance.socket.On("lobby-notif", data => processLobbyNotif((JObject)data));
+        }
+
         private void processLobbyNotif(JObject data)
         {
             App.Current.Dispatcher.Invoke(delegate
@@ -180,11 +195,25 @@ namespace PolyPaint.VueModeles
                     getLobbies();
                 if(((string)data.GetValue("type") == "join"))
                 {
-                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                    try
+                    {
+                        GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Add((string)data.GetValue("username"));
+                    }
+                    catch (Exception)
+                    {
+                        //fail silently
+                    }
                 }
                 if (((string)data.GetValue("type") == "leave"))
                 {
-                    GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                    try
+                    {
+                        GameCards.SingleOrDefault(i => i.LobbyName == (string)data.GetValue("lobbyName")).Players.Remove((string)data.GetValue("username"));
+                    }
+                    catch (Exception)
+                    {
+                        // fail silently
+                    }
                 }
             });
 
@@ -197,7 +226,7 @@ namespace PolyPaint.VueModeles
                 Numbers.Add(i);
             }
         }
-        private async void getLobbies()
+        public async void getLobbies()
         {
             await App.Current.Dispatcher.Invoke(async delegate
              {
@@ -219,26 +248,36 @@ namespace PolyPaint.VueModeles
              });
 
         }
-        private async void createLobby()
+        private async Task<HttpResponseMessage> createLobby()
         {
             string requestPath = Constants.SERVER_PATH + Constants.GAME_JOIN_PATH;
             dynamic values = new JObject();
             values.username = ServerService.instance.username;
-            values.Add("isPrivate", _isPrivate);
             values.lobbyName = _lobbyName;
-            values.size = _selectedSize;
-            values.password = _password;
+            if (_selectedMode == Constants.MODE_SOLO)
+            {
+                values.Add("isPrivate", true);
+                values.size = 1;
+                values.password = "solo";
+            }
+            else
+            {
+                values.Add("isPrivate", _isPrivate);
+                values.size = _selectedSize;
+                values.password = _password;
+            }
             values.mode = _selectedMode;
             var content = JsonConvert.SerializeObject(values);
             var buffer = System.Text.Encoding.UTF8.GetBytes(content);
             var byteContent = new ByteArrayContent(buffer);
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await ServerService.instance.client.PostAsync(requestPath, byteContent);
-            if ((int)response.StatusCode == Constants.SUCCESS_CODE)
-            {
-                Mediator.Notify("GoToLobbyScreen", _lobbyName);
-                LobbyName = "";
-            }
+            return await ServerService.instance.client.PostAsync(requestPath, byteContent);
+            
+        }
+
+        public override void Dispose()
+        {
+            ServerService.instance.socket.Off("lobby-notif");
         }
 
         #endregion
@@ -265,7 +304,16 @@ namespace PolyPaint.VueModeles
             {
                 return _acceptCommand ?? (_acceptCommand = new RelayCommand(async x =>
                 {
-                    await Task.Run(() => createLobby());
+                    var response = await createLobby();
+
+                    if ((int)response.StatusCode == Constants.SUCCESS_CODE)
+                    {
+                        Dictionary<string, string> data = new Dictionary<string, string>();
+                        data.Add("lobbyName", _lobbyName);
+                        data.Add("mode", _selectedMode);
+                        Mediator.Notify("GoToLobbyScreen", data);
+                        LobbyName = "";
+                    }
                     IsCreateGameDialogOpen = false;
                 }));
             }
