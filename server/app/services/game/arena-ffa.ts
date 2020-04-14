@@ -44,7 +44,7 @@ export class ArenaFfa extends Arena {
         this.initUserWithAnswerMap();
     }
 
-    public start(): void {
+    public start(): void {        
         console.log("[Debug] Starting arena FFA", this.room);
 
         this.initBots();
@@ -135,12 +135,7 @@ export class ArenaFfa extends Arena {
     }
 
     private handleGameplayDraw(socket: io.Socket, mes: IGameplayDraw | IGameplayEraser): void {
-        if (mes.username === this.users[this.drawPtr - 1].username) {
-            this.users.forEach(u => {
-                if (u.username != mes.username)
-                    socket.to(u.socketId).emit("draw", this.mapToDrawing(mes))
-            });
-        }
+            socket.to(this.room).emit("draw", this.mapToDrawing(mes));
     }
 
     protected handleGameplayChat(mes: IGameplayChat): void {
