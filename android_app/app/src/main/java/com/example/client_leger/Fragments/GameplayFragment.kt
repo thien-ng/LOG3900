@@ -65,13 +65,13 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
         tableRow.addView(title1)
 
         val title2 = TextView(this.context)
-        title2.setPadding(120 - title1.width, 0, 0, 0)
+        title2.setPadding(80 - title1.width, 0, 0, 0)
         title2.textSize = 20F
         title2.text = "Username"
         tableRow.addView(title2)
 
         val title3 = TextView(this.context)
-        title3.setPadding(110, 0, 0, 0)
+        title3.setPadding(120, 0, 0, 0)
         title3.text = "Points"
         title3.textSize = 20F
         tableRow.addView(title3)
@@ -104,7 +104,7 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
             tableRow.addView(rank)
 
             val user = TextView(this.context)
-            user.setPadding(180 - rank.width, 0, 0, 0)
+            user.setPadding(140 - rank.width, 0, 0, 0)
             user.textSize = 20F
             val str1: String = infos.getString("username")
             user.text = str1
@@ -112,7 +112,7 @@ class GameplayFragment: Fragment(), FragmentChangeListener {
             tableRow.addView(user)
 
             val points = TextView(this.context)
-            points.setPadding(140 - str1.length, 0, 0, 0)
+            points.setPadding(130 - str1.length, 0, 0, 0)
             val str2: String = infos.getInt("points").toString()
             points.text = str2
             points.setTextColor(Color.BLACK)
