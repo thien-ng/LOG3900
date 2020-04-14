@@ -16,6 +16,7 @@ export default {
     LobbyManagerService:    Symbol('LobbyManagerService'),
     GameManagerService:     Symbol('GameManagerService'),
     GameCreatorService:     Symbol('GameCreatorService'),
+    ArenaContainerService:  Symbol('ArenaContainerService'),
 
     AccountDbService:       Symbol('AccountDbService'),
     ChatDbService:          Symbol('ChatDbService'),

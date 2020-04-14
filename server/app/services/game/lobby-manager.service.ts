@@ -3,9 +3,12 @@ import { IJoinLobby, ILeaveLobby, IActiveLobby, IReceptMesLob, INotify, LobbyNot
 import { IUser } from "../../interfaces/user-manager";
 import { UserManagerService } from "../user-manager.service";
 import { Time } from "../../utils/date";
+import { ArenaContainerService } from "./arena-container.service";
 
 import Types from '../../types';
 import * as io from 'socket.io';
+import { ArenaFfa } from "./arena-ffa";
+import { ArenaSprint } from "./arena-sprint";
 
 
 @injectable()
@@ -16,7 +19,9 @@ export class LobbyManagerService {
 
     private socketServer: io.Server;
 
-    public constructor(@inject(Types.UserManagerService) private userServ: UserManagerService) {
+    public constructor(
+        @inject(Types.UserManagerService) private userServ: UserManagerService,
+        @inject(Types.ArenaContainerService) private arenaContainer: ArenaContainerService) {
         this.lobbies = new Map<string, IActiveLobby>();
         this.lobbiesMessages = new Map<string, IReceptMesLob[]>();
     }
@@ -67,6 +72,10 @@ export class LobbyManagerService {
 
         if (!user) throw new Error(`${username} is not found in logged users`);
 
+        if (this.checkIfUserIsAlreadyInAGame(username)) {
+            throw new Error("User is currently in a game");
+        }
+
         if (this.checkIfUserIsAlreadyInALobby(username)){
             throw new Error("User already in a lobby");
         }
@@ -83,6 +92,20 @@ export class LobbyManagerService {
         }
         this.socketServer.to(user.socketId).emit("lobby-invitation", { type: LobbyNotif.invitation, lobbyName: lobbyName, mode: lobby.mode })
         return `${username} added to whitelist`;
+    }
+
+    private checkIfUserIsAlreadyInAGame(username: string): boolean {
+        let isInGame = false;
+        this.arenaContainer.arenas.forEach((arena: ArenaFfa | ArenaSprint, key: number) => {
+            const inUsers: boolean = arena.users.find(u => {return u.username === username}) !== undefined;
+            if (inUsers) {
+                const isDC = arena.dcPlayer.find(user => {return user === username}) !== undefined;
+                if (isDC === false) {
+                    isInGame = true;
+                }
+            }
+        });
+        return isInGame;
     }
 
     private checkIfUserIsAlreadyInALobby(username: string): boolean {

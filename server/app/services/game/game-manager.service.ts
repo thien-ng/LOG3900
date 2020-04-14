@@ -7,6 +7,7 @@ import { RulesDbService } from "../../database/rules-db.service";
 import { GameDbService } from "../../database/game-db.service";
 import { IGameRule } from "../../interfaces/rule";
 import { Time } from "../../utils/date";
+import { ArenaContainerService } from "./arena-container.service";
 
 import Types from '../../types';
 import * as io from 'socket.io';
@@ -23,11 +24,14 @@ export class GameManagerService {
     public constructor(
         @inject(Types.LobbyManagerService) private lobServ: LobbyManagerService,
         @inject(Types.RulesDbService) private rulesDb: RulesDbService,
-        @inject(Types.GameDbService) private gameDb: GameDbService) {
+        @inject(Types.GameDbService) private gameDb: GameDbService,
+        @inject(Types.ArenaContainerService) private arenaContainer: ArenaContainerService) {
 
         this.arenas = new Map<number, ArenaFfa | ArenaSprint>();
         this.userMapArenaId = new Map<string, number>();
         this.arenaId = 0;
+
+        this.arenaContainer.setArenaMap(this.arenas);
     }
 
     public initSocketServer(socketServer: io.Server): void {

@@ -27,8 +27,8 @@ export abstract class Arena {
     protected type: GameMode;
 
     protected userMapReady: Map<string, boolean>;
-    protected dcPlayer: string[];
-    protected users: IUser[];
+    public dcPlayer: string[];
+    public users: IUser[];
     protected isAllDc: boolean;
 
     private arenaId: number;

@@ -19,6 +19,7 @@ import { GameCreatorService } from './services/game/game-creator.service';
 import { GameCreatorController } from './controllers/game-creator.controller';
 import { RulesDbService } from './database/rules-db.service';
 import { GameDbService } from './database/game-db.service';
+import { ArenaContainerService } from "./services/game/arena-container.service";
 import Types from './types';
 
 const container: Container = new Container();
@@ -46,5 +47,6 @@ container.bind(Types.UserManagerService).to(UserManagerService).inSingletonScope
 container.bind(Types.DatabaseService).to(DatabaseService).inSingletonScope();
 container.bind(Types.RulesDbService).to(RulesDbService).inSingletonScope();
 container.bind(Types.GameDbService).to(GameDbService).inSingletonScope();
+container.bind(Types.ArenaContainerService).to(ArenaContainerService).inSingletonScope();
 
 export { container };
