@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@drawable/gradient"
+        android:orientation="vertical"
+        android:weightSum="10">
+
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="5dp">
+
+        <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/appCompatImageView"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:background="@drawable/ic_games_white_24dp"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        <Spinner
+                android:id="@+id/GameMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="11dp"
+                android:layout_marginLeft="11dp"
+                android:textColor="@android:color/white"
+                android:textSize="45sp"
+                android:popupBackground="#80000000"
+                android:overlapAnchor="false"
+                app:layout_constraintStart_toEndOf="@+id/appCompatImageView"
+                app:layout_constraintBottom_toTopOf="@+id/textView_Description" />
+
+        <TextView
+                android:id="@+id/textView_Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="11dp"
+                android:layout_marginLeft="15dp"
+                android:paddingLeft="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="Description"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/appCompatImageView" />
+        <Button
+                android:id="@+id/button_showCreateLobbyDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="25dp"
+                android:layout_marginRight="25dp"
+                android:text="Create Lobby"
+                app:backgroundTint="@android:color/white"
+                android:textColor="@color/colorAccent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@android:color/white" />
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_gameCards"
+            android:layout_weight="9"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:padding="20dp"/>
+
+</LinearLayout>
